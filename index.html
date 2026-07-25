@@ -513,7 +513,7 @@
             apiKey: "AIzaSyAfh0iZSotPra1olpRWRfwwBP9G8yrdHEc",
             authDomain: "print-express-bfa7c.firebaseapp.com",
             projectId: "print-express-bfa7c",
-            storageBucket: "print-express-bfa7c.firebasestorage.app",
+            storageBucket: "print-express-bfa7c.appspot.com",
             messagingSenderId: "471136646915",
             appId: "1:471136646915:web:8b7b6f92c00d88c7c79b36",
             measurementId: "G-8K5LHHCDFE"
@@ -724,9 +724,12 @@
                         totalGeneral += subtotal;
 
                         const file = item.file;
-                        const storageRef = ref(storage, `documentos/${Date.now()}_${file.name}`);
-                        const uploadTask = await uploadBytes(storageRef, file);
-                        const fileUrl = await getDownloadURL(uploadTask.ref);
+                        const nomeArquivo = `${Date.now()}_${file.name}`;
+                        const storageRef = ref(storage, "documentos/" + nomeArquivo);
+
+                        await uploadBytes(storageRef, file);
+
+                        const fileUrl = await getDownloadURL(storageRef);
 
                         arquivosProcessados.push({
                             nome: file.name,
@@ -804,8 +807,8 @@
                 document.getElementById("step-3").classList.remove("hidden");
 
             } catch (err) {
-                console.error("Erro no envio:", err);
-                mostrarToast("Erro de Conexão", "Não foi possível registrar seu pedido. Verifique sua conexão e tente novamente.");
+                console.error(err);
+                mostrarToast("Erro", err.code + " - " + err.message);
                 btn.disabled = false;
                 btn.innerText = "Enviar Pedido 🚀";
             }
