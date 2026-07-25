@@ -186,55 +186,45 @@
             font-size: 14px;
         }
 
-        /* ESTILOS DOS CARDS DE ARQUIVOS MÚLTIPLOS */
-        .arquivo-card-item {
+        /* ESTILOS DA LISTA DE ARQUIVOS */
+        .lista-arquivos {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .item-arquivo {
             background: #0f172a;
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 14px;
-            margin-top: 10px;
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
-        .arquivo-header {
+        .item-arquivo-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 8px;
-        }
-
-        .arquivo-nome {
-            font-size: 14px;
             font-weight: 600;
+            font-size: 14px;
             color: var(--accent);
             word-break: break-all;
         }
 
-        .arquivo-opcoes-grid {
+        .item-arquivo-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
 
-        .subtotal-arquivo {
+        .item-subtotal {
+            text-align: right;
             font-size: 13px;
             color: var(--green);
-            font-weight: 700;
-            text-align: right;
-        }
-
-        .btn-remover-arq {
-            background: transparent;
-            color: var(--danger);
-            border: none;
-            font-size: 12px;
-            cursor: pointer;
-            text-decoration: underline;
-            text-align: left;
-            width: fit-content;
+            font-weight: bold;
         }
 
         .hidden { display: none !important; }
@@ -363,7 +353,7 @@
         @media (max-width: 500px) {
             body { padding: 16px 10px; }
             .servicos-grid { grid-template-columns: 1fr; }
-            .arquivo-opcoes-grid { grid-template-columns: 1fr; }
+            .item-arquivo-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -440,15 +430,14 @@
                     <div class="paper-badge">📄 Papel Sulfite A4 (21x30 cm)</div>
                 </div>
 
-                <!-- CAMPO DE UPLOAD DE MULTIPLOS ARQUIVOS -->
-                <div class="form-group" style="margin-top: 12px;">
+                <!-- CAMPO DE UPLOAD MULTIPLO -->
+                <div class="form-group">
                     <label for="arquivo-upload">Anexar Documento(s) (PDF, DOCX, Imagem):</label>
-                    <!-- ATRIBUTO multiple ADICIONADO AQUI -->
-                    <input type="file" id="arquivo-upload" multiple accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" onchange="processarArquivosSelecionados(this.files)">
+                    <input type="file" id="arquivo-upload" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" multiple onchange="atualizarListaArquivos()">
                 </div>
 
-                <!-- LISTA DINÂMICA DE ARQUIVOS ANEXADOS -->
-                <div id="lista-arquivos-container"></div>
+                <!-- PAINEL DE CONFIGURAÇÃO INDIVIDUAL DOS ARQUIVOS -->
+                <div id="container-arquivos" class="lista-arquivos"></div>
             </div>
 
             <!-- VALOR E AVANÇAR -->
@@ -483,7 +472,7 @@
 
             <div class="form-group">
                 <label for="observacoes">Observações (Opcional):</label>
-                <textarea id="observacoes" rows="2" placeholder="Ex: Preciso de encadernação, grampo, etc..."></textarea>
+                <textarea id="observacoes" rows="2" placeholder="Ex: Preciso da folha 1 impressa frente e verso..."></textarea>
             </div>
 
             <div style="display: flex; gap: 12px; margin-top: 10px;">
@@ -537,8 +526,8 @@
         const MEU_WHATSAPP = "5541999682836";
         const CHAVE_PIX_TEXTO = "41999682836";
 
-        let servicoAtual = "doc"; // 'doc', 'curriculo', 'canva'
-        let listaArquivos = []; // Array que guarda cada arquivo com suas configs individuais
+        let servicoAtual = "doc";
+        let configuracoesArquivos = [];
 
         // CARROSSEL DE AVISOS
         let slideIndex = 0;
@@ -570,84 +559,75 @@
             calcularTotal();
         };
 
-        // LÓGICA DE PROCESSAMENTO DE MÚLTIPLOS ARQUIVOS
-        window.processarArquivosSelecionados = function(files) {
-            if (!files || files.length === 0) return;
-
-            Array.from(files).forEach(file => {
-                const idUnico = 'file_' + Math.random().toString(36).substr(2, 9);
-                listaArquivos.push({
-                    id: idUnico,
-                    fileObject: file,
-                    nome: file.name,
-                    tipoCor: 'pb', // 'pb' ou 'colorida'
-                    copias: 1,
-                    subtotal: 0.50
-                });
+        // GERENCIAMENTO E CONFIGURAÇÃO DE MÚLTIPLOS ARQUIVOS
+        window.atualizarListaArquivos = function() {
+            const input = document.getElementById("arquivo-upload");
+            const container = document.getElementById("container-arquivos");
+            container.innerHTML = "";
+            
+            const arquivosNovos = Array.from(input.files);
+            
+            // Atualiza array mantendo integridade
+            configuracoesArquivos = arquivosNovos.map((file, index) => {
+                const configExistente = configuracoesArquivos[index];
+                return {
+                    file: file,
+                    tipoCor: configExistente ? configExistente.tipoCor : "pb",
+                    copias: configExistente ? configExistente.copias : 1
+                };
             });
 
-            renderizarListaArquivos();
-        };
-
-        window.renderizarListaArquivos = function() {
-            const container = document.getElementById("lista-arquivos-container");
-            container.innerHTML = "";
-
-            listaArquivos.forEach((item) => {
-                const card = document.createElement("div");
-                card.className = "arquivo-card-item";
-                card.innerHTML = `
-                    <div class="arquivo-header">
-                        <span class="arquivo-nome">📄 ${item.nome}</span>
-                        <span class="subtotal-arquivo" id="subtotal_${item.id}">R$ ${item.subtotal.toFixed(2).replace('.', ',')}</span>
+            configuracoesArquivos.forEach((item, index) => {
+                const itemDiv = document.createElement("div");
+                itemDiv.className = "item-arquivo";
+                itemDiv.innerHTML = `
+                    <div class="item-arquivo-header">
+                        <span>📎 ${item.file.name}</span>
                     </div>
-                    <div class="arquivo-opcoes-grid">
-                        <div class="form-group">
-                            <label style="font-size:12px;">Tipo de Impressão:</label>
-                            <select style="padding:8px; font-size:13px;" onchange="atualizarOpcaoArquivo('${item.id}', 'tipoCor', this.value)">
+                    <div class="item-arquivo-grid">
+                        <div>
+                            <label>Impressão:</label>
+                            <select onchange="atualizarOpcaoArquivo(${index}, 'tipoCor', this.value)">
                                 <option value="pb" ${item.tipoCor === 'pb' ? 'selected' : ''}>Preto e Branco (R$ 0,50)</option>
                                 <option value="colorida" ${item.tipoCor === 'colorida' ? 'selected' : ''}>Colorida (R$ 1,50)</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label style="font-size:12px;">Cópias:</label>
-                            <input type="number" min="1" value="${item.copias}" style="padding:8px; font-size:13px;" oninput="atualizarOpcaoArquivo('${item.id}', 'copias', parseInt(this.value) || 1)">
+                        <div>
+                            <label>Quantidade / Folhas:</label>
+                            <input type="number" value="${item.copias}" min="1" oninput="atualizarOpcaoArquivo(${index}, 'copias', parseInt(this.value) || 1)">
                         </div>
                     </div>
-                    <button type="button" class="btn-remover-arq" onclick="removerArquivo('${item.id}')">❌ Remover arquivo</button>
+                    <div class="item-subtotal" id="subtotal-${index}">
+                        Subtotal: R$ 0,00
+                    </div>
                 `;
-                container.appendChild(card);
+                container.appendChild(itemDiv);
             });
 
             calcularTotal();
         };
 
-        window.atualizarOpcaoArquivo = function(id, campo, valor) {
-            const item = listaArquivos.find(a => a.id === id);
-            if (!item) return;
-
-            item[campo] = valor;
-            const precoUnitario = item.tipoCor === "colorida" ? 1.50 : 0.50;
-            item.subtotal = precoUnitario * item.copias;
-
-            const elSubtotal = document.getElementById(`subtotal_${id}`);
-            if (elSubtotal) {
-                elSubtotal.innerText = `R$ ${item.subtotal.toFixed(2).replace('.', ',')}`;
+        window.atualizarOpcaoArquivo = function(index, campo, valor) {
+            if (configuracoesArquivos[index]) {
+                configuracoesArquivos[index][campo] = valor;
+                calcularTotal();
             }
-
-            calcularTotal();
-        };
-
-        window.removerArquivo = function(id) {
-            listaArquivos = listaArquivos.filter(a => a.id !== id);
-            renderizarListaArquivos();
         };
 
         window.calcularTotal = function() {
             let total = 0;
 
             if (servicoAtual === "doc") {
-                total = listaArquivos.reduce((acc, curr) => acc + curr.subtotal, 0);
+                configuracoesArquivos.forEach((item, index) => {
+                    const precoUnitario = item.tipoCor === "colorida" ? 1.50 : 0.50;
+                    const subtotal = item.copias * precoUnitario;
+                    total += subtotal;
+
+                    const subtotalEl = document.getElementById(`subtotal-${index}`);
+                    if (subtotalEl) {
+                        subtotalEl.innerText = `Subtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+                    }
+                });
             } else if (servicoAtual === "curriculo") {
                 total = 10.00;
             } else if (servicoAtual === "canva") {
@@ -692,8 +672,8 @@
                 mostrarToast("WhatsApp Inválido", "Por favor, digite um número de WhatsApp válido com DDD."); 
                 return; 
             }
-            if (servicoAtual === "doc" && listaArquivos.length === 0) {
-                mostrarToast("Arquivo Obrigatório", "Por favor, anexe pelo menos um arquivo para impressão.");
+            if (servicoAtual === "doc" && configuracoesArquivos.length === 0) {
+                mostrarToast("Arquivo Ausente", "Por favor, selecione pelo menos um arquivo para impressão.");
                 return;
             }
 
@@ -726,60 +706,57 @@
             const obs = document.getElementById("observacoes").value || "Nenhuma";
 
             let descServico = "";
-            let total = 0;
-            let arquivosProcessadosDoPedido = [];
-
-            if (servicoAtual === "doc") {
-                total = listaArquivos.reduce((acc, curr) => acc + curr.subtotal, 0);
-                const totalCopias = listaArquivos.reduce((acc, curr) => acc + curr.copias, 0);
-                descServico = `Impressão A4 - ${listaArquivos.length} arquivo(s) (${totalCopias} cópias total)`;
-            } else if (servicoAtual === "curriculo") {
-                total = 10.00;
-                descServico = "Elaboração de Currículo Profissional";
-            } else if (servicoAtual === "canva") {
-                total = 15.00;
-                descServico = "Criação de Arte / Canva";
-            }
+            let totalGeneral = 0;
+            let arquivosProcessados = [];
 
             try {
-                // UPLOAD DE TODOS OS ARQUIVOS PARA O FIREBASE STORAGE
-                if (servicoAtual === "doc" && listaArquivos.length > 0) {
-                    for (let item of listaArquivos) {
-                        btn.innerText = `Enviando ${item.nome}... ⏳`;
-                        const storageRef = ref(storage, `documentos/${Date.now()}_${item.nome}`);
-                        const uploadTask = await uploadBytes(storageRef, item.fileObject);
+                if (servicoAtual === "doc") {
+                    for (const item of configuracoesArquivos) {
+                        const precoUnitario = item.tipoCor === "colorida" ? 1.50 : 0.50;
+                        const subtotal = item.copias * precoUnitario;
+                        totalGeneral += subtotal;
+
+                        // UPLOAD INDIVIDUAL DE CADA ARQUIVO VIA BLOB/ARRAYBUFFER PARA PREVENIR ERROS DE TIMEOUT
+                        const file = item.file;
+                        const storageRef = ref(storage, `documentos/${Date.now()}_${file.name}`);
+                        
+                        // Faz o upload direto do arquivo mantendo suporte completo a PDF/DOCX
+                        const uploadTask = await uploadBytes(storageRef, file);
                         const fileUrl = await getDownloadURL(uploadTask.ref);
 
-                        arquivosProcessadosDoPedido.push({
-                            nome: item.nome,
+                        arquivosProcessados.push({
+                            nome: file.name,
+                            url: fileUrl,
                             tipoCor: item.tipoCor === "colorida" ? "Colorida" : "Preto e Branco",
-                            copias: item.copias,
-                            subtotal: item.subtotal,
-                            url: fileUrl
+                            quantidade: item.copias,
+                            subtotal: subtotal
                         });
                     }
+
+                    descServico = `Impressão A4 (${arquivosProcessados.length} arquivo(s))`;
+                } else if (servicoAtual === "curriculo") {
+                    totalGeneral = 10.00;
+                    descServico = "Elaboração de Currículo Profissional";
+                } else if (servicoAtual === "canva") {
+                    totalGeneral = 15.00;
+                    descServico = "Criação de Arte / Canva";
                 }
 
-                // SALVA O PEDIDO COMPLETO NO FIRESTORE
+                // SALVA O PEDIDO COMPLETO COM TODAS AS CONFIGURAÇÕES NO FIRESTORE
                 await addDoc(collection(db, "pedidos"), {
                     cliente,
                     telefone,
                     servico: descServico,
-                    total: total,
+                    total: totalGeneral,
                     pagamento,
                     troco,
                     observacoes: obs,
                     tipo: servicoAtual,
-                    arquivos: arquivosProcessadosDoPedido,
-                    arquivoUrl: arquivosProcessadosDoPedido.length > 0 ? arquivosProcessadosDoPedido[0].url : "", // Mantém compatibilidade
+                    arquivos: arquivosProcessados,
                     dataEnvio: serverTimestamp()
                 });
 
-                // MENSAGEM SIMPLIFICADA PARA O WHATSAPP
-                const mensagemWhats = encodeURIComponent(
-                    `Estarei enviando o comprovante abaixo`
-                );
-
+                const mensagemWhats = encodeURIComponent("Estarei enviando o comprovante abaixo");
                 const linkWhatsApp = `https://wa.me/${MEU_WHATSAPP}?text=${mensagemWhats}`;
 
                 let htmlFinal = "";
@@ -787,7 +764,7 @@
                 if (pagamento === "PIX") {
                     htmlFinal = `
                         <div class="pix-box">
-                            <p style="font-size:16px;">Valor a Pagar: <strong style="color:var(--green)">R$ ${total.toFixed(2).replace('.', ',')}</strong></p>
+                            <p style="font-size:16px;">Valor a Pagar: <strong style="color:var(--green)">R$ ${totalGeneral.toFixed(2).replace('.', ',')}</strong></p>
                             <p style="font-size:13px; color:var(--text-muted);">Copie a Chave PIX abaixo:</p>
                             
                             <input type="text" id="pixKeyInput" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:16px; color:var(--accent);">
