@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PrintExpress - Impressão Rápida & Serviços</title>
+    <title>PrintExpress - Gráfica Rápida & Serviços</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -127,7 +127,7 @@
         .form-group { display: flex; flex-direction: column; gap: 8px; }
         label { font-weight: 600; font-size: 14px; color: #cbd5e1; }
 
-        input[type="text"], input[type="tel"], input[type="number"], select, textarea {
+        input[type="text"], input[type="tel"], input[type="number"], input[type="file"], select, textarea {
             width: 100%;
             padding: 12px 14px;
             background: #0f172a;
@@ -163,7 +163,6 @@
             flex-direction: column;
             align-items: center;
             gap: 6px;
-            position: relative;
         }
 
         .servico-card:hover { border-color: var(--accent); transform: translateY(-2px); }
@@ -172,27 +171,6 @@
             border-color: var(--accent);
             background: rgba(2, 132, 199, 0.15);
             box-shadow: 0 0 0 2px var(--accent);
-        }
-
-        /* ESTILOS PARA CARD DESATIVADO (EM BREVE) */
-        .servico-card.disabled {
-            opacity: 0.65;
-            cursor: not-allowed;
-            pointer-events: none; /* Desativa os cliques no card */
-            filter: grayscale(0.2);
-        }
-
-        .badge-em-breve {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: #f59e0b;
-            color: #000;
-            font-weight: 800;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 12px;
-            text-transform: uppercase;
         }
 
         .servico-icon { font-size: 24px; }
@@ -379,7 +357,7 @@
                 📄 <strong>Currículos Profissionais:</strong> Montamos ou atualizamos seu currículo na hora.
             </div>
             <div class="carousel-slide">
-                🎨 <strong>EM BREVE: Criação de Arte / Canva:</strong> Cartões, panfletos, convites e banners digitais.
+                🎨 <strong>Criação de Arte / Canva:</strong> Cartões, panfletos, convites e banners digitais.
             </div>
             <div class="carousel-dots">
                 <span class="dot active" onclick="irParaSlide(0)"></span>
@@ -410,24 +388,14 @@
                         <div class="servico-icon">📄</div>
                         <div class="servico-title">Impressão A4</div>
                     </div>
-                    <div class="servico-card" onclick="location.href='curriculo.html'">
+                    <div class="servico-card" id="srv-curriculo" onclick="location.href='curriculo.html'">
                         <div class="servico-icon">💼</div>
                         <div class="servico-title">Elaboração de Currículo</div>
                     </div>
-                    
-                    <!-- -------------------------------------------------------------------------------------- -->
-                    <!-- CARD CANVA (DESATIVADO NO MOMENTO)                                                    -->
-                    <!-- PARA REATIVAR O CANVA QUANDO ESTIVER PRONTO:                                          -->
-                    <!-- 1. Remova a classe 'disabled' do div abaixo.                                           -->
-                    <!-- 2. Apague ou comente a linha da div 'badge-em-breve'.                                 -->
-                    <!-- 3. Troque o onclick para: onclick="location.href='canva.html'"                        -->
-                    <!-- -------------------------------------------------------------------------------------- -->
-                    <div class="servico-card disabled" onclick="/* location.href='canva.html' */">
-                        <div class="badge-em-breve">⏳ Em Breve</div>
+                    <div class="servico-card" id="srv-canva" onclick="location.href='canva.html'">
                         <div class="servico-icon">🎨</div>
                         <div class="servico-title">Design / Edição Canva</div>
                     </div>
-
                     <div class="servico-card" onclick="location.href='fotos.html'">
                         <div class="servico-icon">📸</div>
                         <div class="servico-title">Fotos Glossy</div>
@@ -459,6 +427,12 @@
                 <div class="form-group">
                     <label for="qtd-paginas">Quantidade de Folhas:</label>
                     <input type="number" id="qtd-paginas" value="1" min="1" oninput="calcularTotal()">
+                </div>
+
+                <!-- CAMPO DE UPLOAD DE ARQUIVO -->
+                <div class="form-group" style="margin-top: 12px;">
+                    <label for="arquivo-upload">Anexar Documento (PDF, DOCX, Imagem):</label>
+                    <input type="file" id="arquivo-upload" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
                 </div>
             </div>
 
@@ -507,7 +481,7 @@
         <div id="step-3" class="step-card hidden" style="text-align: center;">
             <div style="font-size: 50px;">🚀</div>
             <h2>Pedido Registrado!</h2>
-            <p style="color: var(--text-muted);">Faça o pagamento e envie os arquivos/dados no nosso WhatsApp para iniciarmos.</p>
+            <p style="color: var(--text-muted);">Faça o pagamento e envie o comprovante no nosso WhatsApp para iniciarmos.</p>
             
             <div id="dados-pagamento-final"></div>
 
@@ -529,6 +503,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAfh0iZSotPra1olpRWRfwwBP9G8yrdHEc",
@@ -542,6 +517,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
         const MEU_WHATSAPP = "5541999682836";
         const CHAVE_PIX_TEXTO = "41999682836";
@@ -570,12 +546,11 @@
 
         // SELEÇÃO DE SERVIÇOS
         window.selecionarServico = function(tipo) {
-            // // COMO DESATIVAR/ATIVAR VIA JS SE PRECISAR:
-            // // Se quiser impedir a seleção por JS caso a classe disabled não impeça em algum navegador:
-            // if (tipo === 'canva') return; 
-
             servicoAtual = tipo;
             document.getElementById("srv-doc").classList.toggle("selected", tipo === 'doc');
+
+            const painelDoc = document.getElementById("painel-doc");
+            if (painelDoc) painelDoc.classList.toggle("hidden", tipo !== 'doc');
 
             calcularTotal();
         };
@@ -668,9 +643,11 @@
             const pagamento = document.querySelector('input[name="pagamento"]:checked').value;
             const troco = document.getElementById("troco").value || "Não precisa";
             const obs = document.getElementById("observacoes").value || "Nenhuma";
+            const arquivoInput = document.getElementById("arquivo-upload");
 
             let descServico = "";
             let total = 0;
+            let fileUrl = "";
 
             if (servicoAtual === "doc") {
                 const qtdPaginas = parseInt(document.getElementById("qtd-paginas").value) || 1;
@@ -686,6 +663,15 @@
             }
 
             try {
+                // UPLOAD DE ARQUIVO PARA O FIREBASE STORAGE (SE HOUVER)
+                if (arquivoInput && arquivoInput.files.length > 0) {
+                    const file = arquivoInput.files[0];
+                    const storageRef = ref(storage, `documentos/${Date.now()}_${file.name}`);
+                    const uploadTask = await uploadBytes(storageRef, file);
+                    fileUrl = await getDownloadURL(uploadTask.ref);
+                }
+
+                // SALVA O PEDIDO COMPLETO NO FIRESTORE (PARA APARECER NO PAINEL.HTML)
                 await addDoc(collection(db, "pedidos"), {
                     cliente,
                     telefone,
@@ -695,17 +681,13 @@
                     troco,
                     observacoes: obs,
                     tipo: servicoAtual,
+                    arquivoUrl: fileUrl,
                     dataEnvio: serverTimestamp()
                 });
 
+                // MENSAGEM SIMPLIFICADA PARA O WHATSAPP
                 const mensagemWhats = encodeURIComponent(
-                    `🚀 Olá! Fiz um pedido no PrintExpress:\n\n` +
-                    `👤 *Cliente:* ${cliente}\n` +
-                    `📌 *Serviço:* ${descServico}\n` +
-                    `💰 *Valor Total:* R$ ${total.toFixed(2).replace('.', ',')}\n` +
-                    `💳 *Forma de Pgto:* ${pagamento}\n` +
-                    `📝 *Obs:* ${obs}\n\n` +
-                    ` Estou enviando os arquivos/dados para produção!`
+                    `Estarei enviando o comprovante abaixo`
                 );
 
                 const linkWhatsApp = `https://wa.me/${MEU_WHATSAPP}?text=${mensagemWhats}`;
@@ -722,7 +704,7 @@
                             <button class="btn-copiar-pix" onclick="copiarChavePix()">📋 Copiar Chave PIX</button>
                             
                             <div style="background: rgba(2, 132, 199, 0.15); border-left: 4px solid var(--accent); padding: 12px; border-radius: 6px; font-size:13px; text-align:left;">
-                                ⚠️ <strong>IMPORTANTE:</strong> Clique abaixo para enviar o comprovante e as informações no nosso WhatsApp.
+                                ⚠️ <strong>IMPORTANTE:</strong> Clique abaixo para enviar o comprovante no nosso WhatsApp.
                             </div>
 
                             <a href="${linkWhatsApp}" target="_blank" class="btn-whatsapp">
