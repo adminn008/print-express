@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Currículos Profissionais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Biblioteca Html2Pdf para gerar o PDF perfeito -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #0284c7;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 20px; }
+
+        .header-title { text-align: center; margin-bottom: 25px; }
+        .header-title h1 { color: #38bdf8; font-size: 26px; }
+        .header-title p { color: var(--text-muted); font-size: 14px; margin-top: 5px; }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Formulário */
+        .form-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 5px; }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+        }
+        input:focus, select:focus, textarea:focus { border-color: #38bdf8; outline: none; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        /* Botões */
+        .btn-action {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        .btn-action:hover { background: #059669; }
+
+        /* Preview do Currículo */
+        .preview-section {
+            background: #334155;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        /* Folha A4 do CV */
+        #curriculo-folha {
+            background: white;
+            color: #1e293b;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            transform-origin: top center;
+        }
+
+        /* MODELOS CSS DE CURRÍCULO */
+        /* Modelo 1: Moderno */
+        .m-1 h1 { color: #0284c7; font-size: 24px; text-transform: uppercase; border-bottom: 2px solid #0284c7; padding-bottom: 5px; }
+        .m-1 h3 { color: #0369a1; font-size: 14px; margin-top: 15px; text-transform: uppercase; border-bottom: 1px solid #cbd5e1; padding-bottom: 3px; }
+        
+        /* Modelo 2: Elegante / Clássico */
+        .m-2 { font-family: 'Merriweather', serif; }
+        .m-2 h1 { text-align: center; color: #1e293b; font-size: 22px; }
+        .m-2 .contatos { text-align: center; font-size: 12px; border-bottom: 1px solid #000; padding-bottom: 8px; margin-bottom: 15px; }
+        .m-2 h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #334155; margin-top: 12px; }
+
+        /* Modelo 3: Minimalista Executivo */
+        .m-3 h1 { font-size: 26px; font-weight: 300; color: #0f172a; }
+        .m-3 h3 { font-size: 12px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 15px; }
+
+        /* Modelo 4: Lateral Azul */
+        .m-4 { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin: -20mm; padding: 20mm; }
+        .m-4 .sidebar { background: #0f172a; color: white; padding: 15px; border-radius: 4px; }
+        .m-4 .sidebar h3 { color: #38bdf8; font-size: 13px; border-bottom: 1px solid #334155; margin-top: 10px; }
+
+        /* Modelo 5: Criativo / Verde */
+        .m-5 h1 { color: #059669; font-size: 24px; }
+        .m-5 h3 { background: #ecfdf5; color: #047857; padding: 4px 8px; font-size: 13px; border-radius: 4px; margin-top: 12px; }
+
+        /* Modelo 6: Borda Superior */
+        .m-6 { border-top: 8px solid #6366f1; }
+        .m-6 h1 { color: #4338ca; }
+        .m-6 h3 { color: #4f46e5; border-bottom: 2px dotted #c7d2fe; padding-bottom: 2px; margin-top: 12px; }
+
+        /* Modelo 7: Compacto / Grade */
+        .m-7 h1 { font-size: 20px; color: #0f172a; }
+        .m-7 .cv-item { font-size: 12px; line-height: 1.4; }
+
+        /* Modelo 8: Corporativo Escuro */
+        .m-8 h1 { color: #1e293b; border-left: 5px solid #0284c7; padding-left: 10px; }
+        .m-8 h3 { color: #0284c7; margin-top: 12px; }
+
+        /* Modelo 9: Tradicional Preto e Branco */
+        .m-9 h1 { text-decoration: underline; font-size: 22px; }
+        .m-9 h3 { font-size: 14px; text-transform: uppercase; margin-top: 10px; }
+
+        /* Modelo 10: Linha Central */
+        .m-10 h1 { text-align: center; color: #0f172a; }
+        .m-10 .contatos { text-align: center; font-size: 12px; margin-bottom: 15px; }
+
+        /* Estilização Geral Interna do CV */
+        .cv-header-info { font-size: 12px; color: #475569; margin-bottom: 12px; }
+        .cv-section-content { font-size: 13px; color: #334155; margin-top: 5px; line-height: 1.5; white-space: pre-line; }
+
+        @media (max-width: 900px) {
+            .app-container { grid-template-columns: 1fr; }
+            #curriculo-folha { transform: scale(0.65); transform-origin: top left; }
+            .preview-section { overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-title">
+        <h1>📄 Criador de Currículos Profissionais</h1>
+        <p>Preencha os dados, escolha um dos 10 modelos e baixe seu PDF pronto!</p>
+    </div>
+
+    <div class="app-container">
+        <!-- FORMULÁRIO DE PREENCHIMENTO -->
+        <div class="form-section">
+            <div class="form-group">
+                <label for="selectModelo">🎨 Escolha o Modelo de Currículo (10 Opções):</label>
+                <select id="selectModelo" onchange="atualizarPreview()">
+                    <option value="m-1">Modelo 1: Moderno Azul</option>
+                    <option value="m-2">Modelo 2: Elegante / Clássico</option>
+                    <option value="m-3">Modelo 3: Minimalista Executivo</option>
+                    <option value="m-4">Modelo 4: Lateral Destacada</option>
+                    <option value="m-5">Modelo 5: Criativo Verde</option>
+                    <option value="m-6">Modelo 6: Indigo Premium</option>
+                    <option value="m-7">Modelo 7: Compacto / Comercial</option>
+                    <option value="m-8">Modelo 8: Corporativo Borda</option>
+                    <option value="m-9">Modelo 9: Tradicional P&B</option>
+                    <option value="m-10">Modelo 10: Centralizado</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Nome Completo:</label>
+                <input type="text" id="nome" placeholder="Ex: João da Silva" oninput="atualizarPreview()">
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Cargo / Objetivo:</label>
+                    <input type="text" id="cargo" placeholder="Ex: Auxiliar Administrativo" oninput="atualizarPreview()">
+                </div>
+                <div class="form-group">
+                    <label>Telefone / WhatsApp:</label>
+                    <input type="text" id="telefone" placeholder="(41) 99999-9999" oninput="atualizarPreview()">
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>E-mail:</label>
+                    <input type="email" id="email" placeholder="joao@email.com" oninput="atualizarPreview()">
+                </div>
+                <div class="form-group">
+                    <label>Cidade / Estado:</label>
+                    <input type="text" id="cidade" placeholder="Curitiba - PR" oninput="atualizarPreview()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Resumo Profissional / Apresentação:</label>
+                <textarea id="resumo" rows="3" placeholder="Profissional dedicado com experiência em..." oninput="atualizarPreview()"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Experiências Profissionais:</label>
+                <textarea id="experiencia" rows="4" placeholder="Empresa XYZ (2022 - Presente)&#10;Cargo: Atendente&#10;Funções: Atendimento ao cliente e caixa." oninput="atualizarPreview()"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Formação Acadêmica / Escolaridade:</label>
+                <textarea id="formacao" rows="3" placeholder="Ensino Médio Completo&#10;Escola Estadual (2021 - 2023)" oninput="atualizarPreview()"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Cursos e Qualificações:</label>
+                <textarea id="cursos" rows="3" placeholder="• Informática Básica&#10;• Atendimento ao Cliente" oninput="atualizarPreview()"></textarea>
+            </div>
+
+            <button class="btn-action" onclick="baixarPDF()">📥 Baixar Currículo em PDF</button>
+        </div>
+
+        <!-- PRÉ-VISUALIZAÇÃO EM TEMPO REAL DA FOLHA A4 -->
+        <div class="preview-section">
+            <div id="curriculo-folha" class="m-1">
+                <h1 id="pv-nome">SEU NOME COMPLETO</h1>
+                <p id="pv-cargo" style="font-weight: 600; color: #475569; font-size: 14px;">Cargo Desejado</p>
+                <div class="cv-header-info contatos" id="pv-contatos">
+                    📍 Cidade - UF | 📞 (00) 00000-0000 | ✉️ email@exemplo.com
+                </div>
+
+                <h3>Resumo Profissional</h3>
+                <div class="cv-section-content" id="pv-resumo">Digite seu resumo profissional no campo ao lado para visualizar aqui.</div>
+
+                <h3>Experiência Profissional</h3>
+                <div class="cv-section-content" id="pv-experiencia">Adicione suas experiências profissionais anteriores.</div>
+
+                <h3>Formação Acadêmica</h3>
+                <div class="cv-section-content" id="pv-formacao">Informe sua escolaridade ou cursos superiores.</div>
+
+                <h3>Cursos e Habilidades</h3>
+                <div class="cv-section-content" id="pv-cursos">Liste seus cursos complementares e habilidades adicionais.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function atualizarPreview() {
+            const modelo = document.getElementById("selectModelo").value;
+            const folha = document.getElementById("curriculo-folha");
+            folha.className = modelo;
+
+            const nome = document.getElementById("nome").value.trim() || "SEU NOME COMPLETO";
+            const cargo = document.getElementById("cargo").value.trim() || "Cargo Desejado";
+            const telefone = document.getElementById("telefone").value.trim() || "(00) 00000-0000";
+            const email = document.getElementById("email").value.trim() || "email@exemplo.com";
+            const cidade = document.getElementById("cidade").value.trim() || "Cidade - UF";
+
+            document.getElementById("pv-nome").innerText = nome.toUpperCase();
+            document.getElementById("pv-cargo").innerText = cargo;
+            document.getElementById("pv-contatos").innerText = `📍 ${cidade} | 📞 ${telefone} | ✉️ ${email}`;
+
+            document.getElementById("pv-resumo").innerText = document.getElementById("resumo").value.trim() || "Digite seu resumo profissional no campo ao lado.";
+            document.getElementById("pv-experiencia").innerText = document.getElementById("experiencia").value.trim() || "Adicione suas experiências profissionais anteriores.";
+            document.getElementById("pv-formacao").innerText = document.getElementById("formacao").value.trim() || "Informe sua escolaridade.";
+            document.getElementById("pv-cursos").innerText = document.getElementById("cursos").value.trim() || "Liste seus cursos complementares e habilidades.";
+        }
+
+        function baixarPDF() {
+            const element = document.getElementById('curriculo-folha');
+            const nomeArquivo = (document.getElementById('nome').value.trim() || 'Curriculo') + '.pdf';
+            
+            const opt = {
+                margin:       0,
+                filename:     nomeArquivo,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        atualizarPreview();
+    </script>
+</body>
+</html>
+
