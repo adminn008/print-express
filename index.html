@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PrintExpress - Central de Impressão Inteligente</title>
+    <title>PrintExpress - Central de Impressão</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -16,187 +16,311 @@
             --text-muted: #94a3b8;
             --accent: #38bdf8;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 15px; }
         
-        /* Banner de Avisos Globais (Enviado do painel.html) */
-        #globalBanner {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #000;
-            text-align: center;
-            padding: 14px;
-            font-weight: bold;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-            font-size: 15px;
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            padding: 24px 16px; 
+            line-height: 1.5;
         }
 
-        .container { max-width: 800px; margin: 0 auto; width: 100%; }
-        header { text-align: center; margin-bottom: 20px; }
-        h1 { color: var(--accent); font-size: 24px; }
+        .container { 
+            max-width: 720px; 
+            margin: 0 auto; 
+            display: flex;
+            flex-direction: column;
+            gap: 24px; /* Espaçamento amplo entre todos os blocos principais */
+        }
+
+        header { 
+            text-align: center; 
+            margin-bottom: 8px; 
+        }
         
+        h1 { 
+            color: var(--accent); 
+            font-size: 26px; 
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* 1. QUADRO DE AVISO FIXO (Conectado ao Painel) */
+        .aviso-fixo-container {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);
+        }
+
+        .aviso-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #f59e0b;
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .aviso-conteudo {
+            color: #f1f5f9;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* 2. BOTÃO FIXO EXCLUSIVO DO CURRÍCULO */
+        .curriculo-banner-fixo {
+            background: linear-gradient(135deg, #059669, #10b981);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .curriculo-banner-fixo h3 {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .curriculo-banner-fixo p {
+            color: #ecfdf5;
+            font-size: 13px;
+        }
+
+        .btn-abrir-curriculo {
+            background: #ffffff;
+            color: #047857;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            width: 100%;
+            max-width: 320px;
+            display: inline-block;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-abrir-curriculo:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* CARD DE FORMULÁRIO COM BASTANTE ESPAÇAMENTO */
         .step-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            border-radius: 14px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Espaço amplo entre cada campo do formulário */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
         }
-        .step-card h2 { font-size: 17px; margin-bottom: 15px; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
 
-        .form-group { margin-bottom: 16px; }
-        label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 14px; color: #cbd5e1; }
+        .step-card h2 { 
+            font-size: 18px; 
+            color: var(--text); 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 12px;
+        }
+
+        .form-group { 
+            display: flex;
+            flex-direction: column;
+            gap: 8px; /* Espaçamento interno entre label, input e dica */
+        }
+
+        label { 
+            font-weight: 600; 
+            font-size: 14px; 
+            color: #cbd5e1; 
+        }
+
         input[type="text"], input[type="tel"], input[type="number"], select, textarea {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background: #0f172a;
             border: 1px solid var(--border);
-            border-radius: 6px;
+            border-radius: 8px;
             color: var(--text);
             font-size: 15px;
+            transition: border-color 0.2s;
         }
-        input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; }
-        .hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; display: block; }
 
-        .radio-group { display: flex; gap: 20px; margin-top: 5px; flex-wrap: wrap; }
-        .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
+        input:focus, select:focus, textarea:focus { 
+            border-color: var(--accent); 
+            outline: none; 
+        }
+
+        .hint { 
+            font-size: 12px; 
+            color: var(--text-muted); 
+        }
+
+        .radio-group { 
+            display: flex; 
+            gap: 24px; 
+            margin-top: 4px; 
+            flex-wrap: wrap; 
+        }
+
+        .radio-label { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            cursor: pointer; 
+            font-size: 15px; 
+        }
+
         .hidden { display: none !important; }
 
         .price-box {
             background: #0f172a;
             border: 1px solid var(--border);
-            padding: 15px;
-            border-radius: 6px;
+            padding: 18px;
+            border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
             font-size: 17px;
+            margin-top: 8px;
         }
-        .price-box strong { color: #34d399; }
+
+        .price-box strong { color: #34d399; font-size: 20px; }
 
         .btn-primary {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 14px 20px;
             font-size: 16px;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
             width: 100%;
             transition: background 0.2s;
         }
+
         .btn-primary:hover { background: var(--primary-hover); }
+
         .btn-secondary {
             background: #475569;
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 14px 20px;
             font-size: 16px;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             width: 100%;
         }
 
-        /* Botão para Gerador de Currículo Externo */
-        .btn-curriculo-externo {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            text-decoration: none;
-            display: block;
-            text-align: center;
-            padding: 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 16px;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-            transition: transform 0.2s;
-        }
-        .btn-curriculo-externo:hover { transform: translateY(-2px); }
-
-        /* Estilização PIX sem caixas de diálogo do navegador */
+        /* PIX Limpo e Elegante */
         .pix-box {
             background: #0f172a;
-            border: 1px solid #334155;
-            padding: 15px;
+            border: 1px solid var(--border);
+            padding: 20px;
             border-radius: 8px;
             text-align: center;
-            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
+
         .btn-copiar-pix {
-            background: #38bdf8;
+            background: var(--accent);
             color: #0f172a;
             border: none;
-            padding: 10px 15px;
+            padding: 12px;
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
-            margin-top: 10px;
-            width: 100%;
-            font-size: 14px;
+            font-size: 15px;
         }
+
         .pix-feedback {
             color: #34d399;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold;
-            margin-top: 8px;
             display: none;
         }
 
         @media (max-width: 600px) {
-            body { padding: 10px; }
-            .step-card { padding: 15px; }
+            body { padding: 16px 10px; }
+            .step-card { padding: 18px; gap: 16px; }
+            .radio-group { flex-direction: column; gap: 12px; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Campo para exibir os Avisos do painel.html -->
-        <div id="globalBanner">📢 <span id="bannerText"></span></div>
-
         <header>
             <h1>🖨️ PrintExpress Pro</h1>
-            <p>Envio rápido, currículos profissionais e impressões sob demanda.</p>
+            <p>Envio de impressões e documentos sob demanda</p>
         </header>
 
-        <!-- PASSO 1 -->
+        <!-- 1. QUADRO DE AVISO FIXO (Atualiza sozinho vindo do Painel) -->
+        <div class="aviso-fixo-container">
+            <div class="aviso-header">📢 Quadro de Avisos</div>
+            <div class="aviso-conteudo" id="bannerText">Nenhum aviso importante no momento. Estamos atendendo normalmente!</div>
+        </div>
+
+        <!-- 2. BOTÃO FIXO DO CURRÍCULO (Localizado antes dos formulários) -->
+        <div class="curriculo-banner-fixo">
+            <h3>📄 Precisa de um Currículo Profissional?</h3>
+            <p>Acesse nossa ferramenta exclusiva para montar e baixar seu currículo em formato PDF pronto para impressão!</p>
+            <!-- Substitua o link abaixo pela URL do seu site de currículo se necessário -->
+            <a href="curriculo.html" target="_blank" class="btn-abrir-curriculo">✨ Criar Currículo Agora</a>
+        </div>
+
+        <!-- 3. FORMULÁRIO DE PEDIDO E DADOS DO CLIENTE -->
         <div id="step-1" class="step-card">
-            <h2>Passo 1: Dados do Cliente e Serviço</h2>
+            <h2>Preencha os Dados do Seu Pedido</h2>
             
             <div class="form-group">
                 <label for="nome-cliente">Nome Completo:</label>
-                <input type="text" id="nome-cliente" placeholder="EX: JOÃO SILVA" oninput="this.value = this.value.toUpperCase()">
-                <small class="hint">O nome é formatado automaticamente em letras maiúsculas.</small>
+                <input type="text" id="nome-cliente" placeholder="EX: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()">
+                <span class="hint">O nome será formatado em letras maiúsculas automaticamente.</span>
             </div>
 
             <div class="form-group">
                 <label for="telefone-cliente">Número de WhatsApp / Telefone:</label>
                 <input type="tel" id="telefone-cliente" placeholder="(41) 99999-9999" maxlength="15" oninput="mascaraTelefone(this)">
-                <small class="hint">Formato obrigatório: (XX) XXXX-XXXX ou (XX) 9XXXX-XXXX</small>
+                <span class="hint">Formato obrigatório: (XX) XXXX-XXXX ou (XX) 9XXXX-XXXX</span>
             </div>
 
             <div class="form-group">
-                <label for="service-type">Tipo de Serviço:</label>
+                <label for="service-type">Tipo de Serviço Desejado:</label>
                 <select id="service-type" onchange="mudarTipoServico()">
                     <option value="impressao">Impressão de Arquivo / Foto / Pesquisa Web</option>
-                    <option value="curriculo">Criar Currículo Profissional (Plataforma Externa)</option>
-                    <option value="canva">Pedido de Arte / Design para Canva</option>
+                    <option value="canva">Pedido de Arte / Design no Canva</option>
                 </select>
             </div>
 
-            <!-- Opção 1: Impressão -->
-            <div id="sec-impressao" class="service-option">
+            <!-- OPÇÃO: IMPRESSÃO -->
+            <div id="sec-impressao" class="form-group" style="display: flex; flex-direction: column; gap: 16px;">
                 <div class="form-group">
-                    <label for="arquivo">Enviar Arquivo ou Foto (PDF, DOCX, PNG, JPG):</label>
+                    <label for="arquivo">Enviar Arquivo ou Foto (PDF, PNG, JPG, DOCX):</label>
                     <input type="file" id="arquivo" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
-                    <small class="hint">Ou cole o texto/link da pesquisa abaixo:</small>
-                    <textarea id="webResearchText" rows="2" placeholder="Cole a pesquisa da internet aqui..." style="margin-top: 8px;"></textarea>
+                    <span class="hint">Ou cole abaixo o texto/link da pesquisa da web:</span>
+                    <textarea id="webResearchText" rows="3" placeholder="Cole o conteúdo ou link da pesquisa aqui..."></textarea>
                 </div>
 
                 <div class="form-group">
@@ -211,50 +335,33 @@
                     <label for="paginas">Quantidade de Páginas / Cópias:</label>
                     <input type="number" id="paginas" value="1" min="1" max="100" oninput="calcularPreco()">
                 </div>
-
-                <div class="form-group">
-                    <label for="observacoes">Observações (Opcional):</label>
-                    <textarea id="observacoes" placeholder="Observações adicionais para a impressão..."></textarea>
-                </div>
-
-                <div class="price-box">
-                    <span>Total Estimado:</span>
-                    <strong id="valor-total">R$ 0,50</strong>
-                </div>
-
-                <button class="btn-primary" onclick="irParaPasso2()">Avançar para Pagamento ➔</button>
             </div>
 
-            <!-- Opção 2: Botão Único para Criador de Currículos -->
-            <div id="sec-curriculo" class="service-option hidden" style="text-align: center; padding: 10px 0;">
-                <p style="color: var(--text-muted); margin-bottom: 15px; font-size: 14px;">
-                    Você será redirecionado para nossa ferramenta de criação de currículos com modelos interativos.
-                </p>
-                <a href="https://destravaestudo.github.io" target="_blank" class="btn-curriculo-externo">
-                    📄 Abrir Criador de Currículos Profissionais 🚀
-                </a>
+            <!-- OPÇÃO: CANVA -->
+            <div id="sec-canva" class="form-group hidden">
+                <label for="canvaDescription">Descreva a Arte desejada no Canva (Cores, Texto, Estilo):</label>
+                <textarea id="canvaDescription" rows="4" placeholder="Ex: Panfleto para divulgação de loja, tons de azul e branco..."></textarea>
             </div>
-
-            <!-- Opção 3: Canva -->
-            <div id="sec-canva" class="service-option hidden">
-                <div class="form-group">
-                    <label for="canvaDescription">Descreva a Arte para o Canva (Cores, Conteúdo, Tema):</label>
-                    <textarea id="canvaDescription" rows="4" placeholder="Ex: Cartão de visita para barbearia..."></textarea>
-                </div>
-                <div class="price-box">
-                    <span>Valor do Serviço Canva:</span>
-                    <strong>R$ 15,00</strong>
-                </div>
-                <button class="btn-primary" onclick="irParaPasso2()">Avançar para Pagamento ➔</button>
-            </div>
-        </div>
-
-        <!-- PASSO 2: PAGAMENTO -->
-        <div id="step-2" class="step-card hidden">
-            <h2>Passo 2: Forma de Pagamento e Finalização</h2>
 
             <div class="form-group">
-                <label>Forma de Pagamento:</label>
+                <label for="observacoes">Observações Gerais (Opcional):</label>
+                <textarea id="observacoes" rows="2" placeholder="Ex: Imprimir em frente e verso, entregar à tarde, etc."></textarea>
+            </div>
+
+            <div class="price-box">
+                <span>Total Estimado:</span>
+                <strong id="valor-total">R$ 0,50</strong>
+            </div>
+
+            <button class="btn-primary" onclick="irParaPasso2()">Avançar para Pagamento ➔</button>
+        </div>
+
+        <!-- PASSO 2: FORMA DE PAGAMENTO -->
+        <div id="step-2" class="step-card hidden">
+            <h2>Escolha a Forma de Pagamento</h2>
+
+            <div class="form-group">
+                <label>Como deseja pagar?</label>
                 <div class="radio-group">
                     <label class="radio-label">
                         <input type="radio" name="pagamento" value="PIX" checked onclick="togglePagamento('pix')"> PIX
@@ -267,31 +374,31 @@
 
             <div id="info-troco" class="form-group hidden">
                 <label for="troco">Precisa de troco para quanto?</label>
-                <input type="text" id="troco" placeholder="Ex: Para R$ 20,00 ou Não preciso">
+                <input type="text" id="troco" placeholder="Ex: Troco para R$ 20,00 ou Não preciso">
             </div>
 
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <div style="display: flex; gap: 12px; margin-top: 10px;">
                 <button class="btn-secondary" onclick="voltarParaPasso1()">⬅ Voltar</button>
-                <button class="btn-primary" id="btn-enviar" onclick="finalizarPedidoFirebase()">Confirmar e Enviar Pedido 🚀</button>
+                <button class="btn-primary" id="btn-enviar" onclick="finalizarPedidoFirebase()">Enviar Pedido 🚀</button>
             </div>
         </div>
 
-        <!-- PASSO 3: SUCESSO -->
+        <!-- PASSO 3: TELA DE SUCESSO -->
         <div id="step-3" class="step-card hidden" style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
-            <h2>Pedido Enviado com Sucesso!</h2>
-            <p style="color: var(--text-muted); margin-bottom: 20px;">Seu pedido já apareceu no painel do operador.</p>
+            <div style="font-size: 50px; margin-bottom: 8px;">✅</div>
+            <h2>Pedido Enviado!</h2>
+            <p style="color: var(--text-muted);">Seu pedido foi transmitido com sucesso para a central de impressão.</p>
             
             <div id="dados-pagamento-final"></div>
 
-            <button class="btn-primary" onclick="location.reload()" style="margin-top: 15px;">Fazer Novo Pedido</button>
+            <button class="btn-primary" onclick="location.reload()" style="margin-top: 16px;">Fazer Novo Pedido</button>
         </div>
     </div>
 
-    <!-- LÓGICA DO FIREBASE E INTERFACE -->
+    <!-- FIREBASE E SCRIPTS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAfh0iZSotPra1olpRWRfwwBP9G8yrdHEc",
@@ -305,6 +412,13 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
+        // ESCUTA EM TEMPO REAL: Recebe atualizações do aviso diretamente do painel.html
+        onSnapshot(doc(db, "config", "aviso"), (docSnap) => {
+            if (docSnap.exists() && docSnap.data().texto) {
+                document.getElementById("bannerText").innerText = docSnap.data().texto;
+            }
+        });
 
         // Máscara de Telefone: (XX) XXXX-XXXX ou (XX) 9XXXX-XXXX
         window.mascaraTelefone = function(input) {
@@ -322,14 +436,14 @@
 
         window.mudarTipoServico = function() {
             const tipo = document.getElementById('service-type').value;
-            document.querySelectorAll('.service-option').forEach(el => el.classList.add('hidden'));
-            if(tipo === 'impressao') {
+            if (tipo === 'impressao') {
                 document.getElementById('sec-impressao').classList.remove('hidden');
+                document.getElementById('sec-canva').classList.add('hidden');
                 calcularPreco();
-            } else if(tipo === 'curriculo') {
-                document.getElementById('sec-curriculo').classList.remove('hidden');
-            } else if(tipo === 'canva') {
+            } else if (tipo === 'canva') {
+                document.getElementById('sec-impressao').classList.add('hidden');
                 document.getElementById('sec-canva').classList.remove('hidden');
+                document.getElementById('valor-total').innerText = "R$ 15,00";
             }
         };
 
@@ -346,8 +460,8 @@
             const cliente = document.getElementById("nome-cliente").value.trim();
             const telefone = document.getElementById("telefone-cliente").value.trim();
 
-            if(!cliente) { alert("Por favor, preencha seu Nome Completo."); return; }
-            if(!telefone || telefone.length < 13) { alert("Por favor, preencha o Telefone no formato (XX) XXXX-XXXX"); return; }
+            if (!cliente) { alert("Por favor, preencha o Nome Completo."); return; }
+            if (!telefone || telefone.length < 13) { alert("Por favor, preencha o Telefone no formato (XX) XXXX-XXXX."); return; }
 
             document.getElementById("step-1").classList.add("hidden");
             document.getElementById("step-2").classList.remove("hidden");
@@ -359,7 +473,7 @@
         };
 
         window.togglePagamento = function(tipo) {
-            if(tipo === 'dinheiro') {
+            if (tipo === 'dinheiro') {
                 document.getElementById("info-troco").classList.remove("hidden");
             } else {
                 document.getElementById("info-troco").classList.add("hidden");
@@ -369,14 +483,14 @@
         window.finalizarPedidoFirebase = async function() {
             const btn = document.getElementById("btn-enviar");
             btn.disabled = true;
-            btn.innerText = "Enviando... ⏳";
+            btn.innerText = "Enviando Pedido... ⏳";
 
             const cliente = document.getElementById("nome-cliente").value.trim();
             const telefone = document.getElementById("telefone-cliente").value.trim();
             const tipoServico = document.getElementById("service-type").value;
             const pagamento = document.querySelector('input[name="pagamento"]:checked').value;
             const troco = document.getElementById("troco").value || "Não precisa";
-            const obs = document.getElementById("observacoes")?.value || "";
+            const obs = document.getElementById("observacoes").value || "Nenhuma";
 
             let papel = "Impressão Padrão";
             let quantidade = 1;
@@ -384,7 +498,7 @@
             let arquivoNome = "sem-arquivo";
             let arquivoDados = "";
 
-            if(tipoServico === 'impressao') {
+            if (tipoServico === 'impressao') {
                 const selectPapel = document.getElementById("tipo-papel");
                 papel = selectPapel.options[selectPapel.selectedIndex].text;
                 quantidade = parseInt(document.getElementById("paginas").value) || 1;
@@ -393,7 +507,7 @@
                 const fileInput = document.getElementById("arquivo");
                 const webText = document.getElementById("webResearchText").value;
 
-                if(fileInput.files.length > 0) {
+                if (fileInput.files.length > 0) {
                     const file = fileInput.files[0];
                     arquivoNome = file.name;
                     arquivoDados = await new Promise(resolve => {
@@ -401,11 +515,11 @@
                         r.onload = e => resolve(e.target.result);
                         r.readAsDataURL(file);
                     });
-                } else if(webText) {
+                } else if (webText) {
                     arquivoNome = "Texto / Pesquisa Web";
                     arquivoDados = "data:text/plain;charset=utf-8," + encodeURIComponent(webText);
                 }
-            } else if(tipoServico === 'canva') {
+            } else if (tipoServico === 'canva') {
                 papel = "Arte / Design Canva";
                 total = 15.00;
                 arquivoNome = "Instruções Canva";
@@ -431,18 +545,18 @@
                 const chavePixExemplo = "00020126360014BR.GOV.BCB.PIX0114+5541999999999520400005303986540515.005802BR5910PrintExpress6008Curitiba62070503***6304E2CA";
 
                 let htmlFinal = "";
-                if(pagamento === "PIX") {
+                if (pagamento === "PIX") {
                     htmlFinal = `
                         <div class="pix-box">
-                            <p style="font-size:14px; margin-bottom:5px;">Valor Total: <strong style="color:#34d399">R$ ${total.toFixed(2).replace('.', ',')}</strong></p>
-                            <p style="font-size:12px; color:#cbd5e1; margin-bottom:10px;">Copie o código PIX abaixo para pagar no app do seu banco:</p>
-                            <input type="text" id="pixCode" value="${chavePixExemplo}" readonly style="font-size:11px; text-align:center;">
+                            <p style="font-size:15px;">Valor Total: <strong style="color:#34d399">R$ ${total.toFixed(2).replace('.', ',')}</strong></p>
+                            <p style="font-size:13px; color:#cbd5e1;">Copie a chave abaixo para pagar no app do seu banco:</p>
+                            <input type="text" id="pixCode" value="${chavePixExemplo}" readonly style="font-size:12px; text-align:center;">
                             <button class="btn-copiar-pix" onclick="copiarPixChave()">📋 Copiar Código PIX</button>
-                            <div id="pixMsg" class="pix-feedback">✓ Código PIX copiado com sucesso!</div>
+                            <div id="pixMsg" class="pix-feedback">✓ Código PIX copiado para a área de transferência!</div>
                         </div>
                     `;
                 } else {
-                    htmlFinal = `<p style="margin-top:15px; color:#cbd5e1;">Pagamento na entrega/retirada. Troco: <strong>${troco}</strong></p>`;
+                    htmlFinal = `<p style="margin-top:15px; color:#cbd5e1; font-size:15px;">Pagamento na entrega/retirada. Troco: <strong>${troco}</strong></p>`;
                 }
 
                 document.getElementById("dados-pagamento-final").innerHTML = htmlFinal;
@@ -451,34 +565,21 @@
 
             } catch (err) {
                 console.error(err);
-                alert("Erro ao enviar pedido. Tente novamente.");
+                alert("Erro ao enviar pedido. Verifique sua conexão e tente novamente.");
                 btn.disabled = false;
-                btn.innerText = "Confirmar e Enviar Pedido 🚀";
+                btn.innerText = "Enviar Pedido 🚀";
             }
         };
 
-        // Função de cópia com feedback visual sem pop-up chato
         window.copiarPixChave = function() {
             const input = document.getElementById("pixCode");
             input.select();
             navigator.clipboard.writeText(input.value);
             const msg = document.getElementById("pixMsg");
             msg.style.display = "block";
-            setTimeout(() => { msg.style.display = "none"; }, 3000);
+            setTimeout(() => { msg.style.display = "none"; }, 3500);
         };
 
-        // Busca o aviso global enviado do painel.html
-        async function buscarAvisoGlobal() {
-            try {
-                const snap = await getDoc(doc(db, "config", "aviso"));
-                if(snap.exists() && snap.data().texto) {
-                    document.getElementById("bannerText").innerText = snap.data().texto;
-                    document.getElementById("globalBanner").style.display = "block";
-                }
-            } catch(e) { console.log("Nenhum aviso configurado."); }
-        }
-
-        buscarAvisoGlobal();
         calcularPreco();
     </script>
 </body>
