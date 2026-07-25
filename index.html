@@ -22,7 +22,7 @@
             <div class="form-group">
                 <label for="arquivo">Seu Arquivo ou Foto (PDF, DOCX, PNG, JPG):</label>
                 <input type="file" id="arquivo" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
-                <small class="hint">Seu arquivo é tratado com total sigilo e apagado após a impressão.</small>
+                <small class="hint">Seu arquivo é tratado com total sigilo.</small>
             </div>
 
             <div class="form-group">
@@ -64,10 +64,10 @@
                 <label>Forma de Pagamento:</label>
                 <div class="radio-group">
                     <label class="radio-label">
-                        <input type="radio" name="pagamento" value="PIX" checked onclick="togglePagamento('pix')"> PIX (Chave gerada no final)
+                        <input type="radio" name="pagamento" value="PIX" checked onclick="togglePagamento('pix')"> PIX
                     </label>
                     <label class="radio-label">
-                        <input type="radio" name="pagamento" value="Dinheiro" onclick="togglePagamento('dinheiro')"> Dinheiro (Pagar na retirada)
+                        <input type="radio" name="pagamento" value="Dinheiro" onclick="togglePagamento('dinheiro')"> Dinheiro (Na retirada)
                     </label>
                 </div>
             </div>
@@ -84,25 +84,178 @@
 
             <div class="btn-group">
                 <button class="btn-secondary" onclick="voltarParaPasso1()">⬅ Voltar</button>
-                <button class="btn-primary" onclick="finalizarPedido()">Enviar Pedido Confidencial 🚀</button>
+                <button class="btn-primary" id="btn-enviar" onclick="finalizarPedido()">Enviar Pedido Confidencial 🚀</button>
             </div>
         </div>
 
-        <!-- PASSO 3: SUCESSO / PIX -->
+        <!-- PASSO 3: SUCESSO -->
         <div id="step-3" class="step-card">
             <div class="success-icon">✅</div>
             <h2>Pedido Enviado com Sucesso!</h2>
-            <p>Seu arquivo foi transmitido de forma criptografada para o operador da impressora.</p>
+            <p>Seu arquivo foi transmitido de forma criptografada para a central.</p>
             
-            <div id="dados-pagamento-final" class="payment-instructions">
-                <!-- Conteúdo injetado via JS dependendo se é PIX ou Dinheiro -->
-            </div>
+            <div id="dados-pagamento-final" class="payment-instructions"></div>
 
             <button class="btn-primary" onclick="novoPedido()">Fazer Novo Pedido</button>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- LÓGICA DO FIREBASE E DO SITE (MODULAR) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
+
+        // Sua configuração exata do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfh0iZSotPra1olpRWRfwwBP9G8yrdHEc",
+            authDomain: "print-express-bfa7c.firebaseapp.com",
+            projectId: "print-express-bfa7c",
+            storageBucket: "print-express-bfa7c.firebasestorage.app",
+            messagingSenderId: "471136646915",
+            appId: "1:471136646915:web:8b7b6f92c00d88c7c79b36",
+            measurementId: "G-8K5LHHCDFE"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        let dadosPedido = {
+            tipoPapelTexto: "",
+            precoUnitario: 0,
+            quantidade: 1,
+            total: 0,
+            observacoes: "",
+            pagamento: "PIX",
+            troco: "",
+            cliente: ""
+        };
+
+        // Funções globais para funcionarem nos botões HTML
+        window.calcularPreco = function() {
+            const selectPapel = document.getElementById("tipo-papel");
+            const optionSelecionada = selectPapel.options[selectPapel.selectedIndex];
+            const precoUnitario = parseFloat(optionSelecionada.getAttribute("data-preco"));
+            const quantidade = parseInt(document.getElementById("paginas").value) || 1;
+            
+            const total = precoUnitario * quantidade;
+            document.getElementById("valor-total").innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        };
+
+        window.irParaPasso2 = function() {
+            const arquivoInput = document.getElementById("arquivo");
+            if (arquivoInput.files.length === 0) {
+                alert("Por favor, selecione um arquivo ou foto para imprimir!");
+                return;
+            }
+
+            const selectPapel = document.getElementById("tipo-papel");
+            const optionSelecionada = selectPapel.options[selectPapel.selectedIndex];
+            
+            dadosPedido.tipoPapelTexto = optionSelecionada.text;
+            dadosPedido.precoUnitario = parseFloat(optionSelecionada.getAttribute("data-preco"));
+            dadosPedido.quantidade = parseInt(document.getElementById("paginas").value);
+            dadosPedido.total = dadosPedido.precoUnitario * dadosPedido.quantidade;
+            dadosPedido.observacoes = document.getElementById("observacoes").value || "Nenhuma observação.";
+
+            document.getElementById("resumo-pedido-texto").innerHTML = `
+                📁 <strong>Arquivo:</strong> ${arquivoInput.files[0].name}<br>
+                📄 <strong>Papel:</strong> ${dadosPedido.tipoPapelTexto}<br>
+                🔢 <strong>Qtd:</strong> ${dadosPedido.quantidade} unidade(s)<br>
+                📝 <strong>Obs:</strong> ${dadosPedido.observacoes}<br>
+                💰 <strong>Total: R$ ${dadosPedido.total.toFixed(2).replace('.', ',')}</strong>
+            `;
+
+            document.getElementById("step-1").classList.remove("active");
+            document.getElementById("step-2").classList.add("active");
+        };
+
+        window.voltarParaPasso1 = function() {
+            document.getElementById("step-2").classList.remove("active");
+            document.getElementById("step-1").classList.add("active");
+        };
+
+        window.togglePagamento = function(tipo) {
+            dadosPedido.pagamento = tipo.toUpperCase();
+            const campoTroco = document.getElementById("info-troco");
+            if (tipo === 'dinheiro') {
+                campoTroco.classList.remove('hidden');
+            } else {
+                campoTroco.classList.add('hidden');
+            }
+        };
+
+        window.finalizarPedido = async function() {
+            const nomeCliente = document.getElementById("nome-cliente").value;
+            const arquivoInput = document.getElementById("arquivo");
+            
+            if (!nomeCliente.trim()) {
+                alert("Por favor, informe seu nome ou WhatsApp.");
+                return;
+            }
+
+            const arquivo = arquivoInput.files[0];
+            const botaoEnviar = document.getElementById("btn-enviar");
+            botaoEnviar.innerText = "Enviando arquivo... ⏳";
+            botaoEnviar.disabled = true;
+
+            try {
+                // 1. Salvar arquivo no Storage do Firebase
+                const nomeArquivoUnico = Date.now() + "_" + arquivo.name;
+                const storageRef = ref(storage, "pedidos_impressao/" + nomeArquivoUnico);
+                
+                const snapshot = await uploadBytes(storageRef, arquivo);
+                const downloadURL = await getDownloadURL(snapshot.ref);
+
+                // 2. Salvar dados no Firestore
+                await addDoc(collection(db, "pedidos"), {
+                    cliente: nomeCliente,
+                    pagamento: dadosPedido.pagamento,
+                    troco: document.getElementById("troco").value || "Não se aplica",
+                    papel: dadosPedido.tipoPapelTexto,
+                    quantidade: dadosPedido.quantidade,
+                    total: dadosPedido.total,
+                    observacoes: dadosPedido.observacoes,
+                    arquivoUrl: downloadURL,
+                    arquivoNome: arquivo.name,
+                    dataEnvio: serverTimestamp()
+                });
+
+                // 3. Tela de sucesso
+                let instrucaoPagamento = "";
+                if (dadosPedido.pagamento === 'PIX') {
+                    instrucaoPagamento = `
+                        <p>Chave PIX: <strong>sua-chave-aqui@email.com</strong></p>
+                        <p>Valor exato: <strong>R$ ${dadosPedido.total.toFixed(2).replace('.', ',')}</strong></p>
+                        <small>Faça o PIX para liberar a impressão!</small>
+                    `;
+                } else {
+                    instrucaoPagamento = `
+                        <p>Forma escolhida: <strong>Dinheiro na Retirada</strong></p>
+                        <p>Troco para: <strong>${document.getElementById("troco").value || 'Não precisa'}</strong></p>
+                    `;
+                }
+
+                document.getElementById("dados-pagamento-final").innerHTML = instrucaoPagamento;
+                document.getElementById("step-2").classList.remove("active");
+                document.getElementById("step-3").classList.add("active");
+
+            } catch (error) {
+                console.error("Erro ao enviar pedido:", error);
+                alert("Erro ao enviar o arquivo. Verifique sua conexão.");
+                botaoEnviar.innerText = "Enviar Pedido Confidencial 🚀";
+                botaoEnviar.disabled = false;
+            }
+        };
+
+        window.novoPedido = function() {
+            location.reload();
+        };
+
+        // Calcular preço inicial ao carregar
+        window.calcularPreco();
+    </script>
 </body>
 </html>
-
