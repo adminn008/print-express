@@ -13,14 +13,12 @@
         p { color: #94a3b8; font-size: 14px; }
         .container { max-width: 900px; margin: 0 auto; }
         
-        /* Seção de Envio de Aviso Global */
         .aviso-box {
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
         .aviso-box h2 { font-size: 16px; color: #38bdf8; margin-bottom: 10px; }
         .aviso-box textarea {
@@ -32,7 +30,6 @@
             padding: 10px;
             font-size: 14px;
             margin-bottom: 10px;
-            resize: vertical;
         }
         .btn-aviso {
             background: #f59e0b;
@@ -42,107 +39,48 @@
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
-            transition: background 0.2s;
         }
-        .btn-aviso:hover { background: #d97706; }
 
-        /* Cards de Pedidos */
         .pedido-card {
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
-        .pedido-card.concluido {
-            opacity: 0.6;
-            border-color: #059669;
-        }
-        .pedido-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+        .pedido-card.concluido { opacity: 0.55; border-color: #10b981; }
+        .pedido-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 10px; margin-bottom: 10px; }
         .cliente-nome { font-size: 18px; font-weight: bold; color: #f8fafc; }
         .pedido-total { font-size: 18px; font-weight: bold; color: #34d399; }
         .pedido-info { font-size: 14px; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
         
-        .btn-group-action { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .btn-group-action { display: flex; gap: 10px; flex-wrap: wrap; }
         .btn-download {
-            background: #0284c7;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            display: inline-block;
-            transition: background 0.2s;
+            background: #0284c7; color: white; padding: 10px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px;
         }
-        .btn-download:hover { background: #0369a1; }
-        
         .btn-concluir {
-            background: #10b981;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background 0.2s;
+            background: #10b981; color: white; border: none; padding: 10px 16px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer;
         }
-        .btn-concluir:hover { background: #059669; }
 
-        /* Pré-visualização do arquivo na tela */
         .preview-container {
-            margin-top: 10px;
-            margin-bottom: 15px;
-            background: #0f172a;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #334155;
-            text-align: center;
+            margin: 10px 0 15px 0; background: #0f172a; padding: 10px; border-radius: 6px; border: 1px solid #334155; text-align: center;
         }
-        .preview-container img {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: 4px;
-            object-fit: contain;
-        }
-        .preview-container iframe {
-            width: 100%;
-            height: 250px;
-            border: none;
-            border-radius: 4px;
-        }
-
-        .sem-pedidos { text-align: center; color: #64748b; margin-top: 50px; font-size: 16px; }
-
-        @media (max-width: 600px) {
-            body { padding: 10px; }
-            .pedido-header { flex-direction: column; align-items: flex-start; }
-        }
+        .preview-container img { max-width: 100%; max-height: 200px; object-fit: contain; }
+        .preview-container iframe { width: 100%; height: 200px; border: none; }
+        .sem-pedidos { text-align: center; color: #64748b; margin-top: 50px; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <header>
-            <h1>🖨️ Painel de Operador - PrintExpress</h1>
-            <p>Gerencie pedidos em tempo real, visualize arquivos e publique avisos.</p>
+            <h1>🖨️ Painel do Operador - PrintExpress</h1>
+            <p>Gerenciamento de Pedidos e Avisos Globais</p>
         </header>
 
-        <!-- Campo exclusivo para enviar Avisos Globais para o index.html -->
         <div class="aviso-box">
             <h2>📢 Publicar Aviso Global no Site (index.html)</h2>
-            <textarea id="inputAviso" rows="2" placeholder="Digite um aviso importante para aparecer no topo do site dos clientes..."></textarea>
+            <textarea id="inputAviso" rows="2" placeholder="Digite um aviso importante para ser exibido no topo do site..."></textarea>
             <button class="btn-aviso" onclick="publicarAviso()">Atualizar Aviso no Site 🚀</button>
         </div>
 
@@ -151,7 +89,6 @@
         </div>
     </div>
 
-    <!-- LÓGICA DO FIREBASE E INTERFACE DO PAINEL -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
@@ -170,100 +107,53 @@
         const db = getFirestore(app);
 
         const containerPedidos = document.getElementById("lista-pedidos");
-        let totalPedidosAnterior = -1;
-
-        if ("Notification" in window && Notification.permission !== "granted") {
-            Notification.requestPermission();
-        }
-
-        function tocarAlertaSonoro() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = "sine";
-                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.3);
-            } catch(e) {
-                console.log("Áudio bloqueado pelo navegador até interação.");
-            }
-        }
 
         const q = query(collection(db, "pedidos"), orderBy("dataEnvio", "desc"));
 
         onSnapshot(q, (snapshot) => {
             if (snapshot.empty) {
-                containerPedidos.innerHTML = `<p class="sem-pedidos">Nenhum pedido recebido ainda. Aguardando...</p>`;
-                totalPedidosAnterior = 0;
+                containerPedidos.innerHTML = `<p class="sem-pedidos">Nenhum pedido recebido ainda.</p>`;
                 return;
             }
-
-            if (totalPedidosAnterior !== -1 && snapshot.size > totalPedidosAnterior) {
-                tocarAlertaSonoro();
-                if ("Notification" in window && Notification.permission === "granted") {
-                    new Notification("Novo Pedido PrintExpress!", {
-                        body: "Um novo arquivo chegou para impressão.",
-                        icon: "https://cdn-icons-png.flaticon.com/512/2933/2933888.png"
-                    });
-                }
-            }
-            totalPedidosAnterior = snapshot.size;
 
             let html = "";
             snapshot.forEach((docSnap) => {
                 const p = docSnap.data();
                 const docId = docSnap.id;
                 
-                let dataFormatada = 'Agora mesmo';
-                if (p.dataEnvio && typeof p.dataEnvio.toDate === 'function') {
-                    dataFormatada = p.dataEnvio.toDate().toLocaleString('pt-BR');
-                }
-
-                const totalFormatado = (typeof p.total === 'number') ? p.total.toFixed(2).replace('.', ',') : '0,00';
-                const obs = p.observacoes ? p.observacoes : 'Nenhuma observação';
-                const nomeArquivo = p.arquivoNome ? p.arquivoNome : 'arquivo';
-                const linkArquivo = p.arquivoDados ? p.arquivoDados : '';
-                const telefoneCliente = p.telefone ? p.telefone : 'Não informado';
+                let dataFormatada = p.dataEnvio?.toDate ? p.dataEnvio.toDate().toLocaleString('pt-BR') : 'Agora mesmo';
+                const totalFormatado = typeof p.total === 'number' ? p.total.toFixed(2).replace('.', ',') : '0,00';
                 const isConcluido = p.concluido === true;
-                
-                let infoTroco = '';
-                if (p.pagamento === 'DINHEIRO' && p.troco) {
-                    infoTroco = ` (Troco para: ${p.troco})`;
-                }
+                const linkArquivo = p.arquivoDados || '';
+                const nomeArquivo = p.arquivoNome || 'arquivo';
 
                 let previewHTML = '';
                 if (linkArquivo) {
                     if (linkArquivo.includes('image/') || nomeArquivo.match(/\.(png|jpg|jpeg)$/i)) {
-                        previewHTML = `<div class="preview-container"><p style="font-size:12px; color:#94a3b8; margin-bottom:5px;">Pré-visualização da Imagem:</p><img src="${linkArquivo}" alt="Preview"></div>`;
+                        previewHTML = `<div class="preview-container"><img src="${linkArquivo}"></div>`;
                     } else if (linkArquivo.includes('application/pdf') || nomeArquivo.match(/\.pdf$/i)) {
-                        previewHTML = `<div class="preview-container"><p style="font-size:12px; color:#94a3b8; margin-bottom:5px;">Pré-visualização do PDF:</p><iframe src="${linkArquivo}"></iframe></div>`;
-                    } else {
-                        previewHTML = `<div class="preview-container"><p style="font-size:12px; color:#94a3b8;">Conteúdo / Texto do Pedido:</p><textarea readonly style="width:100%; background:#1e293b; color:#cbd5e1; border:none; font-size:13px; height:60px;">${p.observacoes || nomeArquivo}</textarea></div>`;
+                        previewHTML = `<div class="preview-container"><iframe src="${linkArquivo}"></iframe></div>`;
                     }
                 }
 
                 html += `
-                    <div class="pedido-card ${isConcluido ? 'concluido' : ''}" id="card-${docId}">
+                    <div class="pedido-card ${isConcluido ? 'concluido' : ''}">
                         <div class="pedido-header">
                             <span class="cliente-nome">👤 ${p.cliente || 'Cliente'} ${isConcluido ? '✅ (Concluído)' : ''}</span>
                             <span class="pedido-total">R$ ${totalFormatado}</span>
                         </div>
                         <div class="pedido-info">
-                            <p>📞 <strong>Telefone / WhatsApp:</strong> ${telefoneCliente}</p>
-                            <p>📄 <strong>Serviço/Papel:</strong> ${p.papel || 'Padrão'} (${p.quantidade || 1} un)</p>
-                            <p>💳 <strong>Pagamento:</strong> ${p.pagamento || 'PIX'}${infoTroco}</p>
-                            <p>📝 <strong>Obs:</strong> ${obs}</p>
-                            <p>📁 <strong>Arquivo:</strong> ${nomeArquivo}</p>
-                            <p>🕒 <strong>Recebido em:</strong> ${dataFormatada}</p>
+                            <p>📞 <strong>Telefone:</strong> ${p.telefone || 'Não informado'}</p>
+                            <p>📄 <strong>Serviço:</strong> ${p.papel || 'Padrão'} (${p.quantidade || 1} un)</p>
+                            <p>💳 <strong>Pagamento:</strong> ${p.pagamento || 'PIX'} ${p.troco ? `(Troco: ${p.troco})` : ''}</p>
+                            <p>📝 <strong>Obs:</strong> ${p.observacoes || 'Nenhuma'}</p>
+                            <p>🕒 <strong>Data:</strong> ${dataFormatada}</p>
                         </div>
 
                         ${previewHTML}
 
                         <div class="btn-group-action">
-                            <a href="${linkArquivo}" download="${nomeArquivo}" class="btn-download">📥 Baixar Arquivo</a>
+                            ${linkArquivo ? `<a href="${linkArquivo}" download="${nomeArquivo}" class="btn-download">📥 Baixar Arquivo</a>` : ''}
                             <button class="btn-concluir" onclick="alternarConcluido('${docId}', ${!isConcluido})">
                                 ${isConcluido ? '🔄 Reabrir Pedido' : '✔️ Marcar como Concluído'}
                             </button>
@@ -277,39 +167,27 @@
 
         window.alternarConcluido = async function(id, status) {
             try {
-                const ref = doc(db, "pedidos", id);
-                await updateDoc(ref, { concluido: status });
-            } catch (err) {
-                console.error("Erro ao atualizar status:", err);
-                alert("Erro ao atualizar o pedido.");
-            }
+                await updateDoc(doc(db, "pedidos", id), { concluido: status });
+            } catch (err) { alert("Erro ao alterar status do pedido."); }
         };
 
         window.publicarAviso = async function() {
             const textoAviso = document.getElementById("inputAviso").value.trim();
             try {
-                await setDoc(doc(db, "config", "aviso"), {
-                    texto: textoAviso,
-                    atualizadoEm: new Date()
-                });
+                await setDoc(doc(db, "config", "aviso"), { texto: textoAviso, atualizadoEm: new Date() });
                 alert("Aviso publicado com sucesso no site!");
-            } catch (err) {
-                console.error("Erro ao publicar aviso:", err);
-                alert("Erro ao publicar aviso.");
-            }
+            } catch (err) { alert("Erro ao publicar aviso."); }
         };
 
-        async function carregarInputAviso() {
+        async function carregarAvisoExistente() {
             try {
                 const snap = await getDoc(doc(db, "config", "aviso"));
                 if (snap.exists() && snap.data().texto) {
                     document.getElementById("inputAviso").value = snap.data().texto;
                 }
-            } catch(e) {
-                console.log("Aviso prévio não encontrado.");
-            }
+            } catch(e) {}
         }
-        carregarInputAviso();
+        carregarAvisoExistente();
     </script>
 </body>
 </html>
