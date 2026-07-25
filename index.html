@@ -380,9 +380,9 @@
                 🎨 <strong>Criação de Arte / Canva:</strong> Cartões, panfletos, convites e banners digitais.
             </div>
             <div class="carousel-dots">
-                <span class="dot active" onclick="irParaSlide(0)"></span>
-                <span class="dot" onclick="irParaSlide(1)"></span>
-                <span class="dot" onclick="irParaSlide(2)"></span>
+                <span class="dot active" data-slide="0"></span>
+                <span class="dot" data-slide="1"></span>
+                <span class="dot" data-slide="2"></span>
             </div>
         </div>
 
@@ -392,19 +392,19 @@
             
             <div class="form-group">
                 <label for="nome-cliente">Seu Nome Completo:</label>
-                <input type="text" id="nome-cliente" placeholder="EX: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()">
+                <input type="text" id="nome-cliente" placeholder="EX: JOÃO DA SILVA">
             </div>
 
             <div class="form-group">
                 <label for="telefone-cliente">WhatsApp para Contato:</label>
-                <input type="tel" id="telefone-cliente" placeholder="(41) 99999-9999" maxlength="15" oninput="mascaraTelefone(this)">
+                <input type="tel" id="telefone-cliente" placeholder="(41) 99999-9999" maxlength="15">
             </div>
 
             <!-- SELEÇÃO DE SERVIÇO -->
             <div class="form-group">
                 <label>Escolha o Serviço:</label>
                 <div class="servicos-grid">
-                    <div class="servico-card selected" id="srv-doc" onclick="selecionarServico('doc')">
+                    <div class="servico-card selected" id="srv-doc">
                         <div class="servico-icon">📄</div>
                         <div class="servico-title">Impressão A4</div>
                     </div>
@@ -433,7 +433,7 @@
                 <!-- CAMPO DE UPLOAD MULTIPLO -->
                 <div class="form-group">
                     <label for="arquivo-upload">Anexar Documento(s) (PDF, DOCX, Imagem):</label>
-                    <input type="file" id="arquivo-upload" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" multiple onchange="atualizarListaArquivos()">
+                    <input type="file" id="arquivo-upload" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" multiple>
                 </div>
 
                 <!-- PAINEL DE CONFIGURAÇÃO INDIVIDUAL DOS ARQUIVOS -->
@@ -446,7 +446,7 @@
                 <strong id="valor-total">R$ 0,00</strong>
             </div>
 
-            <button class="btn-primary" onclick="irParaPasso2()">Continuar ➔</button>
+            <button class="btn-primary" id="btn-passo-1">Continuar ➔</button>
         </div>
 
         <!-- PASSO 2: PAGAMENTO -->
@@ -457,10 +457,10 @@
                 <label>Como deseja pagar?</label>
                 <div class="radio-group">
                     <label class="radio-label">
-                        <input type="radio" name="pagamento" value="PIX" checked onclick="togglePagamento('pix')"> PIX
+                        <input type="radio" name="pagamento" value="PIX" checked> PIX
                     </label>
                     <label class="radio-label">
-                        <input type="radio" name="pagamento" value="Dinheiro" onclick="togglePagamento('dinheiro')"> Dinheiro (Na Retirada)
+                        <input type="radio" name="pagamento" value="Dinheiro"> Dinheiro (Na Retirada)
                     </label>
                 </div>
             </div>
@@ -476,8 +476,8 @@
             </div>
 
             <div style="display: flex; gap: 12px; margin-top: 10px;">
-                <button class="btn-secondary" onclick="voltarParaPasso1()">⬅ Voltar</button>
-                <button class="btn-primary" id="btn-enviar" onclick="finalizarPedidoFirebase()">Enviar Pedido 🚀</button>
+                <button class="btn-secondary" id="btn-voltar">⬅ Voltar</button>
+                <button class="btn-primary" id="btn-enviar">Enviar Pedido 🚀</button>
             </div>
         </div>
 
@@ -499,15 +499,15 @@
             <div class="toast-icon">⚠️</div>
             <div class="toast-title" id="toastTitle">Campo Obrigatório</div>
             <div class="toast-msg" id="toastMsg">Preencha todos os campos antes de continuar.</div>
-            <button class="toast-btn" onclick="fecharToast()">Entendi</button>
+            <button class="toast-btn" id="btn-fechar-toast">Entendi</button>
         </div>
     </div>
 
     <!-- FIREBASE & LÓGICA -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAfh0iZSotPra1olpRWRfwwBP9G8yrdHEc",
@@ -542,32 +542,53 @@
             dots[slideIndex].classList.add("active");
         }
 
-        window.irParaSlide = function(n) { mostrarSlide(n); };
+        dots.forEach((dot, idx) => {
+            dot.addEventListener("click", () => mostrarSlide(idx));
+        });
 
         setInterval(() => {
             mostrarSlide(slideIndex + 1);
         }, 4000);
 
-        // SELEÇÃO DE SERVIÇOS
-        window.selecionarServico = function(tipo) {
-            servicoAtual = tipo;
-            document.getElementById("srv-doc").classList.toggle("selected", tipo === 'doc');
+        // MÁSCARA WHATSAPP E FORMATADOR
+        const inputNome = document.getElementById("nome-cliente");
+        const inputTel = document.getElementById("telefone-cliente");
 
-            const painelDoc = document.getElementById("painel-doc");
-            if (painelDoc) painelDoc.classList.toggle("hidden", tipo !== 'doc');
+        inputNome.addEventListener("input", (e) => {
+            e.target.value = e.target.value.toUpperCase();
+        });
 
-            calcularTotal();
-        };
+        inputTel.addEventListener("input", (e) => {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            if (v.length > 6) {
+                v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+            } else if (v.length > 2) {
+                v = v.replace(/^(\d{2})(\d{1,4}).*/, '($1) $2');
+            } else if (v.length > 0) {
+                v = v.replace(/^(\d*)/, '($1');
+            }
+            e.target.value = v;
+        });
 
-        // GERENCIAMENTO E CONFIGURAÇÃO DE MÚLTIPLOS ARQUIVOS
-        window.atualizarListaArquivos = function() {
-            const input = document.getElementById("arquivo-upload");
+        // TOAST NOTIFICAÇÃO
+        function mostrarToast(titulo, mensagem) {
+            document.getElementById("toastTitle").innerText = titulo;
+            document.getElementById("toastMsg").innerText = mensagem;
+            document.getElementById("customToast").classList.add("active");
+        }
+
+        document.getElementById("btn-fechar-toast").addEventListener("click", () => {
+            document.getElementById("customToast").classList.remove("active");
+        });
+
+        // ARQUIVOS E CÁLCULO
+        const inputArquivos = document.getElementById("arquivo-upload");
+        inputArquivos.addEventListener("change", () => {
             const container = document.getElementById("container-arquivos");
             container.innerHTML = "";
-            
-            const arquivosNovos = Array.from(input.files);
-            
-            // Atualiza array mantendo integridade
+            const arquivosNovos = Array.from(inputArquivos.files);
+
             configuracoesArquivos = arquivosNovos.map((file, index) => {
                 const configExistente = configuracoesArquivos[index];
                 return {
@@ -587,14 +608,14 @@
                     <div class="item-arquivo-grid">
                         <div>
                             <label>Impressão:</label>
-                            <select onchange="atualizarOpcaoArquivo(${index}, 'tipoCor', this.value)">
+                            <select id="select-cor-${index}">
                                 <option value="pb" ${item.tipoCor === 'pb' ? 'selected' : ''}>Preto e Branco (R$ 0,50)</option>
                                 <option value="colorida" ${item.tipoCor === 'colorida' ? 'selected' : ''}>Colorida (R$ 1,50)</option>
                             </select>
                         </div>
                         <div>
                             <label>Quantidade / Folhas:</label>
-                            <input type="number" value="${item.copias}" min="1" oninput="atualizarOpcaoArquivo(${index}, 'copias', parseInt(this.value) || 1)">
+                            <input type="number" id="input-copias-${index}" value="${item.copias}" min="1">
                         </div>
                     </div>
                     <div class="item-subtotal" id="subtotal-${index}">
@@ -602,19 +623,22 @@
                     </div>
                 `;
                 container.appendChild(itemDiv);
+
+                document.getElementById(`select-cor-${index}`).addEventListener("change", (e) => {
+                    configuracoesArquivos[index].tipoCor = e.target.value;
+                    calcularTotal();
+                });
+
+                document.getElementById(`input-copias-${index}`).addEventListener("input", (e) => {
+                    configuracoesArquivos[index].copias = parseInt(e.target.value) || 1;
+                    calcularTotal();
+                });
             });
 
             calcularTotal();
-        };
+        });
 
-        window.atualizarOpcaoArquivo = function(index, campo, valor) {
-            if (configuracoesArquivos[index]) {
-                configuracoesArquivos[index][campo] = valor;
-                calcularTotal();
-            }
-        };
-
-        window.calcularTotal = function() {
+        function calcularTotal() {
             let total = 0;
 
             if (servicoAtual === "doc") {
@@ -635,34 +659,12 @@
             }
 
             document.getElementById("valor-total").innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
-        };
+        }
 
-        window.mostrarToast = function(titulo, mensagem) {
-            document.getElementById("toastTitle").innerText = titulo;
-            document.getElementById("toastMsg").innerText = mensagem;
-            document.getElementById("customToast").classList.add("active");
-        };
-
-        window.fecharToast = function() {
-            document.getElementById("customToast").classList.remove("active");
-        };
-
-        window.mascaraTelefone = function(input) {
-            let v = input.value.replace(/\D/g, '');
-            if (v.length > 11) v = v.substring(0, 11);
-            if (v.length > 6) {
-                v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
-            } else if (v.length > 2) {
-                v = v.replace(/^(\d{2})(\d{1,4}).*/, '($1) $2');
-            } else if (v.length > 0) {
-                v = v.replace(/^(\d*)/, '($1');
-            }
-            input.value = v;
-        };
-
-        window.irParaPasso2 = function() {
-            const cliente = document.getElementById("nome-cliente").value.trim();
-            const telefone = document.getElementById("telefone-cliente").value.trim();
+        // ALTERNÂNCIA DE TELA / NAVEGAÇÃO
+        document.getElementById("btn-passo-1").addEventListener("click", () => {
+            const cliente = inputNome.value.trim();
+            const telefone = inputTel.value.trim();
 
             if (!cliente) { 
                 mostrarToast("Nome Obrigatório", "Por favor, informe seu nome completo."); 
@@ -679,28 +681,33 @@
 
             document.getElementById("step-1").classList.add("hidden");
             document.getElementById("step-2").classList.remove("hidden");
-        };
+        });
 
-        window.voltarParaPasso1 = function() {
+        document.getElementById("btn-voltar").addEventListener("click", () => {
             document.getElementById("step-2").classList.add("hidden");
             document.getElementById("step-1").classList.remove("hidden");
-        };
+        });
 
-        window.togglePagamento = function(tipo) {
-            if (tipo === 'dinheiro') {
-                document.getElementById("info-troco").classList.remove("hidden");
-            } else {
-                document.getElementById("info-troco").classList.add("hidden");
-            }
-        };
+        // TIPO DE PAGAMENTO
+        const radiosPagamento = document.querySelectorAll('input[name="pagamento"]');
+        radiosPagamento.forEach(radio => {
+            radio.addEventListener("change", (e) => {
+                if (e.target.value === "Dinheiro") {
+                    document.getElementById("info-troco").classList.remove("hidden");
+                } else {
+                    document.getElementById("info-troco").classList.add("hidden");
+                }
+            });
+        });
 
-        window.finalizarPedidoFirebase = async function() {
+        // ENVIO DO PEDIDO PRO FIREBASE
+        document.getElementById("btn-enviar").addEventListener("click", async () => {
             const btn = document.getElementById("btn-enviar");
             btn.disabled = true;
             btn.innerText = "Enviando Pedido... ⏳";
 
-            const cliente = document.getElementById("nome-cliente").value.trim();
-            const telefone = document.getElementById("telefone-cliente").value.trim();
+            const cliente = inputNome.value.trim();
+            const telefone = inputTel.value.trim();
             const pagamento = document.querySelector('input[name="pagamento"]:checked').value;
             const troco = document.getElementById("troco").value || "Não precisa";
             const obs = document.getElementById("observacoes").value || "Nenhuma";
@@ -716,11 +723,8 @@
                         const subtotal = item.copias * precoUnitario;
                         totalGeneral += subtotal;
 
-                        // UPLOAD INDIVIDUAL DE CADA ARQUIVO VIA BLOB/ARRAYBUFFER PARA PREVENIR ERROS DE TIMEOUT
                         const file = item.file;
                         const storageRef = ref(storage, `documentos/${Date.now()}_${file.name}`);
-                        
-                        // Faz o upload direto do arquivo mantendo suporte completo a PDF/DOCX
                         const uploadTask = await uploadBytes(storageRef, file);
                         const fileUrl = await getDownloadURL(uploadTask.ref);
 
@@ -734,15 +738,8 @@
                     }
 
                     descServico = `Impressão A4 (${arquivosProcessados.length} arquivo(s))`;
-                } else if (servicoAtual === "curriculo") {
-                    totalGeneral = 10.00;
-                    descServico = "Elaboração de Currículo Profissional";
-                } else if (servicoAtual === "canva") {
-                    totalGeneral = 15.00;
-                    descServico = "Criação de Arte / Canva";
                 }
 
-                // SALVA O PEDIDO COMPLETO COM TODAS AS CONFIGURAÇÕES NO FIRESTORE
                 await addDoc(collection(db, "pedidos"), {
                     cliente,
                     telefone,
@@ -768,7 +765,7 @@
                             <p style="font-size:13px; color:var(--text-muted);">Copie a Chave PIX abaixo:</p>
                             
                             <input type="text" id="pixKeyInput" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:16px; color:var(--accent);">
-                            <button class="btn-copiar-pix" onclick="copiarChavePix()">📋 Copiar Chave PIX</button>
+                            <button class="btn-copiar-pix" id="btn-copiar-pix-final">📋 Copiar Chave PIX</button>
                             
                             <div style="background: rgba(2, 132, 199, 0.15); border-left: 4px solid var(--accent); padding: 12px; border-radius: 6px; font-size:13px; text-align:left;">
                                 ⚠️ <strong>IMPORTANTE:</strong> Clique abaixo para enviar o comprovante no nosso WhatsApp.
@@ -792,23 +789,27 @@
                 }
 
                 document.getElementById("dados-pagamento-final").innerHTML = htmlFinal;
+
+                const btnCopiar = document.getElementById("btn-copiar-pix-final");
+                if (btnCopiar) {
+                    btnCopiar.addEventListener("click", () => {
+                        const input = document.getElementById("pixKeyInput");
+                        input.select();
+                        navigator.clipboard.writeText(input.value);
+                        mostrarToast("PIX Copiado!", "A chave PIX foi copiada para sua área de transferência.");
+                    });
+                }
+
                 document.getElementById("step-2").classList.add("hidden");
                 document.getElementById("step-3").classList.remove("hidden");
 
             } catch (err) {
-                console.error(err);
-                mostrarToast("Erro de Conexão", "Não foi possível registrar seu pedido. Tente novamente.");
+                console.error("Erro no envio:", err);
+                mostrarToast("Erro de Conexão", "Não foi possível registrar seu pedido. Verifique sua conexão e tente novamente.");
                 btn.disabled = false;
                 btn.innerText = "Enviar Pedido 🚀";
             }
-        };
-
-        window.copiarChavePix = function() {
-            const input = document.getElementById("pixKeyInput");
-            input.select();
-            navigator.clipboard.writeText(input.value);
-            mostrarToast("PIX Copiado!", "A chave PIX foi copiada para sua área de transferência.");
-        };
+        });
 
         calcularTotal();
     </script>
