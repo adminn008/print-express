@@ -3,77 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Currículos Profissionais</title>
+    <title>Gerador & Edição de Currículos Profissionais</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Biblioteca Html2Pdf para gerar o PDF perfeito -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
             --primary: #0284c7;
+            --primary-hover: #0369a1;
             --bg: #0f172a;
             --card-bg: #1e293b;
             --border: #334155;
             --text: #f8fafc;
             --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --green: #10b981;
+            --green-hover: #059669;
+            --amber: #f59e0b;
+            --danger: #ef4444;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 20px; }
+        body { background-color: var(--bg); color: var(--text); padding: 20px 16px; line-height: 1.5; }
 
-        .header-title { text-align: center; margin-bottom: 25px; }
-        .header-title h1 { color: #38bdf8; font-size: 26px; }
-        .header-title p { color: var(--text-muted); font-size: 14px; margin-top: 5px; }
+        .header-title { text-align: center; margin-bottom: 20px; }
+        .header-title h1 { color: var(--accent); font-size: 26px; font-weight: 700; }
+        .header-title p { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
 
         .app-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 24px;
             max-width: 1400px;
             margin: 0 auto;
         }
 
-        /* Formulário */
+        /* PAINEL DE INFORMAÇÕES E TABELA DE PREÇOS */
+        .info-panel {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .info-card h3 {
+            font-size: 15px;
+            color: var(--accent);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .price-table th, .price-table td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .price-table th { color: var(--text-muted); font-weight: 600; }
+        .price-table td strong { color: var(--green); }
+
+        .notice-box {
+            background: rgba(2, 132, 199, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #e0f2fe;
+            margin-top: 8px;
+        }
+
+        /* FORMULÁRIO */
         .form-section {
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 20px;
+            padding: 22px;
             max-height: 85vh;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 5px; }
+        .section-subtitle {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        label { font-size: 13px; font-weight: 600; color: #cbd5e1; }
+        
         input, select, textarea {
             width: 100%;
-            padding: 10px;
+            padding: 10px 12px;
             background: #0f172a;
             border: 1px solid var(--border);
-            border-radius: 6px;
+            border-radius: 8px;
             color: #fff;
             font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        input:focus, select:focus, textarea:focus { border-color: #38bdf8; outline: none; }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
 
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 
-        /* Botões */
-        .btn-action {
-            background: #10b981;
+        /* BOTÕES DE AÇÃO */
+        .btn-action-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-download {
+            background: var(--green);
             color: white;
             border: none;
             padding: 14px;
-            width: 100%;
             border-radius: 8px;
-            font-weight: bold;
-            font-size: 16px;
+            font-weight: 700;
+            font-size: 15px;
             cursor: pointer;
-            margin-top: 15px;
             transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .btn-action:hover { background: #059669; }
+        .btn-download:hover { background: var(--green-hover); }
 
-        /* Preview do Currículo */
+        .btn-edit-service {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            border: 1px solid var(--accent);
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-edit-service:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+        /* PREVIEW DO CURRÍCULO */
         .preview-section {
             background: #334155;
             border-radius: 12px;
@@ -85,69 +189,127 @@
             overflow-y: auto;
         }
 
-        /* Folha A4 do CV */
+        /* FOLHA A4 DO CV - PADRÃO P&B */
         #curriculo-folha {
             background: white;
-            color: #1e293b;
+            color: #000000;
             width: 210mm;
             min-height: 297mm;
-            padding: 20mm;
+            padding: 18mm 20mm;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             box-sizing: border-box;
             transform-origin: top center;
+            line-height: 1.45;
         }
 
-        /* MODELOS CSS DE CURRÍCULO */
-        /* Modelo 1: Moderno */
-        .m-1 h1 { color: #0284c7; font-size: 24px; text-transform: uppercase; border-bottom: 2px solid #0284c7; padding-bottom: 5px; }
-        .m-1 h3 { color: #0369a1; font-size: 14px; margin-top: 15px; text-transform: uppercase; border-bottom: 1px solid #cbd5e1; padding-bottom: 3px; }
-        
+        /* REGRAS GERAIS P&B PARA TODOS OS MODELOS */
+        #curriculo-folha h1, 
+        #curriculo-folha h2, 
+        #curriculo-folha h3, 
+        #curriculo-folha p, 
+        #curriculo-folha span, 
+        #curriculo-folha div {
+            color: #000000 !important;
+        }
+
+        /* 10 MODELOS TRADICIONAIS P&B */
+        /* Modelo 1: Moderno Estruturado */
+        .m-1 h1 { font-size: 22px; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 4px; font-weight: 700; }
+        .m-1 h3 { font-size: 13px; margin-top: 14px; text-transform: uppercase; border-bottom: 1px solid #666; padding-bottom: 2px; font-weight: 700; }
+
         /* Modelo 2: Elegante / Clássico */
         .m-2 { font-family: 'Merriweather', serif; }
-        .m-2 h1 { text-align: center; color: #1e293b; font-size: 22px; }
-        .m-2 .contatos { text-align: center; font-size: 12px; border-bottom: 1px solid #000; padding-bottom: 8px; margin-bottom: 15px; }
-        .m-2 h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #334155; margin-top: 12px; }
+        .m-2 h1 { text-align: center; font-size: 20px; font-weight: 700; }
+        .m-2 .contatos { text-align: center; font-size: 11px; border-bottom: 1px solid #000; padding-bottom: 8px; margin-bottom: 12px; }
+        .m-2 h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #ccc; margin-top: 12px; font-weight: 700; }
 
         /* Modelo 3: Minimalista Executivo */
-        .m-3 h1 { font-size: 26px; font-weight: 300; color: #0f172a; }
-        .m-3 h3 { font-size: 12px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 15px; }
+        .m-3 h1 { font-size: 24px; font-weight: 400; letter-spacing: 0.5px; }
+        .m-3 h3 { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 14px; border-left: 3px solid #000; padding-left: 6px; }
 
-        /* Modelo 4: Lateral Azul */
-        .m-4 { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin: -20mm; padding: 20mm; }
-        .m-4 .sidebar { background: #0f172a; color: white; padding: 15px; border-radius: 4px; }
-        .m-4 .sidebar h3 { color: #38bdf8; font-size: 13px; border-bottom: 1px solid #334155; margin-top: 10px; }
+        /* Modelo 4: Lateral Destacada */
+        .m-4 { display: grid; grid-template-columns: 1fr 2.2fr; gap: 16px; margin: -18mm -20mm; padding: 18mm 20mm; }
+        .m-4 .sidebar { border-right: 2px solid #000; padding-right: 14px; }
+        .m-4 .sidebar h3 { font-size: 12px; border-bottom: 1px solid #000; margin-top: 10px; font-weight: 700; }
 
-        /* Modelo 5: Criativo / Verde */
-        .m-5 h1 { color: #059669; font-size: 24px; }
-        .m-5 h3 { background: #ecfdf5; color: #047857; padding: 4px 8px; font-size: 13px; border-radius: 4px; margin-top: 12px; }
+        /* Modelo 5: Linhas Box */
+        .m-5 h1 { font-size: 22px; font-weight: 700; }
+        .m-5 h3 { background: #f0f0f0; padding: 4px 8px; font-size: 12px; border-left: 4px solid #000; margin-top: 12px; font-weight: 700; text-transform: uppercase; }
 
-        /* Modelo 6: Borda Superior */
-        .m-6 { border-top: 8px solid #6366f1; }
-        .m-6 h1 { color: #4338ca; }
-        .m-6 h3 { color: #4f46e5; border-bottom: 2px dotted #c7d2fe; padding-bottom: 2px; margin-top: 12px; }
+        /* Modelo 6: Header Duplo */
+        .m-6 { border-top: 6px solid #000; padding-top: 8px; }
+        .m-6 h1 { font-size: 22px; font-weight: 700; }
+        .m-6 h3 { font-size: 12px; border-bottom: 2px dotted #000; padding-bottom: 2px; margin-top: 12px; font-weight: 700; text-transform: uppercase; }
 
-        /* Modelo 7: Compacto / Grade */
-        .m-7 h1 { font-size: 20px; color: #0f172a; }
-        .m-7 .cv-item { font-size: 12px; line-height: 1.4; }
+        /* Modelo 7: Compacto / Comercial */
+        .m-7 h1 { font-size: 19px; font-weight: 700; }
+        .m-7 h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; margin-top: 10px; border-bottom: 1px solid #000; }
 
-        /* Modelo 8: Corporativo Escuro */
-        .m-8 h1 { color: #1e293b; border-left: 5px solid #0284c7; padding-left: 10px; }
-        .m-8 h3 { color: #0284c7; margin-top: 12px; }
+        /* Modelo 8: Borda Lateral */
+        .m-8 h1 { font-size: 22px; border-left: 6px solid #000; padding-left: 10px; font-weight: 700; }
+        .m-8 h3 { font-size: 12px; margin-top: 12px; font-weight: 700; text-transform: uppercase; border-bottom: 1px dashed #000; padding-bottom: 2px; }
 
-        /* Modelo 9: Tradicional Preto e Branco */
-        .m-9 h1 { text-decoration: underline; font-size: 22px; }
-        .m-9 h3 { font-size: 14px; text-transform: uppercase; margin-top: 10px; }
+        /* Modelo 9: Tradicional Puro P&B */
+        .m-9 h1 { text-decoration: underline; font-size: 21px; font-weight: 700; text-align: center; }
+        .m-9 .contatos { text-align: center; font-size: 11px; margin-bottom: 12px; }
+        .m-9 h3 { font-size: 13px; text-transform: uppercase; margin-top: 12px; border-bottom: 1px solid #000; font-weight: 700; }
 
-        /* Modelo 10: Linha Central */
-        .m-10 h1 { text-align: center; color: #0f172a; }
-        .m-10 .contatos { text-align: center; font-size: 12px; margin-bottom: 15px; }
+        /* Modelo 10: Centralizado Clássico */
+        .m-10 h1 { text-align: center; font-size: 22px; font-weight: 700; text-transform: uppercase; }
+        .m-10 .contatos { text-align: center; font-size: 11px; margin-bottom: 14px; border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 4px 0; }
+        .m-10 h3 { text-align: center; font-size: 12px; text-transform: uppercase; margin-top: 12px; border-bottom: 1px solid #999; font-weight: 700; }
 
-        /* Estilização Geral Interna do CV */
-        .cv-header-info { font-size: 12px; color: #475569; margin-bottom: 12px; }
-        .cv-section-content { font-size: 13px; color: #334155; margin-top: 5px; line-height: 1.5; white-space: pre-line; }
+        /* ESTILIZAÇÃO INTERNA DOS DADOS */
+        .cv-header-info { font-size: 11px; margin-bottom: 10px; word-break: break-word; }
+        .cv-section-content { font-size: 12px; margin-top: 4px; line-height: 1.45; white-space: pre-line; word-break: break-word; }
 
-        @media (max-width: 900px) {
+        /* TOAST / MODAL CUSTOMIZADO */
+        .toast-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .toast-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .toast-card {
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .toast-icon { font-size: 38px; margin-bottom: 8px; }
+        .toast-title { font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 6px; }
+        .toast-msg { font-size: 14px; color: var(--text-muted); margin-bottom: 18px; }
+        
+        .toast-btn {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        @media (max-width: 960px) {
             .app-container { grid-template-columns: 1fr; }
+            .info-panel { grid-template-columns: 1fr; }
             #curriculo-folha { transform: scale(0.65); transform-origin: top left; }
             .preview-section { overflow-x: auto; }
         }
@@ -157,41 +319,84 @@
 
     <div class="header-title">
         <h1>📄 Criador de Currículos Profissionais</h1>
-        <p>Preencha os dados, escolha um dos 10 modelos e baixe seu PDF pronto!</p>
+        <p>Preencha seus dados, escolha entre 10 modelos em Preto & Branco e baixe em PDF!</p>
     </div>
 
     <div class="app-container">
-        <!-- FORMULÁRIO DE PREENCHIMENTO -->
+        <!-- PAINEL DE PREÇOS E AVISOS DA GRÁFICA -->
+        <div class="info-panel">
+            <div class="info-card">
+                <h3>🏷️ Tabela de Serviços & Valores</h3>
+                <table class="price-table">
+                    <thead>
+                        <tr>
+                            <th>Serviço</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Gerar PDF Grátis</td>
+                            <td>Você preenche e baixa direto no site</td>
+                            <td><strong>GRÁTIS</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Revisão / Edição Profissional</td>
+                            <td>Ajustamos o texto, erros e layout para você</td>
+                            <td><strong>R$ 10,00</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Impressão Sulfite A4</td>
+                            <td>Impressão presencial em papel A4 P&B</td>
+                            <td><strong>R$ 0,50 / folha</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="info-card">
+                <h3>📌 Avisos & Orientações</h3>
+                <div class="notice-box">
+                    • Todos os currículos gerados utilizam o padrão <strong>Preto e Branco</strong> para garantir máxima aceitação em processos seletivos e economia na impressão.<br>
+                    • Se preferir que um especialista revise suas experiências e reescreva o objetivo, clique no botão <strong>"Solicitar Edição Profissional"</strong>.
+                </div>
+            </div>
+        </div>
+
+        <!-- FORMULÁRIO DE PREENCHIMENTO COMPLETO -->
         <div class="form-section">
             <div class="form-group">
-                <label for="selectModelo">🎨 Escolha o Modelo de Currículo (10 Opções):</label>
+                <label for="selectModelo">🎨 Modelo do Currículo (10 Opções P&B):</label>
                 <select id="selectModelo" onchange="atualizarPreview()">
-                    <option value="m-1">Modelo 1: Moderno Azul</option>
+                    <option value="m-1">Modelo 1: Moderno Estruturado</option>
                     <option value="m-2">Modelo 2: Elegante / Clássico</option>
                     <option value="m-3">Modelo 3: Minimalista Executivo</option>
                     <option value="m-4">Modelo 4: Lateral Destacada</option>
-                    <option value="m-5">Modelo 5: Criativo Verde</option>
-                    <option value="m-6">Modelo 6: Indigo Premium</option>
+                    <option value="m-5">Modelo 5: Linhas Box</option>
+                    <option value="m-6">Modelo 6: Header Duplo</option>
                     <option value="m-7">Modelo 7: Compacto / Comercial</option>
-                    <option value="m-8">Modelo 8: Corporativo Borda</option>
-                    <option value="m-9">Modelo 9: Tradicional P&B</option>
-                    <option value="m-10">Modelo 10: Centralizado</option>
+                    <option value="m-8">Modelo 8: Borda Lateral</option>
+                    <option value="m-9">Modelo 9: Tradicional Puro P&B</option>
+                    <option value="m-10">Modelo 10: Centralizado Clássico</option>
                 </select>
             </div>
 
+            <div class="section-subtitle">1. Informações Pessoais</div>
+
             <div class="form-group">
-                <label>Nome Completo:</label>
-                <input type="text" id="nome" placeholder="Ex: João da Silva" oninput="atualizarPreview()">
+                <label>Nome Completo (Automático em Maiúsculo):</label>
+                <input type="text" id="nome" placeholder="EX: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase(); atualizarPreview();">
             </div>
 
             <div class="grid-2">
                 <div class="form-group">
-                    <label>Cargo / Objetivo:</label>
+                    <label>Cargo / Objetivo Profissional:</label>
                     <input type="text" id="cargo" placeholder="Ex: Auxiliar Administrativo" oninput="atualizarPreview()">
                 </div>
                 <div class="form-group">
-                    <label>Telefone / WhatsApp:</label>
-                    <input type="text" id="telefone" placeholder="(41) 99999-9999" oninput="atualizarPreview()">
+                    <label>WhatsApp / Telefone:</label>
+                    <input type="text" id="telefone" placeholder="(41) 99999-9999" maxlength="15" oninput="mascaraTelefone(this); atualizarPreview();">
                 </div>
             </div>
 
@@ -202,58 +407,133 @@
                 </div>
                 <div class="form-group">
                     <label>Cidade / Estado:</label>
-                    <input type="text" id="cidade" placeholder="Curitiba - PR" oninput="atualizarPreview()">
+                    <input type="text" id="cidade" placeholder="Ex: Curitiba - PR" oninput="atualizarPreview()">
                 </div>
             </div>
 
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>Idade ou Nasc.:</label>
+                    <input type="text" id="idade" placeholder="Ex: 25 anos" oninput="atualizarPreview()">
+                </div>
+                <div class="form-group">
+                    <label>Estado Civil:</label>
+                    <input type="text" id="estadoCivil" placeholder="Ex: Solteiro(a)" oninput="atualizarPreview()">
+                </div>
+                <div class="form-group">
+                    <label>CNH (Opcional):</label>
+                    <input type="text" id="cnh" placeholder="Ex: CNH AB" oninput="atualizarPreview()">
+                </div>
+            </div>
+
+            <div class="section-subtitle">2. Perfil & Experiência</div>
+
             <div class="form-group">
                 <label>Resumo Profissional / Apresentação:</label>
-                <textarea id="resumo" rows="3" placeholder="Profissional dedicado com experiência em..." oninput="atualizarPreview()"></textarea>
+                <textarea id="resumo" rows="3" placeholder="Profissional proativo com experiência em atendimento ao cliente, organização de estoque e rotinas administrativas..." oninput="atualizarPreview()"></textarea>
             </div>
 
             <div class="form-group">
                 <label>Experiências Profissionais:</label>
-                <textarea id="experiencia" rows="4" placeholder="Empresa XYZ (2022 - Presente)&#10;Cargo: Atendente&#10;Funções: Atendimento ao cliente e caixa." oninput="atualizarPreview()"></textarea>
+                <textarea id="experiencia" rows="4" placeholder="Empresa XYZ (2022 - Presente)&#10;Cargo: Atendente&#10;Funções: Atendimento telefônico, controle de caixa e organização de arquivos." oninput="atualizarPreview()"></textarea>
             </div>
+
+            <div class="section-subtitle">3. Formação & Cursos</div>
 
             <div class="form-group">
                 <label>Formação Acadêmica / Escolaridade:</label>
-                <textarea id="formacao" rows="3" placeholder="Ensino Médio Completo&#10;Escola Estadual (2021 - 2023)" oninput="atualizarPreview()"></textarea>
+                <textarea id="formacao" rows="3" placeholder="Ensino Médio Completo&#10;Colégio Estadual (Concluído em 2023)" oninput="atualizarPreview()"></textarea>
             </div>
 
             <div class="form-group">
-                <label>Cursos e Qualificações:</label>
-                <textarea id="cursos" rows="3" placeholder="• Informática Básica&#10;• Atendimento ao Cliente" oninput="atualizarPreview()"></textarea>
+                <label>Cursos, Qualificações e Idiomas:</label>
+                <textarea id="cursos" rows="3" placeholder="• Informática Básica e Pacote Office&#10;• Curso de Atendimento ao Cliente&#10;• Inglês Intermediário" oninput="atualizarPreview()"></textarea>
             </div>
 
-            <button class="btn-action" onclick="baixarPDF()">📥 Baixar Currículo em PDF</button>
+            <div class="btn-action-group">
+                <button class="btn-download" onclick="baixarPDF()">
+                    📥 Baixar Currículo em PDF (Grátis)
+                </button>
+                <button class="btn-edit-service" onclick="solicitarEdicaoProfissional()">
+                    ✨ Solicitar Edição Profissional por R$ 10,00
+                    <small style="font-weight: 400; opacity: 0.9;">Ajustamos o texto, corrigimos erros e enviamos pronto no WhatsApp</small>
+                </button>
+            </div>
         </div>
 
-        <!-- PRÉ-VISUALIZAÇÃO EM TEMPO REAL DA FOLHA A4 -->
+        <!-- PRÉ-VISUALIZAÇÃO EM TEMPO REAL DA FOLHA A4 P&B -->
         <div class="preview-section">
             <div id="curriculo-folha" class="m-1">
-                <h1 id="pv-nome">SEU NOME COMPLETO</h1>
-                <p id="pv-cargo" style="font-weight: 600; color: #475569; font-size: 14px;">Cargo Desejado</p>
-                <div class="cv-header-info contatos" id="pv-contatos">
-                    📍 Cidade - UF | 📞 (00) 00000-0000 | ✉️ email@exemplo.com
+                <div id="m4-container">
+                    <div class="sidebar" id="m4-sidebar-box" style="display: none;">
+                        <h3>Contato</h3>
+                        <div class="cv-header-info" id="pv-sidebar-contato"></div>
+                        <h3>Dados</h3>
+                        <div class="cv-header-info" id="pv-sidebar-dados"></div>
+                    </div>
+
+                    <div class="main-content">
+                        <h1 id="pv-nome">SEU NOME COMPLETO</h1>
+                        <p id="pv-cargo" style="font-weight: 600; font-size: 13px;">Cargo Desejado</p>
+                        
+                        <div class="cv-header-info contatos" id="pv-contatos">
+                            Cidade - UF | (00) 00000-0000 | email@exemplo.com
+                        </div>
+
+                        <h3>Resumo Profissional</h3>
+                        <div class="cv-section-content" id="pv-resumo">Digite seu resumo profissional para visualizar aqui.</div>
+
+                        <h3>Experiência Profissional</h3>
+                        <div class="cv-section-content" id="pv-experiencia">Adicione suas experiências profissionais anteriores.</div>
+
+                        <h3>Formação Acadêmica</h3>
+                        <div class="cv-section-content" id="pv-formacao">Informe sua escolaridade.</div>
+
+                        <h3>Cursos e Qualificações</h3>
+                        <div class="cv-section-content" id="pv-cursos">Liste seus cursos e habilidades.</div>
+                    </div>
                 </div>
-
-                <h3>Resumo Profissional</h3>
-                <div class="cv-section-content" id="pv-resumo">Digite seu resumo profissional no campo ao lado para visualizar aqui.</div>
-
-                <h3>Experiência Profissional</h3>
-                <div class="cv-section-content" id="pv-experiencia">Adicione suas experiências profissionais anteriores.</div>
-
-                <h3>Formação Acadêmica</h3>
-                <div class="cv-section-content" id="pv-formacao">Informe sua escolaridade ou cursos superiores.</div>
-
-                <h3>Cursos e Habilidades</h3>
-                <div class="cv-section-content" id="pv-cursos">Liste seus cursos complementares e habilidades adicionais.</div>
             </div>
         </div>
     </div>
 
+    <!-- MODAL CUSTOMIZADO TOAST -->
+    <div class="toast-overlay" id="customToast">
+        <div class="toast-card">
+            <div class="toast-icon" id="toastIcon">⚠️</div>
+            <div class="toast-title" id="toastTitle">Aviso</div>
+            <div class="toast-msg" id="toastMsg">Preencha os campos necessários.</div>
+            <button class="toast-btn" onclick="fecharToast()">Entendi</button>
+        </div>
+    </div>
+
     <script>
+        const MEU_WHATSAPP = "5541999682836";
+
+        function mostrarToast(titulo, mensagem, icone = "⚠️") {
+            document.getElementById("toastIcon").innerText = icone;
+            document.getElementById("toastTitle").innerText = titulo;
+            document.getElementById("toastMsg").innerText = mensagem;
+            document.getElementById("customToast").classList.add("active");
+        }
+
+        function fecharToast() {
+            document.getElementById("customToast").classList.remove("active");
+        }
+
+        function mascaraTelefone(input) {
+            let v = input.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            if (v.length > 6) {
+                v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+            } else if (v.length > 2) {
+                v = v.replace(/^(\d{2})(\d{1,4}).*/, '($1) $2');
+            } else if (v.length > 0) {
+                v = v.replace(/^(\d*)/, '($1');
+            }
+            input.value = v;
+        }
+
         function atualizarPreview() {
             const modelo = document.getElementById("selectModelo").value;
             const folha = document.getElementById("curriculo-folha");
@@ -264,10 +544,21 @@
             const telefone = document.getElementById("telefone").value.trim() || "(00) 00000-0000";
             const email = document.getElementById("email").value.trim() || "email@exemplo.com";
             const cidade = document.getElementById("cidade").value.trim() || "Cidade - UF";
+            const idade = document.getElementById("idade").value.trim();
+            const estadoCivil = document.getElementById("estadoCivil").value.trim();
+            const cnh = document.getElementById("cnh").value.trim();
+
+            let detalhesPessoais = [];
+            if (idade) detalhesPessoais.push(idade);
+            if (estadoCivil) detalhesPessoais.push(estadoCivil);
+            if (cnh) detalhesPessoais.push(`CNH: ${cnh}`);
+            const strDetalhes = detalhesPessoais.length > 0 ? " | " + detalhesPessoais.join(" - ") : "";
 
             document.getElementById("pv-nome").innerText = nome.toUpperCase();
             document.getElementById("pv-cargo").innerText = cargo;
-            document.getElementById("pv-contatos").innerText = `📍 ${cidade} | 📞 ${telefone} | ✉️ ${email}`;
+            
+            const contatosFormatados = `${cidade} | ${telefone} | ${email}${strDetalhes}`;
+            document.getElementById("pv-contatos").innerText = contatosFormatados;
 
             document.getElementById("pv-resumo").innerText = document.getElementById("resumo").value.trim() || "Digite seu resumo profissional no campo ao lado.";
             document.getElementById("pv-experiencia").innerText = document.getElementById("experiencia").value.trim() || "Adicione suas experiências profissionais anteriores.";
@@ -276,8 +567,14 @@
         }
 
         function baixarPDF() {
+            const nome = document.getElementById('nome').value.trim();
+            if (!nome) {
+                mostrarToast("Nome Necessário", "Por favor, digite seu nome completo antes de baixar o PDF.");
+                return;
+            }
+
             const element = document.getElementById('curriculo-folha');
-            const nomeArquivo = (document.getElementById('nome').value.trim() || 'Curriculo') + '.pdf';
+            const nomeArquivo = `Curriculo_${nome.replace(/\s+/g, '_')}.pdf`;
             
             const opt = {
                 margin:       0,
@@ -287,11 +584,34 @@
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            html2pdf().set(opt).from(element).save();
+            html2pdf().set(opt).from(element).save().then(() => {
+                mostrarToast("Sucesso!", "Seu currículo em PDF foi gerado e baixado.", "✅");
+            });
         }
 
+        function solicitarEdicaoProfissional() {
+            const nome = document.getElementById('nome').value.trim();
+            const telefone = document.getElementById('telefone').value.trim();
+
+            if (!nome) {
+                mostrarToast("Nome Obrigatório", "Informe seu nome no formulário para podermos identificar seu pedido.");
+                return;
+            }
+
+            const mensagemWhats = encodeURIComponent(
+                `💼 *SOLICITAÇÃO DE EDIÇÃO DE CURRÍCULO (R$ 10,00)*\n\n` +
+                `👤 *Nome:* ${nome}\n` +
+                `📞 *WhatsApp:* ${telefone || 'Não informado'}\n` +
+                `🎯 *Cargo Desejado:* ${document.getElementById('cargo').value.trim() || 'A definir'}\n\n` +
+                `Olá! Gostaria que vocês revisassem e organizassem meu currículo profissionalmente.`
+            );
+
+            const link = `https://wa.me/${MEU_WHATSAPP}?text=${mensagemWhats}`;
+            window.open(link, '_blank');
+        }
+
+        // Inicializa o preview na carga
         atualizarPreview();
     </script>
 </body>
 </html>
-
