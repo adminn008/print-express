@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador & Edição de Currículos Profissionais</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- Biblioteca Html2Pdf para gerar o PDF perfeito -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- html2pdf.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
             --primary: #0284c7;
-            --primary-hover: #0369a1;
             --bg: #0f172a;
             --card-bg: #1e293b;
             --border: #334155;
@@ -19,8 +18,6 @@
             --accent: #38bdf8;
             --green: #10b981;
             --green-hover: #059669;
-            --amber: #f59e0b;
-            --danger: #ef4444;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
@@ -38,7 +35,7 @@
             margin: 0 auto;
         }
 
-        /* PAINEL DE INFORMAÇÕES E TABELA DE PREÇOS */
+        /* TABELA E AVISOS */
         .info-panel {
             grid-column: 1 / -1;
             display: grid;
@@ -53,28 +50,10 @@
             padding: 16px;
         }
 
-        .info-card h3 {
-            font-size: 15px;
-            color: var(--accent);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .info-card h3 { font-size: 15px; color: var(--accent); margin-bottom: 10px; }
 
-        .price-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        .price-table th, .price-table td {
-            padding: 8px 10px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .price-table th { color: var(--text-muted); font-weight: 600; }
+        .price-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .price-table th, .price-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
         .price-table td strong { color: var(--green); }
 
         .notice-box {
@@ -84,7 +63,6 @@
             border-radius: 6px;
             font-size: 13px;
             color: #e0f2fe;
-            margin-top: 8px;
         }
 
         /* FORMULÁRIO */
@@ -101,14 +79,13 @@
         }
 
         .section-subtitle {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             color: var(--accent);
             border-bottom: 1px solid var(--border);
             padding-bottom: 6px;
             margin-top: 6px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .form-group { display: flex; flex-direction: column; gap: 6px; }
@@ -122,19 +99,17 @@
             border-radius: 8px;
             color: #fff;
             font-size: 14px;
-            transition: border-color 0.2s, box-shadow 0.2s;
         }
         
         input:focus, select:focus, textarea:focus {
             border-color: var(--accent);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
         }
 
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 
-        /* BOTÕES DE AÇÃO */
+        /* BOTÕES */
         .btn-action-group {
             display: flex;
             flex-direction: column;
@@ -151,7 +126,6 @@
             font-weight: 700;
             font-size: 15px;
             cursor: pointer;
-            transition: background 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -159,7 +133,7 @@
         }
         .btn-download:hover { background: var(--green-hover); }
 
-        .btn-edit-service {
+        .btn-firebase {
             background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
             color: white;
             border: 1px solid var(--accent);
@@ -168,16 +142,11 @@
             font-weight: 700;
             font-size: 14px;
             cursor: pointer;
-            transition: all 0.2s;
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
         }
-        .btn-edit-service:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn-firebase:hover { filter: brightness(1.1); }
 
-        /* PREVIEW DO CURRÍCULO */
+        /* PREVIEW A4 */
         .preview-section {
             background: #334155;
             border-radius: 12px;
@@ -189,81 +158,72 @@
             overflow-y: auto;
         }
 
-        /* FOLHA A4 DO CV - PADRÃO P&B */
+        .preview-wrapper {
+            width: 210mm;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* FOLHA A4 PERFEITA (210mm x 297mm) */
         #curriculo-folha {
             background: white;
             color: #000000;
             width: 210mm;
             min-height: 297mm;
-            padding: 18mm 20mm;
+            padding: 15mm 18mm;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             box-sizing: border-box;
-            transform-origin: top center;
-            line-height: 1.45;
+            line-height: 1.4;
+            font-size: 12px;
         }
 
-        /* REGRAS GERAIS P&B PARA TODOS OS MODELOS */
-        #curriculo-folha h1, 
-        #curriculo-folha h2, 
-        #curriculo-folha h3, 
-        #curriculo-folha p, 
-        #curriculo-folha span, 
-        #curriculo-folha div {
+        /* REGRAS P&B */
+        #curriculo-folha h1, #curriculo-folha h2, #curriculo-folha h3, 
+        #curriculo-folha p, #curriculo-folha span, #curriculo-folha div {
             color: #000000 !important;
         }
 
-        /* 10 MODELOS TRADICIONAIS P&B */
-        /* Modelo 1: Moderno Estruturado */
+        /* MODELOS P&B */
         .m-1 h1 { font-size: 22px; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 4px; font-weight: 700; }
-        .m-1 h3 { font-size: 13px; margin-top: 14px; text-transform: uppercase; border-bottom: 1px solid #666; padding-bottom: 2px; font-weight: 700; }
+        .m-1 h3 { font-size: 13px; margin-top: 12px; text-transform: uppercase; border-bottom: 1px solid #666; padding-bottom: 2px; font-weight: 700; }
 
-        /* Modelo 2: Elegante / Clássico */
         .m-2 { font-family: 'Merriweather', serif; }
         .m-2 h1 { text-align: center; font-size: 20px; font-weight: 700; }
-        .m-2 .contatos { text-align: center; font-size: 11px; border-bottom: 1px solid #000; padding-bottom: 8px; margin-bottom: 12px; }
-        .m-2 h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #ccc; margin-top: 12px; font-weight: 700; }
+        .m-2 .contatos { text-align: center; font-size: 11px; border-bottom: 1px solid #000; padding-bottom: 6px; margin-bottom: 10px; }
+        .m-2 h3 { font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #ccc; margin-top: 10px; font-weight: 700; }
 
-        /* Modelo 3: Minimalista Executivo */
-        .m-3 h1 { font-size: 24px; font-weight: 400; letter-spacing: 0.5px; }
-        .m-3 h3 { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 14px; border-left: 3px solid #000; padding-left: 6px; }
+        .m-3 h1 { font-size: 24px; font-weight: 400; }
+        .m-3 h3 { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-top: 12px; border-left: 3px solid #000; padding-left: 6px; }
 
-        /* Modelo 4: Lateral Destacada */
-        .m-4 { display: grid; grid-template-columns: 1fr 2.2fr; gap: 16px; margin: -18mm -20mm; padding: 18mm 20mm; }
+        .m-4 { display: grid; grid-template-columns: 1fr 2.2fr; gap: 16px; margin: -15mm -18mm; padding: 15mm 18mm; }
         .m-4 .sidebar { border-right: 2px solid #000; padding-right: 14px; }
         .m-4 .sidebar h3 { font-size: 12px; border-bottom: 1px solid #000; margin-top: 10px; font-weight: 700; }
 
-        /* Modelo 5: Linhas Box */
         .m-5 h1 { font-size: 22px; font-weight: 700; }
-        .m-5 h3 { background: #f0f0f0; padding: 4px 8px; font-size: 12px; border-left: 4px solid #000; margin-top: 12px; font-weight: 700; text-transform: uppercase; }
+        .m-5 h3 { background: #f0f0f0; padding: 4px 8px; font-size: 12px; border-left: 4px solid #000; margin-top: 10px; font-weight: 700; text-transform: uppercase; }
 
-        /* Modelo 6: Header Duplo */
         .m-6 { border-top: 6px solid #000; padding-top: 8px; }
         .m-6 h1 { font-size: 22px; font-weight: 700; }
-        .m-6 h3 { font-size: 12px; border-bottom: 2px dotted #000; padding-bottom: 2px; margin-top: 12px; font-weight: 700; text-transform: uppercase; }
+        .m-6 h3 { font-size: 12px; border-bottom: 2px dotted #000; padding-bottom: 2px; margin-top: 10px; font-weight: 700; text-transform: uppercase; }
 
-        /* Modelo 7: Compacto / Comercial */
         .m-7 h1 { font-size: 19px; font-weight: 700; }
         .m-7 h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; margin-top: 10px; border-bottom: 1px solid #000; }
 
-        /* Modelo 8: Borda Lateral */
         .m-8 h1 { font-size: 22px; border-left: 6px solid #000; padding-left: 10px; font-weight: 700; }
-        .m-8 h3 { font-size: 12px; margin-top: 12px; font-weight: 700; text-transform: uppercase; border-bottom: 1px dashed #000; padding-bottom: 2px; }
+        .m-8 h3 { font-size: 12px; margin-top: 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px dashed #000; }
 
-        /* Modelo 9: Tradicional Puro P&B */
         .m-9 h1 { text-decoration: underline; font-size: 21px; font-weight: 700; text-align: center; }
-        .m-9 .contatos { text-align: center; font-size: 11px; margin-bottom: 12px; }
-        .m-9 h3 { font-size: 13px; text-transform: uppercase; margin-top: 12px; border-bottom: 1px solid #000; font-weight: 700; }
+        .m-9 .contatos { text-align: center; font-size: 11px; margin-bottom: 10px; }
+        .m-9 h3 { font-size: 13px; text-transform: uppercase; margin-top: 10px; border-bottom: 1px solid #000; font-weight: 700; }
 
-        /* Modelo 10: Centralizado Clássico */
         .m-10 h1 { text-align: center; font-size: 22px; font-weight: 700; text-transform: uppercase; }
-        .m-10 .contatos { text-align: center; font-size: 11px; margin-bottom: 14px; border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 4px 0; }
-        .m-10 h3 { text-align: center; font-size: 12px; text-transform: uppercase; margin-top: 12px; border-bottom: 1px solid #999; font-weight: 700; }
+        .m-10 .contatos { text-align: center; font-size: 11px; margin-bottom: 12px; border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 4px 0; }
+        .m-10 h3 { text-align: center; font-size: 12px; text-transform: uppercase; margin-top: 10px; border-bottom: 1px solid #999; font-weight: 700; }
 
-        /* ESTILIZAÇÃO INTERNA DOS DADOS */
-        .cv-header-info { font-size: 11px; margin-bottom: 10px; word-break: break-word; }
-        .cv-section-content { font-size: 12px; margin-top: 4px; line-height: 1.45; white-space: pre-line; word-break: break-word; }
+        .cv-header-info { font-size: 11px; margin-bottom: 8px; }
+        .cv-section-content { font-size: 12px; margin-top: 4px; line-height: 1.4; white-space: pre-line; word-break: break-word; }
 
-        /* TOAST / MODAL CUSTOMIZADO */
+        /* TOAST */
         .toast-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -278,9 +238,7 @@
             pointer-events: none;
             transition: opacity 0.25s ease;
         }
-
         .toast-overlay.active { opacity: 1; pointer-events: auto; }
-
         .toast-card {
             background: var(--card-bg);
             border: 2px solid var(--accent);
@@ -289,13 +247,10 @@
             max-width: 420px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
-
         .toast-icon { font-size: 38px; margin-bottom: 8px; }
         .toast-title { font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 6px; }
         .toast-msg { font-size: 14px; color: var(--text-muted); margin-bottom: 18px; }
-        
         .toast-btn {
             background: var(--accent);
             color: #0f172a;
@@ -310,7 +265,7 @@
         @media (max-width: 960px) {
             .app-container { grid-template-columns: 1fr; }
             .info-panel { grid-template-columns: 1fr; }
-            #curriculo-folha { transform: scale(0.65); transform-origin: top left; }
+            .preview-wrapper { transform: scale(0.65); transform-origin: top center; }
             .preview-section { overflow-x: auto; }
         }
     </style>
@@ -319,11 +274,11 @@
 
     <div class="header-title">
         <h1>📄 Criador de Currículos Profissionais</h1>
-        <p>Preencha seus dados, escolha entre 10 modelos em Preto & Branco e baixe em PDF!</p>
+        <p>Preencha os dados, baixe seu PDF sem cortes ou envie direto para a gráfica!</p>
     </div>
 
     <div class="app-container">
-        <!-- PAINEL DE PREÇOS E AVISOS DA GRÁFICA -->
+        <!-- PAINEL DE VALORES DA GRÁFICA -->
         <div class="info-panel">
             <div class="info-card">
                 <h3>🏷️ Tabela de Serviços & Valores</h3>
@@ -338,17 +293,17 @@
                     <tbody>
                         <tr>
                             <td>Gerar PDF Grátis</td>
-                            <td>Você preenche e baixa direto no site</td>
+                            <td>Você preenche e baixa no dispositivo</td>
                             <td><strong>GRÁTIS</strong></td>
                         </tr>
                         <tr>
-                            <td>Revisão / Edição Profissional</td>
-                            <td>Ajustamos o texto, erros e layout para você</td>
+                            <td>Enviar para Produção / Edição</td>
+                            <td>Salva no banco de dados e abre o painel</td>
                             <td><strong>R$ 10,00</strong></td>
                         </tr>
                         <tr>
                             <td>Impressão Sulfite A4</td>
-                            <td>Impressão presencial em papel A4 P&B</td>
+                            <td>Impressão presencial P&B</td>
                             <td><strong>R$ 0,50 / folha</strong></td>
                         </tr>
                     </tbody>
@@ -356,15 +311,15 @@
             </div>
 
             <div class="info-card">
-                <h3>📌 Avisos & Orientações</h3>
+                <h3>📌 Avisos</h3>
                 <div class="notice-box">
-                    • Todos os currículos gerados utilizam o padrão <strong>Preto e Branco</strong> para garantir máxima aceitação em processos seletivos e economia na impressão.<br>
-                    • Se preferir que um especialista revise suas experiências e reescreva o objetivo, clique no botão <strong>"Solicitar Edição Profissional"</strong>.
+                    • O PDF é gerado rigorosamente na escala A4 (210x297mm) sem cortar margens.<br>
+                    • Ao clicar em <strong>"Enviar para a Gráfica / Painel"</strong>, os dados do seu currículo são registrados na sua conta do Firebase e você é redirecionado para o <code>painel.html</code>.
                 </div>
             </div>
         </div>
 
-        <!-- FORMULÁRIO DE PREENCHIMENTO COMPLETO -->
+        <!-- FORMULÁRIO -->
         <div class="form-section">
             <div class="form-group">
                 <label for="selectModelo">🎨 Modelo do Currículo (10 Opções P&B):</label>
@@ -385,7 +340,7 @@
             <div class="section-subtitle">1. Informações Pessoais</div>
 
             <div class="form-group">
-                <label>Nome Completo (Automático em Maiúsculo):</label>
+                <label>Nome Completo:</label>
                 <input type="text" id="nome" placeholder="EX: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase(); atualizarPreview();">
             </div>
 
@@ -413,7 +368,7 @@
 
             <div class="grid-3">
                 <div class="form-group">
-                    <label>Idade ou Nasc.:</label>
+                    <label>Idade / Nasc.:</label>
                     <input type="text" id="idade" placeholder="Ex: 25 anos" oninput="atualizarPreview()">
                 </div>
                 <div class="form-group">
@@ -430,98 +385,103 @@
 
             <div class="form-group">
                 <label>Resumo Profissional / Apresentação:</label>
-                <textarea id="resumo" rows="3" placeholder="Profissional proativo com experiência em atendimento ao cliente, organização de estoque e rotinas administrativas..." oninput="atualizarPreview()"></textarea>
+                <textarea id="resumo" rows="3" placeholder="Profissional dedicado com foco em resultados..." oninput="atualizarPreview()"></textarea>
             </div>
 
             <div class="form-group">
                 <label>Experiências Profissionais:</label>
-                <textarea id="experiencia" rows="4" placeholder="Empresa XYZ (2022 - Presente)&#10;Cargo: Atendente&#10;Funções: Atendimento telefônico, controle de caixa e organização de arquivos." oninput="atualizarPreview()"></textarea>
+                <textarea id="experiencia" rows="4" placeholder="Empresa XYZ (2022 - Presente)&#10;Cargo: Atendente&#10;Funções: Atendimento telefônico, controle de caixa e estoque." oninput="atualizarPreview()"></textarea>
             </div>
 
             <div class="section-subtitle">3. Formação & Cursos</div>
 
             <div class="form-group">
                 <label>Formação Acadêmica / Escolaridade:</label>
-                <textarea id="formacao" rows="3" placeholder="Ensino Médio Completo&#10;Colégio Estadual (Concluído em 2023)" oninput="atualizarPreview()"></textarea>
+                <textarea id="formacao" rows="2" placeholder="Ensino Médio Completo&#10;Colégio Estadual (Concluído em 2023)" oninput="atualizarPreview()"></textarea>
             </div>
 
             <div class="form-group">
                 <label>Cursos, Qualificações e Idiomas:</label>
-                <textarea id="cursos" rows="3" placeholder="• Informática Básica e Pacote Office&#10;• Curso de Atendimento ao Cliente&#10;• Inglês Intermediário" oninput="atualizarPreview()"></textarea>
+                <textarea id="cursos" rows="2" placeholder="• Informática Básica e Pacote Office&#10;• Atendimento ao Cliente" oninput="atualizarPreview()"></textarea>
             </div>
 
             <div class="btn-action-group">
-                <button class="btn-download" onclick="baixarPDF()">
-                    📥 Baixar Currículo em PDF (Grátis)
+                <button class="btn-download" onclick="baixarPDFSemCorte()">
+                    📥 Baixar PDF Perfeito (Grátis)
                 </button>
-                <button class="btn-edit-service" onclick="solicitarEdicaoProfissional()">
-                    ✨ Solicitar Edição Profissional por R$ 10,00
-                    <small style="font-weight: 400; opacity: 0.9;">Ajustamos o texto, corrigimos erros e enviamos pronto no WhatsApp</small>
+                <button class="btn-firebase" id="btn-enviar-fb" onclick="enviarParaFirebaseEPainel()">
+                    🚀 Enviar Pedido no Firebase & Ir ao Painel
                 </button>
             </div>
         </div>
 
-        <!-- PRÉ-VISUALIZAÇÃO EM TEMPO REAL DA FOLHA A4 P&B -->
+        <!-- PRÉ-VISUALIZAÇÃO A4 -->
         <div class="preview-section">
-            <div id="curriculo-folha" class="m-1">
-                <div id="m4-container">
-                    <div class="sidebar" id="m4-sidebar-box" style="display: none;">
-                        <h3>Contato</h3>
-                        <div class="cv-header-info" id="pv-sidebar-contato"></div>
-                        <h3>Dados</h3>
-                        <div class="cv-header-info" id="pv-sidebar-dados"></div>
+            <div class="preview-wrapper">
+                <div id="curriculo-folha" class="m-1">
+                    <h1 id="pv-nome">SEU NOME COMPLETO</h1>
+                    <p id="pv-cargo" style="font-weight: 600; font-size: 13px;">Cargo Desejado</p>
+                    
+                    <div class="cv-header-info contatos" id="pv-contatos">
+                        Cidade - UF | (00) 00000-0000 | email@exemplo.com
                     </div>
 
-                    <div class="main-content">
-                        <h1 id="pv-nome">SEU NOME COMPLETO</h1>
-                        <p id="pv-cargo" style="font-weight: 600; font-size: 13px;">Cargo Desejado</p>
-                        
-                        <div class="cv-header-info contatos" id="pv-contatos">
-                            Cidade - UF | (00) 00000-0000 | email@exemplo.com
-                        </div>
+                    <h3>Resumo Profissional</h3>
+                    <div class="cv-section-content" id="pv-resumo">Digite seu resumo profissional para visualizar aqui.</div>
 
-                        <h3>Resumo Profissional</h3>
-                        <div class="cv-section-content" id="pv-resumo">Digite seu resumo profissional para visualizar aqui.</div>
+                    <h3>Experiência Profissional</h3>
+                    <div class="cv-section-content" id="pv-experiencia">Adicione suas experiências profissionais anteriores.</div>
 
-                        <h3>Experiência Profissional</h3>
-                        <div class="cv-section-content" id="pv-experiencia">Adicione suas experiências profissionais anteriores.</div>
+                    <h3>Formação Acadêmica</h3>
+                    <div class="cv-section-content" id="pv-formacao">Informe sua escolaridade.</div>
 
-                        <h3>Formação Acadêmica</h3>
-                        <div class="cv-section-content" id="pv-formacao">Informe sua escolaridade.</div>
-
-                        <h3>Cursos e Qualificações</h3>
-                        <div class="cv-section-content" id="pv-cursos">Liste seus cursos e habilidades.</div>
-                    </div>
+                    <h3>Cursos e Qualificações</h3>
+                    <div class="cv-section-content" id="pv-cursos">Liste seus cursos e habilidades.</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CUSTOMIZADO TOAST -->
+    <!-- MODAL TOAST -->
     <div class="toast-overlay" id="customToast">
         <div class="toast-card">
             <div class="toast-icon" id="toastIcon">⚠️</div>
             <div class="toast-title" id="toastTitle">Aviso</div>
-            <div class="toast-msg" id="toastMsg">Preencha os campos necessários.</div>
+            <div class="toast-msg" id="toastMsg">Mensagem...</div>
             <button class="toast-btn" onclick="fecharToast()">Entendi</button>
         </div>
     </div>
 
-    <script>
-        const MEU_WHATSAPP = "5541999682836";
+    <!-- FIREBASE & LÓGICA COMPLETA -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
-        function mostrarToast(titulo, mensagem, icone = "⚠️") {
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfh0iZSotPra1olpRWRfwwBP9G8yrdHEc",
+            authDomain: "print-express-bfa7c.firebaseapp.com",
+            projectId: "print-express-bfa7c",
+            storageBucket: "print-express-bfa7c.firebasestorage.app",
+            messagingSenderId: "471136646915",
+            appId: "1:471136646915:web:8b7b6f92c00d88c7c79b36",
+            measurementId: "G-8K5LHHCDFE"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.mostrarToast = function(titulo, mensagem, icone = "⚠️") {
             document.getElementById("toastIcon").innerText = icone;
             document.getElementById("toastTitle").innerText = titulo;
             document.getElementById("toastMsg").innerText = mensagem;
             document.getElementById("customToast").classList.add("active");
-        }
+        };
 
-        function fecharToast() {
+        window.fecharToast = function() {
             document.getElementById("customToast").classList.remove("active");
-        }
+        };
 
-        function mascaraTelefone(input) {
+        window.mascaraTelefone = function(input) {
             let v = input.value.replace(/\D/g, '');
             if (v.length > 11) v = v.substring(0, 11);
             if (v.length > 6) {
@@ -532,9 +492,9 @@
                 v = v.replace(/^(\d*)/, '($1');
             }
             input.value = v;
-        }
+        };
 
-        function atualizarPreview() {
+        window.atualizarPreview = function() {
             const modelo = document.getElementById("selectModelo").value;
             const folha = document.getElementById("curriculo-folha");
             folha.className = modelo;
@@ -556,20 +516,19 @@
 
             document.getElementById("pv-nome").innerText = nome.toUpperCase();
             document.getElementById("pv-cargo").innerText = cargo;
-            
-            const contatosFormatados = `${cidade} | ${telefone} | ${email}${strDetalhes}`;
-            document.getElementById("pv-contatos").innerText = contatosFormatados;
+            document.getElementById("pv-contatos").innerText = `${cidade} | ${telefone} | ${email}${strDetalhes}`;
 
             document.getElementById("pv-resumo").innerText = document.getElementById("resumo").value.trim() || "Digite seu resumo profissional no campo ao lado.";
             document.getElementById("pv-experiencia").innerText = document.getElementById("experiencia").value.trim() || "Adicione suas experiências profissionais anteriores.";
             document.getElementById("pv-formacao").innerText = document.getElementById("formacao").value.trim() || "Informe sua escolaridade.";
             document.getElementById("pv-cursos").innerText = document.getElementById("cursos").value.trim() || "Liste seus cursos complementares e habilidades.";
-        }
+        };
 
-        function baixarPDF() {
+        // GERAÇÃO DE PDF SEM CORTES
+        window.baixarPDFSemCorte = function() {
             const nome = document.getElementById('nome').value.trim();
             if (!nome) {
-                mostrarToast("Nome Necessário", "Por favor, digite seu nome completo antes de baixar o PDF.");
+                mostrarToast("Nome Necessário", "Por favor, informe seu nome completo antes de baixar o PDF.");
                 return;
             }
 
@@ -580,37 +539,66 @@
                 margin:       0,
                 filename:     nomeArquivo,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
+                html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             html2pdf().set(opt).from(element).save().then(() => {
-                mostrarToast("Sucesso!", "Seu currículo em PDF foi gerado e baixado.", "✅");
+                mostrarToast("Sucesso!", "Seu currículo foi baixado com sucesso sem cortes.", "✅");
             });
-        }
+        };
 
-        function solicitarEdicaoProfissional() {
+        // SALVAR NO FIREBASE E REDIRECIONAR PARA PAINEL.HTML
+        window.enviarParaFirebaseEPainel = async function() {
             const nome = document.getElementById('nome').value.trim();
             const telefone = document.getElementById('telefone').value.trim();
 
             if (!nome) {
-                mostrarToast("Nome Obrigatório", "Informe seu nome no formulário para podermos identificar seu pedido.");
+                mostrarToast("Campo Obrigatório", "Informe seu nome antes de enviar para o sistema.");
                 return;
             }
 
-            const mensagemWhats = encodeURIComponent(
-                `💼 *SOLICITAÇÃO DE EDIÇÃO DE CURRÍCULO (R$ 10,00)*\n\n` +
-                `👤 *Nome:* ${nome}\n` +
-                `📞 *WhatsApp:* ${telefone || 'Não informado'}\n` +
-                `🎯 *Cargo Desejado:* ${document.getElementById('cargo').value.trim() || 'A definir'}\n\n` +
-                `Olá! Gostaria que vocês revisassem e organizassem meu currículo profissionalmente.`
-            );
+            const btn = document.getElementById("btn-enviar-fb");
+            btn.disabled = true;
+            btn.innerText = "Salvando no Banco de Dados... ⏳";
 
-            const link = `https://wa.me/${MEU_WHATSAPP}?text=${mensagemWhats}`;
-            window.open(link, '_blank');
-        }
+            const dadosCurriculo = {
+                cliente: nome,
+                telefone: telefone || "Não informado",
+                email: document.getElementById('email').value.trim(),
+                cidade: document.getElementById('cidade').value.trim(),
+                cargo: document.getElementById('cargo').value.trim(),
+                idade: document.getElementById('idade').value.trim(),
+                estadoCivil: document.getElementById('estadoCivil').value.trim(),
+                cnh: document.getElementById('cnh').value.trim(),
+                resumo: document.getElementById('resumo').value.trim(),
+                experiencia: document.getElementById('experiencia').value.trim(),
+                formacao: document.getElementById('formacao').value.trim(),
+                cursos: document.getElementById('cursos').value.trim(),
+                modelo: document.getElementById('selectModelo').value,
+                servico: "Elaboração / Edição de Currículo",
+                total: 10.00,
+                status: "Pendente",
+                dataEnvio: serverTimestamp()
+            };
 
-        // Inicializa o preview na carga
+            try {
+                await addDoc(collection(db, "pedidos"), dadosCurriculo);
+                
+                mostrarToast("Sucesso!", "Currículo cadastrado no Firebase! Redirecionando para o painel...", "🚀");
+                
+                setTimeout(() => {
+                    window.location.href = "painel.html";
+                }, 1500);
+
+            } catch (err) {
+                console.error(err);
+                mostrarToast("Erro", "Falha ao salvar no banco de dados. Tente novamente.");
+                btn.disabled = false;
+                btn.innerText = "🚀 Enviar Pedido no Firebase & Ir ao Painel";
+            }
+        };
+
         atualizarPreview();
     </script>
 </body>
