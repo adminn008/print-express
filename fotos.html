@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrintExpress - Impressão de Fotos Profissional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --green: #10b981;
+            --amber: #f59e0b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            padding: 24px 16px; 
+            line-height: 1.6;
+        }
+
+        .container { 
+            max-width: 760px; 
+            margin: 0 auto; 
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* HEADER COM BOTÃO DE VOLTAR */
+        header { 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .btn-voltar {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--accent);
+            padding: 10px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-voltar:hover {
+            background: var(--border);
+            transform: translateX(-3px);
+        }
+
+        .header-title { text-align: center; flex-grow: 1; }
+        h1 { color: var(--accent); font-size: 26px; font-weight: 700; }
+        header p { color: var(--text-muted); font-size: 14px; }
+
+        /* CARROSSEL EXCLUSIVO DE FOTOS */
+        .carrossel-container {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 2px solid var(--amber);
+            border-radius: 16px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15);
+            min-height: 85px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .carrossel-header {
+            color: var(--amber);
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 4px;
+        }
+
+        .carrossel-slide {
+            font-size: 14px;
+            color: #f1f5f9;
+            font-weight: 500;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .carrossel-slide.fade-out { opacity: 0; }
+
+        /* TABELA DE PREÇOS EXPANDÍVEL */
+        .tabela-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .tabela-card h3 {
+            font-size: 16px;
+            color: var(--accent);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tabela-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+        }
+
+        .tabela-item {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .tabela-item .qtd { font-weight: 700; font-size: 14px; color: var(--text); }
+        .tabela-item .preco { font-weight: 700; font-size: 15px; color: var(--green); }
+        .tabela-item .unit { font-size: 11px; color: var(--text-muted); }
+
+        /* FORMULÁRIO BEM ESPAÇADO */
+        .step-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .step-card h2 { 
+            font-size: 19px; 
+            color: var(--text); 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 12px;
+        }
+
+        /* SELEÇÃO POR QUADRADINHOS (TILES) */
+        .grid-formatos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .tile-option {
+            background: #0f172a;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tile-option:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .tile-option.selected {
+            border-color: var(--green);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .tile-option .icon { font-size: 24px; }
+        .tile-option .title { font-weight: 700; font-size: 14px; color: var(--text); }
+        .tile-option .sub { font-size: 12px; color: var(--text-muted); }
+        .tile-option .tag-desconto { 
+            position: absolute;
+            top: -8px;
+            right: 8px;
+            background: var(--green);
+            color: #0f172a;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        /* SURPRESA 3 & 5: SELETORES DE ACABAMENTO E BORDA */
+        .option-pills {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pill-btn {
+            flex: 1;
+            padding: 10px 14px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .pill-btn.active {
+            border-color: var(--accent);
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+        }
+
+        /* SURPRESA 2: PREVIEW DE FOTOS */
+        .upload-box {
+            border: 2px dashed var(--border);
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            background: #0f172a;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .upload-box:hover { border-color: var(--accent); }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+            max-height: 140px;
+            overflow-y: auto;
+        }
+
+        .preview-thumb {
+            width: 100%;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        /* SURPRESA 4: MINI NOTA FISCAL (RESUMO) */
+        .resumo-card {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .resumo-line {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+        }
+
+        .resumo-line strong { color: var(--text); }
+        .resumo-line.total {
+            border-top: 1px dashed var(--border);
+            padding-top: 8px;
+            font-size: 16px;
+            color: var(--green);
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-weight: 600; font-size: 14px; color: #cbd5e1; }
+
+        input[type="text"], input[type="tel"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 12px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .encomenda-alert {
+            background: rgba(245, 158, 11, 0.15);
+            border-left: 4px solid var(--amber);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #fef3c7;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .btn-primary:hover { background: var(--primary-hover); }
+
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+            text-decoration: none;
+            padding: 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 12px;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+
+        .hidden { display: none !important; }
+
+        .pix-box {
+            background: #0f172a;
+            border: 2px dashed var(--accent);
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-copiar {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+            padding: 10px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            header { flex-direction: column; gap: 10px; align-items: flex-start; }
+            .grid-formatos { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- HEADER COM BOTÃO VOLTAR -->
+        <header>
+            <a href="index.html" class="btn-voltar">⬅ Voltar ao Início</a>
+            <div class="header-title">
+                <h1>📸 Central de Impressão de Fotos</h1>
+                <p>Eternize suas memórias com qualidade fotográfica</p>
+            </div>
+        </header>
+
+        <!-- CARROSSEL DE AVISOS EXCLUSIVO DE FOTOS -->
+        <div class="carrossel-container">
+            <div class="carrossel-header">📢 Promoções & Avisos de Fotos</div>
+            <div class="carrossel-slide" id="carrosselSlide">Carregando avisos de fotos...</div>
+        </div>
+
+        <!-- TABELA DE PREÇOS DA FOTO A6 10x15 -->
+        <div class="tabela-card">
+            <h3>🏷️ Tabela de Ofertas para Fotos A6 (10x15 cm)</h3>
+            <div class="tabela-grid">
+                <div class="tabela-item">
+                    <div class="qtd">1 a 9 fotos</div>
+                    <div class="preco">R$ 3,60</div>
+                    <div class="unit">cada</div>
+                </div>
+                <div class="tabela-item">
+                    <div class="qtd">10 Fotos</div>
+                    <div class="preco">R$ 32,90</div>
+                    <div class="unit">~R$ 3,29/un</div>
+                </div>
+                <div class="tabela-item">
+                    <div class="qtd">20 Fotos</div>
+                    <div class="preco">R$ 59,90</div>
+                    <div class="unit">~R$ 2,99/un</div>
+                </div>
+                <div class="tabela-item">
+                    <div class="qtd">30 Fotos</div>
+                    <div class="preco">R$ 84,90</div>
+                    <div class="unit">~R$ 2,83/un</div>
+                </div>
+                <div class="tabela-item">
+                    <div class="qtd">50 Fotos</div>
+                    <div class="preco">R$ 124,90</div>
+                    <div class="unit">~R$ 2,49/un</div>
+                </div>
+                <div class="tabela-item">
+                    <div class="qtd">100 Fotos</div>
+                    <div class="preco">R$ 199,90</div>
+                    <div class="unit">~R$ 1,99/un</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASSO 1: FORMULÁRIO DE PEDIDO -->
+        <div id="step-1" class="step-card">
+            <h2>1. Monte seu Pedido de Fotos</h2>
+
+            <div class="encomenda-alert">
+                📌 <strong>Aviso de Encomenda:</strong> Produção e envio em até <strong>3 dias úteis</strong> após a confirmação do pagamento.
+            </div>
+
+            <!-- QUADRADINHOS DE SELEÇÃO DE FORMATO -->
+            <div class="form-group">
+                <label>Escolha o Tamanho / Formato da Foto:</label>
+                <div class="grid-formatos">
+                    <div class="tile-option selected" onclick="selecionarFormato('a6_foto', this)">
+                        <span class="tag-desconto">PROMO</span>
+                        <span class="icon">🖼️</span>
+                        <span class="title">A6 (10x15)</span>
+                        <span class="sub">Fotográfico Brilho</span>
+                    </div>
+                    <div class="tile-option" onclick="selecionarFormato('a4_foto', this)">
+                        <span class="icon">📜</span>
+                        <span class="title">Fotográfico A4</span>
+                        <span class="sub">Tamanho Grande</span>
+                    </div>
+                    <div class="tile-option" onclick="selecionarFormato('polaroid', this)">
+                        <span class="icon">📸</span>
+                        <span class="title">Mini Polaroid</span>
+                        <span class="sub">Estilo Retrô</span>
+                    </div>
+                    <div class="tile-option" onclick="selecionarFormato('imã', this)">
+                        <span class="icon">🧲</span>
+                        <span class="title">Foto Magnética</span>
+                        <span class="sub">Com Ímã de Geladeira</span>
+                    </div>
+                    <div class="tile-option" onclick="selecionarFormato('a4_sulfite', this)">
+                        <span class="icon">📄</span>
+                        <span class="title">Sulfite A4</span>
+                        <span class="sub">Impressão Comum</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUANTIDADE COM DESCONTO INTELIGENTE -->
+            <div class="form-group">
+                <label for="qtd-fotos">Quantidade de Fotos:</label>
+                <input type="number" id="qtd-fotos" value="1" min="1" max="500" oninput="atualizarCalculo()">
+            </div>
+
+            <!-- SURPRESA 3: ACABAMENTO -->
+            <div class="form-group">
+                <label>Tipo de Acabamento do Papel:</label>
+                <div class="option-pills">
+                    <div class="pill-btn active" onclick="selecionarPill(this, 'acabamento', 'Brilhante (Glossy)')">✨ Brilhante (Glossy)</div>
+                    <div class="pill-btn" onclick="selecionarPill(this, 'acabamento', 'Fosco (Matte)')">🎨 Fosco (Matte)</div>
+                </div>
+            </div>
+
+            <!-- SURPRESA 5: BORDA VINTAGE -->
+            <div class="form-group">
+                <label>Estilo das Bordas:</label>
+                <div class="option-pills">
+                    <div class="pill-btn active" onclick="selecionarPill(this, 'borda', 'Sem Borda (Preenchimento Total)')">🖼️ Sem Borda</div>
+                    <div class="pill-btn" onclick="selecionarPill(this, 'borda', 'Com Borda Branca Vintage')">🔳 Borda Branca Vintage</div>
+                </div>
+            </div>
+
+            <!-- SURPRESA 2: SELEÇÃO/PREVIEW DAS FOTOS -->
+            <div class="form-group">
+                <label>Selecione as fotos do seu dispositivo (Opcional - Pré-visualização):</label>
+                <div class="upload-box" onclick="document.getElementById('input-fotos-file').click()">
+                    📁 <strong>Clique aqui para escolher as fotos</strong>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Você também enviará diretamente no WhatsApp a seguir</p>
+                    <input type="file" id="input-fotos-file" multiple accept="image/*" style="display:none;" onchange="previewFotos(this)">
+                </div>
+                <div id="previewContainer" class="preview-grid"></div>
+            </div>
+
+            <!-- DADOS DO CLIENTE -->
+            <div class="form-group">
+                <label for="nome-cliente">Seu Nome Completo:</label>
+                <input type="text" id="nome-cliente" placeholder="EX: MARIA SILVA" oninput="this.value = this.value.toUpperCase()">
+            </div>
+
+            <div class="form-group">
+                <label for="telefone-cliente">WhatsApp para Contato:</label>
+                <input type="tel" id="telefone-cliente" placeholder="(41) 99999-9999" maxlength="15" oninput="mascaraTelefone(this)">
+            </div>
+
+            <div class="form-group">
+                <label for="obs-fotos">Observações Especiais (Opcional):</label>
+                <textarea id="obs-fotos" rows="2" placeholder="Ex: Cortar bordas pretas, ajustar brilho, etc."></textarea>
+            </div>
+
+            <!-- SURPRESA 4: RESUMO EM FORMATO DE MINI NOTA FISCAL -->
+            <div class="resumo-card">
+                <div class="resumo-line"><span>Formato Selecionado:</span> <strong id="res-formato">A6 (10x15 cm)</strong></div>
+                <div class="resumo-line"><span>Acabamento:</span> <strong id="res-acabamento">Brilhante (Glossy)</strong></div>
+                <div class="resumo-line"><span>Estilo Borda:</span> <strong id="res-borda">Sem Borda</strong></div>
+                <div class="resumo-line"><span>Prazo Estimado:</span> <strong>Até 3 dias úteis</strong></div>
+                <div class="resumo-line total"><span>Total a Pagar:</span> <strong id="res-total">R$ 3,60</strong></div>
+            </div>
+
+            <button class="btn-primary" onclick="irParaPagamento()">Avançar para Pagamento ➔</button>
+        </div>
+
+        <!-- PASSO 2: PAGAMENTO E ENVIO DO ZAP -->
+        <div id="step-2" class="step-card hidden">
+            <h2>2. Confirmar e Enviar Fotos</h2>
+
+            <div class="pix-box">
+                <p style="font-size: 15px;">Total do Pedido: <strong style="color: var(--green); font-size: 22px;" id="pix-total-val">R$ 3,60</strong></p>
+                <p style="font-size: 13px; color: var(--text-muted);">Copie a chave PIX abaixo para realizar o pagamento:</p>
+                
+                <input type="text" id="chavePixInput" value="41999682836" readonly style="text-align: center; font-weight: bold; color: var(--accent);">
+                <button class="btn-copiar" onclick="copiarPix()">📋 Copiar Chave PIX (Telefone)</button>
+
+                <div class="encomenda-alert" style="text-align: left; margin-top: 6px;">
+                    ⚠️ <strong>Instrução Importante:</strong><br>
+                    1. Faça o PIX do valor total.<br>
+                    2. Clique no botão do WhatsApp abaixo.<br>
+                    3. A mensagem pré-pronta será aberta. **Anexe o comprovante e as fotos na conversa** para iniciarmos a impressão!
+                </div>
+            </div>
+
+            <a id="btn-enviar-zap" href="#" target="_blank" class="btn-whatsapp">
+                💬 Abrir WhatsApp e Enviar Fotos
+            </a>
+
+            <button class="btn-voltar" onclick="voltarPasso1()" style="justify-content: center; margin-top: 10px;">⬅ Alterar Dados do Pedido</button>
+        </div>
+    </div>
+
+    <!-- FIREBASE & LÓGICA DO SITE DE FOTOS -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfh0iZSotPra1olpRWRfwwBP9G8yrdHEc",
+            authDomain: "print-express-bfa7c.firebaseapp.com",
+            projectId: "print-express-bfa7c",
+            storageBucket: "print-express-bfa7c.firebasestorage.app",
+            messagingSenderId: "471136646915",
+            appId: "1:471136646915:web:8b7b6f92c00d88c7c79b36",
+            measurementId: "G-8K5LHHCDFE"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const MEU_WHATSAPP = "5541999682836";
+
+        // Variaveis de Estado
+        let formatoSelecionado = 'a6_foto';
+        let acabamentoSelecionado = 'Brilhante (Glossy)';
+        let bordaSelecionada = 'Sem Borda (Preenchimento Total)';
+        let valorCalculado = 3.60;
+
+        // CARROSSEL DE AVISOS DE FOTOS
+        const avisosFotos = [
+            "📸 Impressão Fotográfica em alta resolução com papel premium!",
+            "🎉 Promoção de Fotos 10x15: Quanto mais você pede, maior é o desconto!",
+            "📌 Pedidos sob encomenda com entrega ou retirada em até 3 dias úteis."
+        ];
+        let carrosselIdx = 0;
+
+        function rodarCarrossel() {
+            const slide = document.getElementById("carrosselSlide");
+            if(!slide) return;
+            slide.classList.add("fade-out");
+            setTimeout(() => {
+                slide.innerText = avisosFotos[carrosselIdx];
+                slide.classList.remove("fade-out");
+            }, 300);
+            carrosselIdx = (carrosselIdx + 1) % avisosFotos.length;
+        }
+        setInterval(rodarCarrossel, 4500);
+        rodarCarrossel();
+
+        // SELEÇÃO DE QUADRADINHOS
+        window.selecionarFormato = function(formato, element) {
+            document.querySelectorAll('.tile-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            formatoSelecionado = formato;
+
+            const nomes = {
+                'a6_foto': 'A6 (10x15 cm)',
+                'a4_foto': 'Fotográfico A4',
+                'polaroid': 'Mini Polaroid',
+                'imã': 'Foto Magnética (Ímã)',
+                'a4_sulfite': 'Sulfite A4 Comum'
+            };
+
+            document.getElementById('res-formato').innerText = nomes[formato] || formato;
+            atualizarCalculo();
+        };
+
+        // SELEÇÃO DE PILLS (ACABAMENTO / BORDA)
+        window.selecionarPill = function(element, tipo, valor) {
+            const parent = element.parentElement;
+            parent.querySelectorAll('.pill-btn').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            if (tipo === 'acabamento') {
+                acabamentoSelecionado = valor;
+                document.getElementById('res-acabamento').innerText = valor;
+            } else if (tipo === 'borda') {
+                bordaSelecionada = valor;
+                document.getElementById('res-borda').innerText = valor;
+            }
+        };
+
+        // CALCULADORA INTELIGENTE DE PREÇOS
+        window.atualizarCalculo = function() {
+            const qtd = parseInt(document.getElementById('qtd-fotos').value) || 1;
+            let total = 0;
+
+            if (formatoSelecionado === 'a6_foto') {
+                if (qtd >= 100) total = 199.90;
+                else if (qtd >= 50) total = 124.90;
+                else if (qtd >= 40) total = 107.90;
+                else if (qtd >= 30) total = 84.90;
+                else if (qtd >= 20) total = 59.90;
+                else if (qtd >= 10) total = 32.90;
+                else total = 3.60 * qtd;
+            } else if (formatoSelecionado === 'a4_foto') {
+                total = 4.50 * qtd;
+            } else if (formatoSelecionado === 'polaroid') {
+                total = 2.50 * qtd;
+            } else if (formatoSelecionado === 'imã') {
+                total = 6.00 * qtd;
+            } else {
+                total = 0.50 * qtd;
+            }
+
+            valorCalculado = total;
+            document.getElementById('res-total').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            document.getElementById('pix-total-val').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        };
+
+        // PREVIEW DE FOTOS SELECIONADAS
+        window.previewFotos = function(input) {
+            const container = document.getElementById('previewContainer');
+            container.innerHTML = '';
+            if (input.files) {
+                Array.from(input.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'preview-thumb';
+                        container.appendChild(img);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            }
+        };
+
+        window.mascaraTelefone = function(input) {
+            let v = input.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            if (v.length > 6) v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+            else if (v.length > 2) v = v.replace(/^(\d{2})(\d{1,4}).*/, '($1) $2');
+            else if (v.length > 0) v = v.replace(/^(\d*)/, '($1');
+            input.value = v;
+        };
+
+        window.irParaPagamento = async function() {
+            const nome = document.getElementById('nome-cliente').value.trim();
+            const fone = document.getElementById('telefone-cliente').value.trim();
+            const qtd = document.getElementById('qtd-fotos').value;
+            const obs = document.getElementById('obs-fotos').value || 'Nenhuma';
+
+            if (!nome) { alert('Por favor, digite seu nome.'); return; }
+            if (!fone || fone.length < 13) { alert('Por favor, informe seu WhatsApp com DDD.'); return; }
+
+            const formatoNome = document.getElementById('res-formato').innerText;
+
+            // REGISTRA PEDIDO NO FIREBASE FIRESTORE
+            try {
+                await addDoc(collection(db, "pedidos_fotos"), {
+                    cliente: nome,
+                    telefone: fone,
+                    formato: formatoNome,
+                    quantidade: qtd,
+                    acabamento: acabamentoSelecionado,
+                    borda: bordaSelecionada,
+                    valorTotal: valorCalculado,
+                    observacoes: obs,
+                    dataEnvio: serverTimestamp()
+                });
+            } catch (e) { console.error("Erro ao salvar pedido:", e); }
+
+            // MONTA MENSAGEM DO WHATSAPP
+            const msgWhatsApp = encodeURIComponent(
+                `📸 *NOVO PEDIDO DE FOTOS - PRINTEXTRESS*\n\n` +
+                `👤 *Cliente:* ${nome}\n` +
+                `📱 *Contato:* ${fone}\n` +
+                `🖼️ *Formato:* ${formatoNome}\n` +
+                `🔢 *Quantidade:* ${qtd} foto(s)\n` +
+                `✨ *Acabamento:* ${acabamentoSelecionado}\n` +
+                `🔳 *Estilo de Borda:* ${bordaSelecionada}\n` +
+                `💰 *Valor Total:* R$ ${valorCalculado.toFixed(2).replace('.', ',')}\n` +
+                `📝 *Obs:* ${obs}\n\n` +
+                `📌 *Estou enviando o comprovante do PIX e as fotos para impressão em seguida!*`
+            );
+
+            document.getElementById('btn-enviar-zap').href = `https://wa.me/${MEU_WHATSAPP}?text=${msgWhatsApp}`;
+
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.remove('hidden');
+        };
+
+        window.voltarPasso1 = function() {
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('step-1').classList.remove('hidden');
+        };
+
+        window.copiarPix = function() {
+            const input = document.getElementById('chavePixInput');
+            input.select();
+            navigator.clipboard.writeText(input.value);
+            alert("✓ Chave PIX copiada com sucesso!");
+        };
+
+        atualizarCalculo();
+    </script>
+</body>
+</html>
+
