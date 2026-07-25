@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design & Edição Canva Sob Encomenda</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --card-hover: #334155;
+            --border: #334155;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --canva-cyan: #00c4cc;
+            --canva-purple: #7d2ae8;
+            --accent-gradient: linear-gradient(135deg, #00c4cc 0%, #7d2ae8 100%);
+            --green: #10b981;
+            --green-hover: #059669;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 24px 16px; line-height: 1.5; }
+
+        .container { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+        /* HEADER */
+        .header-box {
+            text-align: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 24px 20px;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        .header-box::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: var(--accent-gradient);
+        }
+        .header-box h1 {
+            font-size: 26px;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header-box p { color: var(--text-muted); font-size: 14px; margin-top: 6px; }
+
+        /* AVISO DO SITE */
+        .notice-banner {
+            background: rgba(125, 42, 232, 0.12);
+            border: 1px solid rgba(0, 196, 204, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 13px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .notice-icon { font-size: 20px; flex-shrink: 0; }
+
+        /* TABELA DE PREÇOS SIMPLIFICADA */
+        .price-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px 20px;
+        }
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--canva-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .price-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .price-table th, .price-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); }
+        .price-table th { color: var(--text-muted); font-weight: 600; font-size: 12px; }
+        .price-table td strong { color: var(--green); font-size: 14px; }
+
+        /* LISTA ORGANIZADA DE OPÇÕES (UM EM BAIXO DO OUTRO) */
+        .step-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .option-card {
+            background: #0f172a;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+        .option-card:hover {
+            border-color: var(--canva-cyan);
+            background: #172554;
+        }
+        .option-card.selected {
+            border-color: var(--canva-cyan);
+            background: rgba(0, 196, 204, 0.1);
+        }
+
+        .option-left { display: flex; align-items: center; gap: 12px; }
+        .option-icon { font-size: 22px; }
+        .option-title { font-weight: 600; font-size: 14px; color: #fff; }
+        .option-desc { font-size: 12px; color: var(--text-muted); }
+        .option-price { font-weight: 700; color: var(--green); font-size: 14px; text-align: right; }
+
+        /* RADIO CUSTOMIZADO */
+        .radio-dot {
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--text-muted);
+            margin-right: 4px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .option-card.selected .radio-dot {
+            border-color: var(--canva-cyan);
+            background: var(--canva-cyan);
+        }
+        .option-card.selected .radio-dot::after {
+            content: ''; width: 6px; height: 6px; background: #000; border-radius: 50%;
+        }
+
+        /* FORMULÁRIO DE INFORMAÇÕES */
+        .input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        label { font-size: 13px; font-weight: 600; color: #cbd5e1; }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+        input:focus, textarea:focus { border-color: var(--canva-cyan); outline: none; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* RESUMO E BOTÃO FINAL */
+        .summary-card {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .summary-total { font-size: 20px; font-weight: 800; color: var(--green); }
+
+        .btn-enviar {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 196, 204, 0.3);
+            transition: transform 0.2s;
+        }
+        .btn-enviar:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-enviar:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* MODAL / TOAST */
+        .toast-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; z-index: 9999;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+        }
+        .toast-overlay.active { opacity: 1; pointer-events: auto; }
+        .toast-card {
+            background: var(--card-bg);
+            border: 2px solid var(--canva-cyan);
+            border-radius: 16px;
+            padding: 24px; max-width: 400px; width: 100%; text-align: center;
+        }
+        .toast-btn {
+            background: var(--canva-cyan); color: #000; border: none;
+            padding: 10px 20px; border-radius: 8px; font-weight: 700;
+            margin-top: 14px; cursor: pointer; width: 100%;
+        }
+
+        @media (max-width: 600px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .option-card { padding: 12px; }
+            .option-title { font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- HEADER -->
+        <div class="header-box">
+            <h1>🎨 Canva Design Sob Encomenda</h1>
+            <p>Monte seu arte profissional rápida, personalizada e pronta para uso!</p>
+        </div>
+
+        <!-- AVISO DO SITE -->
+        <div class="notice-banner">
+            <span class="notice-icon">📌</span>
+            <div>
+                <strong>Como funciona?</strong> Todos os projetos são desenvolvidos sob encomenda conforme sua necessidade. Escolha as opções abaixo, preencha os detalhes e envie seu pedido diretamente para nosso painel!
+            </div>
+        </div>
+
+        <!-- TABELA DE PREÇOS -->
+        <div class="price-section">
+            <div class="section-title">🏷️ Tabela de Valores Rápidos</div>
+            <table class="price-table">
+                <thead>
+                    <tr>
+                        <th>Tipo de Arte</th>
+                        <th>Prazo Estimado</th>
+                        <th>Valor Base</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Arte Única (Feed / Story / Banner)</td>
+                        <td>Até 24h</td>
+                        <td><strong>R$ 15,00</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Carrossel do Instagram (3 a 5 telas)</td>
+                        <td>24h a 48h</td>
+                        <td><strong>R$ 35,00</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Cartão Virtual / Panfleto Digital</td>
+                        <td>Até 24h</td>
+                        <td><strong>R$ 25,00</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Logotipo / Identidade Básica</td>
+                        <td>48h</td>
+                        <td><strong>R$ 50,00</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PASSO 1: SELEÇÃO DE TIPO (UM EM BAIXO DO OUTRO) -->
+        <div class="step-box">
+            <div class="section-title">1. O que você precisa? (Selecione um)</div>
+            
+            <div class="options-list" id="listaTipos">
+                
+                <div class="option-card selected" onclick="selecionarTipo(this, 'Arte p/ Redes Sociais (Feed/Story)', 15.00)">
+                    <div class="option-left">
+                        <div class="radio-dot"></div>
+                        <span class="option-icon">📱</span>
+                        <div>
+                            <div class="option-title">Arte Única p/ Redes Sociais</div>
+                            <div class="option-desc">Feed do Instagram, Story, Status ou Banner promocional</div>
+                        </div>
+                    </div>
+                    <div class="option-price">R$ 15,00</div>
+                </div>
+
+                <div class="option-card" onclick="selecionarTipo(this, 'Carrossel do Instagram (Até 5 Telas)', 35.00)">
+                    <div class="option-left">
+                        <div class="radio-dot"></div>
+                        <span class="option-icon">🖼️</span>
+                        <div>
+                            <div class="option-title">Carrossel p/ Instagram</div>
+                            <div class="option-desc">Sequência explicativa/de vendas de 3 a 5 posts continuos</div>
+                        </div>
+                    </div>
+                    <div class="option-price">R$ 35,00</div>
+                </div>
+
+                <div class="option-card" onclick="selecionarTipo(this, 'Cartão Interativo / Panfleto Digital', 25.00)">
+                    <div class="option-left">
+                        <div class="radio-dot"></div>
+                        <span class="option-icon">📄</span>
+                        <div>
+                            <div class="option-title">Cartão Interativo / Panfleto Digital</div>
+                            <div class="option-desc">PDF com botões clicáveis de WhatsApp, Localização e Redes</div>
+                        </div>
+                    </div>
+                    <div class="option-price">R$ 25,00</div>
+                </div>
+
+                <div class="option-card" onclick="selecionarTipo(this, 'Logotipo / Marca Básica', 50.00)">
+                    <div class="option-left">
+                        <div class="radio-dot"></div>
+                        <span class="option-icon">✨</span>
+                        <div>
+                            <div class="option-title">Logotipo / Marca Profissional</div>
+                            <div class="option-desc">Criação de Logo + Paleta de Cores + Tipografia no Canva</div>
+                        </div>
+                    </div>
+                    <div class="option-price">R$ 50,00</div>
+                </div>
+
+                <div class="option-card" onclick="selecionarTipo(this, 'Edição de Link / Template Existente', 10.00)">
+                    <div class="option-left">
+                        <div class="radio-dot"></div>
+                        <span class="option-icon">✏️</span>
+                        <div>
+                            <div class="option-title">Edição de Arte / Template que Já Tenho</div>
+                            <div class="option-desc">Você envia o link do Canva e ajustamos para você</div>
+                        </div>
+                    </div>
+                    <div class="option-price">R$ 10,00</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- PASSO 2: FORMATO / ESTILO -->
+        <div class="step-box">
+            <div class="section-title">2. Formato do Arquivo Final</div>
+            <div class="options-list" id="listaFormatos">
+                
+                <div class="option-card selected" onclick="selecionarFormato(this, 'Acesso ao Link Editável do Canva + Arquivo Final')">
+                    <div class="option-left">
+                        <div class="radio-dot"></div>
+                        <span class="option-icon">🔗</span>
+                        <div>
+                            <div class="option-title">Link do Canva Editável + PNG/JPG</div>
+                            <div class="option-desc">Receba o link no seu Canva para alterar quando quiser</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selecionarFormato(this, 'Apenas Arquivo Pronto (PNG / JPG / PDF)')">
+                    <div class="option-left">
+                        <div class="radio-dot"></div>
+                        <span class="option-icon">📁</span>
+                        <div>
+                            <div class="option-title">Apenas Arquivo Pronto (PNG, JPG ou PDF)</div>
+                            <div class="option-desc">Arte finalizada pronta para postar ou enviar</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- PASSO 3: INFORMAÇÕES DO PEDIDO -->
+        <div class="step-box">
+            <div class="section-title">3. Detalhes & Contato</div>
+            
+            <div class="grid-2">
+                <div class="input-group">
+                    <label>Seu Nome / Empresa *</label>
+                    <input type="text" id="nome" placeholder="Ex: João Silva ou Barbaria VIP">
+                </div>
+                <div class="input-group">
+                    <label>WhatsApp para Contato *</label>
+                    <input type="text" id="telefone" placeholder="(41) 99999-9999" oninput="mascaraTelefone(this)">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>O que deve constar na arte? (Textos, Cores, Fotos, Ideias) *</label>
+                <textarea id="detalhes" rows="4" placeholder="Ex: Preciso de uma arte avisando sobre a promoção de 20% no sábado. Cores da marca: Azul e Preto. WhatsApp: (00) 0000-0000."></textarea>
+            </div>
+
+            <div class="summary-card">
+                <div>
+                    <span style="font-size: 12px; color: var(--text-muted);">VALOR ESTIMADO DO PEDIDO:</span>
+                    <div class="summary-total" id="valorTotalDisplay">R$ 15,00</div>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); text-align: right;">
+                    Pagamento via Pix na entrega
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTÃO ENVIAR -->
+        <button class="btn-enviar" id="btnEnviar" onclick="enviarEncomendaFirebase()">
+            🚀 Enviar Encomenda & Ir para o Painel
+        </button>
+
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast-overlay" id="customToast">
+        <div class="toast-card">
+            <div style="font-size: 36px; margin-bottom: 8px;" id="toastIcon">⚠️</div>
+            <h3 style="font-size: 18px; margin-bottom: 6px;" id="toastTitle">Aviso</h3>
+            <p style="font-size: 14px; color: var(--text-muted);" id="toastMsg">Mensagem...</p>
+            <button class="toast-btn" onclick="fecharToast()">Entendi</button>
+        </div>
+    </div>
+
+    <!-- FIREBASE & LOGICA -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfh0iZSotPra1olpRWRfwwBP9G8yrdHEc",
+            authDomain: "print-express-bfa7c.firebaseapp.com",
+            projectId: "print-express-bfa7c",
+            storageBucket: "print-express-bfa7c.firebasestorage.app",
+            messagingSenderId: "471136646915",
+            appId: "1:471136646915:web:8b7b6f92c00d88c7c79b36",
+            measurementId: "G-8K5LHHCDFE"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Estado do Formulário
+        let servicoSelecionado = "Arte p/ Redes Sociais (Feed/Story)";
+        let valorServico = 15.00;
+        let formatoSelecionado = "Acesso ao Link Editável do Canva + Arquivo Final";
+
+        window.selecionarTipo = function(element, titulo, valor) {
+            document.querySelectorAll('#listaTipos .option-card').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            servicoSelecionado = titulo;
+            valorServico = valor;
+            document.getElementById('valorTotalDisplay').innerText = `R$ ${valor.toFixed(2).replace('.', ',')}`;
+        };
+
+        window.selecionarFormato = function(element, formato) {
+            document.querySelectorAll('#listaFormatos .option-card').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            formatoSelecionado = formato;
+        };
+
+        window.mascaraTelefone = function(input) {
+            let v = input.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            if (v.length > 6) {
+                v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+            } else if (v.length > 2) {
+                v = v.replace(/^(\d{2})(\d{1,4}).*/, '($1) $2');
+            } else if (v.length > 0) {
+                v = v.replace(/^(\d*)/, '($1');
+            }
+            input.value = v;
+        };
+
+        window.mostrarToast = function(titulo, msg, icone = "⚠️") {
+            document.getElementById('toastIcon').innerText = icone;
+            document.getElementById('toastTitle').innerText = titulo;
+            document.getElementById('toastMsg').innerText = msg;
+            document.getElementById('customToast').classList.add('active');
+        };
+
+        window.fecharToast = function() {
+            document.getElementById('customToast').classList.remove('active');
+        };
+
+        window.enviarEncomendaFirebase = async function() {
+            const nome = document.getElementById('nome').value.trim();
+            const telefone = document.getElementById('telefone').value.trim();
+            const detalhes = document.getElementById('detalhes').value.trim();
+
+            if (!nome || !telefone || !detalhes) {
+                mostrarToast("Campos Incompletos", "Preencha seu nome, WhatsApp e os detalhes do que precisa na arte.");
+                return;
+            }
+
+            const btn = document.getElementById('btnEnviar');
+            btn.disabled = true;
+            btn.innerText = "Cadastrando Pedido... ⏳";
+
+            const pedidoData = {
+                cliente: nome,
+                telefone: telefone,
+                servico: `Canva: ${servicoSelecionado}`,
+                formatoEntrega: formatoSelecionado,
+                detalhes: detalhes,
+                total: valorServico,
+                status: "Pendente",
+                categoria: "Canva Sob Encomenda",
+                dataEnvio: serverTimestamp()
+            };
+
+            try {
+                await addDoc(collection(db, "pedidos"), pedidoData);
+                mostrarToast("Pedido Enviado!", "Sua encomenda do Canva foi registrada com sucesso. Redirecionando...", "🚀");
+                setTimeout(() => {
+                    window.location.href = "painel.html";
+                }, 1500);
+            } catch (err) {
+                console.error(err);
+                mostrarToast("Erro", "Falha ao registrar pedido no Firebase. Tente novamente.");
+                btn.disabled = false;
+                btn.innerText = "🚀 Enviar Encomenda & Ir para o Painel";
+            }
+        };
+    </script>
+</body>
+</html>
+
