@@ -6,30 +6,1538 @@
     <title>PrintExpress - Impressão Rápida & Serviços</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        document.getElementById("btn-enviar").addEventListener("click", async () => {
-    const btn = document.getElementById("btn-enviar");
-    btn.disabled = true;
-    btn.innerText = "Enviando Pedido... ⏳";
+        :root {
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --green: #10b981;
+            --danger: #ef4444;
+        }
 
-    const LIMITE_TOTAL = 100 * 1024 * 1024; // 100 MB
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            padding: 24px 16px; 
+            line-height: 1.6;
+        }
 
-    let tamanhoTotal = 0;
+        .container { 
+            max-width: 720px; 
+            margin: 0 auto; 
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
-    for (const item of configuracoesArquivos) {
-        tamanhoTotal += item.file.size;
-    }
+        header { text-align: center; }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
 
-    if (tamanhoTotal > LIMITE_TOTAL) {
-        mostrarToast(
-            "Arquivos muito grandes",
-            "O total dos arquivos não pode ultrapassar 100 MB."
-        );
+        .nav-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            background: rgba(56, 189, 248, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            transition: all 0.2s;
+        }
+        .nav-link:hover { background: rgba(56, 189, 248, 0.2); }
 
-        btn.disabled = false;
-        btn.innerText = "Enviar Pedido 🚀";
-        return;
-    }
+        h1 { color: var(--accent); font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+        header p { color: var(--text-muted); font-size: 14px; }
 
+        /* CARROSSEL DE AVISOS */
+        .carousel-container {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid var(--accent);
+            border-radius: 14px;
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.15);
+        }
+
+        .carousel-slide {
+            display: none;
+            text-align: center;
+            font-size: 14px;
+            color: #e0f2fe;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .carousel-slide.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .dot.active { background: var(--accent); }
+
+        /* CARD PRINCIPAL */
+        .step-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .step-card h2 { 
+            font-size: 18px; 
+            color: var(--text); 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 10px;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-weight: 600; font-size: 14px; color: #cbd5e1; }
+
+        input[type="text"], input[type="tel"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 15px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus { 
+            border-color: var(--accent); 
+            outline: none; 
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+
+        /* GRID DE SERVIÇOS NA TELA */
+        .servicos-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .servico-card {
+            background: #0f172a;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+        }
+
+        .servico-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+        .servico-card.selected {
+            border-color: var(--accent);
+            background: rgba(2, 132, 199, 0.15);
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        /* ESTILOS PARA CARD DESATIVADO (EM BREVE) */
+        .servico-card.disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            pointer-events: none; /* Desativa os cliques no card */
+            filter: grayscale(0.2);
+        }
+
+        .badge-em-breve {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #f59e0b;
+            color: #000;
+            font-weight: 800;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .servico-icon { font-size: 24px; }
+        .servico-title { font-size: 14px; font-weight: 700; color: #ffffff; }
+
+        /* OPÇÕES DE COR (A4) */
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .color-card {
+            background: #0f172a;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .color-card.selected {
+            border-color: var(--accent);
+            background: rgba(2, 132, 199, 0.15);
+        }
+
+        .paper-badge {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 10px;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .hidden { display: none !important; }
+
+        .price-box {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            padding: 18px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+        }
+        .price-box strong { color: var(--green); font-size: 22px; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover { background: var(--primary-hover); }
+
+        .btn-secondary {
+            background: #475569;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .pix-box {
+            background: #0f172a;
+            border: 2px dashed var(--accent);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-copiar-pix {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+            padding: 10px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-whatsapp {
+            background: #25d366;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        /* MODAL CUSTOMIZADO TOAST */
+        .toast-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .toast-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .toast-card {
+            background: var(--card-bg);
+            border: 2px solid var(--danger);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .toast-icon { font-size: 36px; margin-bottom: 8px; }
+        .toast-title { font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 6px; }
+        .toast-msg { font-size: 14px; color: var(--text-muted); margin-bottom: 18px; }
+        
+        .toast-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .radio-group { display: flex; gap: 20px; margin-top: 4px; }
+        .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px; }
+
+        @media (max-width: 500px) {
+            body { padding: 16px 10px; }
+            .servicos-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="nav-links">
+                <a href="fotos.html" class="nav-link">📸 Revelação de Fotos Glossy ➔</a>
+            </div>
+            <h1>PrintExpress</h1>
+            <p>Impressões, Currículos e Edições Gráficas</p>
+        </header>
+
+        <!-- CARROSSEL DE AVISOS -->
+        <div class="carousel-container">
+            <div class="carousel-slide active">
+                📢 <strong>Atendimento Rápido:</strong> Envie seus documentos e retire no mesmo dia!
+            </div>
+            <div class="carousel-slide">
+                📄 <strong>Currículos Profissionais:</strong> Montamos ou atualizamos seu currículo na hora.
+            </div>
+            <div class="carousel-slide">
+                🎨 <strong>EM BREVE: Criação de Arte / Canva:</strong> Cartões, panfletos, convites e banners digitais.
+            </div>
+            <div class="carousel-dots">
+                <span class="dot active" onclick="irParaSlide(0)"></span>
+                <span class="dot" onclick="irParaSlide(1)"></span>
+                <span class="dot" onclick="irParaSlide(2)"></span>
+            </div>
+        </div>
+
+        <!-- PASSO 1: DADOS E CONFIGURAÇÃO -->
+        <div id="step-1" class="step-card">
+            <h2>Monte seu Pedido</h2>
+            
+            <div class="form-group">
+                <label for="nome-cliente">Seu Nome Completo:</label>
+                <input type="text" id="nome-cliente" placeholder="EX: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()">
+            </div>
+
+            <div class="form-group">
+                <label for="telefone-cliente">WhatsApp para Contato:</label>
+                <input type="tel" id="telefone-cliente" placeholder="(41) 99999-9999" maxlength="15" oninput="mascaraTelefone(this)">
+            </div>
+
+            <!-- SELEÇÃO DE SERVIÇO -->
+            <div class="form-group">
+                <label>Escolha o Serviço:</label>
+                <div class="servicos-grid">
+                    <div class="servico-card selected" id="srv-doc" onclick="selecionarServico('doc')">
+                        <div class="servico-icon">📄</div>
+                        <div class="servico-title">Impressão A4</div>
+                    </div>
+                    <div class="servico-card" onclick="location.href='curriculo.html'">
+                        <div class="servico-icon">💼</div>
+                        <div class="servico-title">Elaboração de Currículo</div>
+                    </div>
+                    
+                    <!-- -------------------------------------------------------------------------------------- -->
+                    <!-- CARD CANVA (DESATIVADO NO MOMENTO)                                                    -->
+                    <!-- PARA REATIVAR O CANVA QUANDO ESTIVER PRONTO:                                          -->
+                    <!-- 1. Remova a classe 'disabled' do div abaixo.                                           -->
+                    <!-- 2. Apague ou comente a linha da div 'badge-em-breve'.                                 -->
+                    <!-- 3. Troque o onclick para: onclick="location.href='canva.html'"                        -->
+                    <!-- -------------------------------------------------------------------------------------- -->
+                    <div class="servico-card disabled" onclick="/* location.href='canva.html' */">
+                        <div class="badge-em-breve">⏳ Em Breve</div>
+                        <div class="servico-icon">🎨</div>
+                        <div class="servico-title">Design / Edição Canva</div>
+                    </div>
+
+                    <div class="servico-card" onclick="location.href='fotos.html'">
+                        <div class="servico-icon">📸</div>
+                        <div class="servico-title">Fotos Glossy</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAINEL OPÇÕES IMPRESSÃO A4 -->
+            <div id="painel-doc">
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label>Tamanho do Papel:</label>
+                    <div class="paper-badge">📄 Papel Sulfite A4 (21x30 cm)</div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label>Tipo de Impressão:</label>
+                    <div class="color-options">
+                        <div class="color-card selected" id="card-pb" onclick="selecionarTipoCor('pb')">
+                            <strong>⚫ Preto e Branco</strong><br>
+                            <small>R$ 0,50 / folha</small>
+                        </div>
+                        <div class="color-card" id="card-cor" onclick="selecionarTipoCor('colorida')">
+                            <strong>🎨 Colorida</strong><br>
+                            <small>R$ 1,50 / folha</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="qtd-paginas">Quantidade de Folhas:</label>
+                    <input type="number" id="qtd-paginas" value="1" min="1" oninput="calcularTotal()">
+                </div>
+            </div>
+
+            <!-- VALOR E AVANÇAR -->
+            <div class="price-box">
+                <span>Valor Total:</span>
+                <strong id="valor-total">R$ 0,50</strong>
+            </div>
+
+            <button class="btn-primary" onclick="irParaPasso2()">Continuar ➔</button>
+        </div>
+
+        <!-- PASSO 2: PAGAMENTO -->
+        <div id="step-2" class="step-card hidden">
+            <h2>Escolha a Forma de Pagamento</h2>
+
+            <div class="form-group">
+                <label>Como deseja pagar?</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="pagamento" value="PIX" checked onclick="togglePagamento('pix')"> PIX
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="pagamento" value="Dinheiro" onclick="togglePagamento('dinheiro')"> Dinheiro (Na Retirada)
+                    </label>
+                </div>
+            </div>
+
+            <div id="info-troco" class="form-group hidden">
+                <label for="troco">Precisa de troco para quanto?</label>
+                <input type="text" id="troco" placeholder="Ex: Troco para R$ 20,00 ou Não preciso">
+            </div>
+
+            <div class="form-group">
+                <label for="observacoes">Observações (Opcional):</label>
+                <textarea id="observacoes" rows="2" placeholder="Ex: Preciso de 2 cópias de cada arquivo..."></textarea>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 10px;">
+                <button class="btn-secondary" onclick="voltarParaPasso1()">⬅ Voltar</button>
+                <button class="btn-primary" id="btn-enviar" onclick="finalizarPedidoFirebase()">Enviar Pedido 🚀</button>
+            </div>
+        </div>
+
+        <!-- PASSO 3: CONFIRMAÇÃO -->
+        <div id="step-3" class="step-card hidden" style="text-align: center;">
+            <div style="font-size: 50px;">🚀</div>
+            <h2>Pedido Registrado!</h2>
+            <p style="color: var(--text-muted);">Faça o pagamento e envie os arquivos/dados no nosso WhatsApp para iniciarmos.</p>
+            
+            <div id="dados-pagamento-final"></div>
+
+            <button class="btn-primary" onclick="location.reload()" style="margin-top: 20px;">Fazer Novo Pedido</button>
+        </div>
+    </div>
+
+    <!-- MODAL CUSTOMIZADO TOAST -->
+    <div class="toast-overlay" id="customToast">
+        <div class="toast-card">
+            <div class="toast-icon">⚠️</div>
+            <div class="toast-title" id="toastTitle">Campo Obrigatório</div>
+            <div class="toast-msg" id="toastMsg">Preencha todos os campos antes de continuar.</div>
+            <button class="toast-btn" onclick="fecharToast()">Entendi</button>
+        </div>
+    </div>
+
+    <!-- FIREBASE & LÓGICA -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfh0iZSotPra1olpRWRfwwBP9G8yrdHEc",
+            authDomain: "print-express-bfa7c.firebaseapp.com",
+            projectId: "print-express-bfa7c",
+            storageBucket: "print-express-bfa7c.firebasestorage.app",
+            messagingSenderId: "471136646915",
+            appId: "1:471136646915:web:8b7b6f92c00d88c7c79b36",
+            measurementId: "G-8K5LHHCDFE"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const MEU_WHATSAPP = "5541999682836";
+        const CHAVE_PIX_TEXTO = "41999682836";
+
+        let servicoAtual = "doc"; // 'doc', 'curriculo', 'canva'
+        let tipoCorSelecionado = "pb"; // 'pb', 'colorida'
+
+        // CARROSSEL DE AVISOS
+        let slideIndex = 0;
+        const slides = document.querySelectorAll(".carousel-slide");
+        const dots = document.querySelectorAll(".dot");
+
+        function mostrarSlide(n) {
+            slides.forEach(s => s.classList.remove("active"));
+            dots.forEach(d => d.classList.remove("active"));
+            slideIndex = (n + slides.length) % slides.length;
+            slides[slideIndex].classList.add("active");
+            dots[slideIndex].classList.add("active");
+        }
+
+        window.irParaSlide = function(n) { mostrarSlide(n); };
+
+        setInterval(() => {
+            mostrarSlide(slideIndex + 1);
+        }, 4000);
+
+        // SELEÇÃO DE SERVIÇOS
+        window.selecionarServico = function(tipo) {
+            // // COMO DESATIVAR/ATIVAR VIA JS SE PRECISAR:
+            // // Se quiser impedir a seleção por JS caso a classe disabled não impeça em algum navegador:
+            // if (tipo === 'canva') return; 
+
+            servicoAtual = tipo;
+            document.getElementById("srv-doc").classList.toggle("selected", tipo === 'doc');
+
+            calcularTotal();
+        };
+
+        window.selecionarTipoCor = function(tipo) {
+            tipoCorSelecionado = tipo;
+            document.getElementById("card-pb").classList.toggle("selected", tipo === 'pb');
+            document.getElementById("card-cor").classList.toggle("selected", tipo === 'colorida');
+            calcularTotal();
+        };
+
+        window.calcularTotal = function() {
+            let total = 0;
+
+            if (servicoAtual === "doc") {
+                const qtdInput = document.getElementById("qtd-paginas");
+                let qtd = parseInt(qtdInput.value) || 1;
+                if (qtd < 1) qtd = 1;
+                const precoUnitario = tipoCorSelecionado === "colorida" ? 1.50 : 0.50;
+                total = qtd * precoUnitario;
+            } else if (servicoAtual === "curriculo") {
+                total = 10.00;
+            } else if (servicoAtual === "canva") {
+                total = 15.00;
+            }
+
+            document.getElementById("valor-total").innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        };
+
+        window.mostrarToast = function(titulo, mensagem) {
+            document.getElementById("toastTitle").innerText = titulo;
+            document.getElementById("toastMsg").innerText = mensagem;
+            document.getElementById("customToast").classList.add("active");
+        };
+
+        window.fecharToast = function() {
+            document.getElementById("customToast").classList.remove("active");
+        };
+
+        window.mascaraTelefone = function(input) {
+            let v = input.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            if (v.length > 6) {
+                v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+            } else if (v.length > 2) {
+                v = v.replace(/^(\d{2})(\d{1,4}).*/, '($1) $2');
+            } else if (v.length > 0) {
+                v = v.replace(/^(\d*)/, '($1');
+            }
+            input.value = v;
+        };
+
+        window.irParaPasso2 = function() {
+            const cliente = document.getElementById("nome-cliente").value.trim();
+            const telefone = document.getElementById("telefone-cliente").value.trim();
+
+            if (!cliente) { 
+                mostrarToast("Nome Obrigatório", "Por favor, informe seu nome completo."); 
+                return; 
+            }
+            if (!telefone || telefone.length < 13) { 
+                mostrarToast("WhatsApp Inválido", "Por favor, digite um número de WhatsApp válido com DDD."); 
+                return; 
+            }
+
+            document.getElementById("step-1").classList.add("hidden");
+            document.getElementById("step-2").classList.remove("hidden");
+        };
+
+        window.voltarParaPasso1 = function() {
+            document.getElementById("step-2").classList.add("hidden");
+            document.getElementById("step-1").classList.remove("hidden");
+        };
+
+        window.togglePagamento = function(tipo) {
+            if (tipo === 'dinheiro') {
+                document.getElementById("info-troco").classList.remove("hidden");
+            } else {
+                document.getElementById("info-troco").classList.add("hidden");
+            }
+        };
+
+        window.finalizarPedidoFirebase = async function() {
+            const btn = document.getElementById("btn-enviar");
+            btn.disabled = true;
+            btn.innerText = "Enviando Pedido... ⏳";
+
+            const cliente = document.getElementById("nome-cliente").value.trim();
+            const telefone = document.getElementById("telefone-cliente").value.trim();
+            const pagamento = document.querySelector('input[name="pagamento"]:checked').value;
+            const troco = document.getElementById("troco").value || "Não precisa";
+            const obs = document.getElementById("observacoes").value || "Nenhuma";
+
+            let descServico = "";
+            let total = 0;
+
+            if (servicoAtual === "doc") {
+                const qtdPaginas = parseInt(document.getElementById("qtd-paginas").value) || 1;
+                const tipoCorTexto = tipoCorSelecionado === "colorida" ? "Colorida" : "Preto e Branco";
+                total = qtdPaginas * (tipoCorSelecionado === "colorida" ? 1.50 : 0.50);
+                descServico = `Impressão A4 (${tipoCorTexto}) - ${qtdPaginas} folha(s)`;
+            } else if (servicoAtual === "curriculo") {
+                total = 10.00;
+                descServico = "Elaboração de Currículo Profissional";
+            } else if (servicoAtual === "canva") {
+                total = 15.00;
+                descServico = "Criação de Arte / Canva";
+            }
+
+            try {
+                await addDoc(collection(db, "pedidos"), {
+                    cliente,
+                    telefone,
+                    servico: descServico,
+                    total: total,
+                    pagamento,
+                    troco,
+                    observacoes: obs,
+                    tipo: servicoAtual,
+                    dataEnvio: serverTimestamp()
+                });
+
+                const mensagemWhats = encodeURIComponent(
+                    `🚀 Olá! Fiz um pedido no PrintExpress:\n\n` +
+                    `👤 *Cliente:* ${cliente}\n` +
+                    `📌 *Serviço:* ${descServico}\n` +
+                    `💰 *Valor Total:* R$ ${total.toFixed(2).replace('.', ',')}\n` +
+                    `💳 *Forma de Pgto:* ${pagamento}\n` +
+                    `📝 *Obs:* ${obs}\n\n` +
+                    ` Estou enviando os arquivos/dados para produção!`
+                );
+
+                const linkWhatsApp = `https://wa.me/${MEU_WHATSAPP}?text=${mensagemWhats}`;
+
+                let htmlFinal = "";
+
+                if (pagamento === "PIX") {
+                    htmlFinal = `
+                        <div class="pix-box">
+                            <p style="font-size:16px;">Valor a Pagar: <strong style="color:var(--green)">R$ ${total.toFixed(2).replace('.', ',')}</strong></p>
+                            <p style="font-size:13px; color:var(--text-muted);">Copie a Chave PIX abaixo:</p>
+                            
+                            <input type="text" id="pixKeyInput" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:16px; color:var(--accent);">
+                            <button class="btn-copiar-pix" onclick="copiarChavePix()">📋 Copiar Chave PIX</button>
+                            
+                            <div style="background: rgba(2, 132, 199, 0.15); border-left: 4px solid var(--accent); padding: 12px; border-radius: 6px; font-size:13px; text-align:left;">
+                                ⚠️ <strong>IMPORTANTE:</strong> Clique abaixo para enviar o comprovante e as informações no nosso WhatsApp.
+                            </div>
+
+                            <a href="${linkWhatsApp}" target="_blank" class="btn-whatsapp">
+                                💬 Abrir WhatsApp e Concluir Pedido
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    htmlFinal = `
+                        <div class="pix-box">
+                            <p style="font-size:15px; color:var(--text-muted);">Pagamento em Dinheiro na Retirada.</p>
+                            <p style="font-size:14px;">Troco informado: <strong>${troco}</strong></p>
+                            <a href="${linkWhatsApp}" target="_blank" class="btn-whatsapp">
+                                💬 Abrir WhatsApp e Concluir Pedido
+                            </a>
+                        </div>
+                    `;
+                }
+
+                document.getElementById("dados-pagamento-final").innerHTML = htmlFinal;
+                document.getElementById("step-2").classList.add("hidden");
+                document.getElementById("step-3").classList.remove("hidden");
+
+            } catch (err) {
+                console.error(err);
+                mostrarToast("Erro de Conexão", "Não foi possível registrar seu pedido. Tente novamente.");
+                btn.disabled = false;
+                btn.innerText = "Enviar Pedido 🚀";
+            }
+        };
+
+        window.copiarChavePix = function() {
+            const input = document.getElementById("pixKeyInput");
+            input.select();
+            navigator.clipboard.writeText(input.value);
+            mostrarToast("PIX Copiado!", "A chave PIX foi copiada para sua área de transferência.");
+        };
+
+        calcularTotal();
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrintExpress - Impressão Rápida & Serviços</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --green: #10b981;
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            padding: 24px 16px; 
+            line-height: 1.6;
+        }
+
+        .container { 
+            max-width: 720px; 
+            margin: 0 auto; 
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header { text-align: center; }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .nav-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            background: rgba(56, 189, 248, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            transition: all 0.2s;
+        }
+        .nav-link:hover { background: rgba(56, 189, 248, 0.2); }
+
+        h1 { color: var(--accent); font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+        header p { color: var(--text-muted); font-size: 14px; }
+
+        /* CARROSSEL DE AVISOS */
+        .carousel-container {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid var(--accent);
+            border-radius: 14px;
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.15);
+        }
+
+        .carousel-slide {
+            display: none;
+            text-align: center;
+            font-size: 14px;
+            color: #e0f2fe;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .carousel-slide.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .dot.active { background: var(--accent); }
+
+        /* CARD PRINCIPAL */
+        .step-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .step-card h2 { 
+            font-size: 18px; 
+            color: var(--text); 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 10px;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-weight: 600; font-size: 14px; color: #cbd5e1; }
+
+        input[type="text"], input[type="tel"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 15px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus { 
+            border-color: var(--accent); 
+            outline: none; 
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+
+        /* GRID DE SERVIÇOS NA TELA */
+        .servicos-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .servico-card {
+            background: #0f172a;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+        }
+
+        .servico-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+        .servico-card.selected {
+            border-color: var(--accent);
+            background: rgba(2, 132, 199, 0.15);
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        /* ESTILOS PARA CARD DESATIVADO (EM BREVE) */
+        .servico-card.disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            pointer-events: none; /* Desativa os cliques no card */
+            filter: grayscale(0.2);
+        }
+
+        .badge-em-breve {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #f59e0b;
+            color: #000;
+            font-weight: 800;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .servico-icon { font-size: 24px; }
+        .servico-title { font-size: 14px; font-weight: 700; color: #ffffff; }
+
+        /* OPÇÕES DE COR (A4) */
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .color-card {
+            background: #0f172a;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .color-card.selected {
+            border-color: var(--accent);
+            background: rgba(2, 132, 199, 0.15);
+        }
+
+        .paper-badge {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 10px;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .hidden { display: none !important; }
+
+        .price-box {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            padding: 18px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+        }
+        .price-box strong { color: var(--green); font-size: 22px; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover { background: var(--primary-hover); }
+
+        .btn-secondary {
+            background: #475569;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .pix-box {
+            background: #0f172a;
+            border: 2px dashed var(--accent);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-copiar-pix {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+            padding: 10px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-whatsapp {
+            background: #25d366;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        /* MODAL CUSTOMIZADO TOAST */
+        .toast-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .toast-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .toast-card {
+            background: var(--card-bg);
+            border: 2px solid var(--danger);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .toast-icon { font-size: 36px; margin-bottom: 8px; }
+        .toast-title { font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 6px; }
+        .toast-msg { font-size: 14px; color: var(--text-muted); margin-bottom: 18px; }
+        
+        .toast-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .radio-group { display: flex; gap: 20px; margin-top: 4px; }
+        .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px; }
+
+        @media (max-width: 500px) {
+            body { padding: 16px 10px; }
+            .servicos-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="nav-links">
+                <a href="fotos.html" class="nav-link">📸 Revelação de Fotos Glossy ➔</a>
+            </div>
+            <h1>PrintExpress</h1>
+            <p>Impressões, Currículos e Edições Gráficas</p>
+        </header>
+
+        <!-- CARROSSEL DE AVISOS -->
+        <div class="carousel-container">
+            <div class="carousel-slide active">
+                📢 <strong>Atendimento Rápido:</strong> Envie seus documentos e retire no mesmo dia!
+            </div>
+            <div class="carousel-slide">
+                📄 <strong>Currículos Profissionais:</strong> Montamos ou atualizamos seu currículo na hora.
+            </div>
+            <div class="carousel-slide">
+                🎨 <strong>EM BREVE: Criação de Arte / Canva:</strong> Cartões, panfletos, convites e banners digitais.
+            </div>
+            <div class="carousel-dots">
+                <span class="dot active" onclick="irParaSlide(0)"></span>
+                <span class="dot" onclick="irParaSlide(1)"></span>
+                <span class="dot" onclick="irParaSlide(2)"></span>
+            </div>
+        </div>
+
+        <!-- PASSO 1: DADOS E CONFIGURAÇÃO -->
+        <div id="step-1" class="step-card">
+            <h2>Monte seu Pedido</h2>
+            
+            <div class="form-group">
+                <label for="nome-cliente">Seu Nome Completo:</label>
+                <input type="text" id="nome-cliente" placeholder="EX: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase()">
+            </div>
+
+            <div class="form-group">
+                <label for="telefone-cliente">WhatsApp para Contato:</label>
+                <input type="tel" id="telefone-cliente" placeholder="(41) 99999-9999" maxlength="15" oninput="mascaraTelefone(this)">
+            </div>
+
+            <!-- SELEÇÃO DE SERVIÇO -->
+            <div class="form-group">
+                <label>Escolha o Serviço:</label>
+                <div class="servicos-grid">
+                    <div class="servico-card selected" id="srv-doc" onclick="selecionarServico('doc')">
+                        <div class="servico-icon">📄</div>
+                        <div class="servico-title">Impressão A4</div>
+                    </div>
+                    <div class="servico-card" onclick="location.href='curriculo.html'">
+                        <div class="servico-icon">💼</div>
+                        <div class="servico-title">Elaboração de Currículo</div>
+                    </div>
+                    
+                    <!-- -------------------------------------------------------------------------------------- -->
+                    <!-- CARD CANVA (DESATIVADO NO MOMENTO)                                                    -->
+                    <!-- PARA REATIVAR O CANVA QUANDO ESTIVER PRONTO:                                          -->
+                    <!-- 1. Remova a classe 'disabled' do div abaixo.                                           -->
+                    <!-- 2. Apague ou comente a linha da div 'badge-em-breve'.                                 -->
+                    <!-- 3. Troque o onclick para: onclick="location.href='canva.html'"                        -->
+                    <!-- -------------------------------------------------------------------------------------- -->
+                    <div class="servico-card disabled" onclick="/* location.href='canva.html' */">
+                        <div class="badge-em-breve">⏳ Em Breve</div>
+                        <div class="servico-icon">🎨</div>
+                        <div class="servico-title">Design / Edição Canva</div>
+                    </div>
+
+                    <div class="servico-card" onclick="location.href='fotos.html'">
+                        <div class="servico-icon">📸</div>
+                        <div class="servico-title">Fotos Glossy</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAINEL OPÇÕES IMPRESSÃO A4 -->
+            <div id="painel-doc">
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label>Tamanho do Papel:</label>
+                    <div class="paper-badge">📄 Papel Sulfite A4 (21x30 cm)</div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label>Tipo de Impressão:</label>
+                    <div class="color-options">
+                        <div class="color-card selected" id="card-pb" onclick="selecionarTipoCor('pb')">
+                            <strong>⚫ Preto e Branco</strong><br>
+                            <small>R$ 0,50 / folha</small>
+                        </div>
+                        <div class="color-card" id="card-cor" onclick="selecionarTipoCor('colorida')">
+                            <strong>🎨 Colorida</strong><br>
+                            <small>R$ 1,50 / folha</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="qtd-paginas">Quantidade de Folhas:</label>
+                    <input type="number" id="qtd-paginas" value="1" min="1" oninput="calcularTotal()">
+                </div>
+            </div>
+
+            <!-- VALOR E AVANÇAR -->
+            <div class="price-box">
+                <span>Valor Total:</span>
+                <strong id="valor-total">R$ 0,50</strong>
+            </div>
+
+            <button class="btn-primary" onclick="irParaPasso2()">Continuar ➔</button>
+        </div>
+
+        <!-- PASSO 2: PAGAMENTO -->
+        <div id="step-2" class="step-card hidden">
+            <h2>Escolha a Forma de Pagamento</h2>
+
+            <div class="form-group">
+                <label>Como deseja pagar?</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="pagamento" value="PIX" checked onclick="togglePagamento('pix')"> PIX
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="pagamento" value="Dinheiro" onclick="togglePagamento('dinheiro')"> Dinheiro (Na Retirada)
+                    </label>
+                </div>
+            </div>
+
+            <div id="info-troco" class="form-group hidden">
+                <label for="troco">Precisa de troco para quanto?</label>
+                <input type="text" id="troco" placeholder="Ex: Troco para R$ 20,00 ou Não preciso">
+            </div>
+
+            <div class="form-group">
+                <label for="observacoes">Observações (Opcional):</label>
+                <textarea id="observacoes" rows="2" placeholder="Ex: Preciso de 2 cópias de cada arquivo..."></textarea>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 10px;">
+                <button class="btn-secondary" onclick="voltarParaPasso1()">⬅ Voltar</button>
+                <button class="btn-primary" id="btn-enviar" onclick="finalizarPedidoFirebase()">Enviar Pedido 🚀</button>
+            </div>
+        </div>
+
+        <!-- PASSO 3: CONFIRMAÇÃO -->
+        <div id="step-3" class="step-card hidden" style="text-align: center;">
+            <div style="font-size: 50px;">🚀</div>
+            <h2>Pedido Registrado!</h2>
+            <p style="color: var(--text-muted);">Faça o pagamento e envie os arquivos/dados no nosso WhatsApp para iniciarmos.</p>
+            
+            <div id="dados-pagamento-final"></div>
+
+            <button class="btn-primary" onclick="location.reload()" style="margin-top: 20px;">Fazer Novo Pedido</button>
+        </div>
+    </div>
+
+    <!-- MODAL CUSTOMIZADO TOAST -->
+    <div class="toast-overlay" id="customToast">
+        <div class="toast-card">
+            <div class="toast-icon">⚠️</div>
+            <div class="toast-title" id="toastTitle">Campo Obrigatório</div>
+            <div class="toast-msg" id="toastMsg">Preencha todos os campos antes de continuar.</div>
+            <button class="toast-btn" onclick="fecharToast()">Entendi</button>
+        </div>
+    </div>
+
+    <!-- FIREBASE & LÓGICA -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfh0iZSotPra1olpRWRfwwBP9G8yrdHEc",
+            authDomain: "print-express-bfa7c.firebaseapp.com",
+            projectId: "print-express-bfa7c",
+            storageBucket: "print-express-bfa7c.firebasestorage.app",
+            messagingSenderId: "471136646915",
+            appId: "1:471136646915:web:8b7b6f92c00d88c7c79b36",
+            measurementId: "G-8K5LHHCDFE"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const MEU_WHATSAPP = "5541999682836";
+        const CHAVE_PIX_TEXTO = "41999682836";
+
+        let servicoAtual = "doc"; // 'doc', 'curriculo', 'canva'
+        let tipoCorSelecionado = "pb"; // 'pb', 'colorida'
+
+        // CARROSSEL DE AVISOS
+        let slideIndex = 0;
+        const slides = document.querySelectorAll(".carousel-slide");
+        const dots = document.querySelectorAll(".dot");
+
+        function mostrarSlide(n) {
+            slides.forEach(s => s.classList.remove("active"));
+            dots.forEach(d => d.classList.remove("active"));
+            slideIndex = (n + slides.length) % slides.length;
+            slides[slideIndex].classList.add("active");
+            dots[slideIndex].classList.add("active");
+        }
+
+        window.irParaSlide = function(n) { mostrarSlide(n); };
+
+        setInterval(() => {
+            mostrarSlide(slideIndex + 1);
+        }, 4000);
+
+        // SELEÇÃO DE SERVIÇOS
+        window.selecionarServico = function(tipo) {
+            // // COMO DESATIVAR/ATIVAR VIA JS SE PRECISAR:
+            // // Se quiser impedir a seleção por JS caso a classe disabled não impeça em algum navegador:
+            // if (tipo === 'canva') return; 
+
+            servicoAtual = tipo;
+            document.getElementById("srv-doc").classList.toggle("selected", tipo === 'doc');
+
+            calcularTotal();
+        };
+
+        window.selecionarTipoCor = function(tipo) {
+            tipoCorSelecionado = tipo;
+            document.getElementById("card-pb").classList.toggle("selected", tipo === 'pb');
+            document.getElementById("card-cor").classList.toggle("selected", tipo === 'colorida');
+            calcularTotal();
+        };
+
+        window.calcularTotal = function() {
+            let total = 0;
+
+            if (servicoAtual === "doc") {
+                const qtdInput = document.getElementById("qtd-paginas");
+                let qtd = parseInt(qtdInput.value) || 1;
+                if (qtd < 1) qtd = 1;
+                const precoUnitario = tipoCorSelecionado === "colorida" ? 1.50 : 0.50;
+                total = qtd * precoUnitario;
+            } else if (servicoAtual === "curriculo") {
+                total = 10.00;
+            } else if (servicoAtual === "canva") {
+                total = 15.00;
+            }
+
+            document.getElementById("valor-total").innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        };
+
+        window.mostrarToast = function(titulo, mensagem) {
+            document.getElementById("toastTitle").innerText = titulo;
+            document.getElementById("toastMsg").innerText = mensagem;
+            document.getElementById("customToast").classList.add("active");
+        };
+
+        window.fecharToast = function() {
+            document.getElementById("customToast").classList.remove("active");
+        };
+
+        window.mascaraTelefone = function(input) {
+            let v = input.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            if (v.length > 6) {
+                v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+            } else if (v.length > 2) {
+                v = v.replace(/^(\d{2})(\d{1,4}).*/, '($1) $2');
+            } else if (v.length > 0) {
+                v = v.replace(/^(\d*)/, '($1');
+            }
+            input.value = v;
+        };
+
+        window.irParaPasso2 = function() {
+            const cliente = document.getElementById("nome-cliente").value.trim();
+            const telefone = document.getElementById("telefone-cliente").value.trim();
+
+            if (!cliente) { 
+                mostrarToast("Nome Obrigatório", "Por favor, informe seu nome completo."); 
+                return; 
+            }
+            if (!telefone || telefone.length < 13) { 
+                mostrarToast("WhatsApp Inválido", "Por favor, digite um número de WhatsApp válido com DDD."); 
+                return; 
+            }
+
+            document.getElementById("step-1").classList.add("hidden");
+            document.getElementById("step-2").classList.remove("hidden");
+        };
+
+        window.voltarParaPasso1 = function() {
+            document.getElementById("step-2").classList.add("hidden");
+            document.getElementById("step-1").classList.remove("hidden");
+        };
+
+        window.togglePagamento = function(tipo) {
+            if (tipo === 'dinheiro') {
+                document.getElementById("info-troco").classList.remove("hidden");
+            } else {
+                document.getElementById("info-troco").classList.add("hidden");
+            }
+        };
+
+        window.finalizarPedidoFirebase = async function() {
+            const btn = document.getElementById("btn-enviar");
+            btn.disabled = true;
+            btn.innerText = "Enviando Pedido... ⏳";
+
+            const cliente = document.getElementById("nome-cliente").value.trim();
+            const telefone = document.getElementById("telefone-cliente").value.trim();
+            const pagamento = document.querySelector('input[name="pagamento"]:checked').value;
+            const troco = document.getElementById("troco").value || "Não precisa";
+            const obs = document.getElementById("observacoes").value || "Nenhuma";
+
+            let descServico = "";
+            let total = 0;
+
+            if (servicoAtual === "doc") {
+                const qtdPaginas = parseInt(document.getElementById("qtd-paginas").value) || 1;
+                const tipoCorTexto = tipoCorSelecionado === "colorida" ? "Colorida" : "Preto e Branco";
+                total = qtdPaginas * (tipoCorSelecionado === "colorida" ? 1.50 : 0.50);
+                descServico = `Impressão A4 (${tipoCorTexto}) - ${qtdPaginas} folha(s)`;
+            } else if (servicoAtual === "curriculo") {
+                total = 10.00;
+                descServico = "Elaboração de Currículo Profissional";
+            } else if (servicoAtual === "canva") {
+                total = 15.00;
+                descServico = "Criação de Arte / Canva";
+            }
+
+            try {
+                await addDoc(collection(db, "pedidos"), {
+                    cliente,
+                    telefone,
+                    servico: descServico,
+                    total: total,
+                    pagamento,
+                    troco,
+                    observacoes: obs,
+                    tipo: servicoAtual,
+                    dataEnvio: serverTimestamp()
+                });
+
+                const mensagemWhats = encodeURIComponent(
+                    `🚀 Olá! Fiz um pedido no PrintExpress:\n\n` +
+                    `👤 *Cliente:* ${cliente}\n` +
+                    `📌 *Serviço:* ${descServico}\n` +
+                    `💰 *Valor Total:* R$ ${total.toFixed(2).replace('.', ',')}\n` +
+                    `💳 *Forma de Pgto:* ${pagamento}\n` +
+                    `📝 *Obs:* ${obs}\n\n` +
+                    ` Estou enviando os arquivos/dados para produção!`
+                );
+
+                const linkWhatsApp = `https://wa.me/${MEU_WHATSAPP}?text=${mensagemWhats}`;
+
+                let htmlFinal = "";
+
+                if (pagamento === "PIX") {
+                    htmlFinal = `
+                        <div class="pix-box">
+                            <p style="font-size:16px;">Valor a Pagar: <strong style="color:var(--green)">R$ ${total.toFixed(2).replace('.', ',')}</strong></p>
+                            <p style="font-size:13px; color:var(--text-muted);">Copie a Chave PIX abaixo:</p>
+                            
+                            <input type="text" id="pixKeyInput" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:16px; color:var(--accent);">
+                            <button class="btn-copiar-pix" onclick="copiarChavePix()">📋 Copiar Chave PIX</button>
+                            
+                            <div style="background: rgba(2, 132, 199, 0.15); border-left: 4px solid var(--accent); padding: 12px; border-radius: 6px; font-size:13px; text-align:left;">
+                                ⚠️ <strong>IMPORTANTE:</strong> Clique abaixo para enviar o comprovante e as informações no nosso WhatsApp.
+                            </div>
+
+                            <a href="${linkWhatsApp}" target="_blank" class="btn-whatsapp">
+                                💬 Abrir WhatsApp e Concluir Pedido
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    htmlFinal = `
+                        <div class="pix-box">
+                            <p style="font-size:15px; color:var(--text-muted);">Pagamento em Dinheiro na Retirada.</p>
+                            <p style="font-size:14px;">Troco informado: <strong>${troco}</strong></p>
+                            <a href="${linkWhatsApp}" target="_blank" class="btn-whatsapp">
+                                💬 Abrir WhatsApp e Concluir Pedido
+                            </a>
+                        </div>
+                    `;
+                }
+
+                document.getElementById("dados-pagamento-final").innerHTML = htmlFinal;
+                document.getElementById("step-2").classList.add("hidden");
+                document.getElementById("step-3").classList.remove("hidden");
+
+            } catch (err) {
+                console.error(err);
+                mostrarToast("Erro de Conexão", "Não foi possível registrar seu pedido. Tente novamente.");
+                btn.disabled = false;
+                btn.innerText = "Enviar Pedido 🚀";
+            }
+        };
+
+        window.copiarChavePix = function() {
+            const input = document.getElementById("pixKeyInput");
+            input.select();
+            navigator.clipboard.writeText(input.value);
+            mostrarToast("PIX Copiado!", "A chave PIX foi copiada para sua área de transferência.");
+        };
+
+        calcularTotal();
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrintExpress - Impressão Rápida & Serviços</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
         :root {
             --primary: #0284c7;
             --primary-hover: #0369a1;
