@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PrintExpress - Impressão de Fotos Glossy</title>
+    <title>PrintExpress - Revelação de Fotos Glossy</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -97,8 +97,58 @@
             box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
         }
 
-        .radio-group { display: flex; gap: 20px; margin-top: 4px; flex-wrap: wrap; }
-        .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px; }
+        /* CARD DE TIPO DE PAPEL (ÚNICO E FIXO GLOSSY) */
+        .paper-badge {
+            background: #0f172a;
+            border: 1px solid var(--accent);
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* SELDS / QUADRADOS DE SELEÇÃO DE KITS */
+        .kits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 6px;
+        }
+
+        .kit-card {
+            background: #0f172a;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            position: relative;
+        }
+
+        .kit-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .kit-card.selected {
+            border-color: var(--accent);
+            background: rgba(2, 132, 199, 0.15);
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .kit-title { font-size: 15px; font-weight: 700; color: #ffffff; }
+        .kit-sub { font-size: 12px; color: var(--text-muted); }
+        .kit-price { font-size: 18px; font-weight: 800; color: var(--green); margin-top: 4px; }
 
         .hidden { display: none !important; }
 
@@ -178,7 +228,7 @@
             box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
         }
 
-        /* BANNER DE AVISO BONITO / MODAL CUSTOMIZADO */
+        /* MODAL CUSTOMIZADO */
         .toast-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -194,10 +244,7 @@
             transition: opacity 0.25s ease;
         }
 
-        .toast-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .toast-overlay.active { opacity: 1; pointer-events: auto; }
 
         .toast-card {
             background: var(--card-bg);
@@ -212,9 +259,7 @@
             transition: transform 0.25s ease;
         }
 
-        .toast-overlay.active .toast-card {
-            transform: translateY(0);
-        }
+        .toast-overlay.active .toast-card { transform: translateY(0); }
 
         .toast-icon { font-size: 40px; margin-bottom: 10px; }
         .toast-title { font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 8px; }
@@ -231,9 +276,13 @@
             width: 100%;
         }
 
-        @media (max-width: 600px) {
+        .radio-group { display: flex; gap: 20px; margin-top: 4px; flex-wrap: wrap; }
+        .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px; }
+
+        @media (max-width: 500px) {
             body { padding: 18px 12px; }
             .step-card { padding: 20px; gap: 16px; }
+            .kits-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -242,16 +291,16 @@
     <div class="container">
         <header>
             <a href="index.html" class="back-link">⬅ Voltar para o Inicio</a>
-            <h1>📸 Revelação de Fotos Glossy</h1>
-            <p>Papel Fotográfico Brilhante de Alta Qualidade</p>
+            <h1>📸 Revelação de Fotos</h1>
+            <p>Escolha o Tamanho e o Kit de Fotos Glossy</p>
         </header>
 
         <!-- PASSO 1: CONFIGURAÇÃO DO KIT -->
         <div id="step-1" class="step-card">
-            <h2>Escolha seu Kit de Fotos</h2>
+            <h2>Monte seu Pedido</h2>
 
             <div class="encomenda-alert">
-                📌 <span><strong>Serviço sob encomenda:</strong> Suas fotos são impressas em papel <strong>Glossy Brilhante</strong> de alta definição. Prazo de até 3 dias úteis.</span>
+                📌 <span><strong>Prazo de Produção:</strong> Até 3 dias úteis. Impressão profissional em Papel Fotográfico de alta qualidade.</span>
             </div>
             
             <div class="form-group">
@@ -264,31 +313,39 @@
                 <input type="tel" id="telefone-cliente" placeholder="(41) 99999-9999" maxlength="15" oninput="mascaraTelefone(this)">
             </div>
 
-            <!-- SELEÇÃO DE TAMANHO -->
+            <!-- ACABAMENTO DO PAPEL (ÚNICO) -->
             <div class="form-group">
-                <label for="tamanho-foto">Tamanho da Foto:</label>
-                <select id="tamanho-foto" onchange="atualizarOpcoesKits()">
-                    <option value="a6">Foto A6 / 10x15 cm (Papel Glossy Brilhante)</option>
-                    <option value="a4">Foto A4 / Grande (Papel Glossy Brilhante)</option>
+                <label>Acabamento do Papel:</label>
+                <div class="paper-badge">
+                    ✨ Papel Fotográfico Glossy (Com Brilho Premium)
+                </div>
+            </div>
+
+            <!-- SELEÇÃO DE TAMANHO DA FOTO -->
+            <div class="form-group">
+                <label for="tamanho-foto">Escolha o Tamanho da Foto:</label>
+                <select id="tamanho-foto" onchange="renderizarQuadradosKits()">
+                    <option value="a6">Foto Padrão A6 (10x15 cm)</option>
+                    <option value="a4">Foto Grande A4 (21x30 cm)</option>
                 </select>
             </div>
 
-            <!-- SELEÇÃO DO KIT (DINÂMICO) -->
+            <!-- QUADRADOS DE SELEÇÃO DE KITS (TODOS ABAIXO DE R$ 80,00) -->
             <div class="form-group">
-                <label for="kit-foto">Selecione o Kit Desejado:</label>
-                <select id="kit-foto" onchange="calcularPrecoKit()">
-                    <!-- Preenchido dinamicamente via JS -->
-                </select>
+                <label>Selecione o Kit Desejado:</label>
+                <div class="kits-grid" id="container-kits">
+                    <!-- Gerado dinamicamente via Javascript -->
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="observacoes">Observações Gerais (Opcional):</label>
-                <textarea id="observacoes" rows="2" placeholder="Ex: Fotos para álbum, cortar bordas se necessário, etc."></textarea>
+                <textarea id="observacoes" rows="2" placeholder="Ex: Fotos para álbum de família, etc."></textarea>
             </div>
 
             <div class="price-box">
-                <span>Valor do Kit:</span>
-                <strong id="valor-total">R$ 15,00</strong>
+                <span>Total do Kit:</span>
+                <strong id="valor-total">R$ 0,00</strong>
             </div>
 
             <button class="btn-primary" onclick="irParaPasso2()">Avançar para Pagamento ➔</button>
@@ -317,15 +374,15 @@
 
             <div style="display: flex; gap: 12px; margin-top: 10px;">
                 <button class="btn-secondary" onclick="voltarParaPasso1()">⬅ Voltar</button>
-                <button class="btn-primary" id="btn-enviar" onclick="finalizarPedidoFirebase()">Enviar Pedido de Fotos 🚀</button>
+                <button class="btn-primary" id="btn-enviar" onclick="finalizarPedidoFirebase()">Enviar Pedido 🚀</button>
             </div>
         </div>
 
         <!-- PASSO 3: CONFIRMAÇÃO -->
         <div id="step-3" class="step-card hidden" style="text-align: center;">
             <div style="font-size: 50px;">📸</div>
-            <h2>Pedido de Fotos Registrado!</h2>
-            <p style="color: var(--text-muted);">Faça o pagamento abaixo e envie suas fotos para o nosso WhatsApp!</p>
+            <h2>Pedido Registrado!</h2>
+            <p style="color: var(--text-muted);">Faça o pagamento e envie suas fotos no WhatsApp para iniciar a impressão.</p>
             
             <div id="dados-pagamento-final"></div>
 
@@ -333,12 +390,12 @@
         </div>
     </div>
 
-    <!-- MODAL / AVISO CUSTOMIZADO BONITO -->
+    <!-- MODAL CUSTOMIZADO BONITO -->
     <div class="toast-overlay" id="customToast">
         <div class="toast-card">
             <div class="toast-icon">⚠️</div>
             <div class="toast-title" id="toastTitle">Campo Obrigatório</div>
-            <div class="toast-msg" id="toastMsg">Por favor, preencha todos os campos antes de continuar.</div>
+            <div class="toast-msg" id="toastMsg">Preencha todos os campos antes de continuar.</div>
             <button class="toast-btn" onclick="fecharToast()">Entendi</button>
         </div>
     </div>
@@ -364,22 +421,24 @@
         const MEU_WHATSAPP = "5541999682836";
         const CHAVE_PIX_TEXTO = "41999682836";
 
-        // KITS DE PREÇOS (EDITE OS VALORES AQUI SE QUISER)
+        // TODOS OS KITS ABAIXO DE R$ 80,00
         const TABELA_KITS = {
             a6: [
-                { nome: "Kit 10 Fotos A6 (10x15)", preco: 15.00 },
-                { nome: "Kit 20 Fotos A6 (10x15)", preco: 28.00 },
-                { nome: "Kit 50 Fotos A6 (10x15)", preco: 65.00 },
-                { nome: "Kit 100 Fotos A6 (10x15)", preco: 120.00 }
+                { id: 0, qtd: "Kit 10 Fotos", sub: "10x15 Glossy", preco: 15.00 },
+                { id: 1, qtd: "Kit 20 Fotos", sub: "10x15 Glossy", preco: 28.00 },
+                { id: 2, qtd: "Kit 35 Fotos", sub: "10x15 Glossy", preco: 48.00 },
+                { id: 3, qtd: "Kit 50 Fotos", sub: "10x15 Glossy", preco: 68.00 }
             ],
             a4: [
-                { nome: "Kit 1 Foto A4 Grande", preco: 4.50 },
-                { nome: "Kit 5 Fotos A4 Grandes", preco: 20.00 },
-                { nome: "Kit 10 Fotos A4 Grandes", preco: 38.00 }
+                { id: 0, qtd: "1 Foto A4", sub: "21x30 Grande", preco: 4.50 },
+                { id: 1, qtd: "Kit 5 Fotos A4", sub: "21x30 Grande", preco: 20.00 },
+                { id: 2, qtd: "Kit 10 Fotos A4", sub: "21x30 Grande", preco: 38.00 },
+                { id: 3, qtd: "Kit 15 Fotos A4", sub: "21x30 Grande", preco: 55.00 }
             ]
         };
 
-        // EXIBIR TOAST CUSTOMIZADO BONITO
+        let kitSelecionadoObj = null;
+
         window.mostrarToast = function(titulo, mensagem) {
             document.getElementById("toastTitle").innerText = titulo;
             document.getElementById("toastMsg").innerText = mensagem;
@@ -390,31 +449,39 @@
             document.getElementById("customToast").classList.remove("active");
         };
 
-        // ATUALIZA OS KITS DE ACORDO COM O TAMANHO SELECIONADO
-        window.atualizarOpcoesKits = function() {
+        // MONTA OS QUADRADOS DE KITS NA TELA
+        window.renderizarQuadradosKits = function() {
             const tamanho = document.getElementById("tamanho-foto").value;
-            const selectKit = document.getElementById("kit-foto");
-            selectKit.innerHTML = "";
+            const container = document.getElementById("container-kits");
+            container.innerHTML = "";
 
-            TABELA_KITS[tamanho].forEach((item, index) => {
-                const opt = document.createElement("option");
-                opt.value = index;
-                opt.innerText = `${item.nome} — R$ ${item.preco.toFixed(2).replace('.', ',')}`;
-                selectKit.appendChild(opt);
+            const kitsLista = TABELA_KITS[tamanho];
+
+            kitsLista.forEach((item, index) => {
+                const card = document.createElement("div");
+                card.className = "kit-card" + (index === 0 ? " selected" : "");
+                card.onclick = () => selecionarKitCard(card, item);
+
+                card.innerHTML = `
+                    <div class="kit-title">${item.qtd}</div>
+                    <div class="kit-sub">${item.sub}</div>
+                    <div class="kit-price">R$ ${item.preco.toFixed(2).replace('.', ',')}</div>
+                `;
+
+                container.appendChild(card);
             });
 
-            calcularPrecoKit();
+            // Seleciona o primeiro kit como padrão
+            selecionarKitCard(container.children[0], kitsLista[0]);
         };
 
-        window.calcularPrecoKit = function() {
-            const tamanho = document.getElementById("tamanho-foto").value;
-            const kitIndex = document.getElementById("kit-foto").value;
-            const kitSelecionado = TABELA_KITS[tamanho][kitIndex];
-
-            if (kitSelecionado) {
-                document.getElementById("valor-total").innerText = `R$ ${kitSelecionado.preco.toFixed(2).replace('.', ',')}`;
-            }
-        };
+        function selecionarKitCard(cardElement, kitObj) {
+            document.querySelectorAll(".kit-card").forEach(c => c.classList.remove("selected"));
+            cardElement.classList.add("selected");
+            
+            kitSelecionadoObj = kitObj;
+            document.getElementById("valor-total").innerText = `R$ ${kitObj.preco.toFixed(2).replace('.', ',')}`;
+        }
 
         window.mascaraTelefone = function(input) {
             let v = input.value.replace(/\D/g, '');
@@ -434,12 +501,16 @@
             const telefone = document.getElementById("telefone-cliente").value.trim();
 
             if (!cliente) { 
-                mostrarToast("Nome Obrigatório", "Por favor, digite seu Nome Completo para continuar."); 
+                mostrarToast("Nome Obrigatório", "Por favor, preencha o seu nome completo para continuar."); 
                 return; 
             }
             if (!telefone || telefone.length < 13) { 
-                mostrarToast("WhatsApp Inválido", "Por favor, informe um número de WhatsApp válido com DDD."); 
+                mostrarToast("WhatsApp Inválido", "Por favor, digite um número de WhatsApp válido com DDD."); 
                 return; 
+            }
+            if (!kitSelecionadoObj) {
+                mostrarToast("Selecione um Kit", "Escolha um dos kits de fotos acima para continuar.");
+                return;
             }
 
             document.getElementById("step-1").classList.add("hidden");
@@ -466,10 +537,6 @@
 
             const cliente = document.getElementById("nome-cliente").value.trim();
             const telefone = document.getElementById("telefone-cliente").value.trim();
-            const tamanho = document.getElementById("tamanho-foto").value;
-            const kitIndex = document.getElementById("kit-foto").value;
-            const kitObj = TABELA_KITS[tamanho][kitIndex];
-
             const pagamento = document.querySelector('input[name="pagamento"]:checked').value;
             const troco = document.getElementById("troco").value || "Não precisa";
             const obs = document.getElementById("observacoes").value || "Nenhuma";
@@ -478,9 +545,9 @@
                 await addDoc(collection(db, "pedidos"), {
                     cliente,
                     telefone,
-                    papel: `Fotos Glossy (${kitObj.nome})`,
+                    papel: `Fotos Glossy (${kitSelecionadoObj.qtd} - ${kitSelecionadoObj.sub})`,
                     quantidade: 1,
-                    total: kitObj.preco,
+                    total: kitSelecionadoObj.preco,
                     pagamento,
                     troco,
                     observacoes: obs,
@@ -489,10 +556,10 @@
                 });
 
                 const mensagemWhats = encodeURIComponent(
-                    `📸 Olá! Fiz um pedido de *KITS DE FOTOS GLOSSY*:\n\n` +
+                    `📸 Olá! Fiz um pedido no PrintExpress:\n\n` +
                     `👤 *Cliente:* ${cliente}\n` +
-                    `📦 *Pacote:* ${kitObj.nome}\n` +
-                    `💰 *Valor Total:* R$ ${kitObj.preco.toFixed(2).replace('.', ',')}\n` +
+                    `📦 *Pacote:* ${kitSelecionadoObj.qtd} (${kitSelecionadoObj.sub})\n` +
+                    `💰 *Valor Total:* R$ ${kitSelecionadoObj.preco.toFixed(2).replace('.', ',')}\n` +
                     `💳 *Forma de Pgto:* ${pagamento}\n` +
                     `📝 *Obs:* ${obs}\n\n` +
                     ` Estou enviando o comprovante e as fotos para impressão!`
@@ -505,14 +572,14 @@
                 if (pagamento === "PIX") {
                     htmlFinal = `
                         <div class="pix-box">
-                            <p style="font-size:16px;">Valor do Kit: <strong style="color:var(--green)">R$ ${kitObj.preco.toFixed(2).replace('.', ',')}</strong></p>
-                            <p style="font-size:13px; color:var(--text-muted);">Copie a Chave PIX abaixo para pagar:</p>
+                            <p style="font-size:16px;">Valor a Pagar: <strong style="color:var(--green)">R$ ${kitSelecionadoObj.preco.toFixed(2).replace('.', ',')}</strong></p>
+                            <p style="font-size:13px; color:var(--text-muted);">Copie a Chave PIX abaixo:</p>
                             
                             <input type="text" id="pixKeyInput" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:16px; color:var(--accent);">
                             <button class="btn-copiar-pix" onclick="copiarChavePix()">📋 Copiar Chave PIX</button>
                             
                             <div class="encomenda-alert" style="text-align:left; margin-top:10px;">
-                                ⚠️ <strong>IMPORTANTE:</strong> Envie o comprovante e as <strong>FOTOS</strong> que deseja imprimir diretamente no nosso WhatsApp clicando no botão abaixo!
+                                ⚠️ <strong>IMPORTANTE:</strong> Envie o comprovante e as <strong>FOTOS</strong> que deseja imprimir diretamente no WhatsApp clicando no botão abaixo!
                             </div>
 
                             <a href="${linkWhatsApp}" target="_blank" class="btn-whatsapp">
@@ -526,7 +593,7 @@
                             <p style="font-size:15px; color:var(--text-muted);">Pagamento em Dinheiro na Retirada.</p>
                             <p style="font-size:14px;">Troco informado: <strong>${troco}</strong></p>
                             <a href="${linkWhatsApp}" target="_blank" class="btn-whatsapp">
-                                💬 Enviar Fotos pelo WhatsApp
+                                💬 Enviar Fotos no WhatsApp
                             </a>
                         </div>
                     `;
@@ -538,9 +605,9 @@
 
             } catch (err) {
                 console.error(err);
-                mostrarToast("Erro de Conexão", "Não foi possível registrar seu pedido no momento. Tente novamente.");
+                mostrarToast("Erro de Conexão", "Não foi possível registrar seu pedido. Tente novamente.");
                 btn.disabled = false;
-                btn.innerText = "Enviar Pedido de Fotos 🚀";
+                btn.innerText = "Enviar Pedido 🚀";
             }
         };
 
@@ -548,11 +615,11 @@
             const input = document.getElementById("pixKeyInput");
             input.select();
             navigator.clipboard.writeText(input.value);
-            mostrarToast("PIX Copiado!", "A chave PIX foi copiada para sua área de transferência com sucesso.");
+            mostrarToast("PIX Copiado!", "A chave PIX foi copiada com sucesso.");
         };
 
-        // Inicializa as opções na tela
-        atualizarOpcoesKits();
+        // Renderiza os cards na inicialização
+        renderizarQuadradosKits();
     </script>
 </body>
 </html>
