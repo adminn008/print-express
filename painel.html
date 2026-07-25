@@ -66,6 +66,8 @@
             border-bottom: 1px solid #334155;
             padding-bottom: 10px;
             margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .cliente-nome { font-size: 18px; font-weight: bold; color: #f8fafc; }
         .pedido-total { font-size: 18px; font-weight: bold; color: #34d399; }
@@ -122,6 +124,11 @@
         }
 
         .sem-pedidos { text-align: center; color: #64748b; margin-top: 50px; font-size: 16px; }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .pedido-header { flex-direction: column; align-items: flex-start; }
+        }
     </style>
 </head>
 <body>
@@ -132,7 +139,7 @@
             <p>Gerencie pedidos em tempo real, visualize arquivos e publique avisos.</p>
         </header>
 
-        <!-- Campo exclusivo para enviar Avisos Globais para o site -->
+        <!-- Campo exclusivo para enviar Avisos Globais para o index.html -->
         <div class="aviso-box">
             <h2>📢 Publicar Aviso Global no Site (index.html)</h2>
             <textarea id="inputAviso" rows="2" placeholder="Digite um aviso importante para aparecer no topo do site dos clientes..."></textarea>
@@ -165,19 +172,17 @@
         const containerPedidos = document.getElementById("lista-pedidos");
         let totalPedidosAnterior = -1;
 
-        // Solicita permissão para notificações sonoras/visuais no navegador
         if ("Notification" in window && Notification.permission !== "granted") {
             Notification.requestPermission();
         }
 
-        // Função para tocar som de alerta quando chegar novo pedido
         function tocarAlertaSonoro() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.type = "sine";
-                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // Nota D5
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
                 osc.start();
@@ -187,17 +192,15 @@
             }
         }
 
-        // Ouve a coleção 'pedidos' em tempo real ordenada pelos mais recentes
         const q = query(collection(db, "pedidos"), orderBy("dataEnvio", "desc"));
 
         onSnapshot(q, (snapshot) => {
             if (snapshot.empty) {
-                containerPedidos.innerHTML = `<p class="sem-pedidos">Nenhum pedido recebido ainda. Aguardando...</p>";`;
+                containerPedidos.innerHTML = `<p class="sem-pedidos">Nenhum pedido recebido ainda. Aguardando...</p>`;
                 totalPedidosAnterior = 0;
                 return;
             }
 
-            // Verifica se chegou novo pedido para disparar notificação
             if (totalPedidosAnterior !== -1 && snapshot.size > totalPedidosAnterior) {
                 tocarAlertaSonoro();
                 if ("Notification" in window && Notification.permission === "granted") {
@@ -223,6 +226,7 @@
                 const obs = p.observacoes ? p.observacoes : 'Nenhuma observação';
                 const nomeArquivo = p.arquivoNome ? p.arquivoNome : 'arquivo';
                 const linkArquivo = p.arquivoDados ? p.arquivoDados : '';
+                const telefoneCliente = p.telefone ? p.telefone : 'Não informado';
                 const isConcluido = p.concluido === true;
                 
                 let infoTroco = '';
@@ -230,7 +234,6 @@
                     infoTroco = ` (Troco para: ${p.troco})`;
                 }
 
-                // Gerador de pré-visualização (Mostra imagem direto ou PDF em iframe se for Base64)
                 let previewHTML = '';
                 if (linkArquivo) {
                     if (linkArquivo.includes('image/') || nomeArquivo.match(/\.(png|jpg|jpeg)$/i)) {
@@ -249,6 +252,7 @@
                             <span class="pedido-total">R$ ${totalFormatado}</span>
                         </div>
                         <div class="pedido-info">
+                            <p>📞 <strong>Telefone / WhatsApp:</strong> ${telefoneCliente}</p>
                             <p>📄 <strong>Serviço/Papel:</strong> ${p.papel || 'Padrão'} (${p.quantidade || 1} un)</p>
                             <p>💳 <strong>Pagamento:</strong> ${p.pagamento || 'PIX'}${infoTroco}</p>
                             <p>📝 <strong>Obs:</strong> ${obs}</p>
@@ -271,7 +275,6 @@
             containerPedidos.innerHTML = html;
         });
 
-        // Função global para alternar o status de concluído no Firestore
         window.alternarConcluido = async function(id, status) {
             try {
                 const ref = doc(db, "pedidos", id);
@@ -282,7 +285,6 @@
             }
         };
 
-        // Função para publicar aviso global que aparece no index.html
         window.publicarAviso = async function() {
             const textoAviso = document.getElementById("inputAviso").value.trim();
             try {
@@ -297,7 +299,6 @@
             }
         };
 
-        // Carrega o texto atual do aviso ao abrir o painel
         async function carregarInputAviso() {
             try {
                 const snap = await getDoc(doc(db, "config", "aviso"));
