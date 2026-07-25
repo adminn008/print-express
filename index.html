@@ -100,13 +100,11 @@
         </div>
     </div>
 
-    <!-- LÓGICA DO FIREBASE E DO SITE (MODULAR) -->
+    <!-- LÓGICA DO FIREBASE (APENAS FIRESTORE, SEM STORAGE) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
 
-        // Sua configuração exata do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAfh0iZSotPra1olpRWRfwwBP9G8yrdHEc",
             authDomain: "print-express-bfa7c.firebaseapp.com",
@@ -117,10 +115,8 @@
             measurementId: "G-8K5LHHCDFE"
         };
 
-        // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app);
 
         let dadosPedido = {
             tipoPapelTexto: "",
@@ -133,7 +129,6 @@
             cliente: ""
         };
 
-        // Funções globais para funcionarem nos botões HTML
         window.calcularPreco = function() {
             const selectPapel = document.getElementById("tipo-papel");
             const optionSelecionada = selectPapel.options[selectPapel.selectedIndex];
@@ -187,6 +182,7 @@
             }
         };
 
+        // Função para converter arquivo em Base64 e salvar direto no Firestore
         window.finalizarPedido = async function() {
             const nomeCliente = document.getElementById("nome-cliente").value;
             const arquivoInput = document.getElementById("arquivo");
@@ -198,53 +194,53 @@
 
             const arquivo = arquivoInput.files[0];
             const botaoEnviar = document.getElementById("btn-enviar");
-            botaoEnviar.innerText = "Enviando arquivo... ⏳";
+            botaoEnviar.innerText = "Processando arquivo... ⏳";
             botaoEnviar.disabled = true;
 
             try {
-                // 1. Salvar arquivo no Storage do Firebase
-                const nomeArquivoUnico = Date.now() + "_" + arquivo.name;
-                const storageRef = ref(storage, "pedidos_impressao/" + nomeArquivoUnico);
+                // Lê o arquivo e converte para dados salvos em texto (Base64)
+                const reader = new FileReader();
+                reader.readAsDataURL(arquivo);
                 
-                const snapshot = await uploadBytes(storageRef, arquivo);
-                const downloadURL = await getDownloadURL(snapshot.ref);
+                reader.onload = async function() {
+                    const arquivoBase64 = reader.result;
 
-                // 2. Salvar dados no Firestore
-                await addDoc(collection(db, "pedidos"), {
-                    cliente: nomeCliente,
-                    pagamento: dadosPedido.pagamento,
-                    troco: document.getElementById("troco").value || "Não se aplica",
-                    papel: dadosPedido.tipoPapelTexto,
-                    quantidade: dadosPedido.quantidade,
-                    total: dadosPedido.total,
-                    observacoes: dadosPedido.observacoes,
-                    arquivoUrl: downloadURL,
-                    arquivoNome: arquivo.name,
-                    dataEnvio: serverTimestamp()
-                });
+                    // Salva tudo direto no Firestore (sem precisar do Storage)
+                    await addDoc(collection(db, "pedidos"), {
+                        cliente: nomeCliente,
+                        pagamento: dadosPedido.pagamento,
+                        troco: document.getElementById("troco").value || "Não se aplica",
+                        papel: dadosPedido.tipoPapelTexto,
+                        quantidade: dadosPedido.quantidade,
+                        total: dadosPedido.total,
+                        observacoes: dadosPedido.observacoes,
+                        arquivoNome: arquivo.name,
+                        arquivoDados: arquivoBase64, // O arquivo inteiro vai guardado aqui
+                        dataEnvio: serverTimestamp()
+                    });
 
-                // 3. Tela de sucesso
-                let instrucaoPagamento = "";
-                if (dadosPedido.pagamento === 'PIX') {
-                    instrucaoPagamento = `
-                        <p>Chave PIX: <strong>sua-chave-aqui@email.com</strong></p>
-                        <p>Valor exato: <strong>R$ ${dadosPedido.total.toFixed(2).replace('.', ',')}</strong></p>
-                        <small>Faça o PIX para liberar a impressão!</small>
-                    `;
-                } else {
-                    instrucaoPagamento = `
-                        <p>Forma escolhida: <strong>Dinheiro na Retirada</strong></p>
-                        <p>Troco para: <strong>${document.getElementById("troco").value || 'Não precisa'}</strong></p>
-                    `;
-                }
+                    let instrucaoPagamento = "";
+                    if (dadosPedido.pagamento === 'PIX') {
+                        instrucaoPagamento = `
+                            <p>Chave PIX: <strong>sua-chave-aqui@email.com</strong></p>
+                            <p>Valor exato: <strong>R$ ${dadosPedido.total.toFixed(2).replace('.', ',')}</strong></p>
+                            <small>Faça o PIX para liberar a impressão!</small>
+                        `;
+                    } else {
+                        instrucaoPagamento = `
+                            <p>Forma escolhida: <strong>Dinheiro na Retirada</strong></p>
+                            <p>Troco para: <strong>${document.getElementById("troco").value || 'Não precisa'}</strong></p>
+                        `;
+                    }
 
-                document.getElementById("dados-pagamento-final").innerHTML = instrucaoPagamento;
-                document.getElementById("step-2").classList.remove("active");
-                document.getElementById("step-3").classList.add("active");
+                    document.getElementById("dados-pagamento-final").innerHTML = instrucaoPagamento;
+                    document.getElementById("step-2").classList.remove("active");
+                    document.getElementById("step-3").classList.add("active");
+                };
 
             } catch (error) {
                 console.error("Erro ao enviar pedido:", error);
-                alert("Erro ao enviar o arquivo. Verifique sua conexão.");
+                alert("Erro ao enviar o arquivo. Verifique se o arquivo não é muito pesado.");
                 botaoEnviar.innerText = "Enviar Pedido Confidencial 🚀";
                 botaoEnviar.disabled = false;
             }
@@ -254,7 +250,6 @@
             location.reload();
         };
 
-        // Calcular preço inicial ao carregar
         window.calcularPreco();
     </script>
 </body>
