@@ -163,6 +163,7 @@
             flex-direction: column;
             align-items: center;
             gap: 6px;
+            position: relative;
         }
 
         .servico-card:hover { border-color: var(--accent); transform: translateY(-2px); }
@@ -171,6 +172,27 @@
             border-color: var(--accent);
             background: rgba(2, 132, 199, 0.15);
             box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        /* ESTILOS PARA CARD DESATIVADO (EM BREVE) */
+        .servico-card.disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            pointer-events: none; /* Desativa os cliques no card */
+            filter: grayscale(0.2);
+        }
+
+        .badge-em-breve {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #f59e0b;
+            color: #000;
+            font-weight: 800;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 12px;
+            text-transform: uppercase;
         }
 
         .servico-icon { font-size: 24px; }
@@ -392,10 +414,20 @@
                         <div class="servico-icon">💼</div>
                         <div class="servico-title">Elaboração de Currículo</div>
                     </div>
-                    <div class="servico-card" onclick="location.href='canva.html'">
+                    
+                    <!-- -------------------------------------------------------------------------------------- -->
+                    <!-- CARD CANVA (DESATIVADO NO MOMENTO)                                                    -->
+                    <!-- PARA REATIVAR O CANVA QUANDO ESTIVER PRONTO:                                          -->
+                    <!-- 1. Remova a classe 'disabled' do div abaixo.                                           -->
+                    <!-- 2. Apague ou comente a linha da div 'badge-em-breve'.                                 -->
+                    <!-- 3. Troque o onclick para: onclick="location.href='canva.html'"                        -->
+                    <!-- -------------------------------------------------------------------------------------- -->
+                    <div class="servico-card disabled" onclick="/* location.href='canva.html' */">
+                        <div class="badge-em-breve">⏳ Em Breve</div>
                         <div class="servico-icon">🎨</div>
                         <div class="servico-title">Design / Edição Canva</div>
                     </div>
+
                     <div class="servico-card" onclick="location.href='fotos.html'">
                         <div class="servico-icon">📸</div>
                         <div class="servico-title">Fotos Glossy</div>
@@ -430,6 +462,15 @@
                 </div>
             </div>
 
+            <!-- VALOR E AVANÇAR -->
+            <div class="price-box">
+                <span>Valor Total:</span>
+                <strong id="valor-total">R$ 0,50</strong>
+            </div>
+
+            <button class="btn-primary" onclick="irParaPasso2()">Continuar ➔</button>
+        </div>
+
         <!-- PASSO 2: PAGAMENTO -->
         <div id="step-2" class="step-card hidden">
             <h2>Escolha a Forma de Pagamento</h2>
@@ -449,6 +490,11 @@
             <div id="info-troco" class="form-group hidden">
                 <label for="troco">Precisa de troco para quanto?</label>
                 <input type="text" id="troco" placeholder="Ex: Troco para R$ 20,00 ou Não preciso">
+            </div>
+
+            <div class="form-group">
+                <label for="observacoes">Observações (Opcional):</label>
+                <textarea id="observacoes" rows="2" placeholder="Ex: Preciso de 2 cópias de cada arquivo..."></textarea>
             </div>
 
             <div style="display: flex; gap: 12px; margin-top: 10px;">
@@ -524,14 +570,12 @@
 
         // SELEÇÃO DE SERVIÇOS
         window.selecionarServico = function(tipo) {
+            // // COMO DESATIVAR/ATIVAR VIA JS SE PRECISAR:
+            // // Se quiser impedir a seleção por JS caso a classe disabled não impeça em algum navegador:
+            // if (tipo === 'canva') return; 
+
             servicoAtual = tipo;
             document.getElementById("srv-doc").classList.toggle("selected", tipo === 'doc');
-            document.getElementById("srv-curriculo").classList.toggle("selected", tipo === 'curriculo');
-            document.getElementById("srv-canva").classList.toggle("selected", tipo === 'canva');
-
-            document.getElementById("painel-doc").classList.toggle("hidden", tipo !== 'doc');
-            document.getElementById("painel-curriculo").classList.toggle("hidden", tipo !== 'curriculo');
-            document.getElementById("painel-canva").classList.toggle("hidden", tipo !== 'canva');
 
             calcularTotal();
         };
