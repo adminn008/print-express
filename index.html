@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrintExpress - Central de Impressão Confidencial</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🖨️ PrintExpress</h1>
+            <p>Envio rápido, confidencial e direto para a impressora.</p>
+        </header>
+
+        <!-- PASSO 1: ESCOLHA DE ARQUIVO E PAPEL -->
+        <div id="step-1" class="step-card active">
+            <h2>Passo 1: Envie seu arquivo e escolha o papel</h2>
+            
+            <div class="form-group">
+                <label for="arquivo">Seu Arquivo ou Foto (PDF, DOCX, PNG, JPG):</label>
+                <input type="file" id="arquivo" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+                <small class="hint">Seu arquivo é tratado com total sigilo e apagado após a impressão.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="tipo-papel">Tipo de Papel:</label>
+                <select id="tipo-papel" onchange="calcularPreco()">
+                    <option value="a4" data-preco="0.50">Papel Sulfite A4 Padrão (R$ 0,50 / pág)</option>
+                    <option value="fotografico" data-preco="3.50">Papel Fotográfico Brilhante (R$ 3,50 / un)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="paginas">Quantidade de Páginas / Cópias:</label>
+                <input type="number" id="paginas" value="1" min="1" max="100" oninput="calcularPreco()">
+            </div>
+
+            <div class="form-group">
+                <label for="observacoes">Observações para a impressão (Opcional):</label>
+                <textarea id="observacoes" placeholder="Ex: Imprimir frente e verso, colorido apenas na página 2..."></textarea>
+            </div>
+
+            <div class="price-box">
+                <span>Total Estimado:</span>
+                <strong id="valor-total">R$ 0,50</strong>
+            </div>
+
+            <button class="btn-primary" onclick="irParaPasso2()">Avançar para Pagamento ➔</button>
+        </div>
+
+        <!-- PASSO 2: PAGAMENTO E CONTATO -->
+        <div id="step-2" class="step-card">
+            <h2>Passo 2: Forma de Pagamento e Contato</h2>
+            
+            <div class="summary-box">
+                <p><strong>Resumo do Pedido:</strong></p>
+                <p id="resumo-pedido-texto">Carregando...</p>
+            </div>
+
+            <div class="form-group">
+                <label>Forma de Pagamento:</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="pagamento" value="PIX" checked onclick="togglePagamento('pix')"> PIX (Chave gerada no final)
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="pagamento" value="Dinheiro" onclick="togglePagamento('dinheiro')"> Dinheiro (Pagar na retirada)
+                    </label>
+                </div>
+            </div>
+
+            <div id="info-troco" class="form-group hidden">
+                <label for="troco">Precisa de troco para quanto?</label>
+                <input type="text" id="troco" placeholder="Ex: Para R$ 20,00 ou Não preciso">
+            </div>
+
+            <div class="form-group">
+                <label for="nome-cliente">Seu Nome / WhatsApp:</label>
+                <input type="text" id="nome-cliente" placeholder="Ex: Carlos (41) 99999-9999">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="voltarParaPasso1()">⬅ Voltar</button>
+                <button class="btn-primary" onclick="finalizarPedido()">Enviar Pedido Confidencial 🚀</button>
+            </div>
+        </div>
+
+        <!-- PASSO 3: SUCESSO / PIX -->
+        <div id="step-3" class="step-card">
+            <div class="success-icon">✅</div>
+            <h2>Pedido Enviado com Sucesso!</h2>
+            <p>Seu arquivo foi transmitido de forma criptografada para o operador da impressora.</p>
+            
+            <div id="dados-pagamento-final" class="payment-instructions">
+                <!-- Conteúdo injetado via JS dependendo se é PIX ou Dinheiro -->
+            </div>
+
+            <button class="btn-primary" onclick="novoPedido()">Fazer Novo Pedido</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
