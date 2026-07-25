@@ -6,6 +6,30 @@
     <title>PrintExpress - Impressão Rápida & Serviços</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        document.getElementById("btn-enviar").addEventListener("click", async () => {
+    const btn = document.getElementById("btn-enviar");
+    btn.disabled = true;
+    btn.innerText = "Enviando Pedido... ⏳";
+
+    const LIMITE_TOTAL = 100 * 1024 * 1024; // 100 MB
+
+    let tamanhoTotal = 0;
+
+    for (const item of configuracoesArquivos) {
+        tamanhoTotal += item.file.size;
+    }
+
+    if (tamanhoTotal > LIMITE_TOTAL) {
+        mostrarToast(
+            "Arquivos muito grandes",
+            "O total dos arquivos não pode ultrapassar 100 MB."
+        );
+
+        btn.disabled = false;
+        btn.innerText = "Enviar Pedido 🚀";
+        return;
+    }
+
         :root {
             --primary: #0284c7;
             --primary-hover: #0369a1;
