@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PrintExpress - Gráfica Rápida & Serviços</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SDK DO EMAILJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         :root {
             --primary: #0284c7;
@@ -482,7 +484,7 @@
         <div id="step-3" class="step-card hidden" style="text-align: center;">
             <div style="font-size: 50px;">🚀</div>
             <h2>Pedido Registrado!</h2>
-            <p style="color: var(--text-muted); margin-top: 8px;">Seu pedido foi enviado com sucesso para o nosso sistema.</p>
+            <p style="color: var(--text-muted); margin-top: 8px;">Seu pedido foi enviado com sucesso para o nosso e-mail.</p>
             
             <div id="box-pagamento-final"></div>
 
@@ -501,29 +503,21 @@
     </div>
 
     <script>
-        // CONFIGURAÇÕES DO GITHUB (FATIAMENTO MANTIDO)
-        const prefixo = "ghp_"; 
-        const chave = "ACHKIt2UzTlVkxXFqCms4c2CmTo2en4EsBrD"; // Cole a parte restante do token aqui
-        const GITHUB_TOKEN = prefixo + chave;
+        // --- CONFIGURAÇÕES DO EMAILJS ---
+        const EMAILJS_PUBLIC_KEY = "SUA_PUBLIC_KEY";  // Cole sua Public Key aqui
+        const EMAILJS_SERVICE_ID = "SEU_SERVICE_ID";  // Cole seu Service ID aqui
+        const EMAILJS_TEMPLATE_ID = "SEU_TEMPLATE_ID"; // Cole seu Template ID aqui
 
-        const REPO_OWNER = "adminn008";          // Seu usuário do GitHub
-        const REPO_NAME = "arquivos-printexpress";      // Nome do repositório PRIVADO
+        // Inicializa o EmailJS
+        (function(){
+            emailjs.init(EMAILJS_PUBLIC_KEY);
+        })();
 
-        const CHAVE_PIX_TEXTO = "41999682836";     // Sua chave PIX
+        const CHAVE_PIX_TEXTO = "41999682836"; // Sua chave PIX
 
         let configuracoesArquivos = [];
 
-        // FUNÇÃO PARA LER ARQUIVO E CONVERTER PARA BASE64
-        function lerArquivoComoBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve({ name: file.name, type: file.type, data: reader.result });
-                reader.onerror = error => reject(error);
-                reader.readAsDataURL(file);
-            });
-        }
-
-        // LÓGICA DO CARROSSEL DE AVISOS
+        // LÓGICA DO CARROSSEL
         let slideIndex = 0;
         const slides = document.querySelectorAll(".carousel-slide");
         const dots = document.querySelectorAll(".dot");
@@ -549,7 +543,7 @@
             mostrarToast("Em Breve!", "O serviço de Edição/Canva estará disponível em breve no site.");
         });
 
-        // FORMATAÇÃO DE CAMPOS DE ENTRADA
+        // FORMATAÇÃO DE ENTRADAS
         const inputNome = document.getElementById("nome-cliente");
         const inputTel = document.getElementById("telefone-cliente");
 
@@ -680,76 +674,42 @@
             });
         });
 
-        // ENVIO DO PEDIDO COM CONVERSÃO BASE64
+        // ENVIO DO PEDIDO VIA EMAILJS
         document.getElementById("btn-enviar").addEventListener("click", async () => {
             const btnEnviar = document.getElementById("btn-enviar");
             btnEnviar.disabled = true;
-            btnEnviar.innerText = "Processando e enviando...";
+            btnEnviar.innerText = "Enviando pedido...";
 
             const cliente = inputNome.value.trim();
             const telefone = inputTel.value.trim();
             const pagamento = document.querySelector('input[name="pagamento"]:checked').value;
             const troco = document.getElementById("troco").value || "Não precisa";
             const obs = document.getElementById("observacoes").value || "Nenhuma";
-
             let totalGeneral = calcularTotal();
 
-            // Processa a conversão dos arquivos anexados para Base64
-            let arquivosComData = [];
-            try {
-                arquivosComData = await Promise.all(configuracoesArquivos.map(async (item) => {
-                    const base64Obj = await lerArquivoComoBase64(item.file);
-                    return {
-                        nome: item.file.name,
-                        tipoCor: item.tipoCor === "colorida" ? "Colorida" : "Preto e Branco",
-                        copias: item.copias,
-                        subtotal: (item.copias * (item.tipoCor === "colorida" ? 1.50 : 0.50)).toFixed(2).replace('.', ','),
-                        fileData: base64Obj.data
-                    };
-                }));
-            } catch (e) {
-                console.error("Erro ao converter arquivo para Base64:", e);
-            }
-
-            // Monta o texto legível para ver na interface da Issue do GitHub
-            let arquivosTexto = "";
-            arquivosComData.forEach(item => {
-                arquivosTexto += `- **Arquivo:** ${item.nome}\n  - Impressão: ${item.tipoCor}\n  - Quantidade: ${item.copias}\n  - Subtotal: R$ ${item.subtotal}\n\n`;
+            // Formata o resumo dos arquivos
+            let resumoArquivos = "";
+            configuracoesArquivos.forEach((item, idx) => {
+                const tipo = item.tipoCor === "colorida" ? "Colorida" : "Preto e Branco";
+                const sub = (item.copias * (item.tipoCor === "colorida" ? 1.50 : 0.50)).toFixed(2).replace('.', ',');
+                resumoArquivos += `${idx + 1}. Arquivo: ${item.file.name} | Tipo: ${tipo} | Qtd: ${item.copias} | Subtotal: R$ ${sub}\n`;
             });
 
-            // Estrutura do Pedido para o GitHub
-            const tituloIssue = `Pedido: ${cliente} - R$ ${totalGeneral.toFixed(2).replace('.', ',')}`;
-            let corpoIssue = `### 👤 Dados do Cliente\n`;
-            corpoIssue += `**Nome:** ${cliente}\n`;
-            corpoIssue += `**WhatsApp:** ${telefone}\n`;
-            corpoIssue += `**Pagamento:** ${pagamento}\n`;
-            if (pagamento === "Dinheiro") corpoIssue += `**Troco para:** ${troco}\n`;
-            corpoIssue += `**Observações:** ${obs}\n\n`;
-            corpoIssue += `### 📄 Arquivos do Pedido\n${arquivosTexto}`;
-            corpoIssue += `**Total Geral:** R$ ${totalGeneral.toFixed(2).replace('.', ',')}\n\n`;
-
-            // Bloco de dados embutido para o painel.html ler e fazer download do arquivo
-            corpoIssue += `<!-- ANEXOS_DATA_START\n${JSON.stringify(arquivosComData)}\nANEXOS_DATA_END -->`;
-
-            const payload = {
-                title: tituloIssue,
-                body: corpoIssue,
-                labels: ["pedido-site"]
+            // Parâmetros que serão injetados no Template do EmailJS
+            const templateParams = {
+                cliente: cliente,
+                telefone: telefone,
+                pagamento: pagamento,
+                troco: troco,
+                observacoes: obs,
+                total: `R$ ${totalGeneral.toFixed(2).replace('.', ',')}`,
+                detalhes_arquivos: resumoArquivos
             };
 
             try {
-                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues`, {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${GITHUB_TOKEN}`,
-                        "Content-Type": "application/json",
-                        "Accept": "application/vnd.github+json"
-                    },
-                    body: JSON.stringify(payload)
-                });
+                const res = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
 
-                if (response.ok) {
-                    // EXIBIR PIX OU INSTRUÇÕES NA TELA FINAL
+                if (res.status === 200) {
                     const boxFinal = document.getElementById("box-pagamento-final");
                     if (pagamento === "PIX") {
                         boxFinal.innerHTML = `
@@ -781,13 +741,13 @@
                     document.getElementById("step-2").classList.add("hidden");
                     document.getElementById("step-3").classList.remove("hidden");
                 } else {
-                    mostrarToast("Erro ao Enviar", "Verifique as configurações do GitHub Token.");
+                    mostrarToast("Erro no Envio", "Não foi possível enviar o pedido. Tente novamente.");
                     btnEnviar.disabled = false;
                     btnEnviar.innerText = "Enviar Pedido 🚀";
                 }
             } catch (err) {
-                console.error(err);
-                mostrarToast("Erro de Conexão", "Não foi possível conectar com o GitHub.");
+                console.error("Erro no EmailJS:", err);
+                mostrarToast("Erro no Envio", "Ocorreu uma falha ao enviar o pedido para o e-mail.");
                 btnEnviar.disabled = false;
                 btnEnviar.innerText = "Enviar Pedido 🚀";
             }
