@@ -246,30 +246,19 @@
 
         <!-- Lista de Pedidos -->
         <div id="lista-pedidos">
-            <p class="sem-pedidos">Carregando pedidos...</p>
+            <p class="sem-pedidos">Buscando pedidos diretamente do repositório do GitHub...</p>
         </div>
     </div>
 
-    <!-- FIREBASE E LÓGICA DO PAINEL -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+    <!-- LÓGICA DE INTEGRAÇÃO COM GITHUB (SEM FIREBASE) -->
+    <script>
+        // ==========================================
+        // CONFIGURAÇÕES DO SEU GITHUB
+        // ==========================================
+        const GITHUB_USER = "SEU_USUARIO_DO_GITHUB";     // Coloque seu nome de usuário exato do GitHub
+        const GITHUB_REPO = "NOME_DO_REPOSITORIO_PRIVADO"; // Coloque o nome do seu repositório privado
+        const GITHUB_TOKEN = ""; // Se configurado na Vercel via env var, o front-end busca os arquivos públicos ou via API serverless. Como estamos em site estático puro, coloque seu token 'ghp_...' aqui se quiser testar direto, ou configure via backend.
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAfh0iZSotPra1olpRWRfwwBP9G8yrdHEc",
-            authDomain: "print-express-bfa7c.firebaseapp.com",
-            projectId: "print-express-bfa7c",
-            storageBucket: "print-express-bfa7c.firebasestorage.app",
-            messagingSenderId: "471136646915",
-            appId: "1:471136646915:web:8b7b6f92c00d88c7c79b36",
-            measurementId: "G-8K5LHHCDFE"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        const containerPedidos = document.getElementById("lista-pedidos");
-        let totalPedidosAnterior = -1;
         let listaPedidosCache = [];
         let filtroAtual = 'todos';
 
@@ -278,7 +267,6 @@
             Notification.requestPermission();
         }
 
-        // Função para som de aviso
         window.tocarAlertaSonoro = function() {
             if (!document.getElementById("chkSom").checked) return;
             try {
@@ -286,13 +274,13 @@
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.type = "sine";
-                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // Nota D5
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
                 osc.start();
                 osc.stop(audioCtx.currentTime + 0.3);
             } catch(e) {
-                console.log("Áudio bloqueado pelo navegador até interação.");
+                console.log("Áudio bloqueado pelo navegador.");
             }
         };
 
@@ -300,55 +288,78 @@
             window.tocarAlertaSonoro();
             if ("Notification" in window && Notification.permission === "granted") {
                 new Notification("PrintExpress - Alerta de Teste", {
-                    body: "O sistema de som e notificação está funcionando corretamente!",
+                    body: "O sistema de som e notificação está funcionando!",
                     icon: "https://cdn-icons-png.flaticon.com/512/2933/2933888.png"
                 });
             }
         };
 
-        // Escuta coleção 'pedidos'
-        const q = query(collection(db, "pedidos"), orderBy("dataEnvio", "desc"));
-
-        onSnapshot(q, (snapshot) => {
-            listaPedidosCache = [];
+        // Função para carregar os pedidos direto da API do GitHub (Pastas do repositório privado)
+        async function carregarPedidosDoGitHub() {
+            const containerPedidos = document.getElementById("lista-pedidos");
             
-            let pendentes = 0;
-            let concluidos = 0;
-            let faturamento = 0;
-
-            snapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                data.id = docSnap.id;
-                listaPedidosCache.push(data);
-
-                if (data.concluido) concluidos++;
-                else pendentes++;
-
-                if (typeof data.total === 'number') faturamento += data.total;
-            });
-
-            // Atualiza Dashboard
-            document.getElementById("meta-pendentes").innerText = pendentes;
-            document.getElementById("meta-concluidos").innerText = concluidos;
-            document.getElementById("meta-faturamento").innerText = `R$ ${faturamento.toFixed(2).replace('.', ',')}`;
-
-            // Notifica se houver novos pedidos
-            if (totalPedidosAnterior !== -1 && snapshot.size > totalPedidosAnterior) {
-                window.tocarAlertaSonoro();
-                if (document.getElementById("chkNotificacao").checked && "Notification" in window && Notification.permission === "granted") {
-                    new Notification("Novo Pedido PrintExpress!", {
-                        body: "Um novo arquivo chegou para impressão.",
-                        icon: "https://cdn-icons-png.flaticon.com/512/2933/2933888.png"
-                    });
-                }
+            if (GITHUB_USER === "SEU_USUARIO_DO_GITHUB" || GITHUB_REPO === "NOME_DO_REPOSITORIO_PRIVADO") {
+                containerPedidos.innerHTML = `<p class="sem-pedidos" style="color: #f87171;">⚠️ Atenção: Edite o código e coloque seu GITHUB_USER e GITHUB_REPO corretos!</p>`;
+                return;
             }
-            totalPedidosAnterior = snapshot.size;
 
-            filtrarExibicao();
-        });
+            try {
+                // Busca a lista de arquivos/pastas na raiz ou na pasta de pedidos do repositório
+                const headers = {};
+                // Se você tiver um token no código ou variável
+                if (typeof GITHUB_TOKEN !== 'undefined' && GITHUB_TOKEN.trim() !== '') {
+                    headers["Authorization"] = `token ${GITHUB_TOKEN}`;
+                }
 
-        // Função de filtro e renderização na tela
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`, { headers });
+                
+                if (!response.ok) {
+                    throw new Error("Não foi possível acessar o repositório. Verifique usuário, token ou nome do repositório.");
+                }
+
+                const contents = await response.json();
+                
+                // Filtra arquivos de pedidos (ex: formato JSON ou arquivos enviados)
+                listaPedidosCache = [];
+                let pendentes = 0;
+                let concluidos = 0;
+                let faturamento = 0;
+
+                // Aqui mapeamos os arquivos encontrados no repositório
+                for (let item of contents) {
+                    if (item.type === "file" && (item.name.endsWith('.json') || item.name.includes('pedido'))) {
+                        // Baixa o conteúdo do arquivo de pedido
+                        const fileRes = await fetch(item.download_url);
+                        const pedidoData = await fileRes.json();
+                        
+                        pedidoData.id = item.sha;
+                        pedidoData.arquivoNome = pedidoData.arquivoNome || item.name;
+                        pedidoData.concluido = pedidoData.concluido || false;
+                        
+                        listaPedidosCache.push(pedidoData);
+
+                        if (pedidoData.concluido) concluidos++;
+                        else pendentes++;
+
+                        if (typeof pedidoData.total === 'number') faturamento += pedidoData.total;
+                    }
+                }
+
+                // Atualiza o Dashboard
+                document.getElementById("meta-pendentes").innerText = pendentes;
+                document.getElementById("meta-concluidos").innerText = concluidos;
+                document.getElementById("meta-faturamento").innerText = `R$ ${faturamento.toFixed(2).replace('.', ',')}`;
+
+                filtrarExibicao();
+
+            } catch (err) {
+                console.error("Erro ao buscar do GitHub:", err);
+                containerPedidos.innerHTML = `<p class="sem-pedidos">Nenhum pedido encontrado no repositório ou erro de conexão com o GitHub.</p>`;
+            }
+        }
+
         window.filtrarExibicao = function() {
+            const containerPedidos = document.getElementById("lista-pedidos");
             const termoBusca = document.getElementById("inputBusca").value.toLowerCase();
             
             const pedidosFiltrados = listaPedidosCache.filter(p => {
@@ -372,16 +383,11 @@
             let html = "";
             pedidosFiltrados.forEach((p) => {
                 const docId = p.id;
-                
-                let dataFormatada = 'Agora mesmo';
-                if (p.dataEnvio && typeof p.dataEnvio.toDate === 'function') {
-                    dataFormatada = p.dataEnvio.toDate().toLocaleString('pt-BR');
-                }
-
+                const dataFormatada = p.dataEnvio ? new Date(p.dataEnvio).toLocaleString('pt-BR') : 'Recente';
                 const totalFormatado = (typeof p.total === 'number') ? p.total.toFixed(2).replace('.', ',') : '0,00';
                 const obs = p.observacoes ? p.observacoes : 'Nenhuma observação';
                 const nomeArquivo = p.arquivoNome ? p.arquivoNome : 'arquivo';
-                const linkArquivo = p.arquivoDados ? p.arquivoDados : '';
+                const linkArquivo = p.arquivoDados ? p.arquivoDados : '#';
                 const isConcluido = p.concluido === true;
                 const telefone = p.telefone ? p.telefone.replace(/\D/g, '') : '';
                 
@@ -390,15 +396,12 @@
                     infoTroco = ` (Troco para: ${p.troco})`;
                 }
 
-                // Pré-visualização do Arquivo
                 let previewHTML = '';
-                if (linkArquivo) {
+                if (linkArquivo && linkArquivo !== '#') {
                     if (linkArquivo.includes('image/') || nomeArquivo.match(/\.(png|jpg|jpeg)$/i)) {
-                        previewHTML = `<div class="preview-container"><p style="font-size:12px; color:#94a3b8; margin-bottom:5px;">Pré-visualização da Imagem:</p><img src="${linkArquivo}" alt="Preview"></div>`;
-                    } else if (linkArquivo.includes('application/pdf') || nomeArquivo.match(/\.pdf$/i)) {
-                        previewHTML = `<div class="preview-container"><p style="font-size:12px; color:#94a3b8; margin-bottom:5px;">Pré-visualização do PDF:</p><iframe src="${linkArquivo}"></iframe></div>`;
+                        previewHTML = `<div class="preview-container"><p style="font-size:12px; color:#94a3b8; margin-bottom:5px;">Pré-visualização:</p><img src="${linkArquivo}" alt="Preview"></div>`;
                     } else {
-                        previewHTML = `<div class="preview-container"><p style="font-size:12px; color:#94a3b8;">Conteúdo / Texto:</p><textarea readonly style="width:100%; background:#1e293b; color:#cbd5e1; border:none; font-size:13px; height:60px;">${p.observacoes || nomeArquivo}</textarea></div>`;
+                        previewHTML = `<div class="preview-container"><p style="font-size:12px; color:#94a3b8;">Arquivo anexado disponível para download.</p></div>`;
                     }
                 }
 
@@ -418,7 +421,6 @@
 
                         ${previewHTML}
 
-                        <!-- Seção WhatsApp Personalizada -->
                         <div class="whatsapp-section">
                             <div class="whatsapp-title">💬 Notificar Cliente via WhatsApp</div>
                             <div class="whatsapp-controls">
@@ -437,7 +439,7 @@
                         <div class="btn-group-action">
                             <a href="${linkArquivo}" download="${nomeArquivo}" class="btn-download">📥 Baixar Arquivo</a>
                             <button class="btn-concluir" onclick="alternarConcluido('${docId}', ${!isConcluido})">
-                                ${isConcluido ? '🔄 Reabrir Pedido' : '✔️ Marcar como Concluído'}
+                                ${isConcluido ? '🔄 Reabrir' : '✔️ Marcar como Concluído'}
                             </button>
                         </div>
                     </div>
@@ -447,7 +449,6 @@
             containerPedidos.innerHTML = html;
         };
 
-        // Alterar abas de filtro
         window.alterarFiltro = function(tipo, elemento) {
             filtroAtual = tipo;
             document.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
@@ -455,7 +456,6 @@
             filtrarExibicao();
         };
 
-        // Função para montar e abrir a mensagem de WhatsApp
         window.enviarWhatsApp = function(nomeCliente, telefone, idSelect) {
             const tipoSelecionado = document.getElementById(idSelect).value;
             const mensagem = `Olá, ${nomeCliente}! Passando para avisar que a sua ${tipoSelecionado} já está pronta para retirada/envio. Muito obrigado pela preferência! 😊`;
@@ -464,20 +464,20 @@
             if (telefone) {
                 url = `https://api.whatsapp.com/send?phone=${telefone}&text=${encodeURIComponent(mensagem)}`;
             }
-            
             window.open(url, '_blank');
         };
 
-        // Alternar status concluído no Firestore
-        window.alternarConcluido = async function(id, status) {
-            try {
-                const ref = doc(db, "pedidos", id);
-                await updateDoc(ref, { concluido: status });
-            } catch (err) {
-                console.error("Erro ao atualizar status:", err);
-                alert("Erro ao atualizar o pedido.");
+        window.alternarConcluido = function(id, status) {
+            const p = listaPedidosCache.find(x => x.id === id);
+            if (p) {
+                p.concluido = status;
+                filtrarExibicao();
+                alert("Status atualizado na visualização atual.");
             }
         };
+
+        // Inicia a busca ao carregar a página
+        carregarPedidosDoGitHub();
     </script>
 </body>
 </html>
