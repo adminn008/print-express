@@ -355,6 +355,21 @@
             box-shadow: var(--shadow);
         }
 
+        .status-fila {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
         .radio-group { display: flex; gap: 20px; margin-top: 4px; }
         .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px; font-weight: 500; }
         .hidden { display: none !important; }
@@ -624,10 +639,13 @@
         </form>
 
         <div class="card-chamativo">
-            <h3 style="font-size: 18px; color: var(--primary);">✨ Qualidade Garanta & Entrega Ágil!</h3>
+            <h3 style="font-size: 18px; color: var(--primary);">✨ Impressão Rápida e com Alta Qualidade!</h3>
             <p style="font-size: 14px; color: var(--text-muted);">
-                Imprimimos seus documentos em papéis de alta gramatura com cores vivas e nitidez máxima. Ficou com alguma dúvida? Atendimento direto pelo nosso WhatsApp!
+                Seus arquivos são impressos com cores vibrantes e nitidez total. Dúvidas? Fale diretamente conosco pelo WhatsApp!
             </p>
+            <div class="status-fila">
+                ⚡ <strong>Tempo Médio de Produção:</strong> 5 a 15 minutos após a confirmação.
+            </div>
         </div>
 
         <div id="telaSucesso" class="sucesso-card hidden">
@@ -655,7 +673,7 @@
         const EMAIL_DESTINO = "ws8530135@gmail.com"; 
         const CHAVE_PIX_TEXTO = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
 
-        // HORÁRIO DA LOJA
+        // HORÁRIO DA LOJA - DOMINGO A DOMINGO (NUNCA FECHA PEDIDOS)
         function checarStatusLoja() {
             const agora = new Date();
             const hora = agora.getHours();
@@ -663,13 +681,14 @@
             const statusTexto = document.getElementById("statusTexto");
             const statusIcon = document.getElementById("statusIcon");
 
+            // De Domingo a Domingo
             if (hora >= 6 && hora < 23) {
                 statusDiv.className = "status-badge status-open";
-                statusTexto.innerText = "Atendendo Agora";
+                statusTexto.innerText = "Atendendo Agora (06:00 - 23:00)";
                 statusIcon.innerText = "🟢";
             } else {
                 statusDiv.className = "status-badge status-closed";
-                statusTexto.innerText = "Recebendo Pedidos (Fora do Horário)";
+                statusTexto.innerText = "Recebendo Pedidos 24h (Fora do Horário)";
                 statusIcon.innerText = "🔴";
             }
         }
@@ -831,7 +850,7 @@
             e.target.value = v;
         });
 
-        // TRATAMENTO DO FORMULÁRIO COM ENVIO DE ARQUIVO GARANTIDO
+        // TRATAMENTO DO FORMULÁRIO COM ROLAGEM AUTOMÁTICA ATÉ A TELA DE SUCESSO
         const form = document.getElementById("formImpressao");
         const btnSubmit = document.getElementById("btnSubmit");
 
@@ -840,7 +859,6 @@
             btnSubmit.disabled = true;
             btnSubmit.innerText = "Enviando pedido...";
 
-            // Preenche os campos ocultos para o FormSubmit
             const tipoImpressaoTexto = selectTipo.options[selectTipo.selectedIndex].text;
             const totalCalculado = calcularValor();
             document.getElementById("hidden_tipo_texto").value = tipoImpressaoTexto;
@@ -852,7 +870,6 @@
             const quantidadeFolhas = inputQtd.value;
 
             try {
-                // Envio nativo do arquivo via FormData multipart
                 const response = await fetch(form.action, {
                     method: "POST",
                     body: formData,
@@ -899,6 +916,10 @@
                     document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;
 
                     telaSucesso.classList.remove("hidden");
+
+                    // Rola a tela até o cartão de pagamento imediatamente
+                    telaSucesso.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
                 } else {
                     alert("Erro ao enviar o pedido. Tente novamente.");
                     btnSubmit.disabled = false;
