@@ -144,7 +144,7 @@
             box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
         }
 
-        /* GRID DE SERVIÇOS NA TELA */
+        /* GRID DE SERVIÇOS */
         .servicos-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -503,12 +503,8 @@
         </div>
     </div>
 
-    <!-- LÓGICA DO SITE & GITHUB API -->
+    <!-- LÓGICA DO SITE -->
     <script>
-        // Substitua abaixo pelas informações do SEU github e repositório privado
-        const GITHUB_USER = "adminn008";
-        const GITHUB_REPO = "arquivos-printexpress";
-
         const MEU_WHATSAPP = "5541999682836";
         const CHAVE_PIX_TEXTO = "41999682836";
 
@@ -647,7 +643,7 @@
             document.getElementById("valor-total").innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
         }
 
-        // ALTERNÂNCIA DE TELA / NAVEGAÇÃO
+        // NAVEGAÇÃO DE PASSOS
         document.getElementById("btn-passo-1").addEventListener("click", () => {
             const cliente = inputNome.value.trim();
             const telefone = inputTel.value.trim();
@@ -686,7 +682,6 @@
             });
         });
 
-        // FUNÇÃO AUXILIAR PARA CONVERTER ARQUIVO EM BASE64
         function converterParaBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -696,7 +691,7 @@
             });
         }
 
-        // ENVIO DO PEDIDO PARA O GITHUB (VIA VERCEL)
+        // ENVIO DO PEDIDO VIA API SERVERLESS
         document.getElementById("btn-enviar").addEventListener("click", async () => {
             const btn = document.getElementById("btn-enviar");
             btn.disabled = true;
@@ -708,7 +703,6 @@
             const troco = document.getElementById("troco").value || "Não precisa";
             const obs = document.getElementById("observacoes").value || "Nenhuma";
 
-            let descServico = "";
             let totalGeneral = 0;
             let arquivosProcessados = [];
 
@@ -720,53 +714,52 @@
                         totalGeneral += subtotal;
 
                         const file = item.file;
-                        
-                        // Converte o arquivo para Base64 para a API do GitHub aceitar
                         const base64Data = await converterParaBase64(file);
                         const conteudoLimpo = base64Data.split(',')[1];
-                        
-                        const caminhoArquivo = `uploads/${Date.now()}_${file.name}`;
-                        const urlApi = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${caminhoArquivo}`;
 
-                        // Token injetado de forma segura pela Vercel (Variável de Ambiente)
-                        // Nota: Se rodar local sem build tool, certifique-se de configurar ou usar rota segura, 
-                        // mas na Vercel o processo injeta caso configurado ou lido via backend/proxy. 
-                        // Como estamos no front puro, se usar Vercel serverless functions seria o ideal, 
-                        // mas se optou pelo modo direto, o token fica oculto no deploy da Vercel se tratado corretamente.
-                        const tokenGithub = ""; // Preenchido automaticamente no deploy ou via rotas da Vercel
-
-                        const respostaGithub = await fetch(urlApi, {
-                            method: "PUT",
-                            headers: {
-                                "Authorization": `Bearer ${tokenGithub}`,
-                                "Content-Type": "application/json",
-                            },
+                        // Envio para a nossa Serverless Function na Vercel
+                        const resposta = await fetch('/api/upload', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
-                                message: `Novo pedido de upload: ${file.name} - Cliente: ${cliente}`,
-                                content: conteudoLimpo
+                                fileName: file.name,
+                                fileContent: conteudoLimpo,
+                                clientName: cliente
                             })
                         });
 
-                        if (!respostaGithub.ok) {
-                            throw new Error("Erro ao enviar arquivo para o GitHub.");
-                        }
+                        const resData = await resposta.json();
 
-                        const dadosGithub = await respostaGithub.json();
+                        if (!resposta.ok) {
+                            throw new Error(resData.error || 'Erro no servidor ao enviar arquivo.');
+                        }
 
                         arquivosProcessados.push({
                             nome: file.name,
-                            url: dadosGithub.content.download_url,
                             tipoCor: item.tipoCor === "colorida" ? "Colorida" : "Preto e Branco",
                             quantidade: item.copias,
                             subtotal: subtotal
                         });
                     }
-
-                    descServico = `Impressão A4 (${arquivosProcessados.length} arquivo(s))`;
                 }
 
-                const mensagemWhats = encodeURIComponent("Estarei enviando o comprovante abaixo");
-                const linkWhatsApp = `https://wa.me/${MEU_WHATSAPP}?text=${mensagemWhats}`;
+                // Montagem da mensagem estruturada para o WhatsApp
+                let resumoWhats = `*NOVO PEDIDO - PRINTPRESS*\n\n`;
+                resumoWhats += `👤 *Cliente:* ${cliente}\n`;
+                resumoWhats += `📞 *Contato:* ${telefone}\n`;
+                resumoWhats += `💳 *Pagamento:* ${pagamento}\n`;
+                if (pagamento === "Dinheiro") resumoWhats += `💵 *Troco:* ${troco}\n`;
+                resumoWhats += `📝 *Obs:* ${obs}\n\n`;
+                resumoWhats += `📄 *Itens:* \n`;
+                
+                arquivosProcessados.forEach(arq => {
+                    resumoWhats += `- ${arq.nome} (${arq.quantidade}x, ${arq.tipoCor})\n`;
+                });
+                
+                resumoWhats += `\n💰 *Total:* R$ ${totalGeneral.toFixed(2).replace('.', ',')}\n\n`;
+                resumoWhats += `_Segue abaixo o comprovante de pagamento:_`;
+
+                const linkWhatsApp = `https://wa.me/${MEU_WHATSAPP}?text=${encodeURIComponent(resumoWhats)}`;
 
                 let htmlFinal = "";
 
@@ -780,11 +773,11 @@
                             <button class="btn-copiar-pix" id="btn-copiar-pix-final">📋 Copiar Chave PIX</button>
                             
                             <div style="background: rgba(2, 132, 199, 0.15); border-left: 4px solid var(--accent); padding: 12px; border-radius: 6px; font-size:13px; text-align:left;">
-                                ⚠️ <strong>IMPORTANTE:</strong> Clique abaixo para enviar o comprovante no nosso WhatsApp.
+                                ⚠️ <strong>IMPORTANTE:</strong> Clique abaixo para enviar o pedido e o comprovante pelo WhatsApp.
                             </div>
 
                             <a href="${linkWhatsApp}" target="_blank" class="btn-whatsapp">
-                                💬 Abrir WhatsApp e Concluir Pedido
+                                💬 Enviar Pedido no WhatsApp
                             </a>
                         </div>
                     `;
@@ -794,7 +787,7 @@
                             <p style="font-size:15px; color:var(--text-muted);">Pagamento em Dinheiro na Retirada.</p>
                             <p style="font-size:14px;">Troco informado: <strong>${troco}</strong></p>
                             <a href="${linkWhatsApp}" target="_blank" class="btn-whatsapp">
-                                💬 Abrir WhatsApp e Concluir Pedido
+                                💬 Confirmar Pedido no WhatsApp
                             </a>
                         </div>
                     `;
@@ -817,7 +810,7 @@
 
             } catch (err) {
                 console.error("Erro no envio:", err);
-                mostrarToast("Erro de Conexão", "Não foi possível registrar seu pedido. Verifique sua conexão e tente novamente.");
+                mostrarToast("Erro de Conexão", err.message || "Não foi possível registrar seu pedido. Tente novamente.");
                 btn.disabled = false;
                 btn.innerText = "Enviar Pedido 🚀";
             }
