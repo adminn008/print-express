@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador & Edição de Currículos Profissionais</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
-    <!-- html2pdf.js -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
@@ -18,6 +17,8 @@
             --accent: #38bdf8;
             --green: #10b981;
             --green-hover: #059669;
+            --line-height-cv: 1.4;
+            --font-family-cv: 'Inter', sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
@@ -86,6 +87,9 @@
             padding-bottom: 6px;
             margin-top: 6px;
             text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .form-group { display: flex; flex-direction: column; gap: 6px; }
@@ -109,7 +113,41 @@
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 
-        /* BOTÕES */
+        /* NOVOS BOTÕES E BARRA DE PROGRESSO */
+        .score-bar-container {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 5px;
+        }
+        .score-bar {
+            height: 8px;
+            background: #334155;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        .score-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--green);
+            transition: width 0.3s ease;
+        }
+
+        .btn-mini {
+            background: var(--border);
+            color: var(--accent);
+            border: none;
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-mini:hover { background: var(--accent); color: #0f172a; }
+
+        /* BOTÕES PRINCIPAIS */
         .btn-action-group {
             display: flex;
             flex-direction: column;
@@ -146,6 +184,19 @@
         }
         .btn-firebase:hover { filter: brightness(1.1); }
 
+        .btn-formsubmit {
+            background: #eab308;
+            color: #0f172a;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-formsubmit:hover { filter: brightness(1.1); }
+
         /* PREVIEW A4 */
         .preview-section {
             background: #334155;
@@ -173,14 +224,28 @@
             padding: 15mm 18mm;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             box-sizing: border-box;
-            line-height: 1.4;
+            line-height: var(--line-height-cv);
+            font-family: var(--font-family-cv);
             font-size: 12px;
+            position: relative;
         }
 
         /* REGRAS P&B */
         #curriculo-folha h1, #curriculo-folha h2, #curriculo-folha h3, 
         #curriculo-folha p, #curriculo-folha span, #curriculo-folha div {
             color: #000000 !important;
+        }
+
+        /* FOTO NO CURRÍCULO */
+        .foto-perfil-cv {
+            width: 80px;
+            height: 95px;
+            object-fit: cover;
+            border: 1px solid #000;
+            filter: grayscale(100%);
+            display: none;
+            float: right;
+            margin-left: 10px;
         }
 
         /* MODELOS P&B */
@@ -221,7 +286,7 @@
         .m-10 h3 { text-align: center; font-size: 12px; text-transform: uppercase; margin-top: 10px; border-bottom: 1px solid #999; font-weight: 700; }
 
         .cv-header-info { font-size: 11px; margin-bottom: 8px; }
-        .cv-section-content { font-size: 12px; margin-top: 4px; line-height: 1.4; white-space: pre-line; word-break: break-word; }
+        .cv-section-content { font-size: 12px; margin-top: 4px; line-height: var(--line-height-cv); white-space: pre-line; word-break: break-word; }
 
         /* TOAST */
         .toast-overlay {
@@ -278,7 +343,6 @@
     </div>
 
     <div class="app-container">
-        <!-- PAINEL DE VALORES DA GRÁFICA -->
         <div class="info-panel">
             <div class="info-card">
                 <h3>🏷️ Tabela de Serviços & Valores</h3>
@@ -319,25 +383,57 @@
             </div>
         </div>
 
-        <!-- FORMULÁRIO -->
         <div class="form-section">
-            <div class="form-group">
-                <label for="selectModelo">🎨 Modelo do Currículo (10 Opções P&B):</label>
-                <select id="selectModelo" onchange="atualizarPreview()">
-                    <option value="m-1">Modelo 1: Moderno Estruturado</option>
-                    <option value="m-2">Modelo 2: Elegante / Clássico</option>
-                    <option value="m-3">Modelo 3: Minimalista Executivo</option>
-                    <option value="m-4">Modelo 4: Lateral Destacada</option>
-                    <option value="m-5">Modelo 5: Linhas Box</option>
-                    <option value="m-6">Modelo 6: Header Duplo</option>
-                    <option value="m-7">Modelo 7: Compacto / Comercial</option>
-                    <option value="m-8">Modelo 8: Borda Lateral</option>
-                    <option value="m-9">Modelo 9: Tradicional Puro P&B</option>
-                    <option value="m-10">Modelo 10: Centralizado Clássico</option>
-                </select>
+            
+            <div class="score-bar-container">
+                <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600;">
+                    <span>⭐ Qualidade do Currículo:</span>
+                    <span id="scoreText">0%</span>
+                </div>
+                <div class="score-bar"><div id="scoreFill" class="score-fill"></div></div>
             </div>
 
-            <div class="section-subtitle">1. Informações Pessoais</div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="selectModelo">🎨 Modelo (P&B):</label>
+                    <select id="selectModelo" onchange="atualizarPreview()">
+                        <option value="m-1">Modelo 1: Moderno Estruturado</option>
+                        <option value="m-2">Modelo 2: Elegante / Clássico</option>
+                        <option value="m-3">Modelo 3: Minimalista Executivo</option>
+                        <option value="m-4">Modelo 4: Lateral Destacada</option>
+                        <option value="m-5">Modelo 5: Linhas Box</option>
+                        <option value="m-6">Modelo 6: Header Duplo</option>
+                        <option value="m-7">Modelo 7: Compacto / Comercial</option>
+                        <option value="m-8">Modelo 8: Borda Lateral</option>
+                        <option value="m-9">Modelo 9: Tradicional Puro P&B</option>
+                        <option value="m-10">Modelo 10: Centralizado Clássico</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="selectFonte">🔤 Estilo da Fonte:</label>
+                    <select id="selectFonte" onchange="mudarFonte(this.value)">
+                        <option value="'Inter', sans-serif">Padrão (Inter)</option>
+                        <option value="'Merriweather', serif">Clássica (Merriweather)</option>
+                        <option value="'Roboto Mono', monospace">Moderna (Monospace)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>↕️ Espaçamento (Linhas):</label>
+                    <input type="range" id="sliderEspacamento" min="1.1" max="1.8" step="0.1" value="1.4" oninput="mudarEspacamento(this.value)">
+                </div>
+                <div class="form-group" style="justify-content: flex-end;">
+                    <button class="btn-mini" onclick="preencherExemploRapido()" style="padding: 8px; font-size: 12px;">⚡ Preencher Exemplo Rápido</button>
+                </div>
+            </div>
+
+            <div class="section-subtitle">
+                1. Informações Pessoais
+                <button class="btn-mini" onclick="salvarRascunho()">💾 Salvar Rascunho</button>
+            </div>
 
             <div class="form-group">
                 <label>Nome Completo:</label>
@@ -381,7 +477,21 @@
                 </div>
             </div>
 
-            <div class="section-subtitle">2. Perfil & Experiência</div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Foto de Perfil (P&B Opcional):</label>
+                    <input type="file" id="inputFoto" accept="image/*" onchange="carregarFoto(event)">
+                </div>
+                <div class="form-group">
+                    <label>Link WhatsApp / LinkedIn (QR Code):</label>
+                    <input type="text" id="linkQr" placeholder="Ex: https://wa.me/5541..." oninput="gerarQrCodeCv(this.value)">
+                </div>
+            </div>
+
+            <div class="section-subtitle">
+                2. Perfil & Experiência
+                <button class="btn-mini" onclick="gerarResumoIA()">💡 Sugerir Resumo com IA</button>
+            </div>
 
             <div class="form-group">
                 <label>Resumo Profissional / Apresentação:</label>
@@ -409,16 +519,25 @@
                 <button class="btn-download" onclick="baixarPDFSemCorte()">
                     📥 Baixar PDF Perfeito (Grátis)
                 </button>
+
+                <button class="btn-mini" onclick="window.print()" style="padding: 12px; font-weight:700; font-size:13px; background:#475569; color:#fff;">
+                    🖨️ Imprimir Direto na Impressora Local (Grátis)
+                </button>
+
+                <button class="btn-formsubmit" onclick="enviarParaImpressaoFormSubmit()">
+                    🖨️ Enviar Currículo para Impressão P&B na Loja (R$ 0,50)
+                </button>
+
                 <button class="btn-firebase" id="btn-enviar-fb" onclick="enviarParaFirebaseEPainel()">
-                    🚀 Enviar Pedido & Ir ao Painel
+                    🚀 Enviar Pedido & Ir ao Painel (R$ 10,00)
                 </button>
             </div>
         </div>
 
-        <!-- PRÉ-VISUALIZAÇÃO A4 -->
         <div class="preview-section">
             <div class="preview-wrapper">
                 <div id="curriculo-folha" class="m-1">
+                    <img id="pv-foto" class="foto-perfil-cv" alt="Foto Perfil">
                     <h1 id="pv-nome">SEU NOME COMPLETO</h1>
                     <p id="pv-cargo" style="font-weight: 600; font-size: 13px;">Cargo Desejado</p>
                     
@@ -437,12 +556,16 @@
 
                     <h3>Cursos e Qualificações</h3>
                     <div class="cv-section-content" id="pv-cursos">Liste seus cursos e habilidades.</div>
+
+                    <div id="pv-qr-container" style="position: absolute; bottom: 15mm; right: 18mm; text-align: center; display: none;">
+                        <img id="pv-qrcode" style="width: 55px; height: 55px;" alt="QR Code">
+                        <div style="font-size: 8px; font-weight: bold;">Contato Direto</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL TOAST -->
     <div class="toast-overlay" id="customToast">
         <div class="toast-card">
             <div class="toast-icon" id="toastIcon">⚠️</div>
@@ -452,7 +575,6 @@
         </div>
     </div>
 
-    <!-- FIREBASE & LÓGICA COMPLETA -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
@@ -469,6 +591,8 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
+        const EMAIL_FORMSUBMIT = "ws8530135@gmail.com";
 
         window.mostrarToast = function(titulo, mensagem, icone = "⚠️") {
             document.getElementById("toastIcon").innerText = icone;
@@ -493,6 +617,94 @@
             }
             input.value = v;
         };
+
+        // FUNÇÕES EXTRAS
+        window.mudarFonte = function(fonte) {
+            document.documentElement.style.setProperty('--font-family-cv', fonte);
+        };
+
+        window.mudarEspacamento = function(val) {
+            document.documentElement.style.setProperty('--line-height-cv', val);
+        };
+
+        window.carregarFoto = function(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const img = document.getElementById('pv-foto');
+                img.src = reader.result;
+                img.style.display = 'block';
+            };
+            if(event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+        };
+
+        window.gerarQrCodeCv = function(url) {
+            const container = document.getElementById("pv-qr-container");
+            const img = document.getElementById("pv-qrcode");
+            if(url.trim().length > 5) {
+                img.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
+                container.style.display = "block";
+            } else {
+                container.style.display = "none";
+            }
+        };
+
+        window.gerarResumoIA = function() {
+            const cargo = document.getElementById("cargo").value.trim() || "profissional dedicado";
+            const resumos = [
+                `Profissional proativo e focado em resultados, buscando oportunidade para atuar como ${cargo}. Possuo excelente comunicação, facilidade de aprendizado e bom trabalho em equipe.`,
+                `Com sólida motivação para o mercado de trabalho, busco integrar a equipe como ${cargo}, contribuindo com eficiência, dinamismo e constante aprimoramento de habilidades.`,
+                `Profissional comprometido com a qualidade das entregas e bom relacionamento interpessoal, visando atuar como ${cargo} para agregar valor aos processos da empresa.`
+            ];
+            const sorteio = resumos[Math.floor(Math.random() * resumos.length)];
+            document.getElementById("resumo").value = sorteio;
+            atualizarPreview();
+        };
+
+        window.preencherExemploRapido = function() {
+            document.getElementById("nome").value = "CARLOS EDUARDO SILVA";
+            document.getElementById("cargo").value = "Atendente de Loja / Caixa";
+            document.getElementById("telefone").value = "(41) 99888-7766";
+            document.getElementById("email").value = "carlos.silva@email.com";
+            document.getElementById("cidade").value = "São José dos Pinhais - PR";
+            document.getElementById("idade").value = "22 anos";
+            document.getElementById("estadoCivil").value = "Solteiro";
+            document.getElementById("cnh").value = "CNH B";
+            document.getElementById("resumo").value = "Profissional comunicativo e responsável, com experiência no atendimento ao público e operações de caixa.";
+            document.getElementById("experiencia").value = "Supermercado Exemplo (2022 - 2024)\nCargo: Operador de Caixa\n• Atendimento ao cliente e recebimento de valores.";
+            document.getElementById("formacao").value = "Ensino Médio Completo\nColégio Estadual (Concluído)";
+            document.getElementById("cursos").value = "• Operador de Caixa e Atendimento\n• Informática Básica";
+            atualizarPreview();
+        };
+
+        window.salvarRascunho = function() {
+            const dados = {
+                nome: document.getElementById("nome").value,
+                cargo: document.getElementById("cargo").value,
+                telefone: document.getElementById("telefone").value,
+                email: document.getElementById("email").value,
+                cidade: document.getElementById("cidade").value,
+                idade: document.getElementById("idade").value,
+                estadoCivil: document.getElementById("estadoCivil").value,
+                cnh: document.getElementById("cnh").value,
+                resumo: document.getElementById("resumo").value,
+                experiencia: document.getElementById("experiencia").value,
+                formacao: document.getElementById("formacao").value,
+                cursos: document.getElementById("cursos").value
+            };
+            localStorage.setItem("cv_rascunho", JSON.stringify(dados));
+            mostrarToast("Rascunho Salvo!", "Seus dados foram salvos neste navegador com sucesso.", "💾");
+        };
+
+        function carregarRascunhoAuto() {
+            const salvo = localStorage.getItem("cv_rascunho");
+            if(salvo) {
+                const dados = JSON.parse(salvo);
+                Object.keys(dados).forEach(key => {
+                    const el = document.getElementById(key);
+                    if(el) el.value = dados[key];
+                });
+            }
+        }
 
         window.atualizarPreview = function() {
             const modelo = document.getElementById("selectModelo").value;
@@ -522,7 +734,23 @@
             document.getElementById("pv-experiencia").innerText = document.getElementById("experiencia").value.trim() || "Adicione suas experiências profissionais anteriores.";
             document.getElementById("pv-formacao").innerText = document.getElementById("formacao").value.trim() || "Informe sua escolaridade.";
             document.getElementById("pv-cursos").innerText = document.getElementById("cursos").value.trim() || "Liste seus cursos complementares e habilidades.";
+
+            calcularScore();
         };
+
+        function calcularScore() {
+            let pts = 0;
+            if(document.getElementById("nome").value.trim()) pts += 15;
+            if(document.getElementById("telefone").value.trim()) pts += 15;
+            if(document.getElementById("email").value.trim()) pts += 10;
+            if(document.getElementById("cargo").value.trim()) pts += 15;
+            if(document.getElementById("resumo").value.trim()) pts += 15;
+            if(document.getElementById("experiencia").value.trim()) pts += 15;
+            if(document.getElementById("formacao").value.trim()) pts += 15;
+
+            document.getElementById("scoreFill").style.width = `${pts}%`;
+            document.getElementById("scoreText").innerText = `${pts}% Completo`;
+        }
 
         // GERAÇÃO DE PDF SEM CORTES
         window.baixarPDFSemCorte = function() {
@@ -546,6 +774,53 @@
             html2pdf().set(opt).from(element).save().then(() => {
                 mostrarToast("Sucesso!", "Seu currículo foi baixado com sucesso sem cortes.", "✅");
             });
+        };
+
+        // ENVIAR CURRÍCULO VIA FORMSUBMIT
+        window.enviarParaImpressaoFormSubmit = async function() {
+            const nome = document.getElementById('nome').value.trim();
+            const telefone = document.getElementById('telefone').value.trim();
+
+            if (!nome || !telefone) {
+                mostrarToast("Atenção", "Informe seu Nome e WhatsApp antes de mandar para a impressão.");
+                return;
+            }
+
+            mostrarToast("Gerando Arquivo...", "Aguarde enquanto preparamos seu currículo para envio.", "⏳");
+
+            const element = document.getElementById('curriculo-folha');
+            const opt = {
+                margin:       0,
+                filename:     `Curriculo_${nome.replace(/\s+/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            const pdfBlob = await html2pdf().set(opt).from(element).output('blob');
+
+            const formData = new FormData();
+            formData.append("attachment", pdfBlob, `Curriculo_${nome.replace(/\s+/g, '_')}.pdf`);
+            formData.append("Nome do Cliente", nome);
+            formData.append("WhatsApp", telefone);
+            formData.append("Servico", "Impressao de Curriculo P&B");
+            formData.append("Valor", "R$ 0,50");
+            formData.append("_subject", `Novo Currículo para Impressão - ${nome}`);
+
+            try {
+                const res = await fetch(`https://formsubmit.co/ajax/${EMAIL_FORMSUBMIT}`, {
+                    method: "POST",
+                    body: formData
+                });
+
+                if(res.ok) {
+                    mostrarToast("Pedido Enviado com Sucesso!", "⚠️ AVISO DE IMPRESSÃO:\n\nRecebemos seu currículo para impressão P&B!\nO valor da impressão é R$ 0,50 por folha na retirada.\nAvisaremos via WhatsApp assim que impresso!", "🖨️");
+                } else {
+                    mostrarToast("Erro", "Erro ao enviar pedido para o e-mail.");
+                }
+            } catch(e) {
+                mostrarToast("Erro", "Falha de conexão ao enviar currículo.");
+            }
         };
 
         // SALVAR NO FIREBASE E REDIRECIONAR PARA PAINEL.HTML
@@ -585,7 +860,7 @@
             try {
                 await addDoc(collection(db, "pedidos"), dadosCurriculo);
                 
-                mostrarToast("Sucesso!", "Currículo cadastrado no Banco de Dados! Redirecionando para o painel...", "🚀");
+                mostrarToast("Sucesso!", "Currículo cadastrado no Banco de Dados! Redirecionando para a página principal...", "🚀");
                 
                 setTimeout(() => {
                     window.location.href = "index.html";
@@ -595,10 +870,11 @@
                 console.error(err);
                 mostrarToast("Erro", "Falha ao salvar no banco de dados. Tente novamente.");
                 btn.disabled = false;
-                btn.innerText = "🚀 Enviar Pedido no & Ir ao Painel";
+                btn.innerText = "🚀 Enviar Pedido & Ir ao Painel";
             }
         };
 
+        carregarRascunhoAuto();
         atualizarPreview();
     </script>
 </body>
