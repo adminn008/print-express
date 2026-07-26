@@ -53,7 +53,6 @@
         header { text-align: center; position: relative; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 
-        /* STATUS DA LOJA */
         .status-badge {
             font-size: 12px;
             font-weight: 700;
@@ -84,7 +83,6 @@
         h1 { color: var(--primary); font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
         header p { color: var(--text-muted); font-size: 15px; font-weight: 500; }
 
-        /* CARROSSEL DE AVISOS */
         .carousel-container {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -123,7 +121,6 @@
 
         .dot.active { background: var(--primary); width: 20px; border-radius: 10px; }
 
-        /* TABELA DE PREÇOS */
         .tabela-precos {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -145,7 +142,26 @@
         .preco-item:last-child { border-bottom: none; }
         .preco-item span { font-weight: 700; color: var(--green); }
 
-        /* CARDS E FORMULÁRIOS */
+        /* NOVO CONTAINER DE IMAGEM ABAIXO DA TABELA DE PREÇOS */
+        .banner-imagem-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 4px 0;
+        }
+
+        .banner-imagem {
+            width: 100%;
+            max-width: 380px; /* Tamanho ideal para telas grandes e pequenas */
+            height: auto;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            object-fit: cover;
+            display: block;
+        }
+
         .step-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -184,7 +200,6 @@
             box-shadow: 0 0 0 3px var(--accent-light);
         }
 
-        /* GRID DE SERVIÇOS COM CANVA */
         .servicos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 
         .servico-card {
@@ -292,7 +307,6 @@
             z-index: 999;
         }
 
-        /* NOVA FUNÇÃO: Botão para alternar modo de envio */
         .btn-toggle-modo {
             background: transparent;
             border: 1px dashed var(--primary);
@@ -363,17 +377,21 @@
                 <span>R$ 2,00 / folha</span>
             </div>
             <div class="preco-item">
-                <div>🎴 Plastificação / Proteção</div>
-                <span>+ R$ 3,00 / un</span>
-            </div>
-            <div class="preco-item">
                 <div>💼 Elaboração / Atualização de Currículo</div>
                 <span>A partir de R$ 10,00</span>
             </div>
         </div>
 
-        <form id="formImpressao" class="step-card">
+        <div class="banner-imagem-container">
+            <img src="sua-imagem.jpg" alt="Aviso ou Promoção PrintExpress" class="banner-imagem" onerror="this.style.display='none'">
+        </div>
+
+        <form id="formImpressao" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data" class="step-card">
             <h2>Monte seu Pedido</h2>
+
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" id="hiddenValorTotal" name="Valor Total Estimado" value="R$ 0,50">
             
             <div class="form-group">
                 <label for="nome">Seu Nome Completo:</label>
@@ -407,21 +425,9 @@
             </div>
 
             <div class="form-group">
-                <label for="tipo_impressao">Tipo de Impressão:</label>
-                <select id="tipo_impressao" name="Tipo de Impressao" required>
-                    <option value="pb">Preto e Branco (P&B) - R$ 0,50/folha (Texto ou gráficos cinzas)</option>
-                    <option value="pouca_cor">Colorida Pouca Cor - R$ 1,00/folha (Títulos coloridos, logo pequeno ou gráfico simples)</option>
-                    <option value="media_cor">Colorida Média Cor - R$ 1,50/folha (Trabalhos escolares com imagens, ilustrações parciais)</option>
-                    <option value="cobertura_total">Colorida Cobertura Total - R$ 2,00/folha (Fotos cheias, cartazes ou fundos 100% coloridos)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="acabamento">Adicional / Proteção:</label>
-                <select id="acabamento" name="Adicional de Protecao">
-                    <option value="nenhum">Nenhum (Somente impressão normal)</option>
-                    <option value="plastificacao">Plastificação Polaseal / Crachá/Doc (+ R$ 3,00)</option>
-                </select>
+                <label for="tipo_impressao">Formato & Tipo:</label>
+                <input type="text" id="tipo_impressao_texto" value="A4 Preto e Branco (P&B) - R$ 0,50/folha" readonly style="font-weight: 600; color: var(--primary);">
+                <input type="hidden" id="tipo_impressao" name="Tipo de Impressao" value="pb">
             </div>
 
             <div class="form-group">
@@ -436,22 +442,13 @@
                 </div>
                 
                 <div id="campoArquivoContainer">
-                    <input type="file" id="arquivo" name="Arquivo Anexo" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+                    <input type="file" id="arquivo" name="attachment" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" required>
                     <div id="fileDetails" class="file-info hidden"></div>
                 </div>
 
                 <div id="campoTextoContainer" class="hidden">
-                    <textarea id="textoDireto" name="Texto para Impressao" rows="3" placeholder="Cole aqui o texto ou conteúdo que deseja que seja impresso..."></textarea>
+                    <textarea id="textoDireto" name="Texto para Impressao" rows="3" placeholder="Cole aqui o texto que deseja imprimir..."></textarea>
                 </div>
-            </div>
-
-            <div class="form-group">
-                <label for="cupom">Cupom de Desconto (Opcional):</label>
-                <div style="display:flex; gap:8px;">
-                    <input type="text" id="cupom" placeholder="Ex: PRIMEIRACOMPRA" style="text-transform:uppercase;">
-                    <button type="button" id="btnAplicarCupom" class="btn-primary" style="width: auto; padding: 0 16px;">Aplicar</button>
-                </div>
-                <div id="cupomStatus" style="font-size:12px; font-weight:700;"></div>
             </div>
 
             <div class="form-group">
@@ -482,21 +479,23 @@
         <div id="telaSucesso" class="step-card hidden" style="text-align: center;">
             <div style="font-size: 54px;">🎉</div>
             <h2>Pedido Enviado com Sucesso!</h2>
-            <p style="color: var(--text-muted); margin-top: 4px;">Obrigado! Já recebemos seu arquivo e estamos preparando tudo.</p>
-            
-            <div style="background: var(--accent-light); padding: 12px; border-radius: 12px; margin-top: 10px; font-weight: 600; color: var(--primary);">
-                ⏱️ Previsão de Retirada: <strong>Avisaremos no seu WhatsApp!</strong>
+            <p style="color: var(--text-muted); margin-top: 4px;">Obrigado! Recebemos seu arquivo e estamos preparando tudo.</p>
+
+            <div id="boxDetalhesPagamento">
+                <div class="pix-box">
+                    <p style="font-size:16px; font-weight:bold;">Chave PIX para Pagamento</p>
+                    <div style="margin: 8px 0;">
+                        <img src="qrcode-pix.jpg" alt="QR Code PIX" style="max-width: 180px; width: 100%; border-radius: 10px; border: 1px solid var(--border-color);" onerror="this.style.display='none'">
+                    </div>
+                    <p style="font-size:13px; color:var(--text-muted);">Copie a Chave PIX abaixo:</p>
+                    <input type="text" id="pixKey" value="00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB" readonly style="text-align:center; font-weight:bold; font-size:13px; color:var(--primary);">
+                    <button class="btn-copiar-pix" id="btnCopyPix" type="button" onclick="copiarPix()">📋 Copiar Chave PIX</button>
+                </div>
             </div>
 
-            <div id="boxDetalhesPagamento"></div>
-
-            <a id="btnNotificarWhats" href="#" target="_blank" class="btn-whatsapp">
+            <a id="btnNotificarWhats" href="https://wa.me/5541999682836" target="_blank" class="btn-whatsapp">
                 💬 Avisar no WhatsApp
             </a>
-
-            <button type="button" class="btn-copiar-pix" id="btnCopiarResumo" style="margin-top:10px; background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border-color);">
-                📋 Copiar Resumo do Pedido
-            </button>
 
             <button class="btn-primary" onclick="location.reload()" style="margin-top: 10px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">Fazer Novo Pedido 🔄</button>
         </div>
@@ -507,10 +506,7 @@
     </a>
 
     <script>
-        const EMAIL_DESTINO = "ws8530135@gmail.com"; 
-        const CHAVE_PIX_TEXTO = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";             
-
-        // VERIFICA HORÁRIO DA LOJA
+        // HORÁRIO DA LOJA
         function checarStatusLoja() {
             const agora = new Date();
             const hora = agora.getHours();
@@ -530,7 +526,7 @@
         }
         checarStatusLoja();
 
-        // TOGGLE MODO CLARO / ESCURO
+        // TEMA ESCURO / CLARO
         const themeToggleBtn = document.getElementById('themeToggleBtn');
         const themeIcon = document.getElementById('themeIcon');
         const themeText = document.getElementById('themeText');
@@ -569,49 +565,25 @@
         }
         setInterval(() => mudarSlide(slideIndex + 1), 4000);
 
-        // CÁLCULO DE VALOR EM TEMPO REAL
-        const selectTipo = document.getElementById("tipo_impressao");
+        // CÁLCULO DE VALOR FIXO (A4 P&B = R$ 0,50/folha)
         const inputQtd = document.getElementById("quantidade");
-        const selectAcabamento = document.getElementById("acabamento");
         const valorExibicao = document.getElementById("valorTotalExibicao");
-        let descontoAplicado = 0;
+        const hiddenValorTotal = document.getElementById("hiddenValorTotal");
 
         function calcularValor() {
-            let precoUnitario = 0.50;
-            switch(selectTipo.value) {
-                case "pouca_cor":
-                    precoUnitario = 1.00;
-                    break;
-                case "media_cor":
-                    precoUnitario = 1.50;
-                    break;
-                case "cobertura_total":
-                    precoUnitario = 2.00;
-                    break;
-                case "pb":
-                default:
-                    precoUnitario = 0.50;
-                    break;
-            }
-
+            const precoUnitario = 0.50;
             const qtd = parseInt(inputQtd.value) || 1;
-            const extraAcabamento = (selectAcabamento && selectAcabamento.value === "plastificacao") ? 3.00 : 0.00;
+            const total = precoUnitario * qtd;
             
-            let total = (precoUnitario * qtd) + extraAcabamento;
-            
-            if (descontoAplicado > 0) {
-                total = total * (1 - descontoAplicado);
-            }
-
-            valorExibicao.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            const valorFormatado = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            valorExibicao.innerText = valorFormatado;
+            hiddenValorTotal.value = valorFormatado;
             return total;
         }
 
-        selectTipo.addEventListener("change", calcularValor);
         inputQtd.addEventListener("input", calcularValor);
-        if(selectAcabamento) selectAcabamento.addEventListener("change", calcularValor);
 
-        // ALTERNAR MODO ANEXO OU TEXTO DIRETO
+        // MODO ANEXAR / COLAR TEXTO
         const btnToggleModo = document.getElementById("btnToggleModo");
         const campoArquivoContainer = document.getElementById("campoArquivoContainer");
         const campoTextoContainer = document.getElementById("campoTextoContainer");
@@ -633,25 +605,6 @@
             }
         });
 
-        // CUPOM DE DESCONTO
-        const btnCupom = document.getElementById("btnAplicarCupom");
-        const inputCupom = document.getElementById("cupom");
-        const cupomStatus = document.getElementById("cupomStatus");
-
-        btnCupom.addEventListener("click", () => {
-            const cupom = inputCupom.value.trim().toUpperCase();
-            if (cupom === "PRIMEIRACOMPRA") {
-                descontoAplicado = 0.10; // 10%
-                cupomStatus.innerText = "✅ Cupom de 10% de desconto aplicado!";
-                cupomStatus.style.color = "var(--green)";
-            } else {
-                descontoAplicado = 0;
-                cupomStatus.innerText = "❌ Cupom inválido ou expirado.";
-                cupomStatus.style.color = "var(--danger)";
-            }
-            calcularValor();
-        });
-
         // DETALHES DO ARQUIVO ANEXADO
         const fileDetails = document.getElementById("fileDetails");
 
@@ -666,7 +619,7 @@
             }
         });
 
-        // MÁSCARA WHATSAPP E CAIXA ALTA
+        // MÁSCARAS
         const inputNome = document.getElementById("nome");
         const inputTel = document.getElementById("telefone");
 
@@ -681,76 +634,7 @@
             e.target.value = v;
         });
 
-        // ENVIO DO FORMULÁRIO COM FORMSUBMIT
-        const form = document.getElementById("formImpressao");
-        const btnSubmit = document.getElementById("btnSubmit");
-        let textoResumoCompleto = "";
-
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            btnSubmit.disabled = true;
-            btnSubmit.innerText = "Enviando arquivo...";
-
-            const formData = new FormData(form);
-            const totalCalculado = calcularValor();
-            const pagamentoSel = document.querySelector('input[name="pagamento"]:checked').value;
-            const clienteNome = inputNome.value;
-
-            formData.append("Valor Total Estimado", `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`);
-
-            try {
-                const response = await fetch(`https://formsubmit.co/ajax/${EMAIL_DESTINO}`, {
-                    method: "POST",
-                    body: formData
-                });
-
-                if (response.ok) {
-                    form.classList.add("hidden");
-                    const telaSucesso = document.getElementById("telaSucesso");
-                    const boxPagamento = document.getElementById("boxDetalhesPagamento");
-
-                    if (pagamentoSel === "PIX") {
-                        boxPagamento.innerHTML = `
-                            <div class="pix-box">
-                                <p style="font-size:16px; font-weight:bold;">Total a Pagar: <span style="color:var(--green)">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</span></p>
-                                
-                                <div style="margin: 8px 0;">
-                                    <img src="qrcode-pix.jpg" alt="QR Code PIX" style="max-width: 180px; width: 100%; border-radius: 10px; border: 1px solid var(--border-color);" onerror="this.style.display='none'">
-                                </div>
-
-                                <p style="font-size:13px; color:var(--text-muted);">Copie a Chave PIX abaixo para pagar:</p>
-                                <input type="text" id="pixKey" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:14px; color:var(--primary);">
-                                <button class="btn-copiar-pix" id="btnCopyPix" type="button" onclick="copiarPix()">📋 Copiar Chave PIX</button>
-                            </div>
-                        `;
-                    } else {
-                        boxPagamento.innerHTML = `
-                            <div class="pix-box">
-                                <p style="font-size:16px; font-weight:bold;">Total no Balcão: <span style="color:var(--green)">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</span></p>
-                                <p style="font-size:14px; color:var(--text-muted);">Pagamento em Dinheiro no momento da retirada.</p>
-                            </div>
-                        `;
-                    }
-
-                    // RESUMO PARA O WHATSAPP E COPIAR
-                    textoResumoCompleto = `Olá! Fiz um pedido no site.\n\n👤 Nome: ${clienteNome}\n💰 Total: R$ ${totalCalculado.toFixed(2).replace('.', ',')}\n💳 Forma de Pagamento: ${pagamentoSel}`;
-                    const msgWhats = encodeURIComponent(textoResumoCompleto);
-                    document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;
-
-                    telaSucesso.classList.remove("hidden");
-                } else {
-                    alert("Erro ao enviar o pedido. Tente novamente.");
-                    btnSubmit.disabled = false;
-                    btnSubmit.innerText = "Enviar Pedido para Impressão 🚀";
-                }
-            } catch (error) {
-                alert("Erro de conexão com o servidor.");
-                btnSubmit.disabled = false;
-                btnSubmit.innerText = "Enviar Pedido para Impressão 🚀"; 
-            }
-        });
-
-        // FEEDBACK VISUAL PIX
+        // COPIAR PIX
         function copiarPix() {
             const inputPix = document.getElementById("pixKey");
             const btnCopy = document.getElementById("btnCopyPix");
@@ -766,15 +650,6 @@
                 btnCopy.style.background = "var(--primary)";
             }, 2500);
         }
-
-        // COPIAR RESUMO DO PEDIDO
-        document.getElementById("btnCopiarResumo").addEventListener("click", function() {
-            navigator.clipboard.writeText(textoResumoCompleto);
-            this.innerText = "✅ Resumo Copiado!";
-            setTimeout(() => {
-                this.innerText = "📋 Copiar Resumo do Pedido";
-            }, 2500);
-        });
     </script>
 </body>
 </html>
