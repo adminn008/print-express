@@ -61,6 +61,51 @@
         h1 { color: var(--accent); font-size: 28px; font-weight: 700; margin-bottom: 4px; }
         header p { color: var(--text-muted); font-size: 14px; }
 
+        /* CARROSSEL DE AVISOS */
+        .carousel-container {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid var(--accent);
+            border-radius: 14px;
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.15);
+        }
+
+        .carousel-slide {
+            display: none;
+            text-align: center;
+            font-size: 14px;
+            color: #e0f2fe;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .carousel-slide.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .dot.active { background: var(--accent); }
+
+        /* CARDS E FORMULÁRIOS */
         .step-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
@@ -99,6 +144,7 @@
             box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
         }
 
+        /* GRID DE SERVIÇOS */
         .servicos-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -117,12 +163,33 @@
             flex-direction: column;
             align-items: center;
             gap: 6px;
+            position: relative;
         }
+
+        .servico-card:hover { border-color: var(--accent); transform: translateY(-2px); }
 
         .servico-card.selected {
             border-color: var(--accent);
             background: rgba(2, 132, 199, 0.15);
             box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .servico-card.disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        .badge-breve {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: var(--danger);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 6px;
+            text-transform: uppercase;
         }
 
         .paper-badge {
@@ -214,6 +281,28 @@
             width: 100%;
         }
 
+        .pix-box {
+            background: #0f172a;
+            border: 2px dashed var(--accent);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .btn-copiar-pix {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+            padding: 10px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
         .radio-group { display: flex; gap: 20px; margin-top: 4px; }
         .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px; }
 
@@ -256,15 +345,42 @@
             width: 100%;
             margin-top: 12px;
         }
+
+        @media (max-width: 500px) {
+            body { padding: 16px 10px; }
+            .servicos-grid { grid-template-columns: 1fr; }
+            .item-arquivo-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
         <header>
+            <div class="nav-links">
+                <a href="fotos.html" class="nav-link">📸 Revelação de Fotos Glossy ➔</a>
+            </div>
             <h1>PrintExpress</h1>
-            <p>Envio de Pedidos Gráficos</p>
+            <p>Impressões, Currículos e Edições Gráficas</p>
         </header>
+
+        <!-- CARROSSEL DE AVISOS -->
+        <div class="carousel-container">
+            <div class="carousel-slide active">
+                📢 <strong>Atendimento Rápido:</strong> Envie seus documentos e retire no mesmo dia!
+            </div>
+            <div class="carousel-slide">
+                📄 <strong>Currículos Profissionais:</strong> Montamos ou atualizamos seu currículo na hora.
+            </div>
+            <div class="carousel-slide">
+                🎨 <strong>Criação de Arte / Canva:</strong> Cartões, panfletos, convites e banners digitais.
+            </div>
+            <div class="carousel-dots">
+                <span class="dot active" data-slide="0"></span>
+                <span class="dot" data-slide="1"></span>
+                <span class="dot" data-slide="2"></span>
+            </div>
+        </div>
 
         <!-- PASSO 1: DADOS E CONFIGURAÇÃO -->
         <div id="step-1" class="step-card">
@@ -280,6 +396,7 @@
                 <input type="tel" id="telefone-cliente" placeholder="(41) 99999-9999" maxlength="15">
             </div>
 
+            <!-- SELEÇÃO DE SERVIÇOS -->
             <div class="form-group">
                 <label>Escolha o Serviço:</label>
                 <div class="servicos-grid">
@@ -287,9 +404,26 @@
                         <div style="font-size:24px;">📄</div>
                         <div style="font-size:14px; font-weight:700;">Impressão A4</div>
                     </div>
+                    
+                    <div class="servico-card" id="srv-curriculo" onclick="location.href='curriculo.html'">
+                        <div style="font-size:24px;">💼</div>
+                        <div style="font-size:14px; font-weight:700;">Currículo Profissional</div>
+                    </div>
+
+                    <div class="servico-card disabled" id="srv-canva">
+                        <span class="badge-breve">EM BREVE</span>
+                        <div style="font-size:24px;">🎨</div>
+                        <div style="font-size:14px; font-weight:700;">Design / Canva</div>
+                    </div>
+
+                    <div class="servico-card" onclick="location.href='fotos.html'">
+                        <div style="font-size:24px;">📸</div>
+                        <div style="font-size:14px; font-weight:700;">Fotos Glossy</div>
+                    </div>
                 </div>
             </div>
 
+            <!-- PAINEL OPÇÕES IMPRESSÃO A4 -->
             <div id="painel-doc">
                 <div class="form-group" style="margin-bottom: 12px;">
                     <label>Tamanho do Papel:</label>
@@ -344,11 +478,14 @@
             </div>
         </div>
 
-        <!-- PASSO 3: CONFIRMAÇÃO -->
+        <!-- PASSO 3: CONFIRMAÇÃO E DADOS PIX -->
         <div id="step-3" class="step-card hidden" style="text-align: center;">
             <div style="font-size: 50px;">🚀</div>
             <h2>Pedido Registrado!</h2>
             <p style="color: var(--text-muted); margin-top: 8px;">Seu pedido foi enviado com sucesso para o nosso sistema.</p>
+            
+            <div id="box-pagamento-final"></div>
+
             <button class="btn-primary" onclick="location.reload()" style="margin-top: 20px;">Fazer Novo Pedido</button>
         </div>
     </div>
@@ -364,17 +501,55 @@
     </div>
 
     <script>
-        // O token fica fatiado no código do site público:
-const prefixo = "ghp_";
-const chave = "ACHKIt2UzTlVkxXFqCms4c2CmTo2en4EsBrD"; 
-const GITHUB_TOKEN = prefixo + chave;
+        // CONFIGURAÇÕES DO GITHUB (FATIAMENTO MANTIDO)
+        const prefixo = "github_pat_"; 
+        const chave = "11ABC123456789_SUA_CHAVE_AQUI"; // Cole a parte restante do token aqui
+        const GITHUB_TOKEN = prefixo + chave;
 
-// Mas repare que ele aponta o destino dos dados para o seu REPO PRIVADO:
-const REPO_OWNER = "adminn008";
-const REPO_NAME = "arquivos-printexpress"; // <--- Os pedidos vão para cá!
+        const REPO_OWNER = "SEU_USUARIO";          // Seu usuário do GitHub
+        const REPO_NAME = "SEU_REPO_PRIVADO";      // Nome do repositório PRIVADO
+
+        const CHAVE_PIX_TEXTO = "41999682836";     // Sua chave PIX
 
         let configuracoesArquivos = [];
 
+        // FUNÇÃO PARA LER ARQUIVO E CONVERTER PARA BASE64
+        function lerArquivoComoBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve({ name: file.name, type: file.type, data: reader.result });
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // LÓGICA DO CARROSSEL DE AVISOS
+        let slideIndex = 0;
+        const slides = document.querySelectorAll(".carousel-slide");
+        const dots = document.querySelectorAll(".dot");
+
+        function mostrarSlide(n) {
+            slides.forEach(s => s.classList.remove("active"));
+            dots.forEach(d => d.classList.remove("active"));
+            slideIndex = (n + slides.length) % slides.length;
+            slides[slideIndex].classList.add("active");
+            dots[slideIndex].classList.add("active");
+        }
+
+        dots.forEach((dot, idx) => {
+            dot.addEventListener("click", () => mostrarSlide(idx));
+        });
+
+        setInterval(() => {
+            mostrarSlide(slideIndex + 1);
+        }, 4000);
+
+        // CLIQUE NO CANVA (EM BREVE)
+        document.getElementById("srv-canva").addEventListener("click", () => {
+            mostrarToast("Em Breve!", "O serviço de Edição/Canva estará disponível em breve no site.");
+        });
+
+        // FORMATAÇÃO DE CAMPOS DE ENTRADA
         const inputNome = document.getElementById("nome-cliente");
         const inputTel = document.getElementById("telefone-cliente");
 
@@ -405,6 +580,7 @@ const REPO_NAME = "arquivos-printexpress"; // <--- Os pedidos vão para cá!
             document.getElementById("customToast").classList.remove("active");
         });
 
+        // GESTÃO DE ARQUIVOS
         const inputArquivos = document.getElementById("arquivo-upload");
         inputArquivos.addEventListener("change", () => {
             const container = document.getElementById("container-arquivos");
@@ -472,8 +648,10 @@ const REPO_NAME = "arquivos-printexpress"; // <--- Os pedidos vão para cá!
             });
 
             document.getElementById("valor-total").innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            return total;
         }
 
+        // NAVEGAÇÃO DE PASSOS
         document.getElementById("btn-passo-1").addEventListener("click", () => {
             const cliente = inputNome.value.trim();
             const telefone = inputTel.value.trim();
@@ -502,11 +680,11 @@ const REPO_NAME = "arquivos-printexpress"; // <--- Os pedidos vão para cá!
             });
         });
 
-        // ENVIO DIRETO PARA A API DE ISSUES DO GITHUB
+        // ENVIO DO PEDIDO COM CONVERSÃO BASE64
         document.getElementById("btn-enviar").addEventListener("click", async () => {
             const btnEnviar = document.getElementById("btn-enviar");
             btnEnviar.disabled = true;
-            btnEnviar.innerText = "Enviando pedido...";
+            btnEnviar.innerText = "Processando e enviando...";
 
             const cliente = inputNome.value.trim();
             const telefone = inputTel.value.trim();
@@ -514,19 +692,32 @@ const REPO_NAME = "arquivos-printexpress"; // <--- Os pedidos vão para cá!
             const troco = document.getElementById("troco").value || "Não precisa";
             const obs = document.getElementById("observacoes").value || "Nenhuma";
 
-            let totalGeneral = 0;
+            let totalGeneral = calcularTotal();
+
+            // Processa a conversão dos arquivos anexados para Base64
+            let arquivosComData = [];
+            try {
+                arquivosComData = await Promise.all(configuracoesArquivos.map(async (item) => {
+                    const base64Obj = await lerArquivoComoBase64(item.file);
+                    return {
+                        nome: item.file.name,
+                        tipoCor: item.tipoCor === "colorida" ? "Colorida" : "Preto e Branco",
+                        copias: item.copias,
+                        subtotal: (item.copias * (item.tipoCor === "colorida" ? 1.50 : 0.50)).toFixed(2).replace('.', ','),
+                        fileData: base64Obj.data
+                    };
+                }));
+            } catch (e) {
+                console.error("Erro ao converter arquivo para Base64:", e);
+            }
+
+            // Monta o texto legível para ver na interface da Issue do GitHub
             let arquivosTexto = "";
-
-            configuracoesArquivos.forEach(item => {
-                const precoUnitario = item.tipoCor === "colorida" ? 1.50 : 0.50;
-                const subtotal = item.copias * precoUnitario;
-                totalGeneral += subtotal;
-
-                const tipoStr = item.tipoCor === "colorida" ? "Colorida" : "Preto e Branco";
-                arquivosTexto += `- **Arquivo:** ${item.file.name}\n  - Impressão: ${tipoStr}\n  - Quantidade: ${item.copias}\n  - Subtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}\n\n`;
+            arquivosComData.forEach(item => {
+                arquivosTexto += `- **Arquivo:** ${item.nome}\n  - Impressão: ${item.tipoCor}\n  - Quantidade: ${item.copias}\n  - Subtotal: R$ ${item.subtotal}\n\n`;
             });
 
-            // Montagem da Issue
+            // Estrutura do Pedido para o GitHub
             const tituloIssue = `Pedido: ${cliente} - R$ ${totalGeneral.toFixed(2).replace('.', ',')}`;
             let corpoIssue = `### 👤 Dados do Cliente\n`;
             corpoIssue += `**Nome:** ${cliente}\n`;
@@ -535,7 +726,10 @@ const REPO_NAME = "arquivos-printexpress"; // <--- Os pedidos vão para cá!
             if (pagamento === "Dinheiro") corpoIssue += `**Troco para:** ${troco}\n`;
             corpoIssue += `**Observações:** ${obs}\n\n`;
             corpoIssue += `### 📄 Arquivos do Pedido\n${arquivosTexto}`;
-            corpoIssue += `\n**Total Geral:** R$ ${totalGeneral.toFixed(2).replace('.', ',')}`;
+            corpoIssue += `**Total Geral:** R$ ${totalGeneral.toFixed(2).replace('.', ',')}\n\n`;
+
+            // Bloco de dados embutido para o painel.html ler e fazer download do arquivo
+            corpoIssue += `<!-- ANEXOS_DATA_START\n${JSON.stringify(arquivosComData)}\nANEXOS_DATA_END -->`;
 
             const payload = {
                 title: tituloIssue,
@@ -555,6 +749,35 @@ const REPO_NAME = "arquivos-printexpress"; // <--- Os pedidos vão para cá!
                 });
 
                 if (response.ok) {
+                    // EXIBIR PIX OU INSTRUÇÕES NA TELA FINAL
+                    const boxFinal = document.getElementById("box-pagamento-final");
+                    if (pagamento === "PIX") {
+                        boxFinal.innerHTML = `
+                            <div class="pix-box">
+                                <p style="font-size:16px; font-weight:bold;">Valor a Pagar: <span style="color:var(--green)">R$ ${totalGeneral.toFixed(2).replace('.', ',')}</span></p>
+                                <p style="font-size:13px; color:var(--text-muted);">Copie a Chave PIX abaixo para realizar o pagamento:</p>
+                                <input type="text" id="pixKeyInput" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:16px; color:var(--accent);">
+                                <button class="btn-copiar-pix" id="btn-copiar-pix-action">📋 Copiar Chave PIX</button>
+                            </div>
+                        `;
+                        
+                        setTimeout(() => {
+                            document.getElementById("btn-copiar-pix-action").addEventListener("click", () => {
+                                const inputPix = document.getElementById("pixKeyInput");
+                                inputPix.select();
+                                navigator.clipboard.writeText(inputPix.value);
+                                mostrarToast("PIX Copiado!", "A chave PIX foi copiada com sucesso.");
+                            });
+                        }, 100);
+                    } else {
+                        boxFinal.innerHTML = `
+                            <div class="pix-box">
+                                <p style="font-size:15px; color:var(--text-muted);">Pagamento em Dinheiro na Retirada.</p>
+                                <p style="font-size:14px;">Troco informado: <strong>${troco}</strong></p>
+                            </div>
+                        `;
+                    }
+
                     document.getElementById("step-2").classList.add("hidden");
                     document.getElementById("step-3").classList.remove("hidden");
                 } else {
