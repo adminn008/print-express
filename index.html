@@ -3,784 +3,363 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PrintExpress - Impressões Rápidas & Serviços</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Print Express - Impressão Digital & Serviços</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-body: #f8fafc;
-            --bg-card: #ffffff;
-            --bg-input: #f1f5f9;
-            --border-color: #e2e8f0;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --primary: #0284c7;
-            --primary-hover: #0369a1;
-            --accent: #38bdf8;
-            --accent-light: rgba(2, 132, 199, 0.08);
-            --green: #10b981;
-            --danger: #ef4444;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-        }
-
-        [data-theme="dark"] {
-            --bg-body: #0f172a;
-            --bg-card: #1e293b;
-            --bg-input: #0f172a;
-            --border-color: #334155;
-            --text-main: #f8fafc;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --text: #f8fafc;
             --text-muted: #94a3b8;
-            --accent-light: rgba(56, 189, 248, 0.12);
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --accent: #38bdf8;
+            --green: #10b981;
+            --green-hover: #059669;
+            --yellow: #f59e0b;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease; }
-        
-        body { 
-            background-color: var(--bg-body); 
-            color: var(--text-main); 
-            padding: 32px 16px 80px 16px; 
-            line-height: 1.6;
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 20px 16px; line-height: 1.5; }
+
+        .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+
+        /* HEADER */
+        .header { text-align: center; margin-bottom: 10px; }
+        .header h1 { color: var(--accent); font-size: 28px; font-weight: 800; }
+        .header p { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
+
+        /* BANNER / TABELA DE PREÇOS IMAGEM */
+        .banner-container {
+            position: relative;
+            display: block;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            cursor: pointer;
         }
 
-        .container { 
-            max-width: 680px; 
-            margin: 0 auto; 
+        .banner-container h3 {
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.85);
+            color: #ffffff;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            backdrop-filter: blur(6px);
+            z-index: 2;
+            border: 1px solid var(--accent);
+        }
+
+        .banner-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .banner-container:hover img { transform: scale(1.02); }
+
+        /* MODAL EXPANDIR IMAGEM */
+        .modal-img {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(6px);
+        }
+        .modal-img img { max-width: 95%; max-height: 90vh; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .close-modal { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 35px; font-weight: bold; cursor: pointer; }
+
+        /* PAINEL DE FORMULÁRIO E RESUMO */
+        .grid-main {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 24px;
+        }
+
+        .card-form {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
 
-        header { text-align: center; position: relative; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-
-        .status-badge {
-            font-size: 12px;
+        .section-title {
+            font-size: 14px;
             font-weight: 700;
-            padding: 6px 12px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .status-open { background: rgba(16, 185, 129, 0.15); color: var(--green); }
-        .status-closed { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
 
-        .theme-toggle {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 8px 14px;
-            border-radius: 20px;
-            cursor: pointer;
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        label { font-size: 13px; font-weight: 600; color: #cbd5e1; }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 11px 14px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
             font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: var(--shadow);
         }
 
-        h1 { color: var(--primary); font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
-        header p { color: var(--text-muted); font-size: 15px; font-weight: 500; }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; }
 
-        .carousel-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-        .carousel-slide {
-            display: none;
-            text-align: center;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-main);
-        }
-
-        .carousel-slide.active { display: block; animation: fadeIn 0.4s ease-in-out; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(3px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .carousel-dots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            background: var(--border-color);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .dot.active { background: var(--primary); width: 20px; border-radius: 10px; }
-
-        .tabela-precos {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
+        /* CHECKOUT / RESUMO ESTILO SITE */
+        .checkout-box {
+            background: #0f172a;
+            border: 2px solid var(--border);
+            border-radius: 12px;
             padding: 18px;
-            box-shadow: var(--shadow);
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        .tabela-precos h3 { font-size: 16px; margin-bottom: 12px; color: var(--primary); display: flex; align-items: center; gap: 8px; }
-        
-        .preco-item {
+        .checkout-row {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px dashed var(--border-color);
-            font-size: 14px;
-        }
-
-        .preco-item:last-child { border-bottom: none; }
-        .preco-item span { font-weight: 700; color: var(--green); }
-
-        /* CONTAINER DE IMAGEM AJUSTADO */
-        .banner-imagem-container {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .banner-imagem {
-            width: 100%;
-            max-width: 450px;
-            height: auto;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
-            object-fit: cover;
-            display: block;
-        }
-
-        .step-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .step-card h2 { 
-            font-size: 20px; 
-            font-weight: 700;
-            color: var(--text-main); 
-            border-bottom: 1px solid var(--border-color); 
-            padding-bottom: 12px;
-        }
-
-        .form-group { display: flex; flex-direction: column; gap: 8px; }
-        label { font-weight: 600; font-size: 14px; color: var(--text-main); }
-
-        input[type="text"], input[type="tel"], input[type="number"], input[type="file"], select, textarea {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--text-main);
-            font-size: 15px;
-        }
-
-        input:focus, select:focus, textarea:focus { 
-            border-color: var(--primary); 
-            outline: none; 
-            box-shadow: 0 0 0 3px var(--accent-light);
-        }
-
-        .servicos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-
-        .servico-card {
-            background: var(--bg-input);
-            border: 2px solid var(--border-color);
-            border-radius: 14px;
-            padding: 12px 8px;
-            text-align: center;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .servico-card.selected { border-color: var(--primary); background: var(--accent-light); }
-
-        .servico-card.disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            pointer-events: none;
-            filter: grayscale(40%);
-        }
-
-        .badge-breve {
-            font-size: 9px;
-            background: var(--primary);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 8px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            margin-top: -2px;
-        }
-
-        .file-info {
-            font-size: 12px;
-            color: var(--primary);
-            font-weight: 600;
-            margin-top: 4px;
-        }
-
-        .price-box {
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            padding: 18px; border-radius: 14px;
-            display: flex; justify-content: space-between; align-items: center;
-            font-size: 16px; font-weight: 600;
-        }
-        .price-box strong { color: var(--green); font-size: 24px; font-weight: 800; }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white; border: none;
-            padding: 16px; font-size: 16px;
-            border-radius: 12px; cursor: pointer;
-            font-weight: 700; width: 100%;
-            display: flex; justify-content: center; align-items: center; gap: 8px;
-        }
-        .btn-primary:hover { background: var(--primary-hover); }
-
-        .btn-whatsapp {
-            background: #25D366;
-            color: white;
-            text-decoration: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .pix-box {
-            background: var(--bg-input);
-            border: 2px dashed var(--primary);
-            padding: 20px; border-radius: 14px;
-            text-align: center; display: flex;
-            flex-direction: column; gap: 12px; margin-top: 15px;
-        }
-
-        .btn-copiar-pix {
-            background: var(--primary);
-            color: white; border: none;
-            padding: 12px; font-weight: 700;
-            border-radius: 10px; cursor: pointer;
-            transition: transform 0.1s ease;
-        }
-
-        .radio-group { display: flex; gap: 20px; margin-top: 4px; }
-        .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px; font-weight: 500; }
-        .hidden { display: none !important; }
-
-        .btn-flutuante {
-            position: fixed;
-            bottom: 20px; right: 20px;
-            background: #25D366; color: white;
-            border-radius: 50px; padding: 12px 20px;
-            font-weight: 700; font-size: 14px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            text-decoration: none;
-            display: flex; align-items: center; gap: 8px;
-            z-index: 999;
-        }
-
-        .btn-toggle-modo {
-            background: transparent;
-            border: 1px dashed var(--primary);
-            color: var(--primary);
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
             font-size: 13px;
-            font-weight: 600;
-            margin-top: 4px;
+            color: var(--text-muted);
         }
 
-        @media (max-width: 500px) {
-            body { padding: 16px 10px 80px 10px; }
-            .servicos-grid { grid-template-columns: 1fr; }
+        .checkout-row.discount { color: var(--green); font-weight: 600; }
+
+        .checkout-row.total {
+            border-top: 1px dashed var(--border);
+            padding-top: 10px;
+            font-size: 18px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .checkout-row.total span:last-child { color: var(--green); }
+
+        .btn-enviar {
+            background: var(--green);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+        .btn-enviar:hover { background: var(--green-hover); }
+
+        @media (max-width: 850px) {
+            .grid-main { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <header>
-            <div class="header-top">
-                <div id="statusLoja" class="status-badge status-open">
-                    <span id="statusIcon">🟢</span> <span id="statusTexto">Atendendo Agora</span>
-                </div>
-                <button class="theme-toggle" id="themeToggleBtn" type="button">
-                    <span id="themeIcon">🌙</span> <span id="themeText">Escuro</span>
-                </button>
-            </div>
-            <h1>PrintExpress</h1>
-            <p>Impressões, Currículos e Serviços Rápidos</p>
-        </header>
-
-        <div class="carousel-container">
-            <div class="carousel-slide active">
-                📢 <strong>Atendimento Rápido:</strong> Envie seus documentos e retire no mesmo dia!
-            </div>
-            <div class="carousel-slide">
-                📄 <strong>Currículos Profissionais:</strong> Montamos ou atualizamos seu currículo na hora.
-            </div>
-            <div class="carousel-slide">
-                🎨 <strong>EM BREVE: Criação de Arte / Canva:</strong> Cartões, panfletos, convites e banners digitais.
-            </div>
-            <div class="carousel-dots">
-                <span class="dot active" onclick="mudarSlide(0)"></span>
-                <span class="dot" onclick="mudarSlide(1)"></span>
-                <span class="dot" onclick="mudarSlide(2)"></span>
-            </div>
+        <div class="header">
+            <h1>🖨️ Central de Impressão Digital</h1>
+            <p>Envie seus arquivos e receba tudo pronto com agilidade e qualidade!</p>
         </div>
 
-        <div class="tabela-precos">
-            <h3>🏷️ Tabela de Preços Básica</h3>
-            <div class="preco-item">
-                <div>📄 Preto e Branco (P&B)</div>
-                <span>R$ 0,50 / folha</span>
-            </div>
-            <div class="preco-item">
-                <div>🎨 Colorida Pouca Cor</div>
-                <span>R$ 1,00 / folha</span>
-            </div>
-            <div class="preco-item">
-                <div>🖼️ Colorida Média Cor</div>
-                <span>R$ 1,10 / folha</span>
-            </div>
-            <div class="preco-item">
-                <div>🖼️ Colorida Cobertura Total</div>
-                <span>R$ 2,00 / folha</span>
-            </div>
-            <div class="preco-item">
-                <div>💼 Elaboração / Atualização de Currículo</div>
-                <span>A partir de R$ 10,00</span>
-            </div>
+        <div class="banner-container" onclick="abrirBanner()">
+            <h3>📌 Tabela Oficial de Preços (Clique para Ampliar)</h3>
+            <img id="imgBannerPrecos" src="tabela_precos_impressao.png" alt="Tabela de Preços Impressão Digital" onerror="this.onerror=null; this.src='https://via.placeholder.com/900x350/0f172a/38bdf8?text=Tabela+de+Precos+Impressao+Digital';">
         </div>
 
-        <div class="banner-imagem-container" style="position: relative; display: inline-block; width: 100%; max-width: 450px; margin: 0 auto; cursor: pointer;" onclick="abrirImagem()">
-    
-    <h3 style="
-        position: absolute; 
-        top: 12px; 
-        left: 50%; 
-        transform: translateX(-50%); 
-        background: rgba(15, 23, 42, 0.75); 
-        color: #ffffff; 
-        padding: 6px 16px; 
-        border-radius: 20px; 
-        font-size: 14px; 
-        font-weight: 700; 
-        text-align: center; 
-        white-space: nowrap; 
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        backdrop-filter: blur(4px);
-    ">
-        Tabela de Ilustração Visual de Impressão A4
-    </h3>
-
-    <img id="imgBanner" src="tabela_precos_impressao.png" alt="Tabela de Informações" class="banner-imagem" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x200/0284c7/ffffff?text=Coloque+sua+Imagem+Aqui';">
-</div>
-
-<div id="modalImagem" onclick="fecharImagem()" style="
-    display: none; 
-    position: fixed; 
-    z-index: 9999; 
-    left: 0; 
-    top: 0; 
-    width: 100%; 
-    height: 100%; 
-    background-color: rgba(0, 0, 0, 0.85); 
-    align-items: center; 
-    justify-content: center; 
-    padding: 20px;
-    backdrop-filter: blur(5px);
-">
-    <span style="
-        position: absolute; 
-        top: 15px; 
-        right: 25px; 
-        color: #fff; 
-        font-size: 35px; 
-        font-weight: bold; 
-        cursor: pointer;
-    ">&times;</span>
-    <img id="imgModal" style="max-width: 90%; max-height: 90%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-</div>
-
-<script>
-    function abrirImagem() {
-        const srcOriginal = document.getElementById("imgBanner").src;
-        document.getElementById("imgModal").src = srcOriginal;
-        document.getElementById("modalImagem").style.display = "flex";
-    }
-
-    function fecharImagem() {
-        document.getElementById("modalImagem").style.display = "none";
-    }
-</script>
-
-        <form id="formImpressao" class="step-card">
-            <h2>Monte seu Pedido</h2>
-
-            <div class="form-group">
-                <label for="nome">Seu Nome Completo:</label>
-                <input type="text" id="nome" name="Nome do Cliente" placeholder="EX: JOÃO DA SILVA" required>
-            </div>
-
-            <div class="form-group">
-                <label for="telefone">WhatsApp para Contato:</label>
-                <input type="tel" id="telefone" name="WhatsApp" placeholder="(41) 99999-9999" maxlength="15" required>
-            </div>
-
-            <div class="form-group">
-                <label>Escolha o Serviço:</label>
-                <div class="servicos-grid">
-                    <div class="servico-card selected">
-                        <div style="font-size:24px;">📄</div>
-                        <div style="font-size:13px; font-weight:700;">Impressão A4</div>
-                    </div>
-                    
-                    <div class="servico-card" onclick="location.href='curriculo.html'">
-                        <div style="font-size:24px;">💼</div>
-                        <div style="font-size:13px; font-weight:700;">Currículo</div>
-                    </div>
-
-                    <div class="servico-card disabled" title="Serviço temporariamente indisponível">
-                        <span class="badge-breve">EM BREVE</span>
-                        <div style="font-size:22px;">🔒</div>
-                        <div style="font-size:13px; font-weight:700;">Artes / Canva</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="tipo_impressao">Tipo de Impressão:</label>
-                <select id="tipo_impressao" name="Tipo de Impressao" required>
-                    <option value="pb">Preto e Branco (P&B) - R$ 0,50/folha (Texto ou gráficos cinzas)</option>
-                    <option value="pouca_cor">Colorida Pouca Cor - R$ 1,00/folha (Títulos coloridos, logo simples)</option>
-                    <option value="media_cor">Colorida Média Cor - R$ 1,10/folha (Trabalhos com imagens parciais)</option>
-                    <option value="cobertura_total">Colorida Cobertura Total - R$ 2,00/folha (Fotos cheias ou cartazes)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="quantidade">Quantidade de Cópias / Folhas:</label>
-                <input type="number" id="quantidade" name="Quantidade de Copias" value="1" min="1" required>
-            </div>
-
-            <div class="form-group">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <label for="arquivo">Anexar Documento(s) – Máx. 10.00MB:</label>
-                    <button type="button" class="btn-toggle-modo" id="btnToggleModo">✏️ Prefiro colar um texto</button>
-                </div>
+        <div class="grid-main">
+            <div class="card-form">
+                <div class="section-title">1. Dados do Cliente</div>
                 
-                <div id="campoArquivoContainer">
-                    <input type="file" id="arquivo" name="attachment" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" required>
-                    <div id="fileDetails" class="file-info hidden"></div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Nome Completo:</label>
+                        <input type="text" id="nomeCliente" placeholder="Ex: Maria Oliveira" oninput="calcularTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label>WhatsApp / Telefone:</label>
+                        <input type="text" id="telCliente" placeholder="(41) 99999-9999">
+                    </div>
                 </div>
 
-                <div id="campoTextoContainer" class="hidden">
-                    <textarea id="textoDireto" name="Texto para Impressao" rows="3" placeholder="Cole aqui o texto que deseja imprimir..."></textarea>
+                <div class="section-title">2. Detalhes da Impressão</div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Tipo de Impressão (Cor):</label>
+                        <select id="tipoImpressao" onchange="calcularTotal()">
+                            <option value="0.50">Preto e Branco (R$ 0,50 / folha)</option>
+                            <option value="1.00">Pouca Cor (R$ 1,00 / folha)</option>
+                            <option value="1.35">Média Cor (R$ 1,35 / folha - 🔥 R$ 1,20 acima de 5)</option>
+                            <option value="2.00">Muita Cor / Foto (R$ 2,00 / folha)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quantidade de Folhas A4:</label>
+                        <input type="number" id="qtdFolhas" min="1" value="1" oninput="calcularTotal()">
+                    </div>
+                </div>
+
+                <div class="section-title">3. Serviços Adicionais & Extras</div>
+
+                <div class="form-group">
+                    <label>📁 Organização de Entrega (Grátis):</label>
+                    <select id="optOrganizacao">
+                        <option value="padrão">Envelope Padrão de Papel</option>
+                        <option value="pasta">Separar em Pasta Transparente Sem Custo</option>
+                        <option value="clipes">Agrupar por Clipes de Papel</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>✂️ Refile de Margens / Acabamento (Grátis):</label>
+                    <select id="optRefile">
+                        <option value="nao">Manter Margem Padrão da Impressora</option>
+                        <option value="sim">Refilar / Cortar Bordas Brancas (Sem Custo)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>🔖 Adicional Extra:</label>
+                    <select id="optMarcaPagina" onchange="calcularTotal()">
+                        <option value="0">Nenhum adicional extra</option>
+                        <option value="1.50">Adicionar Marca-Página Personalizado (+ R$ 1,50)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Observações do Pedido:</label>
+                    <textarea id="obsPedido" rows="2" placeholder="Ex: Imprimir frente e verso, páginas específicas..."></textarea>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Forma de Pagamento:</label>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" name="pagamento" value="PIX" checked> PIX
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="pagamento" value="Dinheiro"> Dinheiro (Na Retirada)
-                    </label>
+            <div class="card-form" style="justify-content: space-between;">
+                <div>
+                    <div class="section-title">📊 Resumo do Pedido</div>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Confira os valores calculados automaticamente antes de enviar:</p>
+
+                    <div class="checkout-box">
+                        <div class="checkout-row">
+                            <span>Subtotal Impressão:</span>
+                            <span id="txtSubtotal">R$ 0,50</span>
+                        </div>
+
+                        <div class="checkout-row" id="rowAdicionais" style="display: none;">
+                            <span>Adicionais (Extras):</span>
+                            <span id="txtAdicionais">R$ 0,00</span>
+                        </div>
+
+                        <div class="checkout-row discount">
+                            <span>Desconto Aplicado:</span>
+                            <span id="txtDesconto">Não se aplica</span>
+                        </div>
+
+                        <div class="checkout-row total">
+                            <span>Total Estimado:</span>
+                            <span id="txtTotal">R$ 0,50</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <button class="btn-enviar" onclick="enviarPedido()">🚀 Enviar Pedido para Impressão</button>
                 </div>
             </div>
-
-            <div class="form-group">
-                <label for="observacoes">Observações ou Troco (Opcional):</label>
-                <textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex: Imprimir frente e verso / Troco para R$ 20..."></textarea>
-            </div>
-
-            <div class="price-box">
-                <span>Valor Estimado:</span>
-                <strong id="valorTotalExibicao">R$ 0,50</strong>
-            </div>
-
-            <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido para Impressão 🚀</button>
-        </form>
-
-        <div id="telaSucesso" class="step-card hidden" style="text-align: center;">
-            <div style="font-size: 54px;">🎉</div>
-            <h2>Pedido Enviado com Sucesso!</h2>
-            <p style="color: var(--text-muted); margin-top: 4px;">Obrigado! Já recebemos seu pedido e estamos preparando tudo.</p>
-
-            <div id="boxDetalhesPagamento"></div>
-
-            <a id="btnNotificarWhats" href="#" target="_blank" class="btn-whatsapp">
-                💬 Avisar no WhatsApp
-            </a>
-
-            <button class="btn-primary" onclick="location.reload()" style="margin-top: 10px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">Fazer Novo Pedido 🔄</button>
         </div>
     </div>
 
-    <a href="https://wa.me/5541999682836?text=Olá,%20preciso%20de%20ajuda%20com%20meu%20pedido!" target="_blank" class="btn-flutuante">
-        💬 Dúvidas?
-    </a>
+    <div id="modalImagem" class="modal-img" onclick="fecharBanner()">
+        <span class="close-modal">&times;</span>
+        <img id="imgModalExpanded" alt="Tabela de Preços Expandida">
+    </div>
 
     <script>
-        const EMAIL_DESTINO = "ws8530135@gmail.com"; 
-        const CHAVE_PIX_TEXTO = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
-
-        // HORÁRIO DA LOJA
-        function checarStatusLoja() {
-            const agora = new Date();
-            const hora = agora.getHours();
-            const statusDiv = document.getElementById("statusLoja");
-            const statusTexto = document.getElementById("statusTexto");
-            const statusIcon = document.getElementById("statusIcon");
-
-            if (hora >= 8 && hora < 18) {
-                statusDiv.className = "status-badge status-open";
-                statusTexto.innerText = "Atendendo Agora";
-                statusIcon.innerText = "🟢";
-            } else {
-                statusDiv.className = "status-badge status-closed";
-                statusTexto.innerText = "Recebendo Pedidos (Fora do Horário)";
-                statusIcon.innerText = "🔴";
-            }
-        }
-        checarStatusLoja();
-
-        // TEMA ESCURO / CLARO
-        const themeToggleBtn = document.getElementById('themeToggleBtn');
-        const themeIcon = document.getElementById('themeIcon');
-        const themeText = document.getElementById('themeText');
-
-        function aplicarTema(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            if (theme === 'dark') {
-                themeIcon.innerText = '☀️';
-                themeText.innerText = 'Claro';
-            } else {
-                themeIcon.innerText = '🌙';
-                themeText.innerText = 'Escuro';
-            }
-            localStorage.setItem('theme', theme);
+        function abrirBanner() {
+            const src = document.getElementById("imgBannerPrecos").src;
+            document.getElementById("imgModalExpanded").src = src;
+            document.getElementById("modalImagem").style.display = "flex";
         }
 
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        aplicarTema(savedTheme);
-
-        themeToggleBtn.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            aplicarTema(currentTheme === 'dark' ? 'light' : 'dark');
-        });
-
-        // CARROSSEL
-        let slideIndex = 0;
-        const slides = document.querySelectorAll(".carousel-slide");
-        const dots = document.querySelectorAll(".dot");
-
-        function mudarSlide(n) {
-            slides.forEach(s => s.classList.remove("active"));
-            dots.forEach(d => d.classList.remove("active"));
-            slideIndex = (n + slides.length) % slides.length;
-            if(slides[slideIndex]) slides[slideIndex].classList.add("active");
-            if(dots[slideIndex]) dots[slideIndex].classList.add("active");
+        function fecharBanner() {
+            document.getElementById("modalImagem").style.display = "none";
         }
-        setInterval(() => mudarSlide(slideIndex + 1), 4000);
 
-        // CÁLCULO DE VALOR EM TEMPO REAL
-        const selectTipo = document.getElementById("tipo_impressao");
-        const inputQtd = document.getElementById("quantidade");
-        const valorExibicao = document.getElementById("valorTotalExibicao");
+        function calcularTotal() {
+            const precoUnitario = parseFloat(document.getElementById("tipoImpressao").value);
+            const qtd = parseInt(document.getElementById("qtdFolhas").value) || 1;
+            const valorExtra = parseFloat(document.getElementById("optMarcaPagina").value) || 0;
 
-        function calcularValor() {
-            let precoUnitario = 0.50;
-            switch(selectTipo.value) {
-                case "pouca_cor":
-                    precoUnitario = 1.00;
-                    break;
-                case "media_cor":
-                    precoUnitario = 1.10;
-                    break;
-                case "cobertura_total":
-                    precoUnitario = 2.00;
-                    break;
-                case "pb":
-                default:
-                    precoUnitario = 0.50;
-                    break;
+            let subtotal = precoUnitario * qtd;
+            let desconto = 0;
+
+            // Lógica do desconto de Média Cor (> 5 folhas cai de R$ 1,35 para R$ 1,20 por unidade)
+            if (precoUnitario === 1.35 && qtd > 5) {
+                const subtotalSemDesconto = 1.35 * qtd;
+                const subtotalComDesconto = 1.20 * qtd;
+                desconto = subtotalSemDesconto - subtotalComDesconto;
+                subtotal = subtotalSemDesconto;
             }
 
-            const qtd = parseInt(inputQtd.value) || 1;
-            const total = precoUnitario * qtd;
+            const totalFinal = (subtotal - desconto) + valorExtra;
+
+            // Atualização dos textos na tela
+            document.getElementById("txtSubtotal").innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
             
-            valorExibicao.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
-            return total;
+            if (valorExtra > 0) {
+                document.getElementById("rowAdicionais").style.display = "flex";
+                document.getElementById("txtAdicionais").innerText = `R$ ${valorExtra.toFixed(2).replace('.', ',')}`;
+            } else {
+                document.getElementById("rowAdicionais").style.display = "none";
+            }
+
+            if (desconto > 0) {
+                document.getElementById("txtDesconto").innerText = `- R$ ${desconto.toFixed(2).replace('.', ',')} (Promo 5+ folhas)`;
+            } else {
+                document.getElementById("txtDesconto").innerText = "Não se aplica";
+            }
+
+            document.getElementById("txtTotal").innerText = `R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
         }
 
-        selectTipo.addEventListener("change", calcularValor);
-        inputQtd.addEventListener("input", calcularValor);
-
-        // MODO ANEXAR / COLAR TEXTO
-        const btnToggleModo = document.getElementById("btnToggleModo");
-        const campoArquivoContainer = document.getElementById("campoArquivoContainer");
-        const campoTextoContainer = document.getElementById("campoTextoContainer");
-        const inputArquivo = document.getElementById("arquivo");
-        let modoTextoAtivo = false;
-
-        btnToggleModo.addEventListener("click", () => {
-            modoTextoAtivo = !modoTextoAtivo;
-            if(modoTextoAtivo) {
-                campoArquivoContainer.classList.add("hidden");
-                campoTextoContainer.classList.remove("hidden");
-                btnToggleModo.innerText = "📎 Prefiro anexar um arquivo";
-                inputArquivo.removeAttribute("required");
-            } else {
-                campoTextoContainer.classList.add("hidden");
-                campoArquivoContainer.classList.remove("hidden");
-                btnToggleModo.innerText = "✏️ Prefiro colar um texto";
-                inputArquivo.setAttribute("required", "required");
+        function enviarPedido() {
+            const nome = document.getElementById("nomeCliente").value.trim();
+            if(!nome) {
+                alert("Por favor, preencha seu nome antes de enviar.");
+                return;
             }
-        });
-
-        // DETALHES DO ARQUIVO ANEXADO
-        const fileDetails = document.getElementById("fileDetails");
-
-        inputArquivo.addEventListener("change", function() {
-            if (this.files && this.files[0]) {
-                const file = this.files[0];
-                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-                fileDetails.innerText = `📎 Arquivo: ${file.name} (${sizeMB} MB)`;
-                fileDetails.classList.remove("hidden");
-            } else {
-                fileDetails.classList.add("hidden");
-            }
-        });
-
-        // MÁSCARAS
-        const inputNome = document.getElementById("nome");
-        const inputTel = document.getElementById("telefone");
-
-        inputNome.addEventListener("input", (e) => e.target.value = e.target.value.toUpperCase());
-
-        inputTel.addEventListener("input", (e) => {
-            let v = e.target.value.replace(/\D/g, '');
-            if (v.length > 11) v = v.substring(0, 11);
-            if (v.length > 6) v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
-            else if (v.length > 2) v = v.replace(/^(\d{2})(\d{1,4}).*/, '($1) $2');
-            else if (v.length > 0) v = v.replace(/^(\d*)/, '($1');
-            e.target.value = v;
-        });
-
-        // ENVIO SILENCIOSO VIA AJAX (SEM TELA BRANCA DO FORMSUBMIT)
-        const form = document.getElementById("formImpressao");
-        const btnSubmit = document.getElementById("btnSubmit");
-
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            btnSubmit.disabled = true;
-            btnSubmit.innerText = "Enviando pedido...";
-
-            const formData = new FormData(form);
-            const totalCalculado = calcularValor();
-            const pagamentoSel = document.querySelector('input[name="pagamento"]:checked').value;
-            const clienteNome = inputNome.value;
-
-            formData.append("Valor Total Estimado", `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`);
-
-            try {
-                const response = await fetch(`https://formsubmit.co/ajax/${EMAIL_DESTINO}`, {
-                    method: "POST",
-                    body: formData
-                });
-
-                if (response.ok) {
-                    form.classList.add("hidden");
-                    const telaSucesso = document.getElementById("telaSucesso");
-                    const boxPagamento = document.getElementById("boxDetalhesPagamento");
-
-                    if (pagamentoSel === "PIX") {
-                        boxPagamento.innerHTML = `
-                            <div class="pix-box">
-                                <p style="font-size:16px; font-weight:bold;">Total a Pagar: <span style="color:var(--green)">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</span></p>
-                                
-                                <div style="margin: 8px 0;">
-                                    <img src="qrcode-pix.jpg" alt="QR Code PIX" style="max-width: 180px; width: 100%; border-radius: 10px; border: 1px solid var(--border-color);" onerror="this.style.display='none'">
-                                </div>
-
-                                <p style="font-size:13px; color:var(--text-muted);">Copie a Chave PIX abaixo para pagar:</p>
-                                <input type="text" id="pixKey" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:12px; color:var(--primary);">
-                                <button class="btn-copiar-pix" id="btnCopyPix" type="button" onclick="copiarPix()">📋 Copiar Chave PIX</button>
-                            </div>
-                        `;
-                    } else {
-                        boxPagamento.innerHTML = `
-                            <div class="pix-box">
-                                <p style="font-size:16px; font-weight:bold;">Total no Balcão: <span style="color:var(--green)">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</span></p>
-                                <p style="font-size:14px; color:var(--text-muted);">Pagamento em Dinheiro no momento da retirada.</p>
-                            </div>
-                        `;
-                    }
-
-                    const msgWhats = encodeURIComponent(`Olá! Acabei de fazer um pedido pelo site.\n\n👤 Nome: ${clienteNome}\n💰 Total: R$ ${totalCalculado.toFixed(2).replace('.', ',')}\n💳 Forma: ${pagamentoSel}`);
-                    document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;
-
-                    telaSucesso.classList.remove("hidden");
-                } else {
-                    alert("Erro ao enviar o pedido. Tente novamente. Caso persiste, contate-nos.");
-                    btnSubmit.disabled = false;
-                    btnSubmit.innerText = "Enviar Pedido para Impressão 🚀";
-                }
-            } catch (error) {
-                alert("Erro de conexão ao enviar o formulário.");
-                btnSubmit.disabled = false;
-                btnSubmit.innerText = "Enviar Pedido para Impressão 🚀"; 
-            }
-        });
-
-        // COPIAR PIX
-        function copiarPix() {
-            const inputPix = document.getElementById("pixKey");
-            const btnCopy = document.getElementById("btnCopyPix");
-
-            inputPix.select();
-            navigator.clipboard.writeText(inputPix.value);
-
-            btnCopy.innerText = "✅ Chave Copiada!";
-            btnCopy.style.background = "var(--green)";
-
-            setTimeout(() => {
-                btnCopy.innerText = "📋 Copiar Chave PIX";
-                btnCopy.style.background = "var(--primary)";
-            }, 2500);
+            alert("Pedido gerado com sucesso! Redirecionando para envio...");
         }
+
+        // Executa o cálculo inicial
+        calcularTotal();
     </script>
 </body>
 </html>
