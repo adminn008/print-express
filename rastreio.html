@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acompanhamento de Pedido - PrintExpress</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #0284c7;
+            --green: #10b981;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 32px 16px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 550px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        h1 { color: var(--primary); font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+        p { color: var(--text-muted); font-size: 14px; margin-bottom: 18px; }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 15px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .btn-buscar {
+            background: var(--primary);
+            color: white; border: none;
+            padding: 14px; font-weight: 700;
+            border-radius: 12px; cursor: pointer;
+            width: 100%; font-size: 15px;
+        }
+
+        .status-box {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+            position: relative;
+        }
+
+        .step {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .step.active { color: var(--primary); }
+        .step.done { color: var(--green); }
+
+        .btn-voltar {
+            display: inline-block;
+            margin-top: 14px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <h1>📍 Rastrear Pedido</h1>
+            <p>Digite seu WhatsApp para verificar o andamento do seu pedido:</p>
+
+            <input type="text" id="campoRastreio" placeholder="Ex: (41) 99999-9999">
+            <button class="btn-buscar" onclick="buscarStatus()">Consultar Status 🔎</button>
+
+            <div id="statusResultado" class="status-box">
+                <h3 style="color:var(--primary); font-size:16px;">Status Atual do Pedido:</h3>
+                <div style="font-size: 22px; font-weight:800; color:var(--green); margin: 8px 0;" id="textoStatus">
+                    🟡 EM FILA DE IMPRESSÃO
+                </div>
+
+                <div class="timeline">
+                    <div class="step done"><span>🟡</span> Em Fila</div>
+                    <div class="step active"><span>⚙️</span> Imprimindo</div>
+                    <div class="step"><span>🟢</span> Pronto</div>
+                </div>
+            </div>
+
+            <a href="index.html" class="btn-voltar">⬅️ Voltar para o Site Principal</a>
+        </div>
+    </div>
+
+    <script>
+        function buscarStatus() {
+            const valor = document.getElementById("campoRastreio").value;
+            if(!valor) {
+                alert("Por favor, digite seu WhatsApp.");
+                return;
+            }
+            document.getElementById("statusResultado").style.display = "block";
+        }
+    </script>
+</body>
+</html>
