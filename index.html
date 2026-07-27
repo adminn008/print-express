@@ -214,6 +214,7 @@
         }
 
         .servico-card.selected { border-color: var(--primary); background: var(--accent-light); }
+        .servico-card.disabled { opacity: 0.6; cursor: not-allowed; }
 
         .file-info {
             font-size: 12px;
@@ -432,7 +433,7 @@
 
         @media (max-width: 500px) {
             body { padding: 16px 10px 80px 10px; }
-            .servicos-grid { grid-template-columns: 1fr; }
+            .servicos-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
@@ -449,7 +450,7 @@
                 </button>
             </div>
             <h1>PrintExpress</h1>
-            <p>Impressões, Currículos e Serviços Rápidos</p>
+            <p>Impressões, Xerox, Currículos e Serviços Rápidos</p>
         </header>
 
         <div class="carousel-container">
@@ -472,11 +473,11 @@
         <div id="secaoPrecosVisual" class="tabela-precos">
             <h3>🏷️ Tabela de Preços Básica</h3>
             <div class="preco-item">
-                <div>📄 Preto e Branco (P&B)</div>
+                <div>📄 Impressão / Xerox Preto e Branco (P&B)</div>
                 <span>R$ 0,50 / folha</span>
             </div>
             <div class="preco-item">
-                <div>🎨 Colorida Pouca Cor</div>
+                <div>🎨 Impressão / Xerox Colorida Pouca Cor</div>
                 <span>R$ 1,00 / folha</span>
             </div>
             <div class="preco-item">
@@ -488,7 +489,7 @@
                 <span>R$ 2,00 / folha</span>
             </div>
             <div class="preco-item">
-                <div>📑 Digitalização de Documento</div>
+                <div>📲 Digitalização de Documento (Para o Celular)</div>
                 <span>R$ 2,00 / página</span>
             </div>
             <div class="preco-item">
@@ -561,7 +562,7 @@
             
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="_template" value="table">
-            <input type="hidden" id="hidden_servico_nome" name="Servico Selecionado" value="Impressao A4">
+            <input type="hidden" id="hidden_servico_nome" name="Servico Selecionado" value="Impressao / Xerox A4">
             <input type="hidden" id="hidden_tipo_texto" name="Opcao de Impressao Detalhada" value="">
             <input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">
 
@@ -582,7 +583,12 @@
                 <div class="servicos-grid">
                     <div class="servico-card selected" id="cardA4" onclick="trocarAbaServico('a4')">
                         <div style="font-size:24px;">📄</div>
-                        <div style="font-size:13px; font-weight:700;">Impressão A4</div>
+                        <div style="font-size:13px; font-weight:700;">Impressão / Xerox</div>
+                    </div>
+
+                    <div class="servico-card" id="cardCurriculo" onclick="window.location.href='curriculo.html'">
+                        <div style="font-size:24px;">💼</div>
+                        <div style="font-size:13px; font-weight:700;">Currículo</div>
                     </div>
                     
                     <div class="servico-card" id="cardDoc" onclick="trocarAbaServico('doc')">
@@ -594,14 +600,19 @@
                         <div style="font-size:24px;">📲</div>
                         <div style="font-size:13px; font-weight:700;">Digitalização</div>
                     </div>
+
+                    <div class="servico-card disabled">
+                        <div style="font-size:24px;">🎨</div>
+                        <div style="font-size:13px; font-weight:700;">Canva <span style="font-size:10px; color:var(--primary); block">(Em Breve)</span></div>
+                    </div>
                 </div>
             </div>
 
             <div id="blocoA4">
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label for="tipo_impressao">Tipo de Impressão:</label>
+                    <label for="tipo_impressao">Tipo de Impressão / Xerox:</label>
                     <select id="tipo_impressao" name="Codigo Opcao Cor">
-                        <option value="pb">Preto e Branco (P&B) - R$ 0,50/folha (Texto ou gráficos cinzas)</option>
+                        <option value="pb">Preto e Branco (P&B) - R$ 0,50/folha (Texto, Xerox simples)</option>
                         <option value="pouca_cor">Colorida Pouca Cor - R$ 1,00/folha (Títulos coloridos, logo simples)</option>
                         <option value="media_cor">Colorida Média Cor - R$ 1,35/folha (🔥 R$ 1,20 a partir de 6 folhas)</option>
                         <option value="cobertura_total">Colorida Cobertura Total - R$ 2,00/folha (Fotos cheias ou cartazes)</option>
@@ -663,7 +674,10 @@
                 <div class="form-group" style="margin-bottom: 12px;">
                     <label for="qtd_paginas_digitalizar">Quantidade Estimada de Páginas para Digitalizar:</label>
                     <input type="number" id="qtd_paginas_digitalizar" name="Paginas para Digitalizar" value="1" min="1">
-                    <p style="font-size:12px; color:var(--text-muted);">Taxa fixa: R$ 2,00 por página escaneada e enviada em PDF/WhatsApp.</p>
+                    <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">
+                        💡 <strong>O que é digitalização?</strong> É o processo de pegar o seu papel físico e transformá-lo em um arquivo digital (PDF/Imagem) para enviar diretamente para o seu WhatsApp ou E-mail!
+                    </p>
+                    <p style="font-size:12px; color:var(--primary); font-weight:600; margin-top:2px;">Taxa fixa: R$ 2,00 por página escaneada.</p>
                 </div>
 
                 <div class="form-group">
@@ -862,7 +876,7 @@
             if (servico === 'a4') {
                 document.getElementById("cardA4").classList.add("selected");
                 document.getElementById("blocoA4").classList.remove("hidden");
-                document.getElementById("hidden_servico_nome").value = "Impressão A4";
+                document.getElementById("hidden_servico_nome").value = "Impressao / Xerox A4";
                 if(!modoTextoAtivo) inputArqA4.setAttribute("required", "required");
                 inputArqDoc.removeAttribute("required");
             } else if (servico === 'doc') {
