@@ -215,24 +215,6 @@
 
         .servico-card.selected { border-color: var(--primary); background: var(--accent-light); }
 
-        .servico-card.disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            pointer-events: none;
-            filter: grayscale(40%);
-        }
-
-        .badge-breve {
-            font-size: 9px;
-            background: var(--primary);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 8px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            margin-top: -2px;
-        }
-
         .file-info {
             font-size: 12px;
             color: var(--primary);
@@ -398,6 +380,56 @@
             margin-top: 4px;
         }
 
+        /* Estilo para Futuras Atualizações */
+        .futuras-atualizacoes-card {
+            background: var(--bg-card);
+            border: 1px dashed var(--primary);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .futuras-atualizacoes-card h3 {
+            font-size: 18px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .atualizacoes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .atualizacao-item {
+            background: var(--bg-input);
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alerta-pagamento-pendente {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
         @media (max-width: 500px) {
             body { padding: 16px 10px 80px 10px; }
             .servicos-grid { grid-template-columns: 1fr; }
@@ -428,7 +460,7 @@
                 📄 <strong>Currículos Profissionais:</strong> Montamos ou atualizamos seu currículo na hora.
             </div>
             <div class="carousel-slide">
-                🎨 <strong>EM BREVE: Criação de Arte / Canva:</strong> Cartões, panfletos, convites e banners digitais.
+                📍 <strong>Acompanhe seu Pedido:</strong> <a href="rastreio.html" style="color:var(--primary); font-weight:700;">Clique aqui para rastrear o status</a>
             </div>
             <div class="carousel-dots">
                 <span class="dot active" onclick="mudarSlide(0)"></span>
@@ -437,7 +469,7 @@
             </div>
         </div>
 
-        <div class="tabela-precos">
+        <div id="secaoPrecosVisual" class="tabela-precos">
             <h3>🏷️ Tabela de Preços Básica</h3>
             <div class="preco-item">
                 <div>📄 Preto e Branco (P&B)</div>
@@ -456,12 +488,16 @@
                 <span>R$ 2,00 / folha</span>
             </div>
             <div class="preco-item">
+                <div>📑 Digitalização de Documento</div>
+                <span>R$ 2,00 / página</span>
+            </div>
+            <div class="preco-item">
                 <div>💼 Elaboração / Atualização de Currículo</div>
                 <span>A partir de R$ 10,00</span>
             </div>
         </div>
 
-        <div class="banner-imagem-container" style="position: relative; display: inline-block; width: 100%; max-width: 450px; margin: 0 auto; cursor: pointer;" onclick="abrirImagem()">
+        <div id="secaoBanner" class="banner-imagem-container" style="position: relative; display: inline-block; width: 100%; max-width: 450px; margin: 0 auto; cursor: pointer;" onclick="abrirImagem()">
             <h3 style="
                 position: absolute; 
                 top: 12px; 
@@ -525,6 +561,7 @@
             
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="_template" value="table">
+            <input type="hidden" id="hidden_servico_nome" name="Servico Selecionado" value="Impressao A4">
             <input type="hidden" id="hidden_tipo_texto" name="Opcao de Impressao Detalhada" value="">
             <input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">
 
@@ -543,59 +580,95 @@
             <div class="form-group">
                 <label>Escolha o Serviço:</label>
                 <div class="servicos-grid">
-                    <div class="servico-card selected">
+                    <div class="servico-card selected" id="cardA4" onclick="trocarAbaServico('a4')">
                         <div style="font-size:24px;">📄</div>
                         <div style="font-size:13px; font-weight:700;">Impressão A4</div>
                     </div>
                     
-                    <div class="servico-card" onclick="location.href='curriculo.html'">
-                        <div style="font-size:24px;">💼</div>
-                        <div style="font-size:13px; font-weight:700;">Currículo</div>
+                    <div class="servico-card" id="cardDoc" onclick="trocarAbaServico('doc')">
+                        <div style="font-size:24px;">🏛️</div>
+                        <div style="font-size:13px; font-weight:700;">Doc. Oficiais</div>
                     </div>
 
-                    <div class="servico-card disabled" title="Serviço temporariamente indisponível">
-                        <span class="badge-breve">EM BREVE</span>
-                        <div style="font-size:22px;">🔒</div>
-                        <div style="font-size:13px; font-weight:700;">Artes / Canva</div>
+                    <div class="servico-card" id="cardDig" onclick="trocarAbaServico('dig')">
+                        <div style="font-size:24px;">📲</div>
+                        <div style="font-size:13px; font-weight:700;">Digitalização</div>
                     </div>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="tipo_impressao">Tipo de Impressão:</label>
-                <select id="tipo_impressao" name="Codigo Opcao Cor" required>
-                    <option value="pb">Preto e Branco (P&B) - R$ 0,50/folha (Texto ou gráficos cinzas)</option>
-                    <option value="pouca_cor">Colorida Pouca Cor - R$ 1,00/folha (Títulos coloridos, logo simples)</option>
-                    <option value="media_cor">Colorida Média Cor - R$ 1,35/folha (🔥 R$ 1,20 a partir de 6 folhas)</option>
-                    <option value="cobertura_total">Colorida Cobertura Total - R$ 2,00/folha (Fotos cheias ou cartazes)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="quantidade">Quantidade de Cópias / Folhas:</label>
-                <input type="number" id="quantidade" name="Quantidade de Copias" value="1" min="1" required>
-            </div>
-
-            <div class="form-group">
-                <label for="refile">✂️ Acabamento de Margem (Grátis):</label>
-                <select id="refile" name="Refile de Bordas">
-                    <option value="manter">Manter Bordas Padrão da Impressora</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <label for="arquivo">Anexar Documento(s) – Máx. 10.00MB:</label>
-                    <button type="button" class="btn-toggle-modo" id="btnToggleModo">✏️ Prefiro colar um texto</button>
-                </div>
-                
-                <div id="campoArquivoContainer">
-                    <input type="file" id="arquivo" name="attachment" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" required>
-                    <div id="fileDetails" class="file-info hidden"></div>
+            <div id="blocoA4">
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="tipo_impressao">Tipo de Impressão:</label>
+                    <select id="tipo_impressao" name="Codigo Opcao Cor">
+                        <option value="pb">Preto e Branco (P&B) - R$ 0,50/folha (Texto ou gráficos cinzas)</option>
+                        <option value="pouca_cor">Colorida Pouca Cor - R$ 1,00/folha (Títulos coloridos, logo simples)</option>
+                        <option value="media_cor">Colorida Média Cor - R$ 1,35/folha (🔥 R$ 1,20 a partir de 6 folhas)</option>
+                        <option value="cobertura_total">Colorida Cobertura Total - R$ 2,00/folha (Fotos cheias ou cartazes)</option>
+                    </select>
                 </div>
 
-                <div id="campoTextoContainer" class="hidden">
-                    <textarea id="textoDireto" name="Texto para Impressao" rows="3" placeholder="Cole aqui o texto que deseja imprimir..."></textarea>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="quantidade">Quantidade de Cópias / Folhas:</label>
+                    <input type="number" id="quantidade" name="Quantidade de Copias" value="1" min="1">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="refile">✂️ Acabamento de Margem (Grátis):</label>
+                    <select id="refile" name="Refile de Bordas">
+                        <option value="manter">Manter Bordas Padrão da Impressora</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <label for="arquivo">Anexar Documento(s) – Máx. 10.00MB:</label>
+                        <button type="button" class="btn-toggle-modo" id="btnToggleModo">✏️ Prefiro colar um texto</button>
+                    </div>
+                    
+                    <div id="campoArquivoContainer">
+                        <input type="file" id="arquivo" name="attachment" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+                        <div id="fileDetails" class="file-info hidden"></div>
+                    </div>
+
+                    <div id="campoTextoContainer" class="hidden">
+                        <textarea id="textoDireto" name="Texto para Impressao" rows="3" placeholder="Cole aqui o texto que deseja imprimir..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div id="blocoDoc" class="hidden">
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="tipo_doc_oficial">Selecione o Documento Oficial:</label>
+                    <select id="tipo_doc_oficial" name="Tipo Documento Oficial">
+                        <option value="boleto">Boleto / Conta (P&B - R$ 0,50)</option>
+                        <option value="crlv">CRLV / Documento de Veículo (Colorido - R$ 1,00)</option>
+                        <option value="cpf_rg">Segunda Via CPF / RG / Título (Colorido - R$ 1,00)</option>
+                        <option value="outros">Outro Documento Oficial (R$ 1,00)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="qtd_doc">Quantidade de Vias:</label>
+                    <input type="number" id="qtd_doc" name="Quantidade Vias Doc" value="1" min="1">
+                </div>
+
+                <div class="form-group">
+                    <label for="arquivo_doc">Anexar PDF / Imagem do Documento:</label>
+                    <input type="file" id="arquivo_doc" name="Anexo Documento Oficial" accept=".pdf,.png,.jpg,.jpeg">
+                </div>
+            </div>
+
+            <div id="blocoDig" class="hidden">
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="qtd_paginas_digitalizar">Quantidade Estimada de Páginas para Digitalizar:</label>
+                    <input type="number" id="qtd_paginas_digitalizar" name="Paginas para Digitalizar" value="1" min="1">
+                    <p style="font-size:12px; color:var(--text-muted);">Taxa fixa: R$ 2,00 por página escaneada e enviada em PDF/WhatsApp.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="horario_digitalizacao">Horário Estimado de Ir à Loja Levar os Documentos:</label>
+                    <input type="text" id="horario_digitalizacao" name="Horario para Digitalizar" placeholder="Ex: Hoje às 14:30">
                 </div>
             </div>
 
@@ -638,15 +711,12 @@
             <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido para Impressão 🚀</button>
         </form>
 
-        <div class="card-chamativo">
+        <div id="secaoCardChamativo" class="card-chamativo">
             <h3 style="font-size: 18px; color: var(--primary);">✨ Impressão Rápida e com Alta Qualidade!</h3>
             <p style="font-size: 14px; color: var(--text-muted);">
                 Seus arquivos são impressos com cores vibrantes e nitidez total. Dúvidas? Fale diretamente conosco pelo WhatsApp!
             </p>
-            <p>Futuras atualizações estão por vir! Dentre elas destacamos:</p>
-                <p><strong>• Sistema de Design e Edição;</p>
-                <p>• Escolha da Gramatura do Papel;</p>
-                <p>• Comprovante Anexo.</strong></p>
+            
             <div class="status-fila">
                 ⚡ <strong>Tempo Médio de Produção:</strong> 5 a 15 minutos após a confirmação.
             </div>
@@ -655,7 +725,7 @@
         <div id="telaSucesso" class="sucesso-card hidden">
             <div style="font-size: 60px; margin-bottom: 8px;">🎉</div>
             <h2 style="font-size: 24px; color: var(--primary);">Pedido Confirmado!</h2>
-            <p style="color: var(--text-muted); font-size: 15px; margin-top: 4px;">Tudo certo! Já recebemos sua solicitação e iniciamos o processamento.</p>
+            <p style="color: var(--text-muted); font-size: 15px; margin-top: 4px;">Tudo certo! Já recebemos sua solicitação.</p>
 
             <div id="boxDetalhesPagamento"></div>
 
@@ -663,9 +733,28 @@
                 💬 Confirmar Pedido no WhatsApp
             </a>
 
-            <button class="btn-primary" onclick="location.reload()" style="margin-top: 14px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">
+            <div class="alerta-pagamento-pendente">
+                ⚠️ Não feche esta página antes de realizar o pagamento do pedido!
+            </div>
+
+            <button class="btn-primary" onclick="window.onbeforeunload = null; location.reload();" style="margin-top: 18px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">
                 🔄 Fazer Novo Pedido
             </button>
+        </div>
+
+        <div id="secaoFuturasAtualizacoes" class="futuras-atualizacoes-card">
+            <h3>🚀 Futuras Atualizações & Recursos em Breve</h3>
+            <div class="atualizacoes-grid">
+                <div class="atualizacao-item">🎨 Gerador de Cartão / Panfleto</div>
+                <div class="atualizacao-item">✨ Solicitação de Arte Personalizada</div>
+                <div class="atualizacao-item">🛵 Entrega via Motoboy / Delivery</div>
+                <div class="atualizacao-item">📅 Agendamento de Horário</div>
+                <div class="atualizacao-item">💳 PIX Dinâmico com QR Code</div>
+                <div class="atualizacao-item">📤 Upload de Comprovante</div>
+                <div class="atualizacao-item">🔊 Notificação Sonora de Pedido</div>
+                <div class="atualizacao-item">👁️ Pré-visualização de PDF / Foto</div>
+                <div class="atualizacao-item">🔄 Conversor de Imagem para PDF</div>
+            </div>
         </div>
     </div>
 
@@ -677,7 +766,26 @@
         const EMAIL_DESTINO = "ws8530135@gmail.com"; 
         const CHAVE_PIX_TEXTO = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
 
-        // HORÁRIO DA LOJA - DOMINGO A DOMINGO (NUNCA FECHA PEDIDOS)
+        let servicoAtivo = 'a4';
+
+        // CONFIRMAÇÃO DE SAÍDA DO SITE (VOLTAR / ESC / REFRESH)
+        window.addEventListener("beforeunload", function (e) {
+            e.preventDefault();
+            e.returnValue = "Tem certeza que deseja sair? Seu pedido/pagamento pode não ser concluído.";
+            return e.returnValue;
+        });
+
+        // INTERCEPTAÇÃO DA TECLA ESC
+        window.addEventListener("keydown", function(e) {
+            if (e.key === "Escape") {
+                if (confirm("Você pressionou ESC. Deseja realmente sair do site?")) {
+                    window.onbeforeunload = null;
+                    history.back();
+                }
+            }
+        });
+
+        // HORÁRIO DA LOJA
         function checarStatusLoja() {
             const agora = new Date();
             const hora = agora.getHours();
@@ -685,7 +793,6 @@
             const statusTexto = document.getElementById("statusTexto");
             const statusIcon = document.getElementById("statusIcon");
 
-            // De Domingo a Domingo
             if (hora >= 6 && hora < 23) {
                 statusDiv.className = "status-badge status-open";
                 statusTexto.innerText = "Atendendo Agora (06:00 - 23:00)";
@@ -737,47 +844,87 @@
         }
         setInterval(() => mudarSlide(slideIndex + 1), 4000);
 
+        // TROCA DE ABAS / SERVIÇOS NA PRÓPRIA INDEX
+        function trocarAbaServico(servico) {
+            servicoAtivo = servico;
+            
+            document.getElementById("cardA4").classList.remove("selected");
+            document.getElementById("cardDoc").classList.remove("selected");
+            document.getElementById("cardDig").classList.remove("selected");
+
+            document.getElementById("blocoA4").classList.add("hidden");
+            document.getElementById("blocoDoc").classList.add("hidden");
+            document.getElementById("blocoDig").classList.add("hidden");
+
+            const inputArqA4 = document.getElementById("arquivo");
+            const inputArqDoc = document.getElementById("arquivo_doc");
+
+            if (servico === 'a4') {
+                document.getElementById("cardA4").classList.add("selected");
+                document.getElementById("blocoA4").classList.remove("hidden");
+                document.getElementById("hidden_servico_nome").value = "Impressão A4";
+                if(!modoTextoAtivo) inputArqA4.setAttribute("required", "required");
+                inputArqDoc.removeAttribute("required");
+            } else if (servico === 'doc') {
+                document.getElementById("cardDoc").classList.add("selected");
+                document.getElementById("blocoDoc").classList.remove("hidden");
+                document.getElementById("hidden_servico_nome").value = "Documentos Oficiais";
+                inputArqA4.removeAttribute("required");
+                inputArqDoc.setAttribute("required", "required");
+            } else if (servico === 'dig') {
+                document.getElementById("cardDig").classList.add("selected");
+                document.getElementById("blocoDig").classList.remove("hidden");
+                document.getElementById("hidden_servico_nome").value = "Digitalização / Escaneamento";
+                inputArqA4.removeAttribute("required");
+                inputArqDoc.removeAttribute("required");
+            }
+
+            calcularValor();
+        }
+
         // CÁLCULO DE VALOR EM TEMPO REAL
         const selectTipo = document.getElementById("tipo_impressao");
         const inputQtd = document.getElementById("quantidade");
-        
+        const selectDocOficial = document.getElementById("tipo_doc_oficial");
+        const inputQtdDoc = document.getElementById("qtd_doc");
+        const inputQtdDig = document.getElementById("qtd_paginas_digitalizar");
+
         const valorExibicao = document.getElementById("valorTotalExibicao");
         const subtotalExibicao = document.getElementById("subtotalExibicao");
         const descontoExibicao = document.getElementById("descontoExibicao");
         const extraExibicao = document.getElementById("extraExibicao");
         const rowDesconto = document.getElementById("rowDesconto");
-        const rowExtra = document.getElementById("rowExtra");
 
         function calcularValor() {
-            let precoUnitario = 0.50;
-            switch(selectTipo.value) {
-                case "pouca_cor":
-                    precoUnitario = 1.00;
-                    break;
-                case "media_cor":
-                    precoUnitario = 1.35;
-                    break;
-                case "cobertura_total":
-                    precoUnitario = 2.00;
-                    break;
-                case "pb":
-                default:
-                    precoUnitario = 0.50;
-                    break;
-            }
-
-            const qtd = parseInt(inputQtd.value) || 1;
-            const selectMarcaPagina = document.getElementById("marca_pagina");
-            const extra = selectMarcaPagina ? (parseFloat(selectMarcaPagina.value) || 0) : 0;
-            
-            let subtotal = precoUnitario * qtd;
+            let total = 0;
+            let subtotal = 0;
             let desconto = 0;
 
-            if (selectTipo.value === "media_cor" && qtd > 5) {
-                desconto = (1.35 - 1.20) * qtd;
+            if (servicoAtivo === 'a4') {
+                let precoUnitario = 0.50;
+                switch(selectTipo.value) {
+                    case "pouca_cor": precoUnitario = 1.00; break;
+                    case "media_cor": precoUnitario = 1.35; break;
+                    case "cobertura_total": precoUnitario = 2.00; break;
+                    case "pb": default: precoUnitario = 0.50; break;
+                }
+                const qtd = parseInt(inputQtd.value) || 1;
+                subtotal = precoUnitario * qtd;
+                if (selectTipo.value === "media_cor" && qtd > 5) {
+                    desconto = (1.35 - 1.20) * qtd;
+                }
+                total = subtotal - desconto;
+            } else if (servicoAtivo === 'doc') {
+                let precoDoc = 1.00;
+                if (selectDocOficial.value === 'boleto') precoDoc = 0.50;
+                const qtd = parseInt(inputQtdDoc.value) || 1;
+                subtotal = precoDoc * qtd;
+                total = subtotal;
+            } else if (servicoAtivo === 'dig') {
+                const qtd = parseInt(inputQtdDig.value) || 1;
+                subtotal = 2.00 * qtd;
+                total = subtotal;
             }
-
-            const total = (subtotal - desconto) + extra;
 
             subtotalExibicao.innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
 
@@ -788,19 +935,15 @@
                 rowDesconto.style.display = "none";
             }
 
-            if (extra > 0) {
-                rowExtra.style.display = "flex";
-                extraExibicao.innerText = `+ R$ ${extra.toFixed(2).replace('.', ',')}`;
-            } else {
-                rowExtra.style.display = "none";
-            }
-
             valorExibicao.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
             return total;
         }
 
         selectTipo.addEventListener("change", calcularValor);
         inputQtd.addEventListener("input", calcularValor);
+        selectDocOficial.addEventListener("change", calcularValor);
+        inputQtdDoc.addEventListener("input", calcularValor);
+        inputQtdDig.addEventListener("input", calcularValor);
 
         // MODO ANEXAR / COLAR TEXTO
         const btnToggleModo = document.getElementById("btnToggleModo");
@@ -821,7 +964,7 @@
                 campoTextoContainer.classList.add("hidden");
                 campoArquivoContainer.classList.remove("hidden");
                 btnToggleModo.innerText = "✏️ Prefiro colar um texto";
-                inputArquivo.setAttribute("required", "required");
+                if(servicoAtivo === 'a4') inputArquivo.setAttribute("required", "required");
             }
         });
 
@@ -854,7 +997,7 @@
             e.target.value = v;
         });
 
-        // TRATAMENTO DO FORMULÁRIO COM ROLAGEM AUTOMÁTICA ATÉ A TELA DE SUCESSO
+        // SUBMISSÃO DO FORMULÁRIO COM OCULTAÇÃO TOTAL E EXIBIÇÃO APENAS DO PIX/VALOR
         const form = document.getElementById("formImpressao");
         const btnSubmit = document.getElementById("btnSubmit");
 
@@ -863,27 +1006,29 @@
             btnSubmit.disabled = true;
             btnSubmit.innerText = "Enviando pedido...";
 
-            const tipoImpressaoTexto = selectTipo.options[selectTipo.selectedIndex].text;
             const totalCalculado = calcularValor();
-            document.getElementById("hidden_tipo_texto").value = tipoImpressaoTexto;
+            document.getElementById("hidden_tipo_texto").value = servicoAtivo.toUpperCase();
             document.getElementById("hidden_total").value = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
 
             const formData = new FormData(form);
             const pagamentoSel = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
             const clienteNome = inputNome.value;
-            const quantidadeFolhas = inputQtd.value;
 
             try {
                 const response = await fetch(form.action, {
                     method: "POST",
                     body: formData,
-                    headers: {
-                        'Accept': 'application/json'
-                    }
+                    headers: { 'Accept': 'application/json' }
                 });
 
                 if (response.ok) {
+                    // Oculta completamente os blocos anteriores
                     form.classList.add("hidden");
+                    document.getElementById("secaoPrecosVisual").classList.add("hidden");
+                    document.getElementById("secaoBanner").classList.add("hidden");
+                    document.getElementById("secaoCardChamativo").classList.add("hidden");
+                    document.getElementById("secaoFuturasAtualizacoes").classList.add("hidden");
+
                     const telaSucesso = document.getElementById("telaSucesso");
                     const boxPagamento = document.getElementById("boxDetalhesPagamento");
 
@@ -916,12 +1061,10 @@
                         `;
                     }
 
-                    const msgWhats = encodeURIComponent(`Olá! Acabei de fazer um pedido pelo site.\n\n👤 Nome: ${clienteNome}\n🎨 Tipo: ${tipoImpressaoTexto}\n📄 Quantidade: ${quantidadeFolhas} folha(s)\n💰 Total: R$ ${totalCalculado.toFixed(2).replace('.', ',')}\n💳 Forma: ${pagamentoSel}`);
+                    const msgWhats = encodeURIComponent(`Olá! Acabei de enviar um pedido pelo site.\n\n👤 Nome: ${clienteNome}\n🛠️ Serviço: ${document.getElementById("hidden_servico_nome").value}\n💰 Total: R$ ${totalCalculado.toFixed(2).replace('.', ',')}\n💳 Pagamento: ${pagamentoSel}`);
                     document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;
 
                     telaSucesso.classList.remove("hidden");
-
-                    // Rola a tela até o cartão de pagamento imediatamente
                     telaSucesso.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
                 } else {
