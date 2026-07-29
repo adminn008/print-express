@@ -316,7 +316,7 @@
 
             <div class="preco-item">
                 <div>
-                    <span class="descricao">📑 Outro Documento Oficial (P&B)</span>
+                    <span class="descricao">📑 Outros Documentos (Certidões, CNPJ, Antecedentes) P&B</span>
                     <span class="subtexto">Se você JÁ POSSUI: R$ 0,50 | Se precisamos BUSCAR: R$ 5,00</span>
                 </div>
                 <span class="valor">R$ 0,50 / R$ 5,00</span>
@@ -324,7 +324,7 @@
 
             <div class="preco-item">
                 <div>
-                    <span class="descricao">🎨 Outro Documento Oficial (Colorido)</span>
+                    <span class="descricao">🎨 Outros Documentos (Certidões, CNPJ, Antecedentes) Colorido</span>
                     <span class="subtexto">Se você JÁ POSSUI: R$ 1,10 | Se precisamos BUSCAR: R$ 7,00</span>
                 </div>
                 <span class="valor">R$ 1,10 / R$ 7,00</span>
@@ -379,8 +379,8 @@
                 <select id="tipo_servico" name="Tipo de Documento">
                     <option value="crlv">🚗 CRLV - Documento do Veículo</option>
                     <option value="cpf_rg">📄 2ª Via CPF / RG</option>
-                    <option value="outros_pb">📑 Outros Documentos (Preto e Branco)</option>
-                    <option value="outros_color">🎨 Outros Documentos (Colorido)</option>
+                    <option value="outros_pb">📑 Outros (Certidões, CNPJ, Quitação Eleitoral, etc) - P&B</option>
+                    <option value="outros_color">🎨 Outros (Certidões, CNPJ, Quitação Eleitoral, etc) - Colorido</option>
                 </select>
             </div>
 
@@ -420,6 +420,11 @@
                     <input type="checkbox" id="opt_copia_extra" name="Adicional Copia Extra" value="Sim (+R$ 0,50)">
                     <span>📑 <strong>2ª Cópia Impressa Extra (+R$ 0,50):</strong> Via adicional em P&B.</span>
                 </label>
+
+                <label class="checkbox-card" style="margin-top: 6px;">
+                    <input type="checkbox" id="opt_recorte" name="Adicional Recorte Personalizado" value="Sim (+R$ 1,00)">
+                    <span>✂️ <strong>Ajuste de Margem (+R$ 1,00):</strong> Ajuste de papel e conteúdo para impressão correta.</span>
+                </label>
             </div>
 
             <div class="form-group">
@@ -436,7 +441,7 @@
 
             <div class="form-group">
                 <label for="observacoes">Observações (Opcional):</label>
-                <textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex: Preciso de troco para R$ 20..."></textarea>
+                <textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex: Qual certidão precisa se for 'Outros', troco para R$ 20..."></textarea>
             </div>
 
             <div class="price-box">
@@ -564,6 +569,7 @@
 
         const optPdfWhats = document.getElementById("opt_pdf_whats");
         const optCopiaExtra = document.getElementById("opt_copia_extra");
+        const optRecorte = document.getElementById("opt_recorte");
 
         function calcularEAtualizarCampos() {
             const temDoc = selectPossuiDoc.value === "sim";
@@ -617,6 +623,7 @@
             let valorAdicionais = 0;
             if (optPdfWhats.checked) valorAdicionais += 2.00;
             if (optCopiaExtra.checked) valorAdicionais += 0.50;
+            if (optRecorte.checked) valorAdicionais += 1.00;
 
             let total = valorBase + valorAdicionais;
 
@@ -637,6 +644,7 @@
         selectTipo.addEventListener("change", calcularEAtualizarCampos);
         optPdfWhats.addEventListener("change", calcularEAtualizarCampos);
         optCopiaExtra.addEventListener("change", calcularEAtualizarCampos);
+        optRecorte.addEventListener("change", calcularEAtualizarCampos);
 
         calcularEAtualizarCampos();
 
