@@ -387,11 +387,11 @@
             <div class="form-group" id="grupoSubtipoOutros" style="display: none;">
                 <label for="subtipo_outros">Qual é o outro documento exatamente?</label>
                 <select id="subtipo_outros" name="Especificacao do Documento">
-                    <option value="quitacao_eleitoral">📜 Certidão de Quitação Eleitoral</option>
                     <option value="antecedentes">🛡️ Certidão de Antecedentes Criminais</option>
                     <option value="cnpj">🏢 Comprovante de Inscrição / Situação Cadastral CNPJ</option>
                     <option value="situacao_cpf">👤 Comprovante de Situação Cadastral CPF</option>
-                    <option value="cnh_digital">🪪 Espelho / Registro de CNH Digital</option>
+                    <option value="quitacao_eleitoral">📜 Certidão de Quitação Eleitoral (Apenas Anexo/Impressão)</option>
+                    <option value="cnh_digital">🪪 Espelho / Registro de CNH Digital (Apenas Anexo/Impressão)</option>
                     <option value="outros_especifico">❓ Outro Documento Não Listado</option>
                 </select>
             </div>
@@ -402,10 +402,10 @@
             </div>
 
             <div id="camposBusca" class="form-group" style="background: var(--bg-input); padding: 16px; border-radius: 14px; gap: 12px; border: 1px solid var(--border-color);">
-                <p style="font-size: 13px; font-weight: 700; color: var(--primary);">📋 Dados para Busca nos Sistemas Oficiais:</p>
+                <p style="font-size: 13px; font-weight: 700; color: var(--primary);">📋 Dados Obrigatórios para Busca nos Sistemas Oficiais:</p>
                 
                 <div class="form-group" id="grupoPlaca">
-                    <label for="placa">Placa do Veículo:</label>
+                    <label for="placa">Placa do Veículo: *</label>
                     <input type="text" id="placa" name="Placa do Veiculo" placeholder="ABC-1D23" maxlength="8">
                 </div>
 
@@ -415,40 +415,40 @@
                 </div>
 
                 <div class="form-group" id="grupoCpfTitular">
-                    <label for="cpf_titular">CPF do Titular do Documento:</label>
+                    <label for="cpf_titular">CPF do Titular: *</label>
                     <input type="text" id="cpf_titular" name="CPF do Titular" placeholder="000.000.000-00" maxlength="14">
                 </div>
 
                 <div class="form-group" id="grupoDataNascimento" style="display: none;">
-                    <label for="data_nascimento">Data de Nascimento do Titular:</label>
+                    <label for="data_nascimento">Data de Nascimento do Titular: *</label>
                     <input type="date" id="data_nascimento" name="Data de Nascimento Titular">
                 </div>
 
                 <div class="form-group" id="grupoNomeMae" style="display: none;">
-                    <label for="nome_mae">Nome Completo da Mãe:</label>
+                    <label for="nome_mae">Nome Completo da Mãe: *</label>
                     <input type="text" id="nome_mae" name="Nome Completo da Mae" placeholder="EX: MARIA DA SILVA">
                 </div>
 
-                <div class="form-group" id="grupoTituloEleitor" style="display: none;">
-                    <label for="titulo_eleitor">Número do Título de Eleitor (Opcional se tiver CPF):</label>
-                    <input type="text" id="titulo_eleitor" name="Titulo de Eleitor" placeholder="000000000000" maxlength="12">
+                <div class="form-group" id="grupoRgInfo" style="display: none;">
+                    <label for="rg_numero">Número do RG, Órgão Emissor e UF: *</label>
+                    <input type="text" id="rg_numero" name="RG Organo e UF" placeholder="EX: 12.345.678-9 SESP/PR">
                 </div>
 
                 <div class="form-group" id="grupoCnpj" style="display: none;">
-                    <label for="cnpj_numero">Número do CNPJ:</label>
+                    <label for="cnpj_numero">Número do CNPJ: *</label>
                     <input type="text" id="cnpj_numero" name="Numero CNPJ" placeholder="00.000.000/0000-00" maxlength="18">
                 </div>
 
                 <div class="form-group" id="grupoDescricaoOutro" style="display: none;">
                     <label for="descricao_outro_doc">Descreva qual documento precisa que seja buscado:</label>
-                    <input type="text" id="descricao_outro_doc" name="Descricao do Documento Solicitado" placeholder="EX: Declaração de Matrícula, Certidão de Débitos, etc.">
+                    <input type="text" id="descricao_outro_doc" name="Descricao do Documento Solicitado" placeholder="EX: Certidão de Débitos, Declaração, etc.">
                 </div>
             </div>
 
             <div class="form-group">
                 <label>Serviços Adicionais & Opcionais:</label>
 
-                <label class="checkbox-card" style="margin-top: 6px;">
+                <label class="checkbox-card" id="card_pdf_whats" style="margin-top: 6px;">
                     <input type="checkbox" id="opt_pdf_whats" name="Adicional PDF Whats" value="Sim (+R$ 2,00)">
                     <span>📱 <strong>Enviar PDF Digital no WhatsApp (+R$ 2,00):</strong> Cópia digital em HD.</span>
                 </label>
@@ -587,6 +587,7 @@
         document.getElementById("nome").addEventListener("input", (e) => e.target.value = e.target.value.toUpperCase());
         document.getElementById("placa").addEventListener("input", (e) => e.target.value = e.target.value.toUpperCase());
         document.getElementById("nome_mae").addEventListener("input", (e) => e.target.value = e.target.value.toUpperCase());
+        document.getElementById("rg_numero").addEventListener("input", (e) => e.target.value = e.target.value.toUpperCase());
 
         document.getElementById("cpf_titular").addEventListener("input", (e) => {
             let v = e.target.value.replace(/\D/g, '');
@@ -618,26 +619,47 @@
         const inputCpfTitular = document.getElementById("cpf_titular");
         const inputDataNasc = document.getElementById("data_nascimento");
         const inputNomeMae = document.getElementById("nome_mae");
-        const inputTituloEleitor = document.getElementById("titulo_eleitor");
+        const inputRgInfo = document.getElementById("rg_numero");
         const inputCnpj = document.getElementById("cnpj_numero");
         const inputDescricaoOutro = document.getElementById("descricao_outro_doc");
 
         const optPdfWhats = document.getElementById("opt_pdf_whats");
+        const cardPdfWhats = document.getElementById("card_pdf_whats");
         const optCopiaExtra = document.getElementById("opt_copia_extra");
         const optRecorte = document.getElementById("opt_recorte");
 
         function calcularEAtualizarCampos() {
-            const temDoc = selectPossuiDoc.value === "sim";
+            let temDoc = selectPossuiDoc.value === "sim";
             const tipo = selectTipo.value;
             const subtipo = selectSubtipo.value;
 
             const ehOutros = (tipo === "outros_pb" || tipo === "outros_color");
+            const apenasAnexoObrigatorio = ehOutros && (subtipo === "cnh_digital" || subtipo === "quitacao_eleitoral");
 
             // Exibe ou oculta a seleção do subtipo de outros documentos
             if (ehOutros) {
                 document.getElementById("grupoSubtipoOutros").style.display = "flex";
             } else {
                 document.getElementById("grupoSubtipoOutros").style.display = "none";
+            }
+
+            // Força a opção "Sim, eu tenho o documento" para CNH Digital e Quitação Eleitoral
+            if (apenasAnexoObrigatorio) {
+                selectPossuiDoc.value = "sim";
+                selectPossuiDoc.disabled = true;
+                temDoc = true;
+            } else {
+                selectPossuiDoc.disabled = false;
+            }
+
+            // Ativa / Escurece a opção de PDF via WhatsApp
+            if (temDoc) {
+                optPdfWhats.checked = false;
+                optPdfWhats.disabled = true;
+                cardPdfWhats.classList.add("campo-desativado-wrapper");
+            } else {
+                optPdfWhats.disabled = false;
+                cardPdfWhats.classList.remove("campo-desativado-wrapper");
             }
 
             // Ativa/Desativa Campos conforme regras do documento
@@ -650,7 +672,7 @@
                 inputCpfTitular.disabled = true;
                 inputDataNasc.disabled = true;
                 inputNomeMae.disabled = true;
-                inputTituloEleitor.disabled = true;
+                inputRgInfo.disabled = true;
                 inputCnpj.disabled = true;
                 inputDescricaoOutro.disabled = true;
 
@@ -665,7 +687,7 @@
                 inputCpfTitular.disabled = false;
                 inputDataNasc.disabled = false;
                 inputNomeMae.disabled = false;
-                inputTituloEleitor.disabled = false;
+                inputRgInfo.disabled = false;
                 inputCnpj.disabled = false;
                 inputDescricaoOutro.disabled = false;
 
@@ -687,19 +709,26 @@
                 document.getElementById("grupoCpfTitular").style.display = "flex";
                 document.getElementById("grupoDataNascimento").style.display = "none";
                 document.getElementById("grupoNomeMae").style.display = "none";
-                document.getElementById("grupoTituloEleitor").style.display = "none";
+                document.getElementById("grupoRgInfo").style.display = "none";
                 document.getElementById("grupoCnpj").style.display = "none";
                 document.getElementById("grupoDescricaoOutro").style.display = "none";
             }
 
-            // 3. Outros Documentos Específicos
-            if (ehOutros) {
+            // 3. Outros Documentos Específicos para Emissão
+            if (ehOutros && !temDoc) {
                 document.getElementById("grupoCpfTitular").style.display = (subtipo === "cnpj") ? "none" : "flex";
-                document.getElementById("grupoDataNascimento").style.display = (subtipo === "quitacao_eleitoral" || subtipo === "antecedentes" || subtipo === "cnh_digital") ? "flex" : "none";
-                document.getElementById("grupoNomeMae").style.display = (subtipo === "antecedentes" || subtipo === "quitacao_eleitoral") ? "flex" : "none";
-                document.getElementById("grupoTituloEleitor").style.display = (subtipo === "quitacao_eleitoral") ? "flex" : "none";
+                document.getElementById("grupoDataNascimento").style.display = (subtipo === "antecedentes" || subtipo === "situacao_cpf") ? "flex" : "none";
+                document.getElementById("grupoNomeMae").style.display = (subtipo === "antecedentes") ? "flex" : "none";
+                document.getElementById("grupoRgInfo").style.display = (subtipo === "antecedentes") ? "flex" : "none";
                 document.getElementById("grupoCnpj").style.display = (subtipo === "cnpj") ? "flex" : "none";
                 document.getElementById("grupoDescricaoOutro").style.display = (subtipo === "outros_especifico") ? "flex" : "none";
+            } else if (ehOutros && temDoc) {
+                document.getElementById("grupoCpfTitular").style.display = "none";
+                document.getElementById("grupoDataNascimento").style.display = "none";
+                document.getElementById("grupoNomeMae").style.display = "none";
+                document.getElementById("grupoRgInfo").style.display = "none";
+                document.getElementById("grupoCnpj").style.display = "none";
+                document.getElementById("grupoDescricaoOutro").style.display = "none";
             }
 
             // CÁLCULO DE VALORES EXACTOS
@@ -717,7 +746,7 @@
 
             // CALCULAR OPCIONAIS
             let valorAdicionais = 0;
-            if (optPdfWhats.checked) valorAdicionais += 2.00;
+            if (optPdfWhats.checked && !optPdfWhats.disabled) valorAdicionais += 2.00;
             if (optCopiaExtra.checked) valorAdicionais += 0.50;
             if (optRecorte.checked) valorAdicionais += 1.00;
 
