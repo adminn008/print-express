@@ -1,726 +1,933 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PrintExpress - Documentos Oficiais</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Gerador & Edição de Currículos Profissionais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
-            --bg-body: #f8fafc;
-            --bg-card: #ffffff;
-            --bg-input: #f1f5f9;
-            --bg-disabled: #e2e8f0;
-            --border-color: #cbd5e1;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
             --primary: #0284c7;
-            --primary-hover: #0369a1;
-            --accent-light: rgba(2, 132, 199, 0.08);
-            --green: #10b981;
-            --danger: #ef4444;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
-        }
-
-        [data-theme="dark"] {
-            --bg-body: #0f172a;
-            --bg-card: #1e293b;
-            --bg-input: #0f172a;
-            --bg-disabled: #111827;
-            --border-color: #334155;
-            --text-main: #f8fafc;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --text: #f8fafc;
             --text-muted: #94a3b8;
-            --accent-light: rgba(56, 189, 248, 0.12);
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            --accent: #38bdf8;
+            --green: #10b981;
+            --green-hover: #059669;
+            --danger: #ef4444;
+            --line-height-cv: 1.4;
+            --font-family-cv: 'Inter', sans-serif;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.25s, color 0.25s, border-color 0.25s; }
-        
-        body { 
-            background-color: var(--bg-body); 
-            color: var(--text-main); 
-            padding: 24px 16px 80px 16px; 
-            line-height: 1.6;
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 20px 16px; line-height: 1.5; }
+
+        .header-title { text-align: center; margin-bottom: 20px; }
+        .header-title h1 { color: var(--accent); font-size: 26px; font-weight: 700; }
+        .header-title p { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .container { 
-            max-width: 680px; 
-            margin: 0 auto; 
+        /* TABELA E AVISOS */
+        .info-panel {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .info-card h3 { font-size: 15px; color: var(--accent); margin-bottom: 10px; }
+
+        .price-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .price-table th, .price-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+        .price-table td strong { color: var(--green); }
+
+        .notice-box {
+            background: rgba(2, 132, 199, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #e0f2fe;
+        }
+
+        /* FORMULÁRIO */
+        .form-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px;
+            max-height: 85vh;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
 
-        header { position: relative; text-align: center; margin-bottom: 10px; }
-
-        .top-bar {
+        .section-subtitle {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+            margin-top: 6px;
+            text-transform: uppercase;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .btn-voltar {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--primary);
-            padding: 8px 16px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-        }
-
-        .theme-toggle {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 8px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: var(--shadow);
-        }
-
-        h1 { color: var(--primary); font-size: 28px; font-weight: 800; }
-        header p { color: var(--text-muted); font-size: 14px; font-weight: 500; }
-
-        .tabela-precos {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 18px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .tabela-precos h3 { 
-            font-size: 18px; 
-            margin-bottom: 14px; 
-            color: var(--primary); 
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 8px;
-        }
-
-        .preco-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px dashed var(--border-color);
-            font-size: 14px;
-        }
-        .preco-item:last-child { border-bottom: none; }
-        .preco-item .descricao { font-weight: 700; color: var(--text-main); }
-        .preco-item .subtexto { font-size: 12px; color: var(--text-muted); display: block; }
-        .preco-item .valor { font-weight: 800; color: var(--green); text-align: right; }
-
-        .banner-imagem-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 5px 0;
-        }
-
-        .banner-imagem {
-            width: 100%;
-            max-width: 480px;
-            height: auto;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
-            object-fit: cover;
-        }
-
-        .box-privacidade {
-            background: var(--accent-light);
-            border: 1px solid var(--primary);
-            border-radius: 14px;
-            padding: 14px 16px;
-            font-size: 13px;
-            color: var(--text-main);
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-        }
-
-        .step-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            box-shadow: var(--shadow);
-        }
-
-        .alerta-desconsiderar {
-            background: rgba(239, 68, 68, 0.12);
-            border: 1px solid var(--danger);
-            color: var(--danger);
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 700;
-            text-align: center;
         }
 
         .form-group { display: flex; flex-direction: column; gap: 6px; }
-        label { font-weight: 700; font-size: 14px; color: var(--text-main); }
+        label { font-size: 13px; font-weight: 600; color: #cbd5e1; display: flex; justify-content: space-between; align-items: center; }
+        
+        .char-count { font-size: 11px; color: var(--text-muted); font-weight: 400; }
 
-        input[type="text"], input[type="tel"], input[type="number"], input[type="file"], select, textarea {
+        input, select, textarea {
             width: 100%;
-            padding: 12px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--text-main);
+            padding: 10px 12px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
             font-size: 14px;
         }
-
-        /* ESTILO PARA CAMPOS DESATIVADOS (ESCURECIDOS) */
-        input:disabled, select:disabled {
-            background-color: var(--bg-disabled) !important;
-            color: var(--text-muted) !important;
-            border-color: var(--border-color) !important;
-            cursor: not-allowed;
-            opacity: 0.6;
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent);
+            outline: none;
         }
 
-        .campo-desativado-wrapper {
-            opacity: 0.5;
-            pointer-events: none;
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+        /* NOVOS BOTÕES E BARRA DE PROGRESSO */
+        .score-bar-container {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 5px;
+        }
+        .score-bar {
+            height: 8px;
+            background: #334155;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        .score-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--green);
+            transition: width 0.3s ease;
         }
 
-        .radio-group { display: flex; gap: 15px; margin-top: 4px; flex-wrap: wrap; }
-        .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; font-weight: 600; }
+        .btn-mini {
+            background: var(--border);
+            color: var(--accent);
+            border: none;
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-mini:hover { background: var(--accent); color: #0f172a; }
 
-        .checkbox-card {
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            padding: 10px 14px;
-            border-radius: 12px;
+        .btn-danger-mini {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 6px 10px;
+            font-size: 11px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        .btn-danger-mini:hover { background: var(--danger); color: white; }
+
+        /* BOTÕES PRINCIPAIS */
+        .btn-action-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-download {
+            background: var(--green);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 13px;
-            font-weight: 600;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-download:hover { background: var(--green-hover); }
+
+        .btn-firebase {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            border: 1px solid var(--accent);
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
-        }
-
-        .price-box {
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            padding: 16px; border-radius: 14px;
-            display: flex; flex-direction: column; gap: 8px; font-size: 14px;
-        }
-
-        .price-row { display: flex; justify-content: space-between; color: var(--text-muted); }
-        .price-row.total { border-top: 1px dashed var(--border-color); padding-top: 8px; font-size: 16px; font-weight: 700; color: var(--text-main); }
-        .price-row.total strong { color: var(--green); font-size: 22px; }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white; border: none;
-            padding: 16px; font-size: 16px;
-            border-radius: 12px; cursor: pointer;
-            font-weight: 700; width: 100%;
-        }
-        .btn-primary:hover { background: var(--primary-hover); }
-
-        .hidden { display: none !important; }
-
-        .sucesso-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 28px;
             text-align: center;
-            box-shadow: var(--shadow);
+        }
+        .btn-firebase:hover { filter: brightness(1.1); }
+
+        .btn-formsubmit {
+            background: #eab308;
+            color: #0f172a;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-formsubmit:hover { filter: brightness(1.1); }
+
+        /* PREVIEW A4 */
+        .preview-section {
+            background: #334155;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-height: 85vh;
+            overflow-y: auto;
         }
 
-        .pix-box {
-            background: var(--bg-input);
-            border: 2px dashed var(--primary);
-            padding: 20px; border-radius: 16px;
-            margin-top: 16px;
-            display: flex; flex-direction: column; align-items: center; gap: 12px;
+        .preview-wrapper {
+            width: 210mm;
+            display: flex;
+            justify-content: center;
         }
 
-        .btn-whatsapp {
-            background: #25D366; color: white; text-decoration: none;
-            padding: 14px; border-radius: 12px; font-weight: 700;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            margin-top: 12px;
+        /* FOLHA A4 PERFEITA (210mm x 297mm) */
+        #curriculo-folha {
+            background: white;
+            color: #000000;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm 18mm;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            line-height: var(--line-height-cv);
+            font-family: var(--font-family-cv);
+            font-size: 12px;
+            position: relative;
+        }
+
+        /* REGRAS P&B */
+        #curriculo-folha h1, #curriculo-folha h2, #curriculo-folha h3, 
+        #curriculo-folha p, #curriculo-folha span, #curriculo-folha div {
+            color: #000000 !important;
+        }
+
+        /* MODELOS P&B */
+        .m-1 h1 { font-size: 22px; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 4px; font-weight: 700; }
+        .m-1 h3 { font-size: 13px; margin-top: 12px; text-transform: uppercase; border-bottom: 1px solid #666; padding-bottom: 2px; font-weight: 700; }
+
+        .m-2 { font-family: 'Merriweather', serif; }
+        .m-2 h1 { text-align: center; font-size: 20px; font-weight: 700; }
+        .m-2 .contatos { text-align: center; font-size: 11px; border-bottom: 1px solid #000; padding-bottom: 6px; margin-bottom: 10px; }
+        .m-2 h3 { font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #ccc; margin-top: 10px; font-weight: 700; }
+
+        .m-3 h1 { font-size: 24px; font-weight: 400; }
+        .m-3 h3 { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-top: 12px; border-left: 3px solid #000; padding-left: 6px; }
+
+        .m-4 { display: grid; grid-template-columns: 1fr 2.2fr; gap: 16px; margin: -15mm -18mm; padding: 15mm 18mm; }
+        .m-4 .sidebar { border-right: 2px solid #000; padding-right: 14px; }
+        .m-4 .sidebar h3 { font-size: 12px; border-bottom: 1px solid #000; margin-top: 10px; font-weight: 700; }
+
+        .m-5 h1 { font-size: 22px; font-weight: 700; }
+        .m-5 h3 { background: #f0f0f0; padding: 4px 8px; font-size: 12px; border-left: 4px solid #000; margin-top: 10px; font-weight: 700; text-transform: uppercase; }
+
+        .m-6 { border-top: 6px solid #000; padding-top: 8px; }
+        .m-6 h1 { font-size: 22px; font-weight: 700; }
+        .m-6 h3 { font-size: 12px; border-bottom: 2px dotted #000; padding-bottom: 2px; margin-top: 10px; font-weight: 700; text-transform: uppercase; }
+
+        .m-7 h1 { font-size: 19px; font-weight: 700; }
+        .m-7 h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; margin-top: 10px; border-bottom: 1px solid #000; }
+
+        .m-8 h1 { font-size: 22px; border-left: 6px solid #000; padding-left: 10px; font-weight: 700; }
+        .m-8 h3 { font-size: 12px; margin-top: 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px dashed #000; }
+
+        .m-9 h1 { text-decoration: underline; font-size: 21px; font-weight: 700; text-align: center; }
+        .m-9 .contatos { text-align: center; font-size: 11px; margin-bottom: 10px; }
+        .m-9 h3 { font-size: 13px; text-transform: uppercase; margin-top: 10px; border-bottom: 1px solid #000; font-weight: 700; }
+
+        .m-10 h1 { text-align: center; font-size: 22px; font-weight: 700; text-transform: uppercase; }
+        .m-10 .contatos { text-align: center; font-size: 11px; margin-bottom: 12px; border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 4px 0; }
+        .m-10 h3 { text-align: center; font-size: 12px; text-transform: uppercase; margin-top: 10px; border-bottom: 1px solid #999; font-weight: 700; }
+
+        .cv-header-info { font-size: 11px; margin-bottom: 8px; }
+        .cv-section-content { font-size: 12px; margin-top: 4px; line-height: var(--line-height-cv); white-space: pre-line; word-break: break-word; }
+
+        /* TOAST */
+        .toast-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .toast-overlay.active { opacity: 1; pointer-events: auto; }
+        .toast-card {
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+        }
+        .toast-icon { font-size: 38px; margin-bottom: 8px; }
+        .toast-title { font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 6px; }
+        .toast-msg { font-size: 14px; color: var(--text-muted); margin-bottom: 18px; }
+        .toast-btn {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        @media (max-width: 960px) {
+            .app-container { grid-template-columns: 1fr; }
+            .info-panel { grid-template-columns: 1fr; }
+            .preview-wrapper { transform: scale(0.65); transform-origin: top center; }
+            .preview-section { overflow-x: auto; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <div class="top-bar">
-                <button class="btn-voltar" onclick="confirmarSaidaPainel()">⬅️ Voltar ao Painel</button>
-                <button class="theme-toggle" id="themeToggleBtn" type="button">
-                    <span id="themeIcon">☀️</span> <span id="themeText">Modo Claro</span>
+    <div class="header-title">
+        <h1>📄 Criador de Currículos Profissionais</h1>
+        <p>Preencha os dados, baixe seu PDF sem cortes ou envie direto para a impressão!</p>
+    </div>
+
+    <div class="app-container">
+        <div class="info-panel">
+            <div class="info-card">
+                <h3>🏷️ Tabela de Serviços & Valores</h3>
+                <table class="price-table">
+                    <thead>
+                        <tr>
+                            <th>Serviço</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Gerar PDF Grátis</td>
+                            <td>Você preenche e baixa no dispositivo</td>
+                            <td><strong>GRÁTIS</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Enviar para Produção / Edição</td>
+                            <td>Salva no banco de dados para edição do seu currículo **(Entregue até 24h)**</td>
+                            <td><strong>R$ 10,00</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Impressão Sulfite A4</td>
+                            <td>Impressão presencial P&B</td>
+                            <td><strong>R$ 0,50 / folha</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="info-card">
+                <h3>📌 Avisos</h3>
+                <div class="notice-box">
+                    • O PDF é gerado rigorosamente na escala A4 (210x297mm) sem cortar margens.<br>
+                    • Ao clicar em <strong>"Enviar Pedido"</strong>, os dados do seu currículo são registrados na sua conta do Banco de Dados e você é redirecionado para a <code>aba principal.</code>.
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            
+            <div class="score-bar-container">
+                <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600;">
+                    <span>⭐ Qualidade do Currículo:</span>
+                    <span id="scoreText">0%</span>
+                </div>
+                <div class="score-bar"><div id="scoreFill" class="score-fill"></div></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                <button class="btn-mini" onclick="preencherExemploRapido()" style="padding: 8px; font-size: 12px; width: 50%;">⚡ Preencher Exemplo Rápido</button>
+                <button class="btn-danger-mini" onclick="limparTodosCampos()" style="padding: 8px; font-size: 12px; width: 50%;">🧹 Limpar Todos os Campos</button>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="selectModelo">🎨 Modelo (P&B):</label>
+                    <select id="selectModelo" onchange="atualizarPreview()">
+                        <option value="m-1">Modelo 1: Moderno Estruturado</option>
+                        <option value="m-2">Modelo 2: Elegante / Clássico</option>
+                        <option value="m-3">Modelo 3: Minimalista Executivo</option>
+                        <option value="m-4">Modelo 4: Lateral Destacada</option>
+                        <option value="m-5">Modelo 5: Linhas Box</option>
+                        <option value="m-6">Modelo 6: Header Duplo</option>
+                        <option value="m-7">Modelo 7: Compacto / Comercial</option>
+                        <option value="m-8">Modelo 8: Borda Lateral</option>
+                        <option value="m-9">Modelo 9: Tradicional Puro P&B</option>
+                        <option value="m-10">Modelo 10: Centralizado Clássico</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="selectFonte">🔤 Estilo da Fonte:</label>
+                    <select id="selectFonte" onchange="mudarFonte(this.value)">
+                        <option value="'Inter', sans-serif">Padrão (Inter)</option>
+                        <option value="'Merriweather', serif">Clássica (Merriweather)</option>
+                        <option value="'Roboto Mono', monospace">Moderna (Monospace)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>↕️ Espaçamento de Linhas:</label>
+                <input type="range" id="sliderEspacamento" min="1.1" max="1.8" step="0.1" value="1.4" oninput="mudarEspacamento(this.value)">
+            </div>
+
+            <div class="section-subtitle">
+                1. Informações Pessoais
+                <button class="btn-mini" onclick="salvarRascunho()">💾 Salvar Rascunho</button>
+            </div>
+
+            <div class="form-group">
+                <label>Nome Completo:</label>
+                <input type="text" id="nome" placeholder="EX: JOÃO DA SILVA" oninput="this.value = this.value.toUpperCase(); atualizarPreview();">
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Cargo / Objetivo Profissional:</label>
+                    <input type="text" id="cargo" placeholder="Ex: Auxiliar Administrativo" oninput="atualizarPreview()">
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp / Telefone:</label>
+                    <input type="text" id="telefone" placeholder="(41) 99999-9999" maxlength="15" oninput="mascaraTelefone(this); atualizarPreview();">
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>E-mail:</label>
+                    <input type="email" id="email" placeholder="joao@email.com" oninput="atualizarPreview()">
+                </div>
+                <div class="form-group">
+                    <label>Cidade / Estado:</label>
+                    <input type="text" id="cidade" placeholder="Ex: Curitiba - PR" oninput="atualizarPreview()">
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>Data de Nascimento:</label>
+                    <input type="text" id="idade" placeholder="Ex: 25 anos" oninput="atualizarPreview()">
+                </div>
+                <div class="form-group">
+                    <label>Estado Civil:</label>
+                    <input type="text" id="estadoCivil" placeholder="Ex: Solteiro(a)" oninput="atualizarPreview()">
+                </div>
+                <div class="form-group">
+                    <label>CNH (Opcional):</label>
+                    <input type="text" id="cnh" placeholder="Ex: CNH AB" oninput="atualizarPreview()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Link WhatsApp / LinkedIn (QR Code):</label>
+                <input type="text" id="linkQr" placeholder="Ex: https://wa.me/5541..." oninput="gerarQrCodeCv(this.value)">
+            </div>
+
+            <div class="section-subtitle">
+                2. Perfil & Experiência
+                <button class="btn-mini" onclick="gerarResumoIA()">💡 Sugerir Resumo com IA</button>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Resumo Profissional / Apresentação:
+                    <span class="char-count" id="count-resumo">0 carac.</span>
+                </label>
+                <textarea id="resumo" rows="3" placeholder="Profissional dedicado com foco em resultados..." oninput="atualizarPreview()"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Experiências Profissionais:
+                    <div>
+                        <button class="btn-mini" onclick="adicionarMarcador('experiencia')">• Bullet</button>
+                        <span class="char-count" id="count-experiencia">0 carac.</span>
+                    </div>
+                </label>
+                <textarea id="experiencia" rows="4" placeholder="Empresa XYZ (2022 - Presente)&#10;Cargo: Atendente&#10;• Atendimento telefônico e controle de caixa." oninput="atualizarPreview()"></textarea>
+            </div>
+
+            <div class="section-subtitle">3. Formação & Cursos</div>
+
+            <div class="form-group">
+                <label>
+                    Formação Acadêmica / Escolaridade:
+                    <span class="char-count" id="count-formacao">0 carac.</span>
+                </label>
+                <textarea id="formacao" rows="2" placeholder="Ensino Médio Completo&#10;Colégio Estadual (Concluído em 2023)" oninput="atualizarPreview()"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Cursos, Qualificações e Idiomas:
+                    <div>
+                        <button class="btn-mini" onclick="adicionarMarcador('cursos')">• Bullet</button>
+                        <span class="char-count" id="count-cursos">0 carac.</span>
+                    </div>
+                </label>
+                <textarea id="cursos" rows="2" placeholder="• Informática Básica e Pacote Office&#10;• Atendimento ao Cliente" oninput="atualizarPreview()"></textarea>
+            </div>
+
+            <div class="btn-action-group">
+                <button class="btn-download" onclick="baixarPDFSemCorte()">
+                    📥 Baixar PDF Perfeito (Grátis)
+                </button>
+
+                <button class="btn-formsubmit" onclick="enviarParaImpressaoFormSubmit()">
+                    🖨️ Enviar Currículo para Impressão P&B na Loja (R$ 0,50)
+                </button>
+
+                <button class="btn-firebase" id="btn-enviar-fb" onclick="enviarParaFirebaseEPainel()">
+                    🚀 Enviar Pedido & Ir ao Painel (R$ 10,00)
                 </button>
             </div>
-            <h1>Emissão & Impressão de Documentos</h1>
-            <p>CRLV, 2ª Via de CPF, RG e Documentos Oficiais</p>
-        </header>
-
-        <div id="secaoPrecos" class="tabela-precos">
-            <h3>🏷️ Tabela de Preços do Serviço</h3>
-            
-            <div class="preco-item">
-                <div>
-                    <span class="descricao">🚗 CRLV (Documento do Carro) + Impressão</span>
-                    <span class="subtexto">Se você JÁ POSSUI o PDF / Imagem</span>
-                </div>
-                <span class="valor">R$ 8,00</span>
-            </div>
-
-            <div class="preco-item">
-                <div>
-                    <span class="descricao">🚗 CRLV (Busca + Emissão + Impressão)</span>
-                    <span class="subtexto">Se NÃO possui o arquivo (Buscamos pela Placa/CPF)</span>
-                </div>
-                <span class="valor">R$ 12,20</span>
-            </div>
-
-            <div class="preco-item">
-                <div>
-                    <span class="descricao">📄 2ª Via CPF / RG + Impressão (P&B)</span>
-                    <span class="subtexto">Se você JÁ POSSUI o PDF / Imagem</span>
-                </div>
-                <span class="valor">R$ 0,50</span>
-            </div>
-
-            <div class="preco-item">
-                <div>
-                    <span class="descricao">📄 2ª Via CPF / RG (Busca + Emissão + Impressão)</span>
-                    <span class="subtexto">Se NÃO possui o arquivo (Emitimos para você)</span>
-                </div>
-                <span class="valor">R$ 3,50</span>
-            </div>
-
-            <div class="preco-item">
-                <div>
-                    <span class="descricao">📑 Outro Documento Oficial (P&B)</span>
-                    <span class="subtexto">Se você JÁ POSSUI: R$ 0,50 | Se precisamos BUSCAR: R$ 5,00</span>
-                </div>
-                <span class="valor">R$ 0,50 / R$ 5,00</span>
-            </div>
-
-            <div class="preco-item">
-                <div>
-                    <span class="descricao">🎨 Outro Documento Oficial (Colorido)</span>
-                    <span class="subtexto">Se você JÁ POSSUI: R$ 1,10 | Se precisamos BUSCAR: R$ 7,00</span>
-                </div>
-                <span class="valor">R$ 1,10 / R$ 7,00</span>
-            </div>
         </div>
 
-        <div id="secaoBanner" class="banner-imagem-container">
-            <img src="banner_documentos.jpg" alt="Informações sobre Documentos" class="banner-imagem" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x200/0284c7/ffffff?text=Espaco+para+Sua+Imagem+Ilustrativa';">
-        </div>
+        <div class="preview-section">
+            <div class="preview-wrapper">
+                <div id="curriculo-folha" class="m-1">
+                    <h1 id="pv-nome">SEU NOME COMPLETO</h1>
+                    <p id="pv-cargo" style="font-weight: 600; font-size: 13px;">Cargo Desejado</p>
+                    
+                    <div class="cv-header-info contatos" id="pv-contatos">
+                        Cidade - UF | (00) 00000-0000 | email@exemplo.com
+                    </div>
 
-        <div class="box-privacidade">
-            <div style="font-size: 24px;">🔒</div>
-            <div>
-                <strong>Por que solicitamos CPF, RG ou Placa?</strong><br>
-                Utilizamos esses dados **exclusivamente** nos sistemas do governo/Detran para localizar o documento e realizar a impressão. Garantimos **100% de sigilo, confidencialidade e proteção de dados (LGPD)**.
-            </div>
-        </div>
+                    <h3>Resumo Profissional</h3>
+                    <div class="cv-section-content" id="pv-resumo">Digite seu resumo profissional para visualizar aqui.</div>
 
-        <form id="formDoc" class="step-card" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data">
-            
-            <input type="hidden" name="_captcha" value="false">
-            <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="Servico" value="Emissao de Documentos Oficiais">
-            <input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">
+                    <h3>Experiência Profissional</h3>
+                    <div class="cv-section-content" id="pv-experiencia">Adicione suas experiências profissionais anteriores.</div>
 
-            <div class="alerta-desconsiderar">
-                ⚠️ ATENÇÃO: Pedidos sem pagamento confirmado serão desconsiderados e cancelados automaticamente.
-            </div>
+                    <h3>Formação Acadêmica</h3>
+                    <div class="cv-section-content" id="pv-formacao">Informe sua escolaridade.</div>
 
-            <h2>Montar Pedido de Documento</h2>
+                    <h3>Cursos e Qualificações</h3>
+                    <div class="cv-section-content" id="pv-cursos">Liste seus cursos e habilidades.</div>
 
-            <div class="form-group">
-                <label for="nome">Seu Nome Completo *</label>
-                <input type="text" id="nome" name="Nome do Cliente" placeholder="EX: JOÃO DA SILVA" required>
-            </div>
-
-            <div class="form-group">
-                <label for="telefone">WhatsApp para Contato *</label>
-                <input type="tel" id="telefone" name="WhatsApp" placeholder="(41) 99999-9999" maxlength="15" required>
-            </div>
-
-            <div class="form-group">
-                <label for="possiu_documento">Você possui o arquivo do documento?</label>
-                <select id="possiu_documento" name="Possui o Arquivo">
-                    <option value="sim">Sim, eu tenho o documento (Apenas Imprimir / Anexar)</option>
-                    <option value="nao">Não tenho o documento (Preciso que vocês puxem/emitem)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="tipo_servico">Selecione o Tipo de Documento:</label>
-                <select id="tipo_servico" name="Tipo de Documento">
-                    <option value="crlv">🚗 CRLV - Documento do Veículo</option>
-                    <option value="cpf_rg">📄 2ª Via CPF / RG</option>
-                    <option value="outros_pb">📑 Outros Documentos (Preto e Branco)</option>
-                    <option value="outros_color">🎨 Outros Documentos (Colorido)</option>
-                </select>
-            </div>
-
-            <div class="form-group" id="grupoAnexo">
-                <label for="arquivo">Anexar Documento (PDF ou Imagem):</label>
-                <input type="file" id="arquivo" name="attachment" accept=".pdf,.png,.jpg,.jpeg">
-            </div>
-
-            <div id="camposBusca" class="form-group" style="background: var(--bg-input); padding: 16px; border-radius: 14px; gap: 12px; border: 1px solid var(--border-color);">
-                <p style="font-size: 13px; font-weight: 700; color: var(--primary);">📋 Dados para Busca nos Sistemas Oficiais:</p>
-                
-                <div class="form-group" id="grupoPlaca">
-                    <label for="placa">Placa do Veículo:</label>
-                    <input type="text" id="placa" name="Placa do Veiculo" placeholder="ABC-1D23" maxlength="8">
-                </div>
-
-                <div class="form-group" id="grupoRenavam">
-                    <label for="renavam">RENAVAM (Opcional):</label>
-                    <input type="text" id="renavam" name="RENAVAM" placeholder="00000000000" maxlength="11">
-                </div>
-
-                <div class="form-group" id="grupoCpfTitular">
-                    <label for="cpf_titular">CPF do Titular do Documento:</label>
-                    <input type="text" id="cpf_titular" name="CPF do Titular" placeholder="000.000.000-00" maxlength="14">
+                    <div id="pv-qr-container" style="position: absolute; bottom: 15mm; right: 18mm; text-align: center; display: none;">
+                        <img id="pv-qrcode" style="width: 55px; height: 55px;" alt="QR Code">
+                        <div style="font-size: 8px; font-weight: bold;">Contato Direto</div>
+                    </div>
                 </div>
             </div>
-
-            <div class="form-group">
-                <label>Serviços Adicionais & Opcionais:</label>
-
-                <label class="checkbox-card" style="margin-top: 6px;">
-                    <input type="checkbox" id="opt_pdf_whats" name="Adicional PDF Whats" value="Sim (+R$ 2,00)">
-                    <span>📱 <strong>Enviar PDF Digital no WhatsApp (+R$ 2,00):</strong> Cópia digital em HD.</span>
-                </label>
-
-                <label class="checkbox-card" style="margin-top: 6px;">
-                    <input type="checkbox" id="opt_copia_extra" name="Adicional Copia Extra" value="Sim (+R$ 0,50)">
-                    <span>📑 <strong>2ª Cópia Impressa Extra (+R$ 0,50):</strong> Via adicional em P&B.</span>
-                </label>
-            </div>
-
-            <div class="form-group">
-                <label>Forma de Pagamento:</label>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" name="Forma de Pagamento" value="PIX" checked> PIX
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="Forma de Pagamento" value="Dinheiro"> Dinheiro (Na Retirada)
-                    </label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="observacoes">Observações (Opcional):</label>
-                <textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex: Preciso de troco para R$ 20..."></textarea>
-            </div>
-
-            <div class="price-box">
-                <div class="price-row">
-                    <span>Documento Base:</span>
-                    <span id="valorBaseExibicao">R$ 8,00</span>
-                </div>
-                <div class="price-row" id="rowAdicionais" style="display: none; color: var(--primary);">
-                    <span>Adicionais Selecionados:</span>
-                    <span id="valorAdicionaisExibicao">+ R$ 0,00</span>
-                </div>
-                <div class="price-row total">
-                    <span>Valor Total Estimado:</span>
-                    <strong id="valorTotalExibicao">R$ 8,00</strong>
-                </div>
-            </div>
-
-            <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido & Gerar Pagamento 🚀</button>
-        </form>
-
-        <div id="telaSucesso" class="sucesso-card hidden">
-            <div style="font-size: 50px; margin-bottom: 8px;">🎉</div>
-            <h2 style="font-size: 22px; color: var(--primary);">Pedido Recebido com Sucesso!</h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Realize o pagamento para iniciarmos a emissão/impressão.</p>
-
-            <div id="boxDetalhesPagamento"></div>
-
-            <a id="btnNotificarWhats" href="#" target="_blank" class="btn-whatsapp">
-                💬 Notificar Pedido no WhatsApp
-            </a>
-
-            <button class="btn-primary" onclick="permitirSaida = true; location.href='index.html';" style="margin-top: 16px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">
-                🏠 Voltar ao Painel Central
-            </button>
         </div>
     </div>
 
-    <script>
-        const CHAVE_PIX_TEXTO = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
-        let permitirSaida = false;
-        let cliquesVoltar = 0;
+    <div class="toast-overlay" id="customToast">
+        <div class="toast-card">
+            <div class="toast-icon" id="toastIcon">⚠️</div>
+            <div class="toast-title" id="toastTitle">Aviso</div>
+            <div class="toast-msg" id="toastMsg">Mensagem...</div>
+            <button class="toast-btn" onclick="fecharToast()">Entendi</button>
+        </div>
+    </div>
 
-        // 1. TEMA ESCURO / CLARO
-        const themeToggleBtn = document.getElementById('themeToggleBtn');
-        const themeIcon = document.getElementById('themeIcon');
-        const themeText = document.getElementById('themeText');
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
-        function aplicarTema(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            if (theme === 'dark') {
-                themeIcon.innerText = '☀️';
-                themeText.innerText = 'Modo Claro';
-            } else {
-                themeIcon.innerText = '🌙';
-                themeText.innerText = 'Modo Escuro';
-            }
-            localStorage.setItem('theme_doc', theme);
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfh0iZSotPra1olpRWRfwwBP9G8yrdHEc",
+            authDomain: "print-express-bfa7c.firebaseapp.com",
+            projectId: "print-express-bfa7c",
+            storageBucket: "print-express-bfa7c.firebasestorage.app",
+            messagingSenderId: "471136646915",
+            appId: "1:471136646915:web:8b7b6f92c00d88c7c79b36",
+            measurementId: "G-8K5LHHCDFE"
+        };
 
-        const savedTheme = localStorage.getItem('theme_doc') || 'dark';
-        aplicarTema(savedTheme);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-        themeToggleBtn.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            aplicarTema(currentTheme === 'dark' ? 'light' : 'dark');
-        });
+        const EMAIL_FORMSUBMIT = "ws8530135@gmail.com";
 
-        // 2. DOUBLE CLICK PARA VOLTAR AO PAINEL
-        function confirmarSaidaPainel() {
-            cliquesVoltar++;
-            if (cliquesVoltar === 1) {
-                alert("⚠️ Para sair do site, clique no botão 'Voltar' mais uma vez.\n(Pedidos sem pagamento são cancelados).");
-                setTimeout(() => cliquesVoltar = 0, 3000);
-            } else if (cliquesVoltar >= 2) {
-                permitirSaida = true;
-                window.location.href = "index.html";
-            }
-        }
+        window.mostrarToast = function(titulo, mensagem, icone = "⚠️") {
+            document.getElementById("toastIcon").innerText = icone;
+            document.getElementById("toastTitle").innerText = titulo;
+            document.getElementById("toastMsg").innerText = mensagem;
+            document.getElementById("customToast").classList.add("active");
+        };
 
-        window.addEventListener("beforeunload", function (e) {
-            if (!permitirSaida) {
-                e.preventDefault();
-                e.returnValue = "Tem certeza que deseja sair? Seu pedido/pagamento será cancelado.";
-                return e.returnValue;
-            }
-        });
+        window.fecharToast = function() {
+            document.getElementById("customToast").classList.remove("active");
+        };
 
-        // 3. MÁSCARA AUTOMÁTICA DE TELEFONE: (XX) XXXXX-XXXX
-        const inputTel = document.getElementById("telefone");
-        inputTel.addEventListener("input", (e) => {
-            let v = e.target.value.replace(/\D/g, '');
+        window.mascaraTelefone = function(input) {
+            let v = input.value.replace(/\D/g, '');
             if (v.length > 11) v = v.substring(0, 11);
-            if (v.length > 10) {
+            if (v.length > 6) {
                 v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
-            } else if (v.length > 6) {
-                v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
             } else if (v.length > 2) {
-                v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+                v = v.replace(/^(\d{2})(\d{1,4}).*/, '($1) $2');
             } else if (v.length > 0) {
                 v = v.replace(/^(\d*)/, '($1');
             }
-            e.target.value = v;
-        });
+            input.value = v;
+        };
 
-        // MÁSCARA CPF E PLACA
-        document.getElementById("nome").addEventListener("input", (e) => e.target.value = e.target.value.toUpperCase());
-        document.getElementById("placa").addEventListener("input", (e) => e.target.value = e.target.value.toUpperCase());
-        
-        document.getElementById("cpf_titular").addEventListener("input", (e) => {
-            let v = e.target.value.replace(/\D/g, '');
-            if (v.length > 11) v = v.substring(0, 11);
-            v = v.replace(/(\d{3})(\d)/, '$1.$2');
-            v = v.replace(/(\d{3})(\d)/, '$1.$2');
-            v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-            e.target.value = v;
-        });
+        // FUNÇÃO DE LIMPAR TODOS OS CAMPOS
+        window.limparTodosCampos = function() {
+            if (confirm("Tem certeza que deseja limpar todos os campos do currículo?")) {
+                const ids = ["nome", "cargo", "telefone", "email", "cidade", "idade", "estadoCivil", "cnh", "linkQr", "resumo", "experiencia", "formacao", "cursos"];
+                ids.forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) el.value = "";
+                });
+                localStorage.removeItem("cv_rascunho");
+                document.getElementById("pv-qr-container").style.display = "none";
+                atualizarPreview();
+                mostrarToast("Limpeza Concluída", "Todos os campos foram zerados com sucesso.", "🧹");
+            }
+        };
 
-        // 4. LÓGICA DE ATIVAÇÃO/DESATIVAÇÃO E PREÇOS
-        const selectPossuiDoc = document.getElementById("possiu_documento");
-        const selectTipo = document.getElementById("tipo_servico");
-        const inputArquivo = document.getElementById("arquivo");
-        const inputPlaca = document.getElementById("placa");
-        const inputRenavam = document.getElementById("renavam");
-        const inputCpfTitular = document.getElementById("cpf_titular");
+        // ADICIONAR MARCADOR DE BULLET
+        window.adicionarMarcador = function(idCampo) {
+            const el = document.getElementById(idCampo);
+            if (el) {
+                el.value += (el.value ? "\n" : "") + "• ";
+                el.focus();
+                atualizarPreview();
+            }
+        };
 
-        const optPdfWhats = document.getElementById("opt_pdf_whats");
-        const optCopiaExtra = document.getElementById("opt_copia_extra");
+        window.mudarFonte = function(fonte) {
+            document.documentElement.style.setProperty('--font-family-cv', fonte);
+        };
 
-        function calcularEAtualizarCampos() {
-            const temDoc = selectPossuiDoc.value === "sim";
-            const tipo = selectTipo.value;
+        window.mudarEspacamento = function(val) {
+            document.documentElement.style.setProperty('--line-height-cv', val);
+        };
 
-            // Ativa/Desativa Campos conforme regras
-            if (temDoc) {
-                // Se tem o documento: Anexo FICA ATIVO. Campos de busca FICAM ESCURECIDOS / DESATIVADOS
-                inputArquivo.disabled = false;
-                inputArquivo.required = true;
-                
-                inputPlaca.disabled = true;
-                inputRenavam.disabled = true;
-                inputCpfTitular.disabled = true;
-                document.getElementById("camposBusca").classList.add("campo-desativado-wrapper");
+        window.gerarQrCodeCv = function(url) {
+            const container = document.getElementById("pv-qr-container");
+            const img = document.getElementById("pv-qrcode");
+            if(url.trim().length > 5) {
+                img.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
+                container.style.display = "block";
             } else {
-                // Se NÃO tem o documento: Anexo FICA ESCURECIDO / DESATIVADO. Campos de busca FICAM ATIVOS
-                inputArquivo.disabled = true;
-                inputArquivo.required = false;
-                inputArquivo.value = "";
-
-                inputPlaca.disabled = false;
-                inputRenavam.disabled = false;
-                inputCpfTitular.disabled = false;
-                document.getElementById("camposBusca").classList.remove("campo-desativado-wrapper");
+                container.style.display = "none";
             }
+        };
 
-            // Esconde Placa se não for CRLV
-            if (tipo === "crlv") {
-                document.getElementById("grupoPlaca").style.display = "flex";
-                document.getElementById("grupoRenavam").style.display = "flex";
-            } else {
-                document.getElementById("grupoPlaca").style.display = "none";
-                document.getElementById("grupoRenavam").style.display = "none";
+        window.gerarResumoIA = function() {
+            const cargo = document.getElementById("cargo").value.trim() || "profissional dedicado";
+            const resumos = [
+                `Profissional proativo e focado em resultados, buscando oportunidade para atuar como ${cargo}. Possuo excelente comunicação, facilidade de aprendizado e bom trabalho em equipe.`,
+                `Com sólida motivação para o mercado de trabalho, busco integrar a equipe como ${cargo}, contribuindo com eficiência, dinamismo e constante aprimoramento de habilidades.`,
+                `Profissional comprometido com a qualidade das entregas e bom relacionamento interpessoal, visando atuar como ${cargo} para agregar valor aos processos da empresa.`
+            ];
+            const sorteio = resumos[Math.floor(Math.random() * resumos.length)];
+            document.getElementById("resumo").value = sorteio;
+            atualizarPreview();
+        };
+
+        window.preencherExemploRapido = function() {
+            document.getElementById("nome").value = "CARLOS EDUARDO SILVA";
+            document.getElementById("cargo").value = "Atendente de Loja / Caixa";
+            document.getElementById("telefone").value = "(41) 99888-7766";
+            document.getElementById("email").value = "carlos.silva@email.com";
+            document.getElementById("cidade").value = "São José dos Pinhais - PR";
+            document.getElementById("idade").value = "22 anos";
+            document.getElementById("estadoCivil").value = "Solteiro";
+            document.getElementById("cnh").value = "CNH B";
+            document.getElementById("resumo").value = "Profissional comunicativo e responsável, com experiência no atendimento ao público e operações de caixa.";
+            document.getElementById("experiencia").value = "Supermercado Exemplo (2022 - 2024)\nCargo: Operador de Caixa\n• Atendimento ao cliente e recebimento de valores.";
+            document.getElementById("formacao").value = "Ensino Médio Completo\nColégio Estadual (Concluído)";
+            document.getElementById("cursos").value = "• Operador de Caixa e Atendimento\n• Informática Básica";
+            atualizarPreview();
+        };
+
+        window.salvarRascunho = function() {
+            const dados = {
+                nome: document.getElementById("nome").value,
+                cargo: document.getElementById("cargo").value,
+                telefone: document.getElementById("telefone").value,
+                email: document.getElementById("email").value,
+                cidade: document.getElementById("cidade").value,
+                idade: document.getElementById("idade").value,
+                estadoCivil: document.getElementById("estadoCivil").value,
+                cnh: document.getElementById("cnh").value,
+                resumo: document.getElementById("resumo").value,
+                experiencia: document.getElementById("experiencia").value,
+                formacao: document.getElementById("formacao").value,
+                cursos: document.getElementById("cursos").value
+            };
+            localStorage.setItem("cv_rascunho", JSON.stringify(dados));
+            mostrarToast("Rascunho Salvo!", "Seus dados foram salvos neste navegador com sucesso.", "💾");
+        };
+
+        function carregarRascunhoAuto() {
+            const salvo = localStorage.getItem("cv_rascunho");
+            if(salvo) {
+                const dados = JSON.parse(salvo);
+                Object.keys(dados).forEach(key => {
+                    const el = document.getElementById(key);
+                    if(el) el.value = dados[key];
+                });
             }
-
-            // CÁLCULO DE VALORES EXACTOS
-            let valorBase = 8.00;
-
-            if (tipo === "crlv") {
-                valorBase = temDoc ? 8.00 : 12.20;
-            } else if (tipo === "cpf_rg") {
-                valorBase = temDoc ? 0.50 : 3.50;
-            } else if (tipo === "outros_pb") {
-                valorBase = temDoc ? 0.50 : 5.00;
-            } else if (tipo === "outros_color") {
-                valorBase = temDoc ? 1.10 : 7.00;
-            }
-
-            // CALCULAR OPCIONAIS
-            let valorAdicionais = 0;
-            if (optPdfWhats.checked) valorAdicionais += 2.00;
-            if (optCopiaExtra.checked) valorAdicionais += 0.50;
-
-            let total = valorBase + valorAdicionais;
-
-            document.getElementById("valorBaseExibicao").innerText = `R$ ${valorBase.toFixed(2).replace('.', ',')}`;
-            
-            if (valorAdicionais > 0) {
-                document.getElementById("rowAdicionais").style.display = "flex";
-                document.getElementById("valorAdicionaisExibicao").innerText = `+ R$ ${valorAdicionais.toFixed(2).replace('.', ',')}`;
-            } else {
-                document.getElementById("rowAdicionais").style.display = "none";
-            }
-
-            document.getElementById("valorTotalExibicao").innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
-            return total;
         }
 
-        selectPossuiDoc.addEventListener("change", calcularEAtualizarCampos);
-        selectTipo.addEventListener("change", calcularEAtualizarCampos);
-        optPdfWhats.addEventListener("change", calcularEAtualizarCampos);
-        optCopiaExtra.addEventListener("change", calcularEAtualizarCampos);
+        window.atualizarPreview = function() {
+            const modelo = document.getElementById("selectModelo").value;
+            const folha = document.getElementById("curriculo-folha");
+            folha.className = modelo;
 
-        calcularEAtualizarCampos();
+            const nome = document.getElementById("nome").value.trim() || "SEU NOME COMPLETO";
+            const cargo = document.getElementById("cargo").value.trim() || "Cargo Desejado";
+            const telefone = document.getElementById("telefone").value.trim() || "(00) 00000-0000";
+            const email = document.getElementById("email").value.trim() || "email@exemplo.com";
+            const cidade = document.getElementById("cidade").value.trim() || "Cidade - UF";
+            const idade = document.getElementById("idade").value.trim();
+            const estadoCivil = document.getElementById("estadoCivil").value.trim();
+            const cnh = document.getElementById("cnh").value.trim();
 
-        // 5. SUBMISSÃO VIA FORMSUBMIT (SEM TELA BRANCA)
-        const form = document.getElementById("formDoc");
-        const btnSubmit = document.getElementById("btnSubmit");
+            let detalhesPessoais = [];
+            if (idade) detalhesPessoais.push(idade);
+            if (estadoCivil) detalhesPessoais.push(estadoCivil);
+            if (cnh) detalhesPessoais.push(`CNH: ${cnh}`);
+            const strDetalhes = detalhesPessoais.length > 0 ? " | " + detalhesPessoais.join(" - ") : "";
 
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            btnSubmit.disabled = true;
-            btnSubmit.innerText = "Processando Pedido...";
+            document.getElementById("pv-nome").innerText = nome.toUpperCase();
+            document.getElementById("pv-cargo").innerText = cargo;
+            document.getElementById("pv-contatos").innerText = `${cidade} | ${telefone} | ${email}${strDetalhes}`;
 
-            const totalCalculado = calcularEAtualizarCampos();
-            document.getElementById("hidden_total").value = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
+            const resumoTxt = document.getElementById("resumo").value.trim();
+            const expTxt = document.getElementById("experiencia").value.trim();
+            const formTxt = document.getElementById("formacao").value.trim();
+            const cursosTxt = document.getElementById("cursos").value.trim();
 
-            const formData = new FormData(form);
-            const pagamentoSel = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
-            const clienteNome = document.getElementById("nome").value;
+            document.getElementById("pv-resumo").innerText = resumoTxt || "Digite seu resumo profissional no campo ao lado.";
+            document.getElementById("pv-experiencia").innerText = expTxt || "Adicione suas experiências profissionais anteriores.";
+            document.getElementById("pv-formacao").innerText = formTxt || "Informe sua escolaridade.";
+            document.getElementById("pv-cursos").innerText = cursosTxt || "Liste seus cursos complementares e habilidades.";
+
+            // Atualiza contadores
+            document.getElementById("count-resumo").innerText = `${resumoTxt.length} carac.`;
+            document.getElementById("count-experiencia").innerText = `${expTxt.length} carac.`;
+            document.getElementById("count-formacao").innerText = `${formTxt.length} carac.`;
+            document.getElementById("count-cursos").innerText = `${cursosTxt.length} carac.`;
+
+            calcularScore();
+        };
+
+        function calcularScore() {
+            let pts = 0;
+            if(document.getElementById("nome").value.trim()) pts += 15;
+            if(document.getElementById("telefone").value.trim()) pts += 15;
+            if(document.getElementById("email").value.trim()) pts += 10;
+            if(document.getElementById("cargo").value.trim()) pts += 15;
+            if(document.getElementById("resumo").value.trim()) pts += 15;
+            if(document.getElementById("experiencia").value.trim()) pts += 15;
+            if(document.getElementById("formacao").value.trim()) pts += 15;
+
+            document.getElementById("scoreFill").style.width = `${pts}%`;
+            document.getElementById("scoreText").innerText = `${pts}% Completo`;
+        }
+
+        // GERAÇÃO DE PDF SEM CORTES PERFEITA
+        window.baixarPDFSemCorte = function() {
+            const nome = document.getElementById('nome').value.trim();
+            if (!nome) {
+                mostrarToast("Nome Necessário", "Por favor, informe seu nome completo antes de baixar o PDF.");
+                return;
+            }
+
+            mostrarToast("Gerando PDF...", "Aguarde enquanto preparamos o arquivo em alta definição...", "⏳");
+
+            const element = document.getElementById('curriculo-folha');
+            const nomeArquivo = `Curriculo_${nome.replace(/\s+/g, '_')}.pdf`;
+            
+            const opt = {
+                margin:       0,
+                filename:     nomeArquivo,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, scrollY: 0, logging: false },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                mostrarToast("Sucesso!", "Seu currículo foi baixado com sucesso no formato A4 sem cortes.", "✅");
+            }).catch(err => {
+                mostrarToast("Erro ao Baixar", "Ocorreu uma falha ao renderizar o PDF. Tente novamente.");
+            });
+        };
+
+        // ENVIAR CURRÍCULO CORRIGIDO COM FORMULÁRIO E AVISO WHATSAPP
+        window.enviarParaImpressaoFormSubmit = async function() {
+            const nome = document.getElementById('nome').value.trim();
+            const telefone = document.getElementById('telefone').value.trim();
+
+            if (!nome || !telefone) {
+                mostrarToast("Atenção", "Informe seu Nome e WhatsApp antes de mandar para a impressão.");
+                return;
+            }
+
+            mostrarToast("Preparando Envio...", "Convertendo documento e enviando para a fila de impressão...", "⏳");
+
+            const element = document.getElementById('curriculo-folha');
+            const opt = {
+                margin:       0,
+                filename:     `Curriculo_${nome.replace(/\s+/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
 
             try {
-                const response = await fetch(form.action, {
+                const pdfWorker = html2pdf().set(opt).from(element);
+                const pdfBlob = await pdfWorker.output('blob');
+
+                const formData = new FormData();
+                formData.append("attachment", pdfBlob, `Curriculo_${nome.replace(/\s+/g, '_')}.pdf`);
+                formData.append("Nome do Cliente", nome);
+                formData.append("WhatsApp", telefone);
+                formData.append("Servico", "Impressao de Curriculo P&B");
+                formData.append("Valor Estimado", "R$ 0,50");
+                formData.append("_subject", `Novo Currículo para Impressão - ${nome}`);
+
+                const res = await fetch(`https://formsubmit.co/ajax/${EMAIL_FORMSUBMIT}`, {
                     method: "POST",
-                    body: formData,
-                    headers: { 'Accept': 'application/json' }
+                    body: formData
                 });
 
-                if (response.ok) {
-                    permitirSaida = true; // Desativa alarme de saída ao concluir
+                if(res.ok) {
+                    const msgWhats = encodeURIComponent(`Olá! Acabei de mandar meu currículo pelo site para impressão P&B.\n\n👤 Nome: ${nome}\n📱 Contato: ${telefone}\n💰 Valor: R$ 0,50`);
+                    const urlWhats = `https://wa.me/5541999682836?text=${msgWhats}`;
 
-                    form.classList.add("hidden");
-                    document.getElementById("secaoPrecos").classList.add("hidden");
-                    document.getElementById("secaoBanner").classList.add("hidden");
+                    mostrarToast(
+                        "Pedido Enviado com Sucesso!", 
+                        `Seu currículo foi enviado para impressão P&B!\n\n💰 Valor: R$ 0,50 por folha na retirada.\n\nClique no botão do WhatsApp na tela para avisar a loja!`, 
+                        "🖨️"
+                    );
 
-                    const telaSucesso = document.getElementById("telaSucesso");
-                    const boxPagamento = document.getElementById("boxDetalhesPagamento");
-
-                    if (pagamentoSel === "PIX") {
-                        boxPagamento.innerHTML = `
-                            <div class="pix-box">
-                                <p style="font-size:13px; color:var(--text-muted); font-weight:700;">VALOR TOTAL A PAGAR VIA PIX</p>
-                                <div style="font-size:28px; font-weight:800; color:var(--green);">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
-                                
-                                <div style="margin: 8px 0;">
-                                    <img src="qrcode-pix.jpg" alt="QR Code PIX" style="max-width: 170px; width: 100%; border-radius: 12px; border: 1px solid var(--border-color);" onerror="this.style.display='none'">
-                                </div>
-
-                                <input type="text" id="pixKey" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:11px; color:var(--primary); background: var(--bg-card);">
-                                <button class="btn-primary" type="button" onclick="copiarPix()">📋 Copiar Chave PIX</button>
-                            </div>
-                        `;
-                    } else {
-                        boxPagamento.innerHTML = `
-                            <div style="background:var(--bg-input); padding:20px; border-radius:16px; margin-top:16px;">
-                                <p style="font-size:13px; color:var(--text-muted);">VALOR A PAGAR NA RETIRADA</p>
-                                <div style="font-size:28px; font-weight:800; color:var(--green);">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
-                                <p style="font-size:13px; margin-top:8px;">Pagamento em <strong>Dinheiro</strong> no momento da retirada.</p>
-                            </div>
-                        `;
-                    }
-
-                    const msgWhats = encodeURIComponent(`Olá! Enviei um pedido de Documentos Oficiais.\n\n👤 Nome: ${clienteNome}\n💰 Total: R$ ${totalCalculado.toFixed(2).replace('.', ',')}\n💳 Pagamento: ${pagamentoSel}`);
-                    document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;
-
-                    telaSucesso.classList.remove("hidden");
-                    telaSucesso.scrollIntoView({ behavior: 'smooth' });
+                    // Abre o WhatsApp para confirmação
+                    setTimeout(() => { window.open(urlWhats, '_blank'); }, 1500);
 
                 } else {
-                    alert("Erro ao processar o pedido. Tente novamente.");
-                    btnSubmit.disabled = false;
-                    btnSubmit.innerText = "Enviar Pedido & Gerar Pagamento 🚀";
+                    mostrarToast("Erro no Envio", "Não foi possível registrar o pedido no servidor de e-mail.");
                 }
-            } catch (error) {
-                alert("Erro de conexão ao enviar o formulário.");
-                btnSubmit.disabled = false;
-                btnSubmit.innerText = "Enviar Pedido & Gerar Pagamento 🚀";
+            } catch(e) {
+                console.error(e);
+                mostrarToast("Erro de Conexão", "Falha ao processar o arquivo. Verifique sua conexão e tente novamente.");
             }
-        });
+        };
 
-        function copiarPix() {
-            const inputPix = document.getElementById("pixKey");
-            inputPix.select();
-            navigator.clipboard.writeText(inputPix.value);
-            alert("Chave PIX copiada com sucesso!");
-        }
+        // SALVAR NO FIREBASE E REDIRECIONAR PARA PAINEL.HTML / INDEX.HTML
+        window.enviarParaFirebaseEPainel = async function() {
+            const nome = document.getElementById('nome').value.trim();
+            const telefone = document.getElementById('telefone').value.trim();
+
+            if (!nome) {
+                mostrarToast("Campo Obrigatório", "Informe seu nome antes de enviar para o sistema.");
+                return;
+            }
+
+            const btn = document.getElementById("btn-enviar-fb");
+            btn.disabled = true;
+            btn.innerText = "Salvando no Banco de Dados... ⏳";
+
+            const dadosCurriculo = {
+                cliente: nome,
+                telefone: telefone || "Não informado",
+                email: document.getElementById('email').value.trim(),
+                cidade: document.getElementById('cidade').value.trim(),
+                cargo: document.getElementById('cargo').value.trim(),
+                idade: document.getElementById('idade').value.trim(),
+                estadoCivil: document.getElementById('estadoCivil').value.trim(),
+                cnh: document.getElementById('cnh').value.trim(),
+                resumo: document.getElementById('resumo').value.trim(),
+                experiencia: document.getElementById('experiencia').value.trim(),
+                formacao: document.getElementById('formacao').value.trim(),
+                cursos: document.getElementById('cursos').value.trim(),
+                modelo: document.getElementById('selectModelo').value,
+                servico: "Elaboração / Edição de Currículo",
+                total: 10.00,
+                status: "Pendente",
+                dataEnvio: serverTimestamp()
+            };
+
+            try {
+                await addDoc(collection(db, "pedidos"), dadosCurriculo);
+                
+                mostrarToast("Sucesso!", "Currículo cadastrado no Banco de Dados! Redirecionando para a página principal...", "🚀");
+                
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1500);
+
+            } catch (err) {
+                console.error(err);
+                mostrarToast("Erro", "Falha ao salvar no banco de dados. Tente novamente.");
+                btn.disabled = false;
+                btn.innerText = "🚀 Enviar Pedido & Ir ao Painel (R$ 10,00)";
+            }
+        };
+
+        carregarRascunhoAuto();
+        atualizarPreview();
     </script>
 </body>
 </html>
