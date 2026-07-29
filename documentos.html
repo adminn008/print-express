@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,8 @@
             --bg-body: #f8fafc;
             --bg-card: #ffffff;
             --bg-input: #f1f5f9;
-            --border-color: #e2e8f0;
+            --bg-disabled: #e2e8f0;
+            --border-color: #cbd5e1;
             --text-main: #0f172a;
             --text-muted: #64748b;
             --primary: #0284c7;
@@ -18,21 +19,22 @@
             --accent-light: rgba(2, 132, 199, 0.08);
             --green: #10b981;
             --danger: #ef4444;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
         }
 
         [data-theme="dark"] {
             --bg-body: #0f172a;
             --bg-card: #1e293b;
             --bg-input: #0f172a;
+            --bg-disabled: #111827;
             --border-color: #334155;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --accent-light: rgba(56, 189, 248, 0.12);
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.25s, color 0.25s; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.25s, color 0.25s, border-color 0.25s; }
         
         body { 
             background-color: var(--bg-body); 
@@ -51,14 +53,18 @@
 
         header { position: relative; text-align: center; margin-bottom: 10px; }
 
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
         .btn-voltar {
-            position: absolute;
-            left: 0;
-            top: 0;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             color: var(--primary);
-            padding: 8px 14px;
+            padding: 8px 16px;
             border-radius: 12px;
             text-decoration: none;
             font-weight: 700;
@@ -70,7 +76,22 @@
             cursor: pointer;
         }
 
-        h1 { color: var(--primary); font-size: 28px; font-weight: 800; margin-top: 40px; }
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow);
+        }
+
+        h1 { color: var(--primary); font-size: 28px; font-weight: 800; }
         header p { color: var(--text-muted); font-size: 14px; font-weight: 500; }
 
         .tabela-precos {
@@ -107,7 +128,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 10px 0;
+            margin: 5px 0;
         }
 
         .banner-imagem {
@@ -121,7 +142,7 @@
         }
 
         .box-privacidade {
-            background: rgba(2, 132, 199, 0.08);
+            background: var(--accent-light);
             border: 1px solid var(--primary);
             border-radius: 14px;
             padding: 14px 16px;
@@ -144,7 +165,7 @@
         }
 
         .alerta-desconsiderar {
-            background: rgba(239, 68, 68, 0.1);
+            background: rgba(239, 68, 68, 0.12);
             border: 1px solid var(--danger);
             color: var(--danger);
             padding: 12px;
@@ -167,10 +188,35 @@
             font-size: 14px;
         }
 
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; }
+        /* ESTILO PARA CAMPOS DESATIVADOS (ESCURECIDOS) */
+        input:disabled, select:disabled {
+            background-color: var(--bg-disabled) !important;
+            color: var(--text-muted) !important;
+            border-color: var(--border-color) !important;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
 
-        .radio-group { display: flex; gap: 20px; margin-top: 4px; }
-        .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
+        .campo-desativado-wrapper {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .radio-group { display: flex; gap: 15px; margin-top: 4px; flex-wrap: wrap; }
+        .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; font-weight: 600; }
+
+        .checkbox-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
 
         .price-box {
             background: var(--bg-input);
@@ -223,18 +269,23 @@
 
     <div class="container">
         <header>
-            <button class="btn-voltar" onclick="confirmarSaidaPainel()">⬅️ Voltar</button>
+            <div class="top-bar">
+                <button class="btn-voltar" onclick="confirmarSaidaPainel()">⬅️ Voltar ao Painel</button>
+                <button class="theme-toggle" id="themeToggleBtn" type="button">
+                    <span id="themeIcon">☀️</span> <span id="themeText">Modo Claro</span>
+                </button>
+            </div>
             <h1>Emissão & Impressão de Documentos</h1>
-            <p>CRLV, 2ª Via de CPF, RG e Certidões</p>
+            <p>CRLV, 2ª Via de CPF, RG e Documentos Oficiais</p>
         </header>
 
         <div id="secaoPrecos" class="tabela-precos">
-            <h3>🏷️ Valores dos Serviços</h3>
+            <h3>🏷️ Tabela de Preços do Serviço</h3>
             
             <div class="preco-item">
                 <div>
                     <span class="descricao">🚗 CRLV (Documento do Carro) + Impressão</span>
-                    <span class="subtexto">Se já tiver o PDF/Arquivo</span>
+                    <span class="subtexto">Se você JÁ POSSUI o PDF / Imagem</span>
                 </div>
                 <span class="valor">R$ 8,00</span>
             </div>
@@ -242,7 +293,7 @@
             <div class="preco-item">
                 <div>
                     <span class="descricao">🚗 CRLV (Busca + Emissão + Impressão)</span>
-                    <span class="subtexto">Se NÃO tiver o arquivo (Buscamos pela Placa/CPF)</span>
+                    <span class="subtexto">Se NÃO possui o arquivo (Buscamos pela Placa/CPF)</span>
                 </div>
                 <span class="valor">R$ 12,20</span>
             </div>
@@ -250,7 +301,7 @@
             <div class="preco-item">
                 <div>
                     <span class="descricao">📄 2ª Via CPF / RG + Impressão (P&B)</span>
-                    <span class="subtexto">Se já tiver o arquivo pronto</span>
+                    <span class="subtexto">Se você JÁ POSSUI o PDF / Imagem</span>
                 </div>
                 <span class="valor">R$ 0,50</span>
             </div>
@@ -258,17 +309,25 @@
             <div class="preco-item">
                 <div>
                     <span class="descricao">📄 2ª Via CPF / RG (Busca + Emissão + Impressão)</span>
-                    <span class="subtexto">Se NÃO tiver o arquivo (Geramos na hora)</span>
+                    <span class="subtexto">Se NÃO possui o arquivo (Emitimos para você)</span>
                 </div>
                 <span class="valor">R$ 3,50</span>
             </div>
 
             <div class="preco-item">
                 <div>
-                    <span class="descricao">📑 Outros Documentos Oficiais</span>
-                    <span class="subtexto">Certidões, Boletos, Comprovantes</span>
+                    <span class="descricao">📑 Outro Documento Oficial (P&B)</span>
+                    <span class="subtexto">Se você JÁ POSSUI: R$ 0,50 | Se precisamos BUSCAR: R$ 5,00</span>
                 </div>
-                <span class="valor">R$ 0,50 <small>(P&B)</small><br>R$ 1,10 <small>(Colorido)</small></span>
+                <span class="valor">R$ 0,50 / R$ 5,00</span>
+            </div>
+
+            <div class="preco-item">
+                <div>
+                    <span class="descricao">🎨 Outro Documento Oficial (Colorido)</span>
+                    <span class="subtexto">Se você JÁ POSSUI: R$ 1,10 | Se precisamos BUSCAR: R$ 7,00</span>
+                </div>
+                <span class="valor">R$ 1,10 / R$ 7,00</span>
             </div>
         </div>
 
@@ -279,8 +338,8 @@
         <div class="box-privacidade">
             <div style="font-size: 24px;">🔒</div>
             <div>
-                <strong>Por que pedimos CPF ou Placa?</strong><br>
-                Estes dados são necessários <strong>exclusivamente</strong> para acessar os portais oficiais (Detran, Receita Federal) e emitir o seu documento. Garantimos total **sigilo, confidencialidade e segurança** dos seus dados pessoais.
+                <strong>Por que solicitamos CPF, RG ou Placa?</strong><br>
+                Utilizamos esses dados **exclusivamente** nos sistemas do governo/Detran para localizar o documento e realizar a impressão. Garantimos **100% de sigilo, confidencialidade e proteção de dados (LGPD)**.
             </div>
         </div>
 
@@ -295,52 +354,72 @@
                 ⚠️ ATENÇÃO: Pedidos sem pagamento confirmado serão desconsiderados e cancelados automaticamente.
             </div>
 
-            <h2>Dados da Solicitação</h2>
+            <h2>Montar Pedido de Documento</h2>
 
             <div class="form-group">
-                <label for="nome">Seu Nome Completo:</label>
+                <label for="nome">Seu Nome Completo *</label>
                 <input type="text" id="nome" name="Nome do Cliente" placeholder="EX: JOÃO DA SILVA" required>
             </div>
 
             <div class="form-group">
-                <label for="telefone">WhatsApp para Contato:</label>
+                <label for="telefone">WhatsApp para Contato *</label>
                 <input type="tel" id="telefone" name="WhatsApp" placeholder="(41) 99999-9999" maxlength="15" required>
             </div>
 
             <div class="form-group">
-                <label for="tipo_servico">Selecione o Documento Desejado:</label>
-                <select id="tipo_servico" name="Tipo de Servico Documento">
-                    <option value="crlv_tem">CRLV - Já possuo o arquivo/PDF (R$ 8,00)</option>
-                    <option value="crlv_nao_tem">CRLV - NÃO tenho o arquivo (Precisa buscar) (R$ 12,20)</option>
-                    <option value="cpf_rg_tem">2ª Via CPF/RG - Já possuo o arquivo (P&B) (R$ 0,50)</option>
-                    <option value="cpf_rg_nao_tem">2ª Via CPF/RG - NÃO tenho o arquivo (Precisa emitir) (R$ 3,50)</option>
-                    <option value="outros_pb">Outro Documento (P&B) (R$ 0,50)</option>
-                    <option value="outros_color">Outro Documento (Colorido) (R$ 1,10)</option>
+                <label for="possiu_documento">Você possui o arquivo do documento?</label>
+                <select id="possiu_documento" name="Possui o Arquivo">
+                    <option value="sim">Sim, eu tenho o documento (Apenas Imprimir / Anexar)</option>
+                    <option value="nao">Não tenho o documento (Preciso que vocês puxem/emitem)</option>
                 </select>
             </div>
 
-            <div id="camposBusca" class="hidden" style="background: var(--bg-input); padding: 14px; border-radius: 12px; display: flex; flex-direction: column; gap: 12px;">
-                <p style="font-size: 13px; font-weight: 700; color: var(--primary);">📋 Preencha os dados necessários para buscarmos seu documento:</p>
-                
-                <div class="form-group" id="grupoPlaca">
-                    <label for="placa">Placa do Veículo:</label>
-                    <input type="text" id="placa" name="Placa do Veiculo" placeholder="ABC-1D23">
-                </div>
-
-                <div class="form-group" id="grupoRenavam">
-                    <label for="renavam">RENAVAM (Opcional):</label>
-                    <input type="text" id="renavam" name="RENAVAM" placeholder="00000000000">
-                </div>
-
-                <div class="form-group">
-                    <label for="cpf_titular">CPF do Titular do Documento:</label>
-                    <input type="text" id="cpf_titular" name="CPF do Titular" placeholder="000.000.000-00">
-                </div>
+            <div class="form-group">
+                <label for="tipo_servico">Selecione o Tipo de Documento:</label>
+                <select id="tipo_servico" name="Tipo de Documento">
+                    <option value="crlv">🚗 CRLV - Documento do Veículo</option>
+                    <option value="cpf_rg">📄 2ª Via CPF / RG</option>
+                    <option value="outros_pb">📑 Outros Documentos (Preto e Branco)</option>
+                    <option value="outros_color">🎨 Outros Documentos (Colorido)</option>
+                </select>
             </div>
 
             <div class="form-group" id="grupoAnexo">
                 <label for="arquivo">Anexar Documento (PDF ou Imagem):</label>
                 <input type="file" id="arquivo" name="attachment" accept=".pdf,.png,.jpg,.jpeg">
+            </div>
+
+            <div id="camposBusca" class="form-group" style="background: var(--bg-input); padding: 16px; border-radius: 14px; gap: 12px; border: 1px solid var(--border-color);">
+                <p style="font-size: 13px; font-weight: 700; color: var(--primary);">📋 Dados para Busca nos Sistemas Oficiais:</p>
+                
+                <div class="form-group" id="grupoPlaca">
+                    <label for="placa">Placa do Veículo:</label>
+                    <input type="text" id="placa" name="Placa do Veiculo" placeholder="ABC-1D23" maxlength="8">
+                </div>
+
+                <div class="form-group" id="grupoRenavam">
+                    <label for="renavam">RENAVAM (Opcional):</label>
+                    <input type="text" id="renavam" name="RENAVAM" placeholder="00000000000" maxlength="11">
+                </div>
+
+                <div class="form-group" id="grupoCpfTitular">
+                    <label for="cpf_titular">CPF do Titular do Documento:</label>
+                    <input type="text" id="cpf_titular" name="CPF do Titular" placeholder="000.000.000-00" maxlength="14">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Serviços Adicionais & Opcionais:</label>
+
+                <label class="checkbox-card" style="margin-top: 6px;">
+                    <input type="checkbox" id="opt_pdf_whats" name="Adicional PDF Whats" value="Sim (+R$ 2,00)">
+                    <span>📱 <strong>Enviar PDF Digital no WhatsApp (+R$ 2,00):</strong> Cópia digital em HD.</span>
+                </label>
+
+                <label class="checkbox-card" style="margin-top: 6px;">
+                    <input type="checkbox" id="opt_copia_extra" name="Adicional Copia Extra" value="Sim (+R$ 0,50)">
+                    <span>📑 <strong>2ª Cópia Impressa Extra (+R$ 0,50):</strong> Via adicional em P&B.</span>
+                </label>
             </div>
 
             <div class="form-group">
@@ -357,12 +436,20 @@
 
             <div class="form-group">
                 <label for="observacoes">Observações (Opcional):</label>
-                <textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex: Preciso impresso em folha durinha / Troco para R$ 20..."></textarea>
+                <textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex: Preciso de troco para R$ 20..."></textarea>
             </div>
 
             <div class="price-box">
+                <div class="price-row">
+                    <span>Documento Base:</span>
+                    <span id="valorBaseExibicao">R$ 8,00</span>
+                </div>
+                <div class="price-row" id="rowAdicionais" style="display: none; color: var(--primary);">
+                    <span>Adicionais Selecionados:</span>
+                    <span id="valorAdicionaisExibicao">+ R$ 0,00</span>
+                </div>
                 <div class="price-row total">
-                    <span>Valor Estimado:</span>
+                    <span>Valor Total Estimado:</span>
                     <strong id="valorTotalExibicao">R$ 8,00</strong>
                 </div>
             </div>
@@ -372,13 +459,13 @@
 
         <div id="telaSucesso" class="sucesso-card hidden">
             <div style="font-size: 50px; margin-bottom: 8px;">🎉</div>
-            <h2 style="font-size: 22px; color: var(--primary);">Obrigado pela sua compra!</h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Recebemos seus dados com segurança. Conclua o pagamento para liberarmos a impressão.</p>
+            <h2 style="font-size: 22px; color: var(--primary);">Pedido Recebido com Sucesso!</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Realize o pagamento para iniciarmos a emissão/impressão.</p>
 
             <div id="boxDetalhesPagamento"></div>
 
             <a id="btnNotificarWhats" href="#" target="_blank" class="btn-whatsapp">
-                💬 Confirmar Pedido no WhatsApp
+                💬 Notificar Pedido no WhatsApp
             </a>
 
             <button class="btn-primary" onclick="permitirSaida = true; location.href='index.html';" style="margin-top: 16px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">
@@ -392,11 +479,36 @@
         let permitirSaida = false;
         let cliquesVoltar = 0;
 
-        // TRAVA DE DUPLO CLIQUE PARA SAIR
+        // 1. TEMA ESCURO / CLARO
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+
+        function aplicarTema(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            if (theme === 'dark') {
+                themeIcon.innerText = '☀️';
+                themeText.innerText = 'Modo Claro';
+            } else {
+                themeIcon.innerText = '🌙';
+                themeText.innerText = 'Modo Escuro';
+            }
+            localStorage.setItem('theme_doc', theme);
+        }
+
+        const savedTheme = localStorage.getItem('theme_doc') || 'dark';
+        aplicarTema(savedTheme);
+
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            aplicarTema(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+
+        // 2. DOUBLE CLICK PARA VOLTAR AO PAINEL
         function confirmarSaidaPainel() {
             cliquesVoltar++;
             if (cliquesVoltar === 1) {
-                alert("⚠️ Clique mais uma vez no botão 'Voltar' para confirmar a saída.\nPedidos sem pagamento serão desconsiderados.");
+                alert("⚠️ Para sair do site, clique no botão 'Voltar' mais uma vez.\n(Pedidos sem pagamento são cancelados).");
                 setTimeout(() => cliquesVoltar = 0, 3000);
             } else if (cliquesVoltar >= 2) {
                 permitirSaida = true;
@@ -404,64 +516,131 @@
             }
         }
 
-        // CONFIRMAÇÃO DO NAVEGADOR ANTES DE FECHAR/ATUALIZAR
         window.addEventListener("beforeunload", function (e) {
             if (!permitirSaida) {
                 e.preventDefault();
-                e.returnValue = "Tem certeza que deseja sair? Seu pedido/pagamento será desconsiderado.";
+                e.returnValue = "Tem certeza que deseja sair? Seu pedido/pagamento será cancelado.";
                 return e.returnValue;
             }
         });
 
-        // CÁLCULO E CONTROLE DOS CAMPOS
-        const selectServico = document.getElementById("tipo_servico");
-        const valorExibicao = document.getElementById("valorTotalExibicao");
-        const camposBusca = document.getElementById("camposBusca");
-        const grupoAnexo = document.getElementById("grupoAnexo");
-        const grupoPlaca = document.getElementById("grupoPlaca");
-        const grupoRenavam = document.getElementById("grupoRenavam");
+        // 3. MÁSCARA AUTOMÁTICA DE TELEFONE: (XX) XXXXX-XXXX
+        const inputTel = document.getElementById("telefone");
+        inputTel.addEventListener("input", (e) => {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            if (v.length > 10) {
+                v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+            } else if (v.length > 6) {
+                v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+            } else if (v.length > 2) {
+                v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+            } else if (v.length > 0) {
+                v = v.replace(/^(\d*)/, '($1');
+            }
+            e.target.value = v;
+        });
 
-        function atualizarFormulario() {
-            let total = 8.00;
-            const val = selectServico.value;
+        // MÁSCARA CPF E PLACA
+        document.getElementById("nome").addEventListener("input", (e) => e.target.value = e.target.value.toUpperCase());
+        document.getElementById("placa").addEventListener("input", (e) => e.target.value = e.target.value.toUpperCase());
+        
+        document.getElementById("cpf_titular").addEventListener("input", (e) => {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            v = v.replace(/(\d{3})(\d)/, '$1.$2');
+            v = v.replace(/(\d{3})(\d)/, '$1.$2');
+            v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            e.target.value = v;
+        });
 
-            camposBusca.classList.add("hidden");
-            grupoAnexo.classList.remove("hidden");
-            grupoPlaca.classList.remove("hidden");
-            grupoRenavam.classList.remove("hidden");
+        // 4. LÓGICA DE ATIVAÇÃO/DESATIVAÇÃO E PREÇOS
+        const selectPossuiDoc = document.getElementById("possiu_documento");
+        const selectTipo = document.getElementById("tipo_servico");
+        const inputArquivo = document.getElementById("arquivo");
+        const inputPlaca = document.getElementById("placa");
+        const inputRenavam = document.getElementById("renavam");
+        const inputCpfTitular = document.getElementById("cpf_titular");
 
-            if (val === "crlv_tem") {
-                total = 8.00;
-            } else if (val === "crlv_nao_tem") {
-                total = 12.20;
-                camposBusca.classList.remove("hidden");
-                grupoAnexo.classList.add("hidden");
-            } else if (val === "cpf_rg_tem") {
-                total = 0.50;
-            } else if (val === "cpf_rg_nao_tem") {
-                total = 3.50;
-                camposBusca.classList.remove("hidden");
-                grupoAnexo.classList.add("hidden");
-                grupoPlaca.classList.add("hidden");
-                grupoRenavam.classList.add("hidden");
-            } else if (val === "outros_pb") {
-                total = 0.50;
-            } else if (val === "outros_color") {
-                total = 1.10;
+        const optPdfWhats = document.getElementById("opt_pdf_whats");
+        const optCopiaExtra = document.getElementById("opt_copia_extra");
+
+        function calcularEAtualizarCampos() {
+            const temDoc = selectPossuiDoc.value === "sim";
+            const tipo = selectTipo.value;
+
+            // Ativa/Desativa Campos conforme regras
+            if (temDoc) {
+                // Se tem o documento: Anexo FICA ATIVO. Campos de busca FICAM ESCURECIDOS / DESATIVADOS
+                inputArquivo.disabled = false;
+                inputArquivo.required = true;
+                
+                inputPlaca.disabled = true;
+                inputRenavam.disabled = true;
+                inputCpfTitular.disabled = true;
+                document.getElementById("camposBusca").classList.add("campo-desativado-wrapper");
+            } else {
+                // Se NÃO tem o documento: Anexo FICA ESCURECIDO / DESATIVADO. Campos de busca FICAM ATIVOS
+                inputArquivo.disabled = true;
+                inputArquivo.required = false;
+                inputArquivo.value = "";
+
+                inputPlaca.disabled = false;
+                inputRenavam.disabled = false;
+                inputCpfTitular.disabled = false;
+                document.getElementById("camposBusca").classList.remove("campo-desativado-wrapper");
             }
 
-            valorExibicao.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            // Esconde Placa se não for CRLV
+            if (tipo === "crlv") {
+                document.getElementById("grupoPlaca").style.display = "flex";
+                document.getElementById("grupoRenavam").style.display = "flex";
+            } else {
+                document.getElementById("grupoPlaca").style.display = "none";
+                document.getElementById("grupoRenavam").style.display = "none";
+            }
+
+            // CÁLCULO DE VALORES EXACTOS
+            let valorBase = 8.00;
+
+            if (tipo === "crlv") {
+                valorBase = temDoc ? 8.00 : 12.20;
+            } else if (tipo === "cpf_rg") {
+                valorBase = temDoc ? 0.50 : 3.50;
+            } else if (tipo === "outros_pb") {
+                valorBase = temDoc ? 0.50 : 5.00;
+            } else if (tipo === "outros_color") {
+                valorBase = temDoc ? 1.10 : 7.00;
+            }
+
+            // CALCULAR OPCIONAIS
+            let valorAdicionais = 0;
+            if (optPdfWhats.checked) valorAdicionais += 2.00;
+            if (optCopiaExtra.checked) valorAdicionais += 0.50;
+
+            let total = valorBase + valorAdicionais;
+
+            document.getElementById("valorBaseExibicao").innerText = `R$ ${valorBase.toFixed(2).replace('.', ',')}`;
+            
+            if (valorAdicionais > 0) {
+                document.getElementById("rowAdicionais").style.display = "flex";
+                document.getElementById("valorAdicionaisExibicao").innerText = `+ R$ ${valorAdicionais.toFixed(2).replace('.', ',')}`;
+            } else {
+                document.getElementById("rowAdicionais").style.display = "none";
+            }
+
+            document.getElementById("valorTotalExibicao").innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
             return total;
         }
 
-        selectServico.addEventListener("change", atualizarFormulario);
-        atualizarFormulario();
+        selectPossuiDoc.addEventListener("change", calcularEAtualizarCampos);
+        selectTipo.addEventListener("change", calcularEAtualizarCampos);
+        optPdfWhats.addEventListener("change", calcularEAtualizarCampos);
+        optCopiaExtra.addEventListener("change", calcularEAtualizarCampos);
 
-        // MÁSCARAS
-        document.getElementById("nome").addEventListener("input", (e) => e.target.value = e.target.value.toUpperCase());
-        document.getElementById("placa").addEventListener("input", (e) => e.target.value = e.target.value.toUpperCase());
+        calcularEAtualizarCampos();
 
-        // ENVIO ASSÍNCRONO PARA O FORMSUBMIT (SEM TELA BRANCA)
+        // 5. SUBMISSÃO VIA FORMSUBMIT (SEM TELA BRANCA)
         const form = document.getElementById("formDoc");
         const btnSubmit = document.getElementById("btnSubmit");
 
@@ -470,7 +649,7 @@
             btnSubmit.disabled = true;
             btnSubmit.innerText = "Processando Pedido...";
 
-            const totalCalculado = atualizarFormulario();
+            const totalCalculado = calcularEAtualizarCampos();
             document.getElementById("hidden_total").value = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
 
             const formData = new FormData(form);
@@ -485,7 +664,7 @@
                 });
 
                 if (response.ok) {
-                    permitirSaida = true; // Libera trava ao concluir
+                    permitirSaida = true; // Desativa alarme de saída ao concluir
 
                     form.classList.add("hidden");
                     document.getElementById("secaoPrecos").classList.add("hidden");
@@ -497,14 +676,14 @@
                     if (pagamentoSel === "PIX") {
                         boxPagamento.innerHTML = `
                             <div class="pix-box">
-                                <p style="font-size:13px; color:var(--text-muted); font-weight:700;">VALOR A PAGAR VIA PIX</p>
-                                <div style="font-size:26px; font-weight:800; color:var(--green);">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
+                                <p style="font-size:13px; color:var(--text-muted); font-weight:700;">VALOR TOTAL A PAGAR VIA PIX</p>
+                                <div style="font-size:28px; font-weight:800; color:var(--green);">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
                                 
                                 <div style="margin: 8px 0;">
                                     <img src="qrcode-pix.jpg" alt="QR Code PIX" style="max-width: 170px; width: 100%; border-radius: 12px; border: 1px solid var(--border-color);" onerror="this.style.display='none'">
                                 </div>
 
-                                <input type="text" id="pixKey" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:11px; color:var(--primary);">
+                                <input type="text" id="pixKey" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:11px; color:var(--primary); background: var(--bg-card);">
                                 <button class="btn-primary" type="button" onclick="copiarPix()">📋 Copiar Chave PIX</button>
                             </div>
                         `;
@@ -512,7 +691,7 @@
                         boxPagamento.innerHTML = `
                             <div style="background:var(--bg-input); padding:20px; border-radius:16px; margin-top:16px;">
                                 <p style="font-size:13px; color:var(--text-muted);">VALOR A PAGAR NA RETIRADA</p>
-                                <div style="font-size:26px; font-weight:800; color:var(--green);">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
+                                <div style="font-size:28px; font-weight:800; color:var(--green);">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
                                 <p style="font-size:13px; margin-top:8px;">Pagamento em <strong>Dinheiro</strong> no momento da retirada.</p>
                             </div>
                         `;
@@ -525,7 +704,7 @@
                     telaSucesso.scrollIntoView({ behavior: 'smooth' });
 
                 } else {
-                    alert("Erro ao enviar pedido. Tente novamente.");
+                    alert("Erro ao processar o pedido. Tente novamente.");
                     btnSubmit.disabled = false;
                     btnSubmit.innerText = "Enviar Pedido & Gerar Pagamento 🚀";
                 }
