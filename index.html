@@ -847,10 +847,16 @@
             <div class="form-group">
                 <label>Serviços e Opções Extras:</label>
 
-                <label class="checkbox-card">
-                    <input type="checkbox" id="opt_amostra" name="Teste Amostra Impressao" value="Sim (+R$ 1,00)">
-                    <span>🖨️ <strong>Teste de Amostra de Impressão (+R$ 1,00):</strong> Impressão de uma folha de teste prévia para você conferir a qualidade antes do pedido total.</span>
-                </label>
+                <div class="form-group">
+    <label>Pré-visualização do Arquivo:</label>
+    <div id="previewContainer" class="hidden" style="text-align: center; margin-top: 8px;">
+        <p style="font-size: 13px; font-weight: 600; color: var(--primary); margin-bottom: 8px;">
+            👁️ Pré-visualização do seu arquivo/foto (Grátis):
+        </p>
+        <img id="imgPreview" src="" alt="Prévia da Imagem" style="max-width: 100%; max-height: 250px; border-radius: 12px; border: 1px solid var(--border-color); display: none; margin: 0 auto;">
+        <iframe id="pdfPreview" src="" style="width: 100%; height: 250px; border-radius: 12px; border: 1px solid var(--border-color); display: none;"></iframe>
+    </div>
+</div>
 
                 <label class="checkbox-card">
                     <input type="checkbox" id="opt_armazenamento" name="Armazenamento Seguro 24h" value="Sim (Gratis)">
@@ -943,7 +949,6 @@
                 <div class="atualizacao-item">💳 PIX Dinâmico com QR Code</div>
                 <div class="atualizacao-item">📤 Upload de Comprovante</div>
                 <div class="atualizacao-item">🔊 Notificação Sonora de Pedido</div>
-                <div class="atualizacao-item">👁️ Pré-visualização de PDF / Foto</div>
                 <div class="atualizacao-item">🔄 Conversor de Imagem para PDF</div>
             </div>
         </div>
@@ -1141,7 +1146,6 @@
         const inputQtdDoc = document.getElementById("qtd_doc");
         const inputQtdDig = document.getElementById("qtd_paginas_digitalizar");
 
-        const optAmostra = document.getElementById("opt_amostra");
 
         const valorExibicao = document.getElementById("valorTotalExibicao");
         const subtotalExibicao = document.getElementById("subtotalExibicao");
@@ -1184,10 +1188,6 @@
 
                 let totalDig = precoEfetivo * qtd;
                 desconto = subtotal - totalDig;
-            }
-
-            if (optAmostra.checked) {
-                extras += 1.00;
             }
 
             total = (subtotal - desconto) + extras;
@@ -1245,16 +1245,41 @@
         // DETALHES DO ARQUIVO ANEXADO
         const fileDetails = document.getElementById("fileDetails");
 
-        inputArquivo.addEventListener("change", function() {
-            if (this.files && this.files[0]) {
-                const file = this.files[0];
-                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-                fileDetails.innerText = `📎 Arquivo selecionado: ${file.name} (${sizeMB} MB)`;
-                fileDetails.classList.remove("hidden");
-            } else {
-                fileDetails.classList.add("hidden");
-            }
-        });
+        // SUBSTITUA A LÓGICA DO 'inputArquivo' POR ESTA:
+const imgPreview = document.getElementById("imgPreview");
+const pdfPreview = document.getElementById("pdfPreview");
+const previewContainer = document.getElementById("previewContainer");
+
+inputArquivo.addEventListener("change", function() {
+    const file = this.files[0];
+
+    if (file) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        fileDetails.innerText = `📎 Arquivo selecionado: ${file.name} (${sizeMB} MB)`;
+        fileDetails.classList.remove("hidden");
+        previewContainer.classList.remove("hidden");
+
+        const fileURL = URL.createObjectURL(file);
+
+        if (file.type.startsWith("image/")) {
+            imgPreview.src = fileURL;
+            imgPreview.style.display = "block";
+            pdfPreview.style.display = "none";
+        } else if (file.type === "application/pdf") {
+            pdfPreview.src = fileURL;
+            pdfPreview.style.display = "block";
+            imgPreview.style.display = "none";
+        } else {
+            imgPreview.style.display = "none";
+            pdfPreview.style.display = "none";
+        }
+    } else {
+        fileDetails.classList.add("hidden");
+        previewContainer.classList.add("hidden");
+        imgPreview.style.display = "none";
+        pdfPreview.style.display = "none";
+    }
+});
 
         // MÁSCARAS E PREENCHIMENTOS DA SUBMISSÃO
         const inputNome = document.getElementById("nome");
