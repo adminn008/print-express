@@ -121,7 +121,6 @@
 
         .dot.active { background: var(--primary); width: 20px; border-radius: 10px; }
 
-        /* TABELA DE PREÇOS REORGANIZADA E MODERNA */
         .tabela-precos {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -251,6 +250,21 @@
 
         .servico-card.selected { border-color: var(--primary); background: var(--accent-light); }
         .servico-card.disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .checkbox-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            padding: 12px 14px;
+            border-radius: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .checkbox-card:hover { border-color: var(--primary); }
+        .checkbox-card input[type="checkbox"] { margin-top: 3px; width: 16px; height: 16px; cursor: pointer; }
 
         .file-info {
             font-size: 12px;
@@ -671,12 +685,12 @@
                         <div style="font-size:13px; font-weight:700;">Impressão / Xerox</div>
                     </div>
 
-                    <div class="servico-card" id="cardCurriculo" onclick="window.location.href='curriculo.html'">
+                    <div class="servico-card" id="cardCurriculo" onclick="navegarComConfirmacao('curriculo.html')">
                         <div style="font-size:24px;">💼</div>
                         <div style="font-size:13px; font-weight:700;">Currículo</div>
                     </div>
                     
-                    <div class="servico-card" id="cardDoc" onclick="window.location.href='documentos.html'">
+                    <div class="servico-card" id="cardDoc" onclick="navegarComConfirmacao('documentos.html')">
                         <div style="font-size:24px;">🏛️</div>
                         <div style="font-size:13px; font-weight:700;">Doc. Oficiais</div>
                    </div>
@@ -774,6 +788,25 @@
             </div>
 
             <div class="form-group">
+                <label>Serviços e Opções Extras:</label>
+
+                <label class="checkbox-card">
+                    <input type="checkbox" id="opt_amostra" name="Teste Amostra Impressao" value="Sim (+R$ 1,00)">
+                    <span>🖨️ <strong>Teste de Amostra de Impressão (+R$ 1,00):</strong> Impressão de uma folha de teste prévia para você conferir a qualidade antes do pedido total.</span>
+                </label>
+
+                <label class="checkbox-card">
+                    <input type="checkbox" id="opt_armazenamento" name="Armazenamento Seguro 24h" value="Sim (Gratis)">
+                    <span>💾 <strong>Armazenamento Seguro por 24h (Grátis):</strong> Garantia de eliminação permanente de todos os seus arquivos do servidor após o pedido.</span>
+                </label>
+
+                <label class="checkbox-card">
+                    <input type="checkbox" id="opt_suporte" name="Suporte Atendimento Direto Site" value="Sim (Gratis)">
+                    <span>💬 <strong>Suporte Direto e Atendimento (Grátis):</strong> Canais rápidos dentro do próprio site para tirar dúvidas e acompanhar seu envio.</span>
+                </label>
+            </div>
+
+            <div class="form-group">
                 <label>Forma de Pagamento:</label>
                 <div class="radio-group">
                     <label class="radio-label">
@@ -799,8 +832,8 @@
                     <span>Desconto Aplicado:</span>
                     <span id="descontoExibicao">- R$ 0,00</span>
                 </div>
-                <div class="price-row" id="rowExtra" style="display: none;">
-                    <span>Adicionais:</span>
+                <div class="price-row" id="rowExtra" style="display: none; color: var(--primary);">
+                    <span>Adicionais Selecionados:</span>
                     <span id="extraExibicao">+ R$ 0,00</span>
                 </div>
                 <div class="price-row total">
@@ -838,7 +871,7 @@
                 ⚠️ Não feche esta página antes de realizar o pagamento do pedido!
             </div>
 
-            <button class="btn-primary" onclick="window.onbeforeunload = null; location.reload();" style="margin-top: 18px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">
+            <button class="btn-primary" onclick="permitirSaida = true; window.onbeforeunload = null; location.reload();" style="margin-top: 18px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">
                 🔄 Fazer Novo Pedido
             </button>
         </div>
@@ -868,19 +901,56 @@
         const CHAVE_PIX_TEXTO = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
 
         let servicoAtivo = 'a4';
+        let permitirSaida = false;
+        let cliquesNavegacao = 0;
 
-        // CONFIRMAÇÃO DE SAÍDA DO SITE (VOLTAR / ESC / REFRESH)
+        // VERIFICA SE HÁ CAMPOS PREENCHIDOS NO FORMULÁRIO
+        function temCamposPreenchidos() {
+            const nome = document.getElementById("nome").value.trim();
+            const tel = document.getElementById("telefone").value.trim();
+            const arqA4 = document.getElementById("arquivo").files.length;
+            const arqDoc = document.getElementById("arquivo_doc").files.length;
+            const texto = document.getElementById("textoDireto").value.trim();
+            return (nome.length > 0 || tel.length > 0 || arqA4 > 0 || arqDoc > 0 || texto.length > 0);
+        }
+
+        // BLOQUEIO/AVISO DE SAÍDA APENAS SE HOUVER PREENCHIMENTO
         window.addEventListener("beforeunload", function (e) {
-            e.preventDefault();
-            e.returnValue = "Tem certeza que deseja sair? Seu pedido/pagamento pode não ser concluído.";
-            return e.returnValue;
+            if (!permitirSaida && temCamposPreenchidos()) {
+                e.preventDefault();
+                e.returnValue = "Você iniciou um pedido! Deseja realmente sair do site?";
+                return e.returnValue;
+            }
         });
+
+        // NAVEGAÇÃO SEGURA ENTRE ABAS DO PAINEL (2 CLIQUES SE PREENCHIDO)
+        function navegarComConfirmacao(url) {
+            if (!temCamposPreenchidos()) {
+                permitirSaida = true;
+                window.location.href = url;
+                return;
+            }
+
+            cliquesNavegacao++;
+            if (cliquesNavegacao === 1) {
+                alert("⚠️ Você preencheu dados no pedido! Clique novamente no botão para confirmar a saída.");
+                setTimeout(() => cliquesNavegacao = 0, 3000);
+            } else if (cliquesNavegacao >= 2) {
+                permitirSaida = true;
+                window.location.href = url;
+            }
+        }
 
         // INTERCEPTAÇÃO DA TECLA ESC
         window.addEventListener("keydown", function(e) {
             if (e.key === "Escape") {
-                if (confirm("Você pressionou ESC. Deseja realmente sair do site?")) {
-                    window.onbeforeunload = null;
+                if (temCamposPreenchidos()) {
+                    if (confirm("Você pressionou ESC e tem dados preenchidos. Deseja realmente sair do site?")) {
+                        permitirSaida = true;
+                        history.back();
+                    }
+                } else {
+                    permitirSaida = true;
                     history.back();
                 }
             }
@@ -990,16 +1060,20 @@
         const inputQtdDoc = document.getElementById("qtd_doc");
         const inputQtdDig = document.getElementById("qtd_paginas_digitalizar");
 
+        const optAmostra = document.getElementById("opt_amostra");
+
         const valorExibicao = document.getElementById("valorTotalExibicao");
         const subtotalExibicao = document.getElementById("subtotalExibicao");
         const descontoExibicao = document.getElementById("descontoExibicao");
         const extraExibicao = document.getElementById("extraExibicao");
         const rowDesconto = document.getElementById("rowDesconto");
+        const rowExtra = document.getElementById("rowExtra");
 
         function calcularValor() {
             let total = 0;
             let subtotal = 0;
             let desconto = 0;
+            let extras = 0;
 
             if (servicoAtivo === 'a4') {
                 let precoUnitario = 0.50;
@@ -1014,24 +1088,28 @@
                 if (selectTipo.value === "media_cor" && qtd > 5) {
                     desconto = (1.35 - 1.20) * qtd;
                 }
-                total = subtotal - desconto;
             } else if (servicoAtivo === 'doc') {
                 let precoDoc = 1.00;
                 if (selectDocOficial.value === 'boleto') precoDoc = 0.50;
                 const qtd = parseInt(inputQtdDoc.value) || 1;
                 subtotal = precoDoc * qtd;
-                total = subtotal;
             } else if (servicoAtivo === 'dig') {
                 const qtd = parseInt(inputQtdDig.value) || 1;
-                subtotal = 2.00 * qtd; // Preço base sem desconto
+                subtotal = 2.00 * qtd;
                 
                 let precoEfetivo = 2.00;
                 if (qtd > 10) precoEfetivo = 1.00;
                 else if (qtd >= 5) precoEfetivo = 1.50;
 
-                total = precoEfetivo * qtd;
-                desconto = subtotal - total;
+                let totalDig = precoEfetivo * qtd;
+                desconto = subtotal - totalDig;
             }
+
+            if (optAmostra.checked) {
+                extras += 1.00;
+            }
+
+            total = (subtotal - desconto) + extras;
 
             subtotalExibicao.innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
 
@@ -1040,6 +1118,13 @@
                 descontoExibicao.innerText = `- R$ ${desconto.toFixed(2).replace('.', ',')}`;
             } else {
                 rowDesconto.style.display = "none";
+            }
+
+            if (extras > 0) {
+                rowExtra.style.display = "flex";
+                extraExibicao.innerText = `+ R$ ${extras.toFixed(2).replace('.', ',')}`;
+            } else {
+                rowExtra.style.display = "none";
             }
 
             valorExibicao.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
@@ -1051,6 +1136,7 @@
         selectDocOficial.addEventListener("change", calcularValor);
         inputQtdDoc.addEventListener("input", calcularValor);
         inputQtdDig.addEventListener("input", calcularValor);
+        optAmostra.addEventListener("change", calcularValor);
 
         // MODO ANEXAR / COLAR TEXTO
         const btnToggleModo = document.getElementById("btnToggleModo");
@@ -1104,7 +1190,7 @@
             e.target.value = v;
         });
 
-        // SUBMISSÃO DO FORMULÁRIO COM OCULTAÇÃO TOTAL E EXIBIÇÃO APENAS DO PIX/VALOR
+        // SUBMISSÃO DO FORMULÁRIO
         const form = document.getElementById("formImpressao");
         const btnSubmit = document.getElementById("btnSubmit");
 
@@ -1129,6 +1215,8 @@
                 });
 
                 if (response.ok) {
+                    permitirSaida = true;
+
                     // Oculta completamente os blocos anteriores
                     form.classList.add("hidden");
                     document.getElementById("secaoPrecosVisual").classList.add("hidden");
