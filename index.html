@@ -20,6 +20,7 @@
             --green: #10b981;
             --danger: #ef4444;
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            --font-scale: 1rem;
         }
 
         [data-theme="dark"] {
@@ -33,8 +34,18 @@
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease; 
+        }
         
+        html {
+            font-size: var(--font-scale);
+        }
+
         body { 
             background-color: var(--bg-body); 
             color: var(--text-main); 
@@ -42,16 +53,36 @@
             line-height: 1.6;
         }
 
+        /* ACESSIBILIDADE - BOTÃO DE PULAR CONTEÚDO PARA TECLADO */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 10px;
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            z-index: 10000;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: top 0.2s ease;
+        }
+        .skip-link:focus {
+            top: 10px;
+        }
+
         .container { 
             max-width: 680px; 
             margin: 0 auto; 
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 24px;
         }
 
         header { text-align: center; position: relative; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
+
+        .header-controls { display: flex; gap: 8px; align-items: center; }
 
         .status-badge {
             font-size: 12px;
@@ -65,19 +96,24 @@
         .status-open { background: rgba(16, 185, 129, 0.15); color: var(--green); }
         .status-closed { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
 
-        .theme-toggle {
+        .theme-toggle, .access-btn {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            padding: 8px 14px;
+            padding: 8px 12px;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             display: flex;
             align-items: center;
             gap: 6px;
             box-shadow: var(--shadow);
+        }
+
+        .theme-toggle:hover, .access-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
         }
 
         h1 { color: var(--primary); font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
@@ -87,7 +123,7 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            padding: 16px;
+            padding: 18px;
             position: relative;
             overflow: hidden;
             box-shadow: var(--shadow);
@@ -104,11 +140,11 @@
         .carousel-slide.active { display: block; animation: fadeIn 0.4s ease-in-out; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(3px); }
+            from { opacity: 0; transform: translateY(4px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .carousel-dots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+        .carousel-dots { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
 
         .dot {
             width: 8px;
@@ -119,13 +155,13 @@
             transition: all 0.2s;
         }
 
-        .dot.active { background: var(--primary); width: 20px; border-radius: 10px; }
+        .dot.active { background: var(--primary); width: 22px; border-radius: 10px; }
 
         .tabela-precos {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 18px;
-            padding: 20px;
+            padding: 22px;
             box-shadow: var(--shadow);
         }
 
@@ -150,7 +186,7 @@
             padding: 4px 10px;
             border-radius: 6px;
             display: inline-block;
-            margin: 12px 0 6px 0;
+            margin: 14px 0 8px 0;
         }
 
         .preco-item {
@@ -182,6 +218,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: transform 0.2s ease;
+        }
+
+        .banner-imagem-container:hover {
+            transform: scale(1.01);
         }
 
         .banner-imagem {
@@ -227,19 +268,20 @@
             font-size: 15px;
         }
 
-        input:focus, select:focus, textarea:focus { 
+        input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { 
             border-color: var(--primary); 
-            outline: none; 
+            outline: 2px solid var(--primary); 
+            outline-offset: 1px;
             box-shadow: 0 0 0 3px var(--accent-light);
         }
 
-        .servicos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .servicos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
         .servico-card {
             background: var(--bg-input);
             border: 2px solid var(--border-color);
             border-radius: 14px;
-            padding: 12px 8px;
+            padding: 14px 8px;
             text-align: center;
             cursor: pointer;
             display: flex;
@@ -248,13 +290,18 @@
             gap: 6px;
         }
 
+        .servico-card:hover:not(.disabled) {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+        }
+
         .servico-card.selected { border-color: var(--primary); background: var(--accent-light); }
         .servico-card.disabled { opacity: 0.6; cursor: not-allowed; }
 
         .checkbox-card {
             background: var(--bg-input);
             border: 1px solid var(--border-color);
-            padding: 12px 14px;
+            padding: 14px 16px;
             border-radius: 12px;
             display: flex;
             align-items: flex-start;
@@ -263,8 +310,8 @@
             font-weight: 600;
             cursor: pointer;
         }
-        .checkbox-card:hover { border-color: var(--primary); }
-        .checkbox-card input[type="checkbox"] { margin-top: 3px; width: 16px; height: 16px; cursor: pointer; }
+        .checkbox-card:hover { border-color: var(--primary); transform: translateX(2px); }
+        .checkbox-card input[type="checkbox"] { margin-top: 3px; width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
 
         .file-info {
             font-size: 12px;
@@ -276,7 +323,7 @@
         .price-box {
             background: var(--bg-input);
             border: 1px solid var(--border-color);
-            padding: 18px; border-radius: 14px;
+            padding: 20px; border-radius: 14px;
             display: flex; 
             flex-direction: column;
             gap: 8px;
@@ -292,7 +339,7 @@
 
         .price-row.total {
             border-top: 1px dashed var(--border-color);
-            padding-top: 8px;
+            padding-top: 10px;
             font-size: 16px;
             font-weight: 700;
             color: var(--text-main);
@@ -307,8 +354,9 @@
             border-radius: 12px; cursor: pointer;
             font-weight: 700; width: 100%;
             display: flex; justify-content: center; align-items: center; gap: 8px;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
         }
-        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
 
         .btn-whatsapp {
             background: #25D366;
@@ -325,6 +373,7 @@
             font-size: 16px;
             box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
         }
+        .btn-whatsapp:hover { transform: translateY(-2px); }
 
         .sucesso-card {
             background: var(--bg-card);
@@ -418,6 +467,7 @@
             display: flex; align-items: center; gap: 8px;
             z-index: 999;
         }
+        .btn-flutuante:hover { transform: scale(1.05); }
 
         .btn-toggle-modo {
             background: transparent;
@@ -488,21 +538,28 @@
 </head>
 <body>
 
+    <a href="#formImpressao" class="skip-link">Pular para o Formulário de Pedido</a>
+
     <div class="container">
-        <header>
+        <header role="banner">
             <div class="header-top">
-                <div id="statusLoja" class="status-badge status-open">
+                <div id="statusLoja" class="status-badge status-open" aria-live="polite">
                     <span id="statusIcon">🟢</span> <span id="statusTexto">Atendendo Agora</span>
                 </div>
-                <button class="theme-toggle" id="themeToggleBtn" type="button">
-                    <span id="themeIcon">🌙</span> <span id="themeText">Escuro</span>
-                </button>
+                <div class="header-controls">
+                    <button class="access-btn" id="btnFonte" type="button" onclick="alternarTamanhoFonte()" aria-label="Aumentar Tamanho da Fonte">
+                        <span>🔍 A+</span>
+                    </button>
+                    <button class="theme-toggle" id="themeToggleBtn" type="button" aria-label="Alternar Tema Claro/Escuro">
+                        <span id="themeIcon">🌙</span> <span id="themeText">Escuro</span>
+                    </button>
+                </div>
             </div>
             <h1>PrintExpress</h1>
             <p>Impressões, Xerox, Currículos e Serviços Rápidos</p>
         </header>
 
-        <div class="carousel-container">
+        <section class="carousel-container" aria-label="Carrossel de Avisos">
             <div class="carousel-slide active">
                 📢 <strong>Atendimento Rápido:</strong> Envie seus documentos e retire no mesmo dia!
             </div>
@@ -521,9 +578,9 @@
                 <span class="dot" onclick="mudarSlide(2)"></span>
                 <span class="dot" onclick="mudarSlide(3)"></span>
             </div>
-        </div>
+        </section>
 
-        <div id="secaoPrecosVisual" class="tabela-precos">
+        <section id="secaoPrecosVisual" class="tabela-precos" aria-label="Tabela de Preços">
             <h3>🏷️ Tabela de Preços e Serviços</h3>
             
             <div class="preco-categoria-titulo">🖨️ Impressões & Xerox (A4)</div>
@@ -595,7 +652,7 @@
                 </div>
                 <span class="valor">A partir de R$ 10,00</span>
             </div>
-        </div>
+        </section>
 
         <div id="secaoBanner" class="banner-imagem-container" style="position: relative; display: inline-block; width: 100%; max-width: 450px; margin: 0 auto; cursor: pointer;" onclick="abrirImagem()">
             <h3 style="
@@ -616,7 +673,7 @@
             ">
                 Tabela de Ilustração Visual de Impressão A4
             </h3>
-            <img id="imgBanner" src="tabela_precos_impressao.jpg" alt="Tabela de Informações" class="banner-imagem" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x200/0284c7/ffffff?text=Coloque+sua+Imagem+Aqui';">
+            <img id="imgBanner" src="tabela_precos_impressao.jpg" alt="Tabela Visual de Impressão A4" class="banner-imagem" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x200/0284c7/ffffff?text=Coloque+sua+Imagem+Aqui';">
         </div>
 
         <div id="modalImagem" onclick="fecharImagem()" style="
@@ -642,7 +699,7 @@
                 font-weight: bold; 
                 cursor: pointer;
             ">&times;</span>
-            <img id="imgModal" style="max-width: 90%; max-height: 90%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <img id="imgModal" alt="Visualização ampliada" style="max-width: 90%; max-height: 90%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
         </div>
 
         <script>
@@ -702,7 +759,7 @@
 
                     <div class="servico-card disabled">
                         <div style="font-size:24px;">🎨</div>
-                        <div style="font-size:13px; font-weight:700;">Canva <span style="font-size:10px; color:var(--primary); block">(Em Breve)</span></div>
+                        <div style="font-size:13px; font-weight:700;">Canva <span style="font-size:10px; color:var(--primary); display:block;">(Em Breve)</span></div>
                     </div>
                 </div>
             </div>
@@ -892,7 +949,7 @@
         </div>
     </div>
 
-    <a href="https://wa.me/5541999682836?text=Olá,%20preciso%20de%20ajuda%20com%20meu%20pedido!" target="_blank" class="btn-flutuante">
+    <a href="https://wa.me/5541999682836?text=Olá,%20preciso%20de%20ajuda%20com%20meu%20pedido!" target="_blank" class="btn-flutuante" aria-label="Suporte via WhatsApp">
         💬 Dúvidas?
     </a>
 
@@ -903,6 +960,14 @@
         let servicoAtivo = 'a4';
         let permitirSaida = false;
         let cliquesNavegacao = 0;
+        let naAbaPagamento = false;
+
+        // ACCESSIBILIDADE - MUDAR TAMANHO DA FONTE
+        let fonteAmpliada = false;
+        function alternarTamanhoFonte() {
+            fonteAmpliada = !fonteAmpliada;
+            document.documentElement.style.setProperty('--font-scale', fonteAmpliada ? '1.12rem' : '1rem');
+        }
 
         // VERIFICA SE HÁ CAMPOS PREENCHIDOS NO FORMULÁRIO
         function temCamposPreenchidos() {
@@ -911,21 +976,26 @@
             const arqA4 = document.getElementById("arquivo").files.length;
             const arqDoc = document.getElementById("arquivo_doc").files.length;
             const texto = document.getElementById("textoDireto").value.trim();
-            return (nome.length > 0 || tel.length > 0 || arqA4 > 0 || arqDoc > 0 || texto.length > 0);
+            const obs = document.getElementById("observacoes").value.trim();
+            return (nome.length > 0 || tel.length > 0 || arqA4 > 0 || arqDoc > 0 || texto.length > 0 || obs.length > 0);
         }
 
-        // BLOQUEIO/AVISO DE SAÍDA APENAS SE HOUVER PREENCHIMENTO
+        // CONFIRMAÇÃO OBRIGATÓRIA ANTES DE FECHAR A ABA / ATUALIZAR
         window.addEventListener("beforeunload", function (e) {
-            if (!permitirSaida && temCamposPreenchidos()) {
+            if (!permitirSaida && (temCamposPreenchidos() || naAbaPagamento)) {
                 e.preventDefault();
-                e.returnValue = "Você iniciou um pedido! Deseja realmente sair do site?";
+                e.returnValue = naAbaPagamento 
+                    ? "Atenção! Você possui um pagamento pendente. Deseja realmente fechar?" 
+                    : "Você iniciou um preenchimento! Deseja realmente sair sem concluir?";
                 return e.returnValue;
             }
         });
 
-        // NAVEGAÇÃO SEGURA ENTRE ABAS DO PAINEL (2 CLIQUES SE PREENCHIDO)
+        // NAVEGAÇÃO ENTRE PAGINAS DO SITE (2 CLIQUES SE PREENCHIDO/NA ABA PAGAMENTO)
         function navegarComConfirmacao(url) {
-            if (!temCamposPreenchidos()) {
+            const precisaConfirmar = temCamposPreenchidos() || naAbaPagamento;
+
+            if (!precisaConfirmar) {
                 permitirSaida = true;
                 window.location.href = url;
                 return;
@@ -933,23 +1003,34 @@
 
             cliquesNavegacao++;
             if (cliquesNavegacao === 1) {
-                alert("⚠️ Você preencheu dados no pedido! Clique novamente no botão para confirmar a saída.");
-                setTimeout(() => cliquesNavegacao = 0, 3000);
+                const msg = naAbaPagamento 
+                    ? "⚠️ Você tem um pagamento pendente! Clique novamente para sair assim mesmo."
+                    : "⚠️ Você preencheu dados no formulário! Clique novamente no botão para confirmar a saída.";
+                alert(msg);
+                setTimeout(() => cliquesNavegacao = 0, 3500);
             } else if (cliquesNavegacao >= 2) {
                 permitirSaida = true;
                 window.location.href = url;
             }
         }
 
-        // INTERCEPTAÇÃO DA TECLA ESC
+        // TECLA ESC COM LOGICA DE 2 CLIQUES / CONFIRMAÇÃO
+        let escCount = 0;
         window.addEventListener("keydown", function(e) {
             if (e.key === "Escape") {
-                if (temCamposPreenchidos()) {
-                    if (confirm("Você pressionou ESC e tem dados preenchidos. Deseja realmente sair do site?")) {
-                        permitirSaida = true;
-                        history.back();
-                    }
-                } else {
+                const precisaConfirmar = temCamposPreenchidos() || naAbaPagamento;
+
+                if (!precisaConfirmar) {
+                    permitirSaida = true;
+                    history.back();
+                    return;
+                }
+
+                escCount++;
+                if (escCount === 1) {
+                    alert("⚠️ Pressione ESC novamente para confirmar a saída do site.");
+                    setTimeout(() => escCount = 0, 3000);
+                } else if (escCount >= 2) {
                     permitirSaida = true;
                     history.back();
                 }
@@ -1015,7 +1096,7 @@
         }
         setInterval(() => mudarSlide(slideIndex + 1), 4000);
 
-        // TROCA DE ABAS / SERVIÇOS NA PRÓPRIA INDEX
+        // TROCA DE ABAS / SERVIÇOS
         function trocarAbaServico(servico) {
             servicoAtivo = servico;
             
@@ -1190,7 +1271,7 @@
             e.target.value = v;
         });
 
-        // SUBMISSÃO DO FORMULÁRIO
+        // SUBMISSÃO DO FORMULÁRIO COM TELA DE PAGAMENTO OBRIGATÓRIA
         const form = document.getElementById("formImpressao");
         const btnSubmit = document.getElementById("btnSubmit");
 
@@ -1215,9 +1296,11 @@
                 });
 
                 if (response.ok) {
-                    permitirSaida = true;
+                    // ATIVA MODO DE PAGAMENTO PENDENTE
+                    naAbaPagamento = true;
+                    permitirSaida = false;
 
-                    // Oculta completamente os blocos anteriores
+                    // Oculta os blocos da página inicial
                     form.classList.add("hidden");
                     document.getElementById("secaoPrecosVisual").classList.add("hidden");
                     document.getElementById("secaoBanner").classList.add("hidden");
