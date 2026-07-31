@@ -3,43 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modelos Rápidos - PrintExpress</title>
+    <title>Gerador de Documentos e Modelos - PrintExpress</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-body: #f8fafc;
-            --bg-card: #ffffff;
-            --bg-input: #f1f5f9;
-            --border-color: #e2e8f0;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --primary: #0284c7;
-            --primary-hover: #0369a1;
-            --accent-light: rgba(2, 132, 199, 0.08);
-            --green: #10b981;
-            --danger: #ef4444;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-        }
-
-        [data-theme="dark"] {
             --bg-body: #0f172a;
             --bg-card: #1e293b;
             --bg-input: #0f172a;
             --border-color: #334155;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --accent-light: rgba(2, 132, 199, 0.12);
+            --green: #10b981;
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.25s ease; }
+        [data-theme="light"] {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s, color 0.2s, border 0.2s; }
         
         body { background-color: var(--bg-body); color: var(--text-main); padding: 24px 16px 80px 16px; line-height: 1.6; }
 
         .container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
 
-        /* HEADER & NAV */
-        header { text-align: center; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        /* HEADER & BARRA SUPERIOR */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; }
         
         .btn-voltar {
             background: var(--bg-card); border: 1px solid var(--border-color); color: var(--primary);
@@ -51,231 +49,399 @@
             padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 700;
         }
 
-        h1 { color: var(--primary); font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+        header { text-align: center; margin-top: 10px; }
+        h1 { color: var(--primary); font-size: 28px; font-weight: 800; }
+        p.subtitle { color: var(--text-muted); font-size: 14px; }
 
         /* TABELA DE PREÇOS */
         .tabela-precos {
             background: var(--bg-card); border-radius: 18px; padding: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow);
         }
         .preco-item {
-            display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed var(--border-color); font-size: 14px;
+            display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border-color); font-size: 14px;
         }
         .preco-item:last-child { border-bottom: none; }
         .preco-item .valor { font-weight: 800; color: var(--green); }
 
-        /* BUSCA */
-        .search-container { position: sticky; top: 10px; z-index: 100; }
-        .search-box {
-            width: 100%; padding: 16px 20px; border-radius: 15px; border: 2px solid var(--primary);
-            background: var(--bg-card); color: var(--text-main); font-size: 16px; box-shadow: var(--shadow); outline: none;
+        /* PAINEL GERADOR DE DOCUMENTO */
+        .gerador-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
         }
 
-        /* GRID DE MODELOS */
-        .grid-container {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;
+        @media (max-width: 850px) {
+            .gerador-grid { grid-template-columns: 1fr; }
         }
-        .card {
-            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px;
-            padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow);
-        }
-        .card-tag {
-            font-size: 10px; font-weight: 800; text-transform: uppercase; color: white;
-            background: var(--primary); padding: 4px 10px; border-radius: 6px; width: fit-content;
-        }
-        .doc-preview {
-            background: var(--bg-input); padding: 12px; border-radius: 8px; font-family: monospace;
-            font-size: 11px; white-space: pre-wrap; height: 120px; overflow-y: auto; border: 1px solid var(--border-color);
-        }
-        .card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        
-        .btn-card {
-            padding: 10px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px;
-        }
-        .btn-copy { background: var(--accent-light); color: var(--primary); border: 1px solid var(--primary); }
-        .btn-print { background: var(--primary); color: white; }
 
-        /* FORMULÁRIO DE PEDIDO */
-        .form-section {
-            background: var(--bg-card); border-radius: 20px; padding: 30px; border: 1px solid var(--border-color); box-shadow: var(--shadow);
+        .painel-box {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px;
+            padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: var(--shadow);
         }
-        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+
         input, select, textarea {
-            padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main);
+            padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-main); font-size: 14px; outline: none;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+
+        /* PRÉ-VISUALIZAÇÃO A4 (FOLHA DE PAPEL BRANCA MANTIDA SEMPRE COMO IMPRESSÃO) */
+        .preview-wrapper {
+            background: #cbd5e1; padding: 20px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; gap: 15px;
+        }
+        
+        .folha-a4 {
+            background: #ffffff; color: #000000; width: 100%; min-height: 400px; padding: 30px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-radius: 4px; font-family: 'Times New Roman', Times, serif; font-size: 14px; line-height: 1.8; white-space: pre-wrap; word-break: break-word;
         }
 
-        .btn-submit {
-            background: var(--primary); color: white; padding: 16px; border: none; border-radius: 12px;
-            width: 100%; font-weight: 800; font-size: 16px; cursor: pointer;
+        .btn-action {
+            background: var(--primary); color: white; padding: 14px 20px; border: none; border-radius: 12px;
+            font-weight: 800; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+        }
+        .btn-action:hover { background: var(--primary-hover); }
+
+        /* SEÇÃO PEDIDO / FORM SUBMIT */
+        .form-section {
+            background: var(--bg-card); border-radius: 18px; padding: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow);
         }
 
-        /* TELA DE SUCESSO E PAGAMENTO */
+        /* MODAL CUSTOMIZADO (SUBSTITUI O ALERT DO NAVEGADOR) */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7);
+            display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        .modal-card {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px;
+            padding: 30px; max-width: 400px; width: 90%; text-align: center; box-shadow: var(--shadow);
+        }
+        .modal-card h3 { color: var(--primary); margin-bottom: 10px; font-size: 20px; }
+        .modal-card p { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; }
+        .modal-btn {
+            background: var(--primary); color: white; border: none; padding: 10px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; width: 100%;
+        }
+
+        /* TELA DE SUCESSO / PAGAMENTO */
         .hidden { display: none !important; }
         .success-card { text-align: center; padding: 40px; background: var(--bg-card); border-radius: 20px; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
         .pix-box { background: var(--bg-input); padding: 20px; border-radius: 15px; border: 2px dashed var(--primary); margin: 20px 0; }
 
+        /* REGRAS DE IMPRESSÃO / SALVAR EM PDF */
         @media print {
             body * { visibility: hidden; }
-            .print-area, .print-area * { visibility: visible; }
-            .print-area { position: absolute; left: 0; top: 0; width: 100%; padding: 40px; font-size: 12pt; }
-        }
-
-        @media (max-width: 600px) {
-            .grid-container { grid-template-columns: 1fr; }
+            .folha-a4, .folha-a4 * { visibility: visible; }
+            .folha-a4 {
+                position: absolute; left: 0; top: 0; width: 100%; min-height: 100%;
+                padding: 40px; margin: 0; box-shadow: none; border-radius: 0; font-size: 12pt;
+            }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
+        <div class="top-bar">
+            <button class="btn-voltar" onclick="voltarPainel()">⬅️ Painel Central</button>
+            <button class="theme-toggle" onclick="toggleTheme()">☀️ Modo Claro</button>
+        </div>
+
         <header>
-            <div class="top-bar">
-                <button class="btn-voltar" onclick="voltarPainel()">⬅️ Painel Central</button>
-                <button class="theme-toggle" onclick="toggleTheme()">☀️ Modo Claro</button>
-            </div>
-            <h1>Central de Modelos Rápidos</h1>
-            <p>Copie o texto para usar ou peça para imprimirmos preenchido.</p>
+            <h1>Preencher e Gerar Documentos em PDF</h1>
+            <p class="subtitle">Escolha o modelo, preencha os dados e salve em PDF ou solicite a impressão conosco.</p>
         </header>
 
         <section class="tabela-precos">
-            <h3 style="margin-bottom: 10px; color: var(--primary);">💰 Tabela de Preços</h3>
+            <h3 style="margin-bottom: 8px; color: var(--primary); font-size: 16px;">💰 Tabela de Serviços</h3>
             <div class="preco-item">
-                <span>📄 Impressão do Modelo em Branco (A4)</span>
+                <span>📄 Baixar em PDF / Gerar no site (Uso Pessoal)</span>
+                <span class="valor">GRÁTIS</span>
+            </div>
+            <div class="preco-item">
+                <span>🖨️ Impressão na Loja do Modelo Gerado (Folha A4)</span>
                 <span class="valor">R$ 0,50</span>
             </div>
             <div class="preco-item">
-                <span>✍️ Modelo Preenchido por nós (Pronto p/ assinar)</span>
+                <span>✍️ Documento Editado e Preenchido por nós (Pronto p/ assinar)</span>
                 <span class="valor">R$ 5,00</span>
-            </div>
-            <div class="preco-item">
-                <span>⚖️ Contratos ou Documentos Personalizados</span>
-                <span class="valor">R$ 15,00 - R$ 25,00</span>
             </div>
         </section>
 
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-box" placeholder="🔍 O que você precisa? (ex: recibo, aluguel, declaração)..." onkeyup="filterModels()">
-        </div>
+        <div class="gerador-grid">
+            <div class="painel-box">
+                <h3 style="font-size: 18px; color: var(--primary);">1. Escolha e Preencha</h3>
 
-        <div id="modelsGrid" class="grid-container">
+                <div class="form-group">
+                    <label>Selecione o Modelo:</label>
+                    <select id="selectModelo" onchange="carregarCamposModelo()">
+                        <option value="0">1. Declaração de Residência</option>
+                        <option value="1">2. Recibo de Pagamento Simples</option>
+                        <option value="2">3. Declaração de Trabalho Autônomo</option>
+                        <option value="3">4. Contrato Simples de Aluguel</option>
+                        <option value="4">5. Procuração Particular Simples</option>
+                        <option value="5">6. Recibo de Compra e Venda de Veículo</option>
+                        <option value="6">7. Declaração de Extravio/Perda de Documentos</option>
+                        <option value="7">8. Autorização de Viagem para Menor</option>
+                        <option value="8">9. Placa A4: Aceitamos PIX</option>
+                        <option value="9">10. Placa A4: Vende-se / Aluga-se</option>
+                    </select>
+                </div>
+
+                <div id="camposDinamicos" style="display: flex; flex-direction: column; gap: 12px;">
+                    </div>
             </div>
 
+            <div class="preview-wrapper">
+                <div style="width: 100%; display: flex; justify-content: space-between; align-align: center;">
+                    <span style="font-weight: 800; font-size: 13px; color: #0f172a;">📄 Visualização A4</span>
+                    <span style="font-size: 11px; color: #475569;">Atualiza automaticamente</span>
+                </div>
+
+                <div class="folha-a4" id="folhaA4Preview">
+                    </div>
+
+                <button class="btn-action" onclick="baixarPDF()">💾 Baixar / Salvar em PDF</button>
+            </div>
+        </div>
+
         <section class="form-section" id="secaoPedido">
-            <h2 style="margin-bottom: 20px;">📝 Solicitar Impressão / Edição</h2>
+            <h3 style="margin-bottom: 12px; color: var(--primary);">🚀 Deseja receber impresso ou preenchido por nós?</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Preencha abaixo que preparamos seu documento impresso para retirada rápida.</p>
+
             <form id="formModelos" action="https://formsubmit.co/ws8530135@gmail.com" method="POST">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
-                <input type="hidden" id="hidden_total" name="Valor Estimado" value="">
-
-                <div class="form-group">
-                    <label>Seu Nome:</label>
-                    <input type="text" name="Nome" required placeholder="Ex: Maria Souza">
-                </div>
-                <div class="form-group">
-                    <label>WhatsApp:</label>
-                    <input type="tel" id="telefone" name="WhatsApp" required placeholder="(41) 99999-9999">
-                </div>
-                <div class="form-group">
-                    <label>Qual modelo você quer?</label>
-                    <select name="Modelo Escolhido" id="selectModelos">
-                        <option value="Personalizado">Outro / Modelo Personalizado</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Instruções ou Dados para Preencher:</label>
-                    <textarea name="Instrucoes" rows="3" placeholder="Digite aqui os nomes, CPFs ou detalhes que devem constar no documento..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Forma de Pagamento:</label>
-                    <div style="display: flex; gap: 15px;">
-                        <label><input type="radio" name="Pagamento" value="PIX" checked> PIX</label>
-                        <label><input type="radio" name="Pagamento" value="Dinheiro"> Dinheiro</label>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Seu Nome:</label>
+                        <input type="text" name="Nome" required placeholder="Ex: João da Silva">
+                    </div>
+                    <div class="form-group">
+                        <label>WhatsApp:</label>
+                        <input type="tel" id="telefone" name="WhatsApp" required placeholder="(41) 99999-9999">
                     </div>
                 </div>
 
-                <button type="submit" class="btn-submit">Enviar Pedido e Ir para Pagamento 🚀</button>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Tipo de Serviço Desejado:</label>
+                    <select name="Servico" id="selectServicoPed">
+                        <option value="Impressao Simples (R$ 0,50)">Apenas Imprimir o Modelo que gerei aqui (R$ 0,50)</option>
+                        <option value="Preenchimento Completo (R$ 5,00)">Quero que a PrintExpress preencha e imprima tudo (R$ 5,00)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Observações ou dados extras:</label>
+                    <textarea name="Observacoes" rows="2" placeholder="Ex: Preciso de 2 vias impressas..."></textarea>
+                </div>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Forma de Pagamento:</label>
+                    <div style="display: flex; gap: 20px;">
+                        <label style="font-size: 14px;"><input type="radio" name="Pagamento" value="PIX" checked> PIX</label>
+                        <label style="font-size: 14px;"><input type="radio" name="Pagamento" value="Dinheiro"> Dinheiro na Loja</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-action" style="margin-top: 20px;">Enviar Pedido e Pagar 💳</button>
             </form>
         </section>
 
         <div id="telaSucesso" class="success-card hidden">
-            <h2 style="color: var(--green);">🎉 Pedido Recebido!</h2>
-            <p>Iniciaremos a edição/impressão assim que confirmar o pagamento.</p>
+            <h2 style="color: var(--green);">🎉 Pedido Recebido com Sucesso!</h2>
+            <p>Seu documento já está na nossa fila de impressão.</p>
             
-            <div id="boxPagamento" class="pix-box">
-                </div>
+            <div id="boxPagamento" class="pix-box"></div>
 
-            <a id="btnWhats" href="#" target="_blank" style="display: block; background: #25D366; color: white; padding: 15px; border-radius: 12px; text-decoration: none; font-weight: 800; margin-top: 10px;">
+            <a id="btnWhats" href="#" target="_blank" style="display: block; background: #25D366; color: white; padding: 14px; border-radius: 12px; text-decoration: none; font-weight: 800; margin-top: 10px;">
                 💬 Confirmar no WhatsApp
             </a>
-            <button onclick="location.reload()" style="margin-top: 20px; background: transparent; border: none; color: var(--text-muted); cursor: pointer;">🔄 Fazer outro pedido</button>
+            <button onclick="location.reload()" style="margin-top: 20px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; text-decoration: underline;">🔄 Fazer outro documento</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="customModal">
+        <div class="modal-card">
+            <h3 id="modalTitle">Aviso</h3>
+            <p id="modalMsg">Mensagem do sistema...</p>
+            <button class="modal-btn" onclick="fecharModal()">OK</button>
         </div>
     </div>
 
     <script>
-        const modelos = [
-            { cat: "FINANCEIRO", tit: "Recibo de Pagamento Simples", txt: "RECIBO DE PAGAMENTO\n\nVALOR: R$ ___________\n\nRecebi de: ____________________________________________________\nA quantia de: __________________________________________________\nReferente a: __________________________________________________\n\nData: ____/____/20___\n\nAssinatura: ________________________________" },
-            { cat: "IMÓVEIS", tit: "Contrato de Aluguel Mensal", txt: "CONTRATO DE LOCAÇÃO RESIDENCIAL\n\nLOCADOR: ____________________________________________________\nLOCATÁRIO: __________________________________________________\nIMÓVEL: _____________________________________________________\n\nValor Mensal: R$ ____________\nPrazo: _____ Meses.\n\nData: ____/____/20___\n\nAssinatura: ________________________________" },
-            { cat: "PESSOAL", tit: "Declaração de Residência", txt: "DECLARAÇÃO DE RESIDÊNCIA\n\nEu, ____________________________________________________, portador do CPF nº _____________________, DECLARO para os devidos fins que resido no endereço ____________________________________________________________________.\n\nData: ____/____/20___\n\nAssinatura: ________________________________" },
-            { cat: "VEÍCULOS", tit: "Recibo de Venda de Veículo", txt: "RECIBO DE VENDA DE VEÍCULO\n\nRecebi de ________________________, CPF _____________________, a quantia de R$ ____________ pela venda do veículo ________________, Placa _____________, RENAVAM ______________.\n\nData: ____/____/20___\n\nAssinatura: ________________________________" },
-            { cat: "TRABALHO", tit: "Declaração de Trabalho Autônomo", txt: "DECLARAÇÃO DE TRABALHO INFORMAL\n\nEu, ________________________________, CPF _____________________, declaro que exerço a função de ______________________ de forma autônoma, com renda média de R$ ____________.\n\nData: ____/____/20___\n\nAssinatura: ________________________________" },
-            { cat: "ESCOLA", tit: "Autorização Viagem Menor", txt: "AUTORIZAÇÃO DE VIAGEM\n\nAutorizo o menor ________________________________, RG _________________, a viajar para ________________________ acompanhado de ________________________.\n\nData: ____/____/20___\n\nAssinatura: ________________________________" },
-            { cat: "PLACA", tit: "Aviso: ACEITAMOS PIX", txt: "==================================\n        ACEITAMOS PIX\n==================================\n\nCHAVE: __________________________\n\nBANCO: __________________________\nNOME: __________________________\n\n==================================" },
-            { cat: "SERVIÇOS", tit: "Ordem de Serviço Básica", txt: "ORDEM DE SERVIÇO Nº _____\n\nCLIENTE: ________________________________\nEQUIPAMENTO: ____________________________\nDEFEITO: ________________________________\n\nVALOR: R$ ____________\n\nData: ____/____/20___\n\nAssinatura: ________________________________" }
+        // BASE DE DADOS DOS 10 MODELOS DIVERSOS
+        const listaModelos = [
+            {
+                nome: "Declaração de Residência",
+                campos: [
+                    { id: "nome", label: "Seu Nome Completo", def: "João da Silva" },
+                    { id: "cpf", label: "Seu CPF", def: "000.000.000-00" },
+                    { id: "rg", label: "Seu RG", def: "00.000.000-0" },
+                    { id: "residente", label: "Nome do Residente/Declarante", def: "Maria das Dores" },
+                    { id: "endereco", label: "Endereço Completo", def: "Rua das Flores, 123, Bairro Centro - Curitiba/PR" },
+                    { id: "cidadeData", label: "Cidade e Data", def: "Curitiba - PR, 31 de Julho de 2026" }
+                ],
+                gerar: (d) => `DECLARAÇÃO DE RESIDÊNCIA\n\nEu, ${d.nome.toUpperCase()}, portador(a) do RG nº ${d.rg} e inscrito(a) no CPF nº ${d.cpf},\n\nDECLARO para os devidos fins de direito e comprovação junto a quem interessar possa, que ${d.residente.toUpperCase()} reside no endereço:\n\n${d.endereco}\n\nPor ser a expressão da verdade, assumo inteira responsabilidade pelas informações acima e firmo a presente declaração.\n\n\n${d.cidadeData}\n\n\n__________________________________________________\nAssinatura do Declarante`
+            },
+            {
+                nome: "Recibo de Pagamento Simples",
+                campos: [
+                    { id: "valor", label: "Valor (R$)", def: "150,00" },
+                    { id: "valorExtenso", label: "Valor por Extenso", def: "Cento e cinquenta reais" },
+                    { id: "pagador", label: "Nome de quem pagou", def: "Carlos Eduardo" },
+                    { id: "referente", label: "Referente a", def: "Serviços de manutenção elétrica" },
+                    { id: "recebedor", label: "Seu Nome (Quem Recebeu)", def: "Oficina PrintExpress" },
+                    { id: "cpfRecebedor", label: "Seu CPF/CNPJ", def: "00.000.000/0001-00" },
+                    { id: "cidadeData", label: "Cidade e Data", def: "Curitiba - PR, 31 de Julho de 2026" }
+                ],
+                gerar: (d) => `RECIBO DE PAGAMENTO — R$ ${d.valor}\n\nRecebi(emos) de ${d.pagador.toUpperCase()} a quantia de R$ ${d.valor} (${d.valorExtenso}), referente a:\n${d.referente}.\n\nPara clareza e fins de quitação, firmo o presente recibo.\n\n\n${d.cidadeData}\n\n\n__________________________________________________\n${d.recebedor}\nCPF/CNPJ: ${d.cpfRecebedor}`
+            },
+            {
+                nome: "Declaração de Trabalho Autônomo",
+                campos: [
+                    { id: "nome", label: "Seu Nome Completo", def: "Ana Paula Souza" },
+                    { id: "cpf", label: "Seu CPF", def: "111.222.333-44" },
+                    { id: "profissao", label: "Sua Profissão / Atividade", def: "Confeiteira Autônoma" },
+                    { id: "renda", label: "Renda Média Mensal (R$)", def: "2.500,00" },
+                    { id: "cidadeData", label: "Cidade e Data", def: "Curitiba - PR, 31 de Julho de 2026" }
+                ],
+                gerar: (d) => `DECLARAÇÃO DE TRABALHO INFORMAL / AUTÔNOMO\n\nEu, ${d.nome.toUpperCase()}, portador(a) do CPF nº ${d.cpf},\n\nDECLARO sob as penas da lei, para fins de comprovação de renda, que exerço a atividade autônoma de ${d.profissao.toUpperCase()}, obtendo como rendimento médio mensal a quantia de R$ ${d.renda}.\n\nPor ser verdade, firmo a presente declaração.\n\n\n${d.cidadeData}\n\n\n__________________________________________________\nAssinatura do Declarante`
+            },
+            {
+                nome: "Contrato Simples de Aluguel",
+                campos: [
+                    { id: "locador", label: "Nome do Proprietário (Locador)", def: "Pedro Alves" },
+                    { id: "locatario", label: "Nome do Inquilino (Locatário)", def: "Lucas Mendes" },
+                    { id: "imovel", label: "Endereço do Imóvel", def: "Rua do Comércio, 45 - Apt 202" },
+                    { id: "valor", label: "Valor Mensal (R$)", def: "800,00" },
+                    { id: "vencimento", label: "Dia do Vencimento", def: "10" },
+                    { id: "cidadeData", label: "Cidade e Data", def: "Curitiba - PR, 31 de Julho de 2026" }
+                ],
+                gerar: (d) => `CONTRATO SIMPLIFICADO DE LOCAÇÃO RESIDENCIAL\n\nLOCADOR: ${d.locador.toUpperCase()}\nLOCATÁRIO: ${d.locatario.toUpperCase()}\n\n1. O LOCADOR aluga ao LOCATÁRIO o imóvel situado em: ${d.imovel}.\n2. O valor do aluguel mensal é de R$ ${d.valor}, com vencimento todo dia ${d.vencimento} de cada mês.\n3. O LOCATÁRIO compromete-se a zelar pelo imóvel e arcar com as despesas de consumo (água/luz).\n\n\n${d.cidadeData}\n\n\n_________________________________          _________________________________\nAssinatura do Locador                      Assinatura do Locatário`
+            },
+            {
+                nome: "Procuração Particular Simples",
+                campos: [
+                    { id: "outorgante", label: "Seu Nome (Outorgante)", def: "Roberto Carlos" },
+                    { id: "cpfOut", label: "Seu CPF", def: "222.333.444-55" },
+                    { id: "outorgado", label: "Nome de quem te representa", def: "Fernanda Lima" },
+                    { id: "cpfOutorgado", label: "CPF do Representante", def: "666.777.888-99" },
+                    { id: "poderes", label: "Poderes concedidos (Finalidade)", def: "resolver pendências administrativas junto ao DETRAN e assinar documentos." },
+                    { id: "cidadeData", label: "Cidade e Data", def: "Curitiba - PR, 31 de Julho de 2026" }
+                ],
+                gerar: (d) => `PROCURAÇÃO PARTICULAR\n\nOUTORGANTE: ${d.outorgante.toUpperCase()}, inscrito(a) no CPF nº ${d.cpfOut}.\nOUTORGADO: ${d.outorgado.toUpperCase()}, inscrito(a) no CPF nº ${d.cpfOutorgado}.\n\nPODERES: Por este instrumento, o Outorgante concede ao Outorgado amplos poderes para ${d.poderes}, praticando todos os atos necessários para o fiel cumprimento deste mandato.\n\n\n${d.cidadeData}\n\n\n__________________________________________________\nAssinatura do Outorgante`
+            },
+            {
+                nome: "Recibo de Venda de Veículo",
+                campos: [
+                    { id: "vendedor", label: "Nome do Vendedor", def: "Marcos Vinicius" },
+                    { id: "comprador", label: "Nome do Comprador", def: "Gabriel Santos" },
+                    { id: "veiculo", label: "Modelo / Ano / Marca", def: "Fiat Uno 2012 Vivace" },
+                    { id: "placa", label: "Placa", def: "ABC-1D23" },
+                    { id: "valor", label: "Valor de Venda (R$)", def: "18.000,00" },
+                    { id: "cidadeData", label: "Cidade e Data", def: "Curitiba - PR, 31 de Julho de 2026" }
+                ],
+                gerar: (d) => `RECIBO DE COMPRA E VENDA DE VEÍCULO\n\nRecebi de ${d.comprador.toUpperCase()} a quantia de R$ ${d.valor} referente à venda do veículo abaixo especificado:\n\nVeículo: ${d.veiculo.toUpperCase()}\nPlaca: ${d.placa.toUpperCase()}\n\nDou plena, geral e irrevogável quitação do valor recebido, transferindo a posse do referido veículo no estado em que se encontra.\n\n\n${d.cidadeData}\n\n\n__________________________________________________\nAssinatura do Vendedor (${d.vendedor})`
+            },
+            {
+                nome: "Declaração de Extravio/Perda",
+                campos: [
+                    { id: "nome", label: "Seu Nome Completo", def: "Juliana Paes" },
+                    { id: "cpf", label: "Seu CPF", def: "555.444.333-22" },
+                    { id: "docsPerdidos", label: "Documentos Perdidos/Extraviados", def: "Carteira de Trabalho e Cartão do SUS" },
+                    { id: "cidadeData", label: "Cidade e Data", def: "Curitiba - PR, 31 de Julho de 2026" }
+                ],
+                gerar: (d) => `DECLARAÇÃO DE EXTRAVIO DE DOCUMENTOS\n\nEu, ${d.nome.toUpperCase()}, portador(a) do CPF nº ${d.cpf},\n\nDECLARO para os devidos fins de direito que perdi/extraviei os seguintes documentos de minha propriedade:\n\n- ${d.docsPerdidos.toUpperCase()}\n\nPor ser a expressão da verdade, firmo a presente declaração sob as penas da lei.\n\n\n${d.cidadeData}\n\n\n__________________________________________________\nAssinatura do Declarante`
+            },
+            {
+                nome: "Autorização de Viagem para Menor",
+                campos: [
+                    { id: "pai", label: "Nome do Pai/Mãe/Responsável", def: "Rodrigo Faro" },
+                    { id: "cpfPai", label: "CPF do Responsável", def: "999.888.777-66" },
+                    { id: "menor", label: "Nome do Menor", def: "Lucas Faro" },
+                    { id: "acompanhante", label: "Nome do Acompanhante", def: "Tia Maria Faro" },
+                    { id: "destino", label: "Destino da Viagem", def: "São Paulo / SP" },
+                    { id: "cidadeData", label: "Cidade e Data", def: "Curitiba - PR, 31 de Julho de 2026" }
+                ],
+                gerar: (d) => `AUTORIZAÇÃO DE VIAGEM NACIONAL PARA MENOR\n\nEu, ${d.pai.toUpperCase()}, inscrito(a) no CPF nº ${d.cpfPai}, na qualidade de responsável legal,\n\nAUTORIZO o(a) menor ${d.menor.toUpperCase()} a viajar acompanhado(a) de ${d.acompanhante.toUpperCase()} com destino a ${d.destino.toUpperCase()}.\n\n\n${d.cidadeData}\n\n\n__________________________________________________\nAssinatura do Responsável Legal`
+            },
+            {
+                nome: "Placa A4: Aceitamos PIX",
+                campos: [
+                    { id: "chave", label: "Sua Chave PIX", def: "(41) 99999-9999" },
+                    { id: "tipo", label: "Tipo de Chave", def: "Celular / E-mail / CPF" },
+                    { id: "titular", label: "Nome do Titular", def: "PrintExpress Grafica" }
+                ],
+                gerar: (d) => `=========================================================\n\n                     ACEITAMOS PIX!                      \n\n=========================================================\n\n\nCHAVE PIX:\n${d.chave}\n\nTIPO DE CHAVE:\n${d.tipo}\n\nTITULAR:\n${d.titular}\n\n\n=========================================================\n             Por favor, envie o comprovante!             \n=========================================================`
+            },
+            {
+                nome: "Placa A4: Vende-se / Aluga-se",
+                campos: [
+                    { id: "titulo", label: "Título da Placa", def: "ALUGA-SE ESTE IMÓVEL" },
+                    { id: "detalhes", label: "Detalhes (Ex: 2 quartos, garagem)", def: "2 Quartos, Sala, Cozinha e Vaga de Garagem." },
+                    { id: "contato", label: "Telefone / WhatsApp", def: "(41) 99968-2836" }
+                ],
+                gerar: (d) => `=========================================================\n\n                  ${d.titulo.toUpperCase()}                  \n\n=========================================================\n\n\nDETALHES:\n${d.detalhes}\n\n\nTRATAR DIRETO COM PROPRIETÁRIO:\nTELEFONE / WHATSAPP: ${d.contato}\n\n\n=========================================================`
+            }
         ];
 
         let naAbaPagamento = false;
 
-        function filterModels() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = modelos.filter(m => m.tit.toLowerCase().includes(term) || m.cat.toLowerCase().includes(term));
-            renderGrid(filtered);
-        }
+        // CARREGA DINAMICAMENTE OS CAMPOS DE ACORDO COM O MODELO SELECIONADO
+        function carregarCamposModelo() {
+            const index = document.getElementById('selectModelo').value;
+            const mod = listaModelos[index];
+            const container = document.getElementById('camposDinamicos');
+            container.innerHTML = '';
 
-        function renderGrid(lista) {
-            const grid = document.getElementById('modelsGrid');
-            const select = document.getElementById('selectModelos');
-            grid.innerHTML = '';
-            
-            lista.forEach((m, i) => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <span class="card-tag">${m.cat}</span>
-                    <h3 style="font-size: 16px;">${m.tit}</h3>
-                    <div class="doc-preview" id="txt-${i}">${m.txt}</div>
-                    <div class="card-actions">
-                        <button class="btn-card btn-copy" onclick="copiar(${i})">📋 Copiar</button>
-                        <button class="btn-card btn-print" onclick="imprimir(${i})">🖨️ Imprimir</button>
-                    </div>
+            mod.campos.forEach(c => {
+                const group = document.createElement('div');
+                group.className = 'form-group';
+                group.innerHTML = `
+                    <label>${c.label}:</label>
+                    <input type="text" id="input_${c.id}" value="${c.def}" oninput="atualizarDocumento()">
                 `;
-                grid.appendChild(card);
+                container.appendChild(group);
             });
+
+            atualizarDocumento();
         }
 
-        // Popula o select do formulário
-        modelos.forEach(m => {
-            const opt = document.createElement('option');
-            opt.value = m.tit;
-            opt.innerText = m.tit;
-            document.getElementById('selectModelos').appendChild(opt);
-        });
+        // ATUALIZA A FOLHA A4 EM TEMPO REAL
+        function atualizarDocumento() {
+            const index = document.getElementById('selectModelo').value;
+            const mod = listaModelos[index];
+            let dados = {};
 
-        function copiar(i) {
-            navigator.clipboard.writeText(modelos[i].txt);
-            alert("Texto copiado! Você pode colar no Word ou WhatsApp.");
+            mod.campos.forEach(c => {
+                const el = document.getElementById(`input_${c.id}`);
+                dados[c.id] = el ? el.value : c.def;
+            });
+
+            document.getElementById('folhaA4Preview').innerText = mod.gerar(dados);
         }
 
-        function imprimir(i) {
-            const area = document.createElement('div');
-            area.className = 'print-area';
-            area.innerText = modelos[i].txt;
-            document.body.appendChild(area);
+        // SALVA OU IMPRIME O DOCUMENTO EM PDF
+        function baixarPDF() {
             window.print();
-            document.body.removeChild(area);
+        }
+
+        // MODAL CUSTOMIZADO (SUBSTITUTO DO ALERT PADRÃO)
+        function mostrarModal(titulo, mensagem) {
+            document.getElementById('modalTitle').innerText = titulo;
+            document.getElementById('modalMsg').innerText = mensagem;
+            document.getElementById('customModal').classList.add('active');
+        }
+
+        function fecharModal() {
+            document.getElementById('customModal').classList.remove('active');
         }
 
         function voltarPainel() {
             if(naAbaPagamento) {
-                if(confirm("Você tem um pagamento pendente. Deseja sair?")) window.location.href = 'index.html';
+                if(confirm("Você possui um pedido pendente de pagamento. Deseja realmente sair?")) window.location.href = 'index.html';
             } else {
                 window.location.href = 'index.html';
             }
@@ -293,50 +459,7 @@
             }
         }
 
-        // Submissão do Formulário
-        const form = document.getElementById('formModelos');
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button');
-            btn.disabled = true;
-            btn.innerText = "Processando...";
-
-            const formData = new FormData(form);
-            const pagamento = formData.get('Pagamento');
-            const total = (formData.get('Modelo Escolhido') === 'Personalizado') ? "R$ 15,00 (Varia)" : "R$ 5,00";
-            
-            try {
-                await fetch(form.action, { method: 'POST', body: formData, headers: {'Accept': 'application/json'} });
-                
-                naAbaPagamento = true;
-                document.getElementById('secaoPedido').classList.add('hidden');
-                document.getElementById('modelsGrid').classList.add('hidden');
-                document.querySelector('.search-container').classList.add('hidden');
-                
-                const tela = document.getElementById('telaSucesso');
-                const box = document.getElementById('boxPagamento');
-                
-                if(pagamento === 'PIX') {
-                    box.innerHTML = `
-                        <p>Total do Serviço:</p>
-                        <h2 style="color:var(--green)">${total}</h2>
-                        <img src="qrcode-pix.jpg" style="width:150px; margin:10px auto; display:block;">
-                        <p style="font-size:11px; margin-top:5px; word-break:break-all;">00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB</p>
-                    `;
-                } else {
-                    box.innerHTML = `<h2>Total: ${total}</h2><p>Pagamento em dinheiro na retirada.</p>`;
-                }
-                
-                document.getElementById('btnWhats').href = `https://wa.me/5541999682836?text=Olá! Fiz um pedido de Modelo (${formData.get('Modelo Escolhido')}) no valor de ${total}.`;
-                tela.classList.remove('hidden');
-                window.scrollTo(0,0);
-            } catch(e) {
-                alert("Erro ao enviar. Tente novamente.");
-                btn.disabled = false;
-            }
-        });
-
-        // Máscara Telefone
+        // MÁSCARA TELEFONE
         document.getElementById('telefone').addEventListener('input', (e) => {
             let v = e.target.value.replace(/\D/g,'');
             v=v.replace(/^(\d{2})(\d)/g,"($1) $2");
@@ -344,11 +467,52 @@
             e.target.value = v;
         });
 
-        window.onbeforeunload = function() {
-            if(naAbaPagamento) return "Você tem um pagamento pendente!";
-        };
+        // ENVIO DO FORMULÁRIO DE PEDIDO / PAGAMENTO
+        const form = document.getElementById('formModelos');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.innerText = "Enviando Pedido...";
 
-        renderGrid(modelos);
+            const formData = new FormData(form);
+            const pagamento = formData.get('Pagamento');
+            const servico = formData.get('Servico');
+            const total = servico.includes("R$ 5,00") ? "R$ 5,00" : "R$ 0,50";
+
+            try {
+                await fetch(form.action, { method: 'POST', body: formData, headers: {'Accept': 'application/json'} });
+                
+                naAbaPagamento = true;
+                document.getElementById('secaoPedido').classList.add('hidden');
+                document.querySelector('.gerador-grid').classList.add('hidden');
+                
+                const tela = document.getElementById('telaSucesso');
+                const box = document.getElementById('boxPagamento');
+                
+                if(pagamento === 'PIX') {
+                    box.innerHTML = `
+                        <p style="font-size: 13px; color: var(--text-muted);">Total do Pedido:</p>
+                        <h2 style="color:var(--green); font-size: 28px; margin-bottom: 10px;">${total}</h2>
+                        <p style="font-size: 12px; font-weight:700;">Chave PIX (Copia e Cola / Telefone):</p>
+                        <p style="font-size:11px; margin-top:5px; word-break:break-all; background: var(--bg-card); padding: 10px; border-radius: 8px;">00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB</p>
+                    `;
+                } else {
+                    box.innerHTML = `<h2>Total: ${total}</h2><p style="margin-top:5px;">Pagamento presencial em dinheiro na retirada do documento.</p>`;
+                }
+                
+                document.getElementById('btnWhats').href = `https://wa.me/5541999682836?text=Olá! Fiz o pedido do documento (${formData.get('Servico')}) no valor de ${total}.`;
+                tela.classList.remove('hidden');
+                window.scrollTo(0,0);
+            } catch(err) {
+                mostrarModal("Ops!", "Houve uma falha no envio. Verifique sua conexão e tente novamente.");
+                btn.disabled = false;
+                btn.innerText = "Enviar Pedido e Pagar 💳";
+            }
+        });
+
+        // INICIALIZA O PRIMEIRO MODELO
+        carregarCamposModelo();
     </script>
 </body>
 </html>
