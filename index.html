@@ -833,7 +833,7 @@
                     </div>
                     
                     <div id="campoArquivoContainer">
-                        <input type="file" id="arquivo" name="attachment" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+                        <input type="file" id="arquivo" name="attachment[]" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" multiple>
                         <div id="fileDetails" class="file-info hidden"></div>
                     </div>
 
@@ -861,7 +861,7 @@
 
                 <div class="form-group">
                     <label for="arquivo_doc">Anexar PDF / Imagem do Documento:</label>
-                    <input type="file" id="arquivo_doc" name="Anexo Documento Oficial" accept=".pdf,.png,.jpg,.jpeg">
+                    <input type="file" id="arquivo_doc" name="Anexo Documento Oficial[]" accept=".pdf,.png,.jpg,.jpeg" multiple>
                 </div>
             </div>
 
@@ -1286,21 +1286,32 @@
         const previewContainer = document.getElementById("previewContainer");
 
         inputArquivo.addEventListener("change", function() {
-            const file = this.files[0];
+            const files = this.files;
 
-            if (file) {
-                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-                fileDetails.innerText = `📎 Arquivo selecionado: ${file.name} (${sizeMB} MB)`;
+            if (files.length > 0) {
+                let totalSizeMB = 0;
+                for (let i = 0; i < files.length; i++) {
+                    totalSizeMB += files[i].size;
+                }
+                totalSizeMB = (totalSizeMB / (1024 * 1024)).toFixed(2);
+
+                if (files.length === 1) {
+                    fileDetails.innerText = `📎 Arquivo selecionado: ${files[0].name} (${totalSizeMB} MB)`;
+                } else {
+                    fileDetails.innerText = `📎 ${files.length} arquivos selecionados (Total: ${totalSizeMB} MB)`;
+                }
+
                 fileDetails.classList.remove("hidden");
                 previewContainer.classList.remove("hidden");
 
-                const fileURL = URL.createObjectURL(file);
+                const firstFile = files[0];
+                const fileURL = URL.createObjectURL(firstFile);
 
-                if (file.type.startsWith("image/")) {
+                if (firstFile.type.startsWith("image/")) {
                     imgPreview.src = fileURL;
                     imgPreview.style.display = "block";
                     pdfPreview.style.display = "none";
-                } else if (file.type === "application/pdf") {
+                } else if (firstFile.type === "application/pdf") {
                     pdfPreview.src = fileURL;
                     pdfPreview.style.display = "block";
                     imgPreview.style.display = "none";
