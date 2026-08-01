@@ -287,11 +287,12 @@
 
         <section class="form-section" id="secaoPedido">
             <h3 style="margin-bottom: 12px; color: var(--primary);">🚀 Deseja receber impresso na loja (R$ 0,50/folha)?</h3>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Preencha abaixo para solicitar a impressão do seu documento.</p>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Preencha abaixo para solicitar a impressão do seu documento ou anexe seu próprio arquivo.</p>
 
-            <form id="formModelos" action="https://formsubmit.co/ws8530135@gmail.com" method="POST">
+            <form id="formModelos" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="Texto_Documento_Gerado" id="ped_texto_gerado">
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="form-group">
@@ -302,6 +303,11 @@
                         <label>WhatsApp *</label>
                         <input type="tel" id="ped_telefone" name="WhatsApp" required placeholder="(41) 99999-9999">
                     </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>📎 Anexar Próprio Arquivo para Impressão (Opcional - PDF ou Imagem):</label>
+                    <input type="file" name="Arquivo_Anexo" accept=".pdf,image/*">
                 </div>
 
                 <div class="form-group" style="margin-top: 15px;">
@@ -362,7 +368,7 @@
             return `Curitiba - PR, ${dia} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}`;
         }
 
-        // 15 TÓPICOS/CATEGORIAS COM SEUS MODELOS E CAMPOS
+        // 15 TÓPICOS/CATEGORIAS TOTALMENTE PREENCHIDOS COM MODELOS E CAMPOS
         const topicosData = [
             {
                 id: 1,
@@ -380,6 +386,16 @@
                             { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
                         ],
                         gerar: (d) => `DECLARAÇÃO DE RESIDÊNCIA\n\nEu, ${d.nome || '________________________________________'}, portador(a) do RG nº ${d.rg || '__________________'} e CPF nº ${d.cpf || '__________________'},\n\nDECLARO que ${d.residente || '________________________________________'} reside no endereço:\n${d.endereco || '________________________________________________________________'}.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Declarante</div>`
+                    },
+                    {
+                        nome: "Declaração de Hipossuficiência (Pobreza)",
+                        campos: [
+                            { id: "nome", label: "Nome Completo", ph: "EX: CARLOS ALBERTO", mask: "maiusculo" },
+                            { id: "cpf", label: "CPF", ph: "000.000.000-00", mask: "cpf" },
+                            { id: "rg", label: "RG", ph: "00.000.000-0", mask: "rg" },
+                            { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
+                        ],
+                        gerar: (d) => `DECLARAÇÃO DE HIPOSSUFIÊNCIA DE RECURSOS\n\nEu, ${d.nome || '________________________________________'}, inscrito(a) no CPF nº ${d.cpf || '__________________'} e RG nº ${d.rg || '__________________'},\n\nDECLARO para os devidos fins de direito que não possuo condições financeiras de arcar com as custas sem prejuízo do meu sustento e de minha família.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Requerente</div>`
                     }
                 ]
             },
@@ -419,18 +435,213 @@
                     }
                 ]
             },
-            { id: 4, titulo: "4. Procurações", desc: "Procurações particulares para representação comercial e pessoal.", modelos: [] },
-            { id: 5, titulo: "5. Veículos e Trânsito", desc: "Recibos de compra/venda, autorizações e transferência.", modelos: [] },
-            { id: 6, titulo: "6. Trabalho e Renda", desc: "Declarações de trabalho autônomo e prestação de serviços.", modelos: [] },
-            { id: 7, titulo: "7. Viagem e Menor", desc: "Autorizações de viagem nacional/internacional para menores.", modelos: [] },
-            { id: 8, titulo: "8. Gestão e Fluxo de Caixa", desc: "Planilhas e controles de fluxo de caixa diário.", modelos: [] },
-            { id: 9, titulo: "9. RH e Registro de Ponto", desc: "Folhas de ponto mensal e controle de horários de funcionários.", modelos: [] },
-            { id: 10, titulo: "10. Orçamentos de Serviço", desc: "Formulários e modelos de orçamento de prestação de serviços.", modelos: [] },
-            { id: 11, titulo: "11. Checklists e Listas", desc: "Listas de checagem diária e organização de tarefas.", modelos: [] },
-            { id: 12, titulo: "12. Requerimentos", desc: "Requerimentos gerais para órgãos, instituições e empresas.", modelos: [] },
-            { id: 13, titulo: "13. Termos de Responsabilidade", desc: "Termos de uso de equipamentos, entrega de chaves e devolução.", modelos: [] },
-            { id: 14, titulo: "14. Vendas e Comércio", desc: "Pedidos de venda simples e comprovantes comerciais.", modelos: [] },
-            { id: 15, titulo: "15. Atendimentos e Fichas", desc: "Fichas de atendimento, cadastro simples e formulários de recepção.", modelos: [] }
+            {
+                id: 4,
+                titulo: "4. Procurações",
+                desc: "Procurações particulares para representação comercial e pessoal.",
+                modelos: [
+                    {
+                        nome: "Procuração Particular Simples",
+                        campos: [
+                            { id: "outorgante", label: "Seu Nome (Outorgante)", ph: "EX: JOSE OLIVEIRA", mask: "maiusculo" },
+                            { id: "cpf1", label: "Seu CPF", ph: "000.000.000-00", mask: "cpf" },
+                            { id: "outorgado", label: "Nome do Procurador", ph: "EX: ANA PAULA", mask: "maiusculo" },
+                            { id: "cpf2", label: "CPF do Procurador", ph: "000.000.000-00", mask: "cpf" },
+                            { id: "poderes", label: "Poderes Concedidos", ph: "EX: REPRESENTAR JUNTO À COPEL", mask: "maiusculo" },
+                            { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
+                        ],
+                        gerar: (d) => `PROCURAÇÃO PARTICULAR\n\nOUTORGANTE: ${d.outorgante || '________________________________________'}, CPF nº ${d.cpf1 || '__________________'}.\nOUTORGADO: ${d.outorgado || '________________________________________'}, CPF nº ${d.cpf2 || '__________________'}.\n\nPODERES: Nomeia e constitui seu procurador para: ${d.poderes || '________________________________________________________________'}.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Outorgante</div>`
+                    }
+                ]
+            },
+            {
+                id: 5,
+                titulo: "5. Veículos e Trânsito",
+                desc: "Recibos de compra/venda, autorizações e transferência.",
+                modelos: [
+                    {
+                        nome: "Recibo de Venda de Veículo",
+                        campos: [
+                            { id: "vendedor", label: "Nome do Vendedor", ph: "EX: MARCOS SILVA", mask: "maiusculo" },
+                            { id: "comprador", label: "Nome do Comprador", ph: "EX: FERNANDO DIAS", mask: "maiusculo" },
+                            { id: "veiculo", label: "Modelo do Veículo", ph: "EX: GOL 1.0 2015", mask: "maiusculo" },
+                            { id: "placa", label: "Placa", ph: "ABC-1234", mask: "maiusculo" },
+                            { id: "valor", label: "Valor de Venda (R$)", ph: "25.000,00", mask: "texto" },
+                            { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
+                        ],
+                        gerar: (d) => `RECIBO DE COMPRA E VENDA DE VEÍCULO\n\nVENDEDOR: ${d.vendedor || '________________________________________'}\nCOMPRADOR: ${d.comprador || '________________________________________'}\n\nVEÍCULO: ${d.veiculo || '____________________'} | PLACA: ${d.placa || '__________'}\nVALOR: R$ ${d.valor || '______'}\n\nDeclaro que recebi a quantia acima referente ao veículo descrito.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Vendedor</div>`
+                    }
+                ]
+            },
+            {
+                id: 6,
+                titulo: "6. Trabalho e Renda",
+                desc: "Declarações de trabalho autônomo e prestação de serviços.",
+                modelos: [
+                    {
+                        nome: "Declaração de Trabalho Autônomo",
+                        campos: [
+                            { id: "nome", label: "Nome Completo", ph: "EX: ROBERTO SANTOS", mask: "maiusculo" },
+                            { id: "cpf", label: "CPF", ph: "000.000.000-00", mask: "cpf" },
+                            { id: "profissao", label: "Atividade / Profissão", ph: "EX: ELECTRICISTA", mask: "maiusculo" },
+                            { id: "renda", label: "Renda Média Mensal (R$)", ph: "2.500,00", mask: "texto" },
+                            { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
+                        ],
+                        gerar: (d) => `DECLARAÇÃO DE TRABALHO AUTÔNOMO / RENDA\n\nEu, ${d.nome || '________________________________________'}, CPF nº ${d.cpf || '__________________'},\nDECLARO que exerço a atividade de ${d.profissao || '____________________'} de forma autônoma, auferindo renda média mensal de R$ ${d.renda || '______'}.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Trabalhador</div>`
+                    }
+                ]
+            },
+            {
+                id: 7,
+                titulo: "7. Viagem e Menor",
+                desc: "Autorizações de viagem nacional/internacional para menores.",
+                modelos: [
+                    {
+                        nome: "Autorização de Viagem para Menor",
+                        campos: [
+                            { id: "pai", label: "Nome do Responsável", ph: "EX: LUIZ GUSTAVO", mask: "maiusculo" },
+                            { id: "menor", label: "Nome do Menor", ph: "EX: PEDRO GUSTAVO", mask: "maiusculo" },
+                            { id: "acompanhante", label: "Nome do Acompanhante", ph: "EX: TIA MARIA", mask: "maiusculo" },
+                            { id: "destino", label: "Destino da Viagem", ph: "EX: SÃO PAULO - SP", mask: "maiusculo" },
+                            { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
+                        ],
+                        gerar: (d) => `AUTORIZAÇÃO DE VIAGEM NACIONAL PARA MENOR\n\nEu, ${d.pai || '________________________________________'}, autorizo meu(minha) filho(a) ${d.menor || '________________________________________'} a viajar acompanhado(a) de ${d.acompanhante || '________________________________________'} com destino a ${d.destino || '____________________'}.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Responsável</div>`
+                    }
+                ]
+            },
+            {
+                id: 8,
+                titulo: "8. Gestão e Fluxo de Caixa",
+                desc: "Planilhas e controles de fluxo de caixa diário.",
+                modelos: [
+                    {
+                        nome: "Folha de Controle de Caixa Diário",
+                        campos: [
+                            { id: "empresa", label: "Nome da Empresa", ph: "EX: MINHA LOJA", mask: "maiusculo" },
+                            { id: "data", label: "Data do Caixa", ph: "01/08/2026", mask: "texto" },
+                            { id: "saldoInicial", label: "Saldo Inicial (R$)", ph: "100,00", mask: "texto" },
+                            { id: "responsavel", label: "Responsável pelo Caixa", ph: "EX: ALICE SILVA", mask: "maiusculo" }
+                        ],
+                        gerar: (d) => `RELATÓRIO DE FECHAMENTO DE CAIXA\n\nEMPRESA: ${d.empresa || '____________________'} | DATA: ${d.data || '____/____/________'}\nRESPONSÁVEL: ${d.responsavel || '____________________'}\nSALDO INICIAL: R$ ${d.saldoInicial || '0,00'}\n\nENTRADAS:\n1. _______________________ R$ _________\n2. _______________________ R$ _________\n\nSAÍDAS:\n1. _______________________ R$ _________\n2. _______________________ R$ _________\n\nSALDO FINAL EM CAIXA: R$ _____________\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Visto do Responsável</div>`
+                    }
+                ]
+            },
+            {
+                id: 9,
+                titulo: "9. RH e Registro de Ponto",
+                desc: "Folhas de ponto mensal e controle de horários de funcionários.",
+                modelos: [
+                    {
+                        nome: "Folha de Ponto Mensal Simples",
+                        campos: [
+                            { id: "funcionario", label: "Nome do Funcionário", ph: "EX: JOÃO DA SILVA", mask: "maiusculo" },
+                            { id: "cargo", label: "Cargo", ph: "EX: ATENDENTE", mask: "maiusculo" },
+                            { id: "mesAno", label: "Mês / Ano", ph: "AGOSTO / 2026", mask: "maiusculo" }
+                        ],
+                        gerar: (d) => `FOLHA DE PONTO MENSAL\n\nFUNCIONÁRIO: ${d.funcionario || '________________________________________'}\nCARGO: ${d.cargo || '____________________'} | MÊS/ANO: ${d.mesAno || '____________________'}\n\nDIA | ENTRADA | SAÍDA ALMOÇO | RETORNO | SAÍDA | ASSINATURA\n----------------------------------------------------------------------\n 01 | ___:___ | _____:_____ | ___:___ | ___:___ | ___________________\n 02 | ___:___ | _____:_____ | ___:___ | ___:___ | ___________________\n 03 | ___:___ | _____:_____ | ___:___ | ___:___ | ___________________\n 04 | ___:___ | _____:_____ | ___:___ | ___:___ | ___________________\n 05 | ___:___ | _____:_____ | ___:___ | ___:___ | ___________________\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Funcionário</div>`
+                    }
+                ]
+            },
+            {
+                id: 10,
+                titulo: "10. Orçamentos de Serviço",
+                desc: "Formulários e modelos de orçamento de prestação de serviços.",
+                modelos: [
+                    {
+                        nome: "Proposta de Orçamento de Serviço",
+                        campos: [
+                            { id: "cliente", label: "Nome do Cliente", ph: "EX: MARCOS PAULO", mask: "maiusculo" },
+                            { id: "servico", label: "Descrição do Serviço", ph: "EX: MANUTENÇÃO ELÉTRICA", mask: "maiusculo" },
+                            { id: "valorTotal", label: "Valor Total (R$)", ph: "450,00", mask: "texto" },
+                            { id: "validade", label: "Validade da Proposta", ph: "15 DIAS", mask: "maiusculo" },
+                            { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
+                        ],
+                        gerar: (d) => `ORÇAMENTO DE PRESTAÇÃO DE SERVIÇOS\n\nCLIENTE: ${d.cliente || '________________________________________'}\nSERVIÇO: ${d.servico || '________________________________________'}\n\nVALOR TOTAL PROPOSTO: R$ ${d.valorTotal || '______'}\nVALIDADE DESTE ORÇAMENTO: ${d.validade || '__________'}\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Prestador</div>`
+                    }
+                ]
+            },
+            {
+                id: 11,
+                titulo: "11. Checklists e Listas",
+                desc: "Listas de checagem diária e organização de tarefas.",
+                modelos: [
+                    {
+                        nome: "Checklist Diário de Tarefas",
+                        campos: [
+                            { id: "titulo", label: "Título do Checklist", ph: "EX: CHECAGEM DA LOJA", mask: "maiusculo" },
+                            { id: "responsavel", label: "Responsável", ph: "EX: FERNANDA", mask: "maiusculo" },
+                            { id: "data", label: "Data", ph: "01/08/2026", mask: "texto" }
+                        ],
+                        gerar: (d) => `CHECKLIST DIÁRIO — ${d.titulo || 'TAREFAS'}\n\nRESPONSÁVEL: ${d.responsavel || '____________________'} | DATA: ${d.data || '____/____/________'}\n\n[  ] 1. Limpeza e organização do ambiente\n[  ] 2. Verificação do estoque\n[  ] 3. Conferência dos equipamentos\n[  ] 4. Fechamento das luzes e portas\n[  ] 5. Registro das ocorrências diárias\n\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Conferido por</div>`
+                    }
+                ]
+            },
+            {
+                id: 12,
+                titulo: "12. Requerimentos",
+                desc: "Requerimentos gerais para órgãos, instituições e empresas.",
+                modelos: [
+                    {
+                        nome: "Requerimento Geral Solicitante",
+                        campos: [
+                            { id: "destinatario", label: "Órgão / Empresa Destinatária", ph: "EX: PREFEITURA MUNICIPAL", mask: "maiusculo" },
+                            { id: "requerente", label: "Nome do Requerente", ph: "EX: SIMONE SILVA", mask: "maiusculo" },
+                            { id: "solicitacao", label: "Descreva seu Pedido", ph: "EX: SOLICITO A EMISSÃO DA CERTIDÃO...", mask: "maiusculo" },
+                            { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
+                        ],
+                        gerar: (d) => `REQUERIMENTO\n\nAO: ${d.destinatario || '________________________________________'}\n\nEu, ${d.requerente || '________________________________________'}, venho respeitosamente REQUERER:\n${d.solicitacao || '________________________________________________________________'}.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Requerente</div>`
+                    }
+                ]
+            },
+            {
+                id: 13,
+                titulo: "13. Termos de Responsabilidade",
+                desc: "Termos de uso de equipamentos, entrega de chaves e devolução.",
+                modelos: [
+                    {
+                        nome: "Termo de Entrega de Chaves / Equipamento",
+                        campos: [
+                            { id: "recebedor", label: "Quem Recebeu", ph: "EX: GABRIEL FERREIRA", mask: "maiusculo" },
+                            { id: "item", label: "Item / Equipamento Entregue", ph: "EX: CHAVES DA SALA 02 + NOTEBOOK", mask: "maiusculo" },
+                            { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
+                        ],
+                        gerar: (d) => `TERMO DE RESPONSABILIDADE E ENTREGA\n\nDeclaro que recebi o item: ${d.item || '________________________________________'} sob minha responsabilidade, comprometendo-me a mantê-lo em bom estado de uso.\n\nRECEBEDOR: ${d.recebedor || '________________________________________'}\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Recebedor</div>`
+                    }
+                ]
+            },
+            {
+                id: 14,
+                titulo: "14. Vendas e Comércio",
+                desc: "Pedidos de venda simples e comprovantes comerciais.",
+                modelos: [
+                    {
+                        nome: "Comprovante de Pedido de Venda",
+                        campos: [
+                            { id: "cliente", label: "Nome do Cliente", ph: "EX: BEATRIZ SOUZA", mask: "maiusculo" },
+                            { id: "itens", label: "Itens Vendidos", ph: "EX: 2 CÓPIAS A4 + 1 PASTA", mask: "maiusculo" },
+                            { id: "total", label: "Total Pago (R$)", ph: "15,00", mask: "texto" },
+                            { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
+                        ],
+                        gerar: (d) => `PEDIDO DE VENDA\n\nCLIENTE: ${d.cliente || '________________________________________'}\nITENS:\n${d.itens || '________________________________________________________________'}\n\nVALOR TOTAL: R$ ${d.total || '______'}\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Vendedor / Atendente</div>`
+                    }
+                ]
+            },
+            {
+                id: 15,
+                titulo: "15. Atendimentos e Fichas",
+                desc: "Fichas de atendimento, cadastro simples e formulários de recepção.",
+                modelos: [
+                    {
+                        nome: "Ficha de Cadastro de Atendimento",
+                        campos: [
+                            { id: "nome", label: "Nome do Cliente", ph: "EX: DANILO LIMA", mask: "maiusculo" },
+                            { id: "telefone", label: "Telefone / WhatsApp", ph: "(41) 99999-9999", mask: "texto" },
+                            { id: "obs", label: "Observação do Atendimento", ph: "EX: PRIMEIRA VISITA À LOJA", mask: "maiusculo" }
+                        ],
+                        gerar: (d) => `FICHA DE CADASTRO E ATENDIMENTO\n\nNOME: ${d.nome || '________________________________________'}\nTELEFONE: ${d.telefone || '____________________'}\nOBSERVAÇÕES: ${d.obs || '________________________________________'}\n\nDATA DO ATENDIMENTO: ${obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Atendente Responsável</div>`
+                    }
+                ]
+            }
         ];
 
         let topicoAtivo = null;
@@ -460,13 +671,9 @@
             const select = document.getElementById('selectModeloTopico');
             select.innerHTML = '';
 
-            if(!topicoAtivo.modelos || topicoAtivo.modelos.length === 0) {
-                select.innerHTML = `<option value="">Modelo Padrão em Branco (${topicoAtivo.titulo})</option>`;
-            } else {
-                topicoAtivo.modelos.forEach((m, idx) => {
-                    select.innerHTML += `<option value="${idx}">${m.nome}</option>`;
-                });
-            }
+            topicoAtivo.modelos.forEach((m, idx) => {
+                select.innerHTML += `<option value="${idx}">${m.nome}</option>`;
+            });
 
             document.getElementById('secaoGerador').classList.remove('hidden');
             carregarModeloSelecionado();
@@ -478,25 +685,16 @@
             const container = document.getElementById('camposDinamicos');
             container.innerHTML = '';
 
-            if(!topicoAtivo.modelos || topicoAtivo.modelos.length === 0 || idx === "") {
-                modeloAtivo = {
-                    nome: topicoAtivo.titulo,
-                    campos: [],
-                    gerar: () => `${topicoAtivo.titulo.toUpperCase()}\n\nNOME: _____________________________________________________\nCPF/RG: ____________________ DATA: ____/____/________\n\nDESCRITIVO / CONTEÚDO:\n______________________________________________________________________\n______________________________________________________________________\n______________________________________________________________________\n\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Responsável</div>`
-                };
-                container.innerHTML = `<p style="font-size: 13px; color: var(--text-muted);">Folha sem preenchimento automático. Você pode baixá-la para preencher à mão.</p>`;
-            } else {
-                modeloAtivo = topicoAtivo.modelos[idx];
-                modeloAtivo.campos.forEach(c => {
-                    const group = document.createElement('div');
-                    group.className = 'form-group';
-                    group.innerHTML = `
-                        <label>${c.label}:</label>
-                        <input type="text" id="input_${c.id}" placeholder="${c.ph}" oninput="processarEntradaInput(this, '${c.mask}')">
-                    `;
-                    container.appendChild(group);
-                });
-            }
+            modeloAtivo = topicoAtivo.modelos[idx];
+            modeloAtivo.campos.forEach(c => {
+                const group = document.createElement('div');
+                group.className = 'form-group';
+                group.innerHTML = `
+                    <label>${c.label}:</label>
+                    <input type="text" id="input_${c.id}" placeholder="${c.ph}" oninput="processarEntradaInput(this, '${c.mask}')">
+                `;
+                container.appendChild(group);
+            });
             atualizarDocumento();
         }
 
@@ -530,7 +728,11 @@
                 if (val !== "") preenchidos++;
             });
 
-            document.getElementById('folhaA4Preview').innerHTML = modeloAtivo.gerar(dados);
+            const htmlGerado = modeloAtivo.gerar(dados);
+            document.getElementById('folhaA4Preview').innerHTML = htmlGerado;
+            
+            // Atualiza o campo oculto do formulário de impressão
+            document.getElementById('ped_texto_gerado').value = document.getElementById('folhaA4Preview').innerText;
 
             const totalCampos = modeloAtivo.campos.length;
             const pct = totalCampos > 0 ? Math.round((preenchidos / totalCampos) * 100) : 100;
