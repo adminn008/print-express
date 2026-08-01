@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Documentos e Modelos - PrintExpress</title>
+    <title>Gerador e Emissor de Documentos - PrintExpress</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -33,81 +33,58 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s, color 0.2s, border 0.2s; }
-        
         body { background-color: var(--bg-body); color: var(--text-main); padding: 24px 16px 80px 16px; line-height: 1.6; }
-
         .container { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
 
-        /* HEADER & BARRA SUPERIOR */
+        /* HEADER & TOP BAR */
         .top-bar { display: flex; justify-content: space-between; align-items: center; }
-        
         .btn-voltar {
             background: var(--bg-card); border: 1px solid var(--border-color); color: var(--primary);
             padding: 8px 16px; border-radius: 12px; cursor: pointer; font-weight: 700; display: flex; align-items: center; gap: 8px;
         }
-
         .theme-toggle {
             background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main);
             padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 700;
         }
-
         header { text-align: center; margin-top: 10px; }
         h1 { color: var(--primary); font-size: 28px; font-weight: 800; }
         p.subtitle { color: var(--text-muted); font-size: 14px; }
 
-        /* CARROSSEL DE AVISOS */
+        /* CARROSSEL AUTOMÁTICO SEM SETAS */
         .carousel-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--shadow);
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 16px 20px; overflow: hidden; box-shadow: var(--shadow);
+            text-align: center;
         }
-        .carousel-slide {
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }
-        .carousel-slide.active { display: flex; }
-        .carousel-content { font-size: 13px; color: var(--text-main); flex: 1; }
+        .carousel-slide { display: none; }
+        .carousel-slide.active { display: block; }
+        .carousel-content { font-size: 13px; color: var(--text-main); }
         .carousel-content strong { color: var(--primary); font-size: 14px; display: block; margin-bottom: 2px; }
-        .carousel-nav {
-            display: flex; gap: 6px; align-items: center;
-        }
-        .carousel-btn {
-            background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-main);
-            border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        /* BARRA DE PROGRESSO DO PREENCHIMENTO */
-        .progress-box {
-            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 6px;
-        }
-        .progress-bar-bg { background: var(--bg-input); height: 10px; border-radius: 5px; overflow: hidden; width: 100%; }
-        .progress-bar-fill { background: var(--green); height: 100%; width: 0%; transition: width 0.3s; }
 
         /* TABELA DE PREÇOS */
         .tabela-precos {
             background: var(--bg-card); border-radius: 18px; padding: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow);
         }
-        .preco-item {
-            display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border-color); font-size: 14px;
-        }
+        .preco-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border-color); font-size: 14px; }
         .preco-item:last-child { border-bottom: none; }
         .preco-item .valor { font-weight: 800; color: var(--green); }
 
-        /* PAINEL GERADOR DE DOCUMENTO */
-        .gerador-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+        /* ESTRUTURA DE TÓPICOS / CATEGORIAS */
+        .topics-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;
         }
+        .topic-card {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px;
+            padding: 16px; cursor: pointer; transition: transform 0.2s, border-color 0.2s;
+        }
+        .topic-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .topic-header { display: flex; justify-content: space-between; align-items: center; }
+        .topic-title { font-size: 15px; font-weight: 700; color: var(--primary); }
+        .topic-desc { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 
-        @media (max-width: 850px) {
-            .gerador-grid { grid-template-columns: 1fr; }
-        }
+        /* PAINEL GERADOR DE DOCUMENTO */
+        .gerador-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        @media (max-width: 850px) { .gerador-grid { grid-template-columns: 1fr; } }
 
         .painel-box {
             background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px;
@@ -122,29 +99,21 @@
         }
         input:focus, select:focus, textarea:focus { border-color: var(--primary); }
 
-        /* PAINEL FERRAMENTAS EXTRAS DE AJUSTE */
         .tools-row {
             display: flex; gap: 8px; flex-wrap: wrap; background: var(--bg-input); padding: 10px; border-radius: 10px; align-items: center; justify-content: space-between;
         }
-        .tools-row select, .tools-row button { padding: 6px 10px; font-size: 12px; border-radius: 6px; }
+        .tools-row select { padding: 6px 10px; font-size: 12px; border-radius: 6px; }
 
         /* PRÉ-VISUALIZAÇÃO A4 */
         .preview-wrapper {
             background: #cbd5e1; padding: 20px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; gap: 15px;
         }
-        
         .folha-a4 {
             background: #ffffff; color: #000000; width: 100%; min-height: 500px; padding: 40px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-radius: 4px; font-family: 'Times New Roman', Times, serif; font-size: 14px; line-height: 1.8; white-space: pre-wrap; word-break: break-word;
         }
-
-        /* ESTILO DA ASSINATURA CENTRALIZADA NO DOCUMENTO */
-        .assinatura-box {
-            text-align: center; margin-top: 50px; width: 100%;
-        }
-        .linha-assinatura {
-            border-top: 1px solid #000; width: 300px; margin: 0 auto 5px auto;
-        }
+        .assinatura-box { text-align: center; margin-top: 50px; width: 100%; }
+        .linha-assinatura { border-top: 1px solid #000; width: 300px; margin: 0 auto 5px auto; }
 
         .btn-action {
             background: var(--primary); color: white; padding: 14px 20px; border: none; border-radius: 12px;
@@ -162,7 +131,14 @@
             background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;
         }
 
-        /* SEÇÃO PEDIDO / FORM SUBMIT */
+        /* BARRA DE PROGRESSO DO PREENCHIMENTO */
+        .progress-box {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 6px;
+        }
+        .progress-bar-bg { background: var(--bg-input); height: 10px; border-radius: 5px; overflow: hidden; width: 100%; }
+        .progress-bar-fill { background: var(--green); height: 100%; width: 0%; transition: width 0.3s; }
+
+        /* SEÇÃO PEDIDO */
         .form-section {
             background: var(--bg-card); border-radius: 18px; padding: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow);
         }
@@ -173,7 +149,6 @@
             display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        
         .modal-card {
             background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px;
             padding: 30px; max-width: 400px; width: 90%; text-align: center; box-shadow: var(--shadow);
@@ -184,11 +159,9 @@
             background: var(--primary); color: white; border: none; padding: 10px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; width: 100%;
         }
 
-        /* TELA DE SUCESSO / PAGAMENTO */
         .hidden { display: none !important; }
         .success-card { text-align: center; padding: 40px; background: var(--bg-card); border-radius: 20px; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
         .pix-box { background: var(--bg-input); padding: 20px; border-radius: 15px; border: 2px dashed var(--primary); margin: 20px 0; }
-
         .contador-info { font-size: 11px; color: var(--text-muted); text-align: right; }
     </style>
 </head>
@@ -202,31 +175,27 @@
 
         <header>
             <h1>Gerador e Emissor de Documentos Oficial</h1>
-            <p class="subtitle">Preencha os campos, veja a visualização em tempo real e faça o download direto do PDF.</p>
+            <p class="subtitle">Escolha o tópico, selecione o documento e baixe diretamente em PDF.</p>
         </header>
 
         <div class="carousel-container">
-            <div class="carousel-slide active" id="slide1">
+            <div class="carousel-slide active">
                 <div class="carousel-content">
-                    <strong>💡 Recursos Gratuitos no Site:</strong>
-                    Você pode gerar, visualizar em tempo real e baixar PDFs preenchidos ou em branco totalmente grátis!
+                    <strong>💡 Modelos Gratuitos para Uso Pessoal:</strong>
+                    Gere, preencha e baixe seus documentos em PDF diretamente pelo nosso site sem pagar nada!
                 </div>
             </div>
-            <div class="carousel-slide" id="slide2">
+            <div class="carousel-slide">
                 <div class="carousel-content">
-                    <strong>✍️ Serviço de Edição Profissional (R$ 5,00):</strong>
-                    Sem tempo para preencher? Selecione a opção no formulário que nossa equipe formata e preenche tudo para você!
+                    <strong>🖨️ Serviço de Impressão na Loja (R$ 0,50/folha):</strong>
+                    Envie o formulário de pedido abaixo e retire suas cópias impressas diretamente na PrintExpress.
                 </div>
             </div>
-            <div class="carousel-slide" id="slide3">
+            <div class="carousel-slide">
                 <div class="carousel-content">
-                    <strong>🖨️ Impressão Rápida na Loja (R$ 0,50):</strong>
-                    Gere seu documento aqui e envie o pedido para apenas retirar impresso na PrintExpress.
+                    <strong>✍️ Opção de Impressão Sem Preenchimento:</strong>
+                    Precisa assinar à caneta? Baixe a folha em branco diretamente pelo botão secundário!
                 </div>
-            </div>
-            <div class="carousel-nav">
-                <button class="carousel-btn" onclick="mudarSlide(-1)">❮</button>
-                <button class="carousel-btn" onclick="mudarSlide(1)">❯</button>
             </div>
         </div>
 
@@ -240,104 +209,87 @@
                 <span>🖨️ Impressão na Loja do Modelo Gerado (Folha A4)</span>
                 <span class="valor">R$ 0,50</span>
             </div>
-            <div class="preco-item">
-                <span>✍️ Documento Editado e Preenchido por nós (Pronto p/ assinar)</span>
-                <span class="valor">R$ 5,00</span>
-            </div>
         </section>
 
-        <div class="progress-box">
-            <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700;">
-                <span>Progresso do Preenchimento:</span>
-                <span id="percentualTexto">0%</span>
-            </div>
-            <div class="progress-bar-bg">
-                <div class="progress-bar-fill" id="progressBarFill"></div>
-            </div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <h2 style="font-size: 20px; color: var(--primary);">📂 Escolha uma Categoria de Documentos (15 Tópicos):</h2>
+            <div class="topics-grid" id="topicosContainer"></div>
         </div>
 
-        <div class="gerador-grid">
-            <div class="painel-box">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="font-size: 18px; color: var(--primary);">1. Escolha e Preencha</h3>
-                    <button class="btn-secundario" onclick="limparFormulario()">🧹 Limpar</button>
+        <div id="secaoGerador" class="hidden">
+            <div class="progress-box">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700;">
+                    <span>Progresso do Preenchimento:</span>
+                    <span id="percentualTexto">0%</span>
                 </div>
-
-                <div class="form-group">
-                    <label>Selecione o Modelo:</label>
-                    <select id="selectModelo" onchange="carregarCamposModelo()">
-                        <optgroup label="📄 Modelos com Preenchimento Automático">
-                            <option value="0">1. Declaração de Residência</option>
-                            <option value="1">2. Recibo de Pagamento Simples</option>
-                            <option value="2">3. Declaração de Trabalho Autônomo</option>
-                            <option value="3">4. Contrato Simples de Aluguel</option>
-                            <option value="4">5. Procuração Particular Simples</option>
-                            <option value="5">6. Recibo de Compra e Venda de Veículo</option>
-                            <option value="6">7. Declaração de Extravio/Perda de Documentos</option>
-                            <option value="7">8. Autorização de Viagem para Menor</option>
-                            <option value="8">9. Planilha / Controle de Fluxo de Caixa Diário</option>
-                            <option value="9">10. Folha de Ponto / Registro de Horários Mensal</option>
-                        </optgroup>
-                        <optgroup label="📋 Modelos Extras (Folha sem Preenchimento)">
-                            <option value="10">11. Extra: Formulário de Pedido Simples</option>
-                            <option value="11">12. Extra: Formulário de Orçamento de Serviço</option>
-                            <option value="12">13. Extra: Lista de Checagem / Checklist Diário</option>
-                        </optgroup>
-                    </select>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
                 </div>
-
-                <div id="camposDinamicos" style="display: flex; flex-direction: column; gap: 12px;"></div>
-
-                <div class="contador-info" id="contadorInfo">0 caracteres | 0 palavras</div>
             </div>
 
-            <div class="preview-wrapper">
-                <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-weight: 800; font-size: 13px; color: #0f172a;">📄 Visualização A4</span>
-                    <button class="btn-secundario" style="background:#fff; color:#0f172a;" onclick="copiarTextoPreview()">📋 Copiar Texto</button>
+            <div class="gerador-grid">
+                <div class="painel-box">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="font-size: 18px; color: var(--primary);" id="tituloModeloAtual">Preencha os Campos</h3>
+                        <button class="btn-secundario" onclick="limparFormulario()">🧹 Limpar</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Selecione o Modelo do Tópico:</label>
+                        <select id="selectModeloTopico" onchange="carregarModeloSelecionado()"></select>
+                    </div>
+
+                    <div id="camposDinamicos" style="display: flex; flex-direction: column; gap: 12px;"></div>
+
+                    <div class="contador-info" id="contadorInfo">0 caracteres | 0 palavras</div>
                 </div>
 
-                <div class="tools-row" style="width: 100%;">
-                    <div>
-                        <span style="font-size: 11px; font-weight:700; color:#0f172a;">Fonte:</span>
-                        <select id="selectFonte" onchange="alterarFontePreview()">
-                            <option value="'Times New Roman', Times, serif">Times New Roman</option>
-                            <option value="'Arial', sans-serif">Arial</option>
-                            <option value="'Courier New', monospace">Courier New</option>
-                        </select>
+                <div class="preview-wrapper">
+                    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 800; font-size: 13px; color: #0f172a;">📄 Visualização A4</span>
+                        <button class="btn-secundario" style="background:#fff; color:#0f172a;" onclick="copiarTextoPreview()">📋 Copiar Texto</button>
                     </div>
 
-                    <div>
-                        <span style="font-size: 11px; font-weight:700; color:#0f172a;">Tamanho:</span>
-                        <select id="selectTamanhoFonte" onchange="alterarTamanhoPreview()">
-                            <option value="13px">Pequeno</option>
-                            <option value="14px" selected>Médio</option>
-                            <option value="16px">Grande</option>
-                        </select>
+                    <div class="tools-row" style="width: 100%;">
+                        <div>
+                            <span style="font-size: 11px; font-weight:700; color:#0f172a;">Fonte:</span>
+                            <select id="selectFonte" onchange="alterarFontePreview()">
+                                <option value="'Times New Roman', Times, serif">Times New Roman</option>
+                                <option value="'Arial', sans-serif">Arial</option>
+                                <option value="'Courier New', monospace">Courier New</option>
+                            </select>
+                        </div>
+                        <div>
+                            <span style="font-size: 11px; font-weight:700; color:#0f172a;">Tamanho:</span>
+                            <select id="selectTamanhoFonte" onchange="alterarTamanhoPreview()">
+                                <option value="13px">Pequeno</option>
+                                <option value="14px" selected>Médio</option>
+                                <option value="16px">Grande</option>
+                            </select>
+                        </div>
+                        <div>
+                            <span style="font-size: 11px; font-weight:700; color:#0f172a;">Zoom:</span>
+                            <select id="selectZoom" onchange="alterarZoomPreview()">
+                                <option value="1">100%</option>
+                                <option value="0.9">90%</option>
+                                <option value="0.8">80%</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div>
-                        <span style="font-size: 11px; font-weight:700; color:#0f172a;">Zoom:</span>
-                        <select id="selectZoom" onchange="alterarZoomPreview()">
-                            <option value="1">100%</option>
-                            <option value="0.9">90%</option>
-                            <option value="0.8">80%</option>
-                        </select>
-                    </div>
+                    <div class="folha-a4" id="folhaA4Preview"></div>
+
+                    <button class="btn-action" onclick="baixarPDFDireto()">💾 Baixar PDF Preenchido</button>
+                    <button class="btn-outline" onclick="baixarPDFEmBranco()">✍️ Baixar PDF Sem Preenchimento (Assinar à Caneta)</button>
                 </div>
-
-                <div class="folha-a4" id="folhaA4Preview"></div>
-
-                <button class="btn-action" onclick="baixarPDFDireto()">💾 Baixar PDF Preenchido</button>
-                <button class="btn-outline" onclick="baixarPDFEmBranco()">✍️ Baixar PDF Sem Preenchimento (Assinar à Caneta)</button>
             </div>
         </div>
 
         <section class="form-section" id="secaoPedido">
-            <h3 style="margin-bottom: 12px; color: var(--primary);">🚀 Deseja receber impresso ou preenchido por nós?</h3>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Preencha abaixo para solicitarmos a impressão ou o preenchimento profissional.</p>
+            <h3 style="margin-bottom: 12px; color: var(--primary);">🚀 Deseja receber impresso na loja (R$ 0,50/folha)?</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Preencha abaixo para solicitar a impressão do seu documento.</p>
 
-            <form id="formModelos" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data">
+            <form id="formModelos" action="https://formsubmit.co/ws8530135@gmail.com" method="POST">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
                 
@@ -353,54 +305,13 @@
                 </div>
 
                 <div class="form-group" style="margin-top: 15px;">
-                    <label>Tipo de Serviço Desejado:</label>
-                    <select name="Servico" id="selectServicoPed" onchange="alternarCamposServico5Reais()">
-                        <option value="Impressao Simples (R$ 0,50)">Apenas Imprimir o Modelo que gerei aqui (R$ 0,50)</option>
-                        <option value="Preenchimento Completo (R$ 5,00)">Quero que a PrintExpress preencha e imprima tudo (R$ 5,00)</option>
-                    </select>
-                </div>
-
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Quantidade de Cópias Desejadas:</label>
+                    <label>Quantidade de Cópias Desejadas (R$ 0,50 cada):</label>
                     <input type="number" name="Quantidade_Copias" id="numCopias" value="1" min="1" max="50">
-                </div>
-
-                <div id="boxCampos5Reais" style="display: none; background: var(--bg-input); padding: 16px; border-radius: 12px; margin-top: 15px; border: 1px solid var(--border-color); flex-direction: column; gap: 12px;">
-                    <p style="font-size: 12px; font-weight: 800; color: var(--primary);">📋 DADOS COMPLETOS PARA PREENCHIMENTO PELA PRINTEXPRESS (R$ 5,00):</p>
-                    
-                    <div class="form-group">
-                        <label>Qual modelo você deseja que a gente edite?</label>
-                        <select id="selectModeloEdicaoPaga" name="Modelo_Solicitado_Para_Edicao" onchange="carregarCamposEdicaoPaga()">
-                            <option value="0">1. Declaração de Residência</option>
-                            <option value="1">2. Recibo de Pagamento Simples</option>
-                            <option value="2">3. Declaração de Trabalho Autônomo</option>
-                            <option value="3">4. Contrato Simples de Aluguel</option>
-                            <option value="4">5. Procuração Particular Simples</option>
-                            <option value="5">6. Recibo de Compra e Venda de Veículo</option>
-                            <option value="6">7. Declaração de Extravio/Perda de Documentos</option>
-                            <option value="7">8. Autorização de Viagem para Menor</option>
-                            <option value="8">9. Planilha / Controle de Fluxo de Caixa Diário</option>
-                            <option value="9">10. Folha de Ponto / Registro de Horários Mensal</option>
-                        </select>
-                    </div>
-
-                    <div id="containerCamposEdicaoPaga" style="display: flex; flex-direction: column; gap: 10px; background: var(--bg-card); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color);">
-                        </div>
-
-                    <div class="form-group">
-                        <label>E-mail para Envio da Prévia:</label>
-                        <input type="email" name="Email_Cliente" placeholder="seuemail@gmail.com">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Anexar Foto de Documento ou Comprovante (Opcional):</label>
-                        <input type="file" name="attachment" accept=".pdf,.jpg,.jpeg,.png">
-                    </div>
                 </div>
 
                 <div class="form-group" style="margin-top: 15px;">
                     <label>Observações ou Instruções Extras:</label>
-                    <textarea name="Observacoes" rows="2" placeholder="Ex: Preciso que preencha com a data do mês passado..."></textarea>
+                    <textarea name="Observacoes" rows="2" placeholder="Ex: Favor reter para retirada à tarde..."></textarea>
                 </div>
 
                 <div class="form-group" style="margin-top: 15px;">
@@ -411,16 +322,14 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn-action" style="margin-top: 20px;">Enviar Pedido por E-mail e Pagar 💳</button>
+                <button type="submit" class="btn-action" style="margin-top: 20px;">Enviar Pedido para Impressão 🖨️</button>
             </form>
         </section>
 
         <div id="telaSucesso" class="success-card hidden">
             <h2 style="color: var(--green);">🎉 Pedido Recebido com Sucesso!</h2>
-            <p>Seu documento já foi enviado para nosso e-mail e está na fila de impressão/edição.</p>
-            
+            <p>Seu documento foi enviado para nossa fila de impressão.</p>
             <div id="boxPagamento" class="pix-box"></div>
-
             <a id="btnWhats" href="#" target="_blank" style="display: block; background: #25D366; color: white; padding: 14px; border-radius: 12px; text-decoration: none; font-weight: 800; margin-top: 10px;">
                 💬 Confirmar Pedido no WhatsApp
             </a>
@@ -437,181 +346,148 @@
     </div>
 
     <script>
-        // CARROSSEL SCRIPT
+        // CARROSSEL AUTOMÁTICO SEM SETAS (Alterna a cada 3.5 segundos)
         let currentSlide = 0;
         const slides = document.querySelectorAll('.carousel-slide');
-
-        function mostrarSlide(index) {
-            slides.forEach(s => s.classList.remove('active'));
-            if (index >= slides.length) currentSlide = 0;
-            if (index < 0) currentSlide = slides.length - 1;
-            slides[currentSlide].classList.add('active');
-        }
-
-        function mudarSlide(direcao) {
-            currentSlide += direcao;
-            mostrarSlide(currentSlide);
-        }
-
         setInterval(() => {
-            currentSlide++;
-            mostrarSlide(currentSlide);
-        }, 4000);
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }, 3500);
 
-
-        // DATA ATUAL FORMATADA AUTOMÁTICA
         function obterDataAtual() {
             const hoje = new Date();
             const dia = hoje.getDate();
             const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-            const mes = meses[hoje.getMonth()];
-            const ano = hoje.getFullYear();
-            return `Curitiba - PR, ${dia} de ${mes} de ${ano}`;
+            return `Curitiba - PR, ${dia} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}`;
         }
 
-        // BASE DE DADOS DOS MODELOS
-        const listaModelos = [
+        // 15 TÓPICOS/CATEGORIAS COM SEUS MODELOS E CAMPOS
+        const topicosData = [
             {
-                nome: "Declaração de Residência",
-                campos: [
-                    { id: "nome", label: "Seu Nome Completo", ph: "EX: JOÃO DA SILVA", mask: "maiusculo" },
-                    { id: "cpf", label: "Seu CPF", ph: "000.000.000-00", mask: "cpf" },
-                    { id: "rg", label: "Seu RG", ph: "00.000.000-0", mask: "rg" },
-                    { id: "residente", label: "Nome do Residente/Declarante", ph: "EX: MARIA DAS DORES", mask: "maiusculo" },
-                    { id: "endereco", label: "Endereço Completo", ph: "EX: RUA DAS FLORES, 123 - CENTRO", mask: "maiusculo" },
-                    { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
-                ],
-                gerar: (d) => `DECLARAÇÃO DE RESIDÊNCIA\n\nEu, ${d.nome || '________________________________________'}, portador(a) do RG nº ${d.rg || '__________________'} e inscrito(a) no CPF nº ${d.cpf || '__________________'},\n\nDECLARO para os devidos fins de direito e comprovação junto a quem interessar possa, que ${d.residente || '________________________________________'} reside no endereço:\n\n${d.endereco || '________________________________________________________________________________'}\n\nPor ser a expressão da verdade, assumo inteira responsabilidade pelas informações acima e firmo a presente declaração.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Declarante</div>`
+                id: 1,
+                titulo: "1. Declarações Gerais",
+                desc: "Declarações de residência, hipossuficiência, extravio e gerais.",
+                modelos: [
+                    {
+                        nome: "Declaração de Residência",
+                        campos: [
+                            { id: "nome", label: "Seu Nome Completo", ph: "EX: JOÃO DA SILVA", mask: "maiusculo" },
+                            { id: "cpf", label: "Seu CPF", ph: "000.000.000-00", mask: "cpf" },
+                            { id: "rg", label: "Seu RG", ph: "00.000.000-0", mask: "rg" },
+                            { id: "residente", label: "Nome do Residente", ph: "EX: MARIA DAS DORES", mask: "maiusculo" },
+                            { id: "endereco", label: "Endereço Completo", ph: "EX: RUA DAS FLORES, 123", mask: "maiusculo" },
+                            { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
+                        ],
+                        gerar: (d) => `DECLARAÇÃO DE RESIDÊNCIA\n\nEu, ${d.nome || '________________________________________'}, portador(a) do RG nº ${d.rg || '__________________'} e CPF nº ${d.cpf || '__________________'},\n\nDECLARO que ${d.residente || '________________________________________'} reside no endereço:\n${d.endereco || '________________________________________________________________'}.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Declarante</div>`
+                    }
+                ]
             },
             {
-                nome: "Recibo de Pagamento Simples",
-                campos: [
-                    { id: "valor", label: "Valor (R$)", ph: "150,00", mask: "texto" },
-                    { id: "valorExtenso", label: "Valor por Extenso", ph: "EX: CENTO E CINQUENTA REAIS", mask: "maiusculo" },
-                    { id: "pagador", label: "Nome de quem pagou", ph: "EX: CARLOS EDUARDO", mask: "maiusculo" },
-                    { id: "referente", label: "Referente a", ph: "EX: SERVIÇOS DE MANUTENÇÃO", mask: "maiusculo" },
-                    { id: "recebedor", label: "Seu Nome (Quem Recebeu)", ph: "EX: PRINTEXPRESS", mask: "maiusculo" },
-                    { id: "cpfRecebedor", label: "Seu CPF/CNPJ", ph: "00.000.000/0001-00", mask: "texto" },
-                    { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
-                ],
-                gerar: (d) => `RECIBO DE PAGAMENTO — R$ ${d.valor || '______'}\n\nRecebi(emos) de ${d.pagador || '________________________________________'} a quantia de R$ ${d.valor || '______'} (${d.valorExtenso || '________________________________________'}), referente a:\n${d.referente || '________________________________________________________________'}.\n\nPara clareza e fins de quitação, firmo o presente recibo.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>${d.recebedor || 'Assinatura do Recebedor'}<br>CPF/CNPJ: ${d.cpfRecebedor || '__________________'}</div>`
+                id: 2,
+                titulo: "2. Recibos e Comprovantes",
+                desc: "Recibos de pagamento, quitação e prestação de serviços.",
+                modelos: [
+                    {
+                        nome: "Recibo de Pagamento Simples",
+                        campos: [
+                            { id: "valor", label: "Valor (R$)", ph: "150,00", mask: "texto" },
+                            { id: "pagador", label: "Nome do Pagador", ph: "EX: CARLOS SILVA", mask: "maiusculo" },
+                            { id: "referente", label: "Referente a", ph: "EX: SERVIÇOS DE PINTURA", mask: "maiusculo" },
+                            { id: "recebedor", label: "Seu Nome (Recebedor)", ph: "EX: PRINTEXPRESS", mask: "maiusculo" },
+                            { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
+                        ],
+                        gerar: (d) => `RECIBO DE PAGAMENTO — R$ ${d.valor || '______'}\n\nRecebi de ${d.pagador || '________________________________________'} a quantia referente a:\n${d.referente || '________________________________________________________________'}.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>${d.recebedor || 'Assinatura do Recebedor'}</div>`
+                    }
+                ]
             },
             {
-                nome: "Declaração de Trabalho Autônomo",
-                campos: [
-                    { id: "nome", label: "Seu Nome Completo", ph: "EX: ANA PAULA SOUZA", mask: "maiusculo" },
-                    { id: "cpf", label: "Seu CPF", ph: "000.000.000-00", mask: "cpf" },
-                    { id: "profissao", label: "Sua Profissão / Atividade", ph: "EX: CONFEITEIRA AUTÔNOMA", mask: "maiusculo" },
-                    { id: "renda", label: "Renda Média Mensal (R$)", ph: "2.500,00", mask: "texto" },
-                    { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
-                ],
-                gerar: (d) => `DECLARAÇÃO DE TRABALHO INFORMAL / AUTÔNOMO\n\nEu, ${d.nome || '________________________________________'}, portador(a) do CPF nº ${d.cpf || '__________________'},\n\nDECLARO sob as penas da lei, para fins de comprovação de renda, que exerço a atividade autônoma de ${d.profissao || '________________________________________'}, obtendo como rendimento médio mensal a quantia de R$ ${d.renda || '______'}.\n\nPor ser verdade, firmo a presente declaração.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Declarante</div>`
+                id: 3,
+                titulo: "3. Contratos e Locação",
+                desc: "Contratos simples de aluguel, prestação de serviço e parcerias.",
+                modelos: [
+                    {
+                        nome: "Contrato Simples de Aluguel",
+                        campos: [
+                            { id: "locador", label: "Proprietário (Locador)", ph: "EX: PEDRO ALVES", mask: "maiusculo" },
+                            { id: "locatario", label: "Inquilino (Locatário)", ph: "EX: LUCAS MENDES", mask: "maiusculo" },
+                            { id: "imovel", label: "Endereço do Imóvel", ph: "EX: RUA DO COMÉRCIO, 45", mask: "maiusculo" },
+                            { id: "valor", label: "Valor Mensal (R$)", ph: "800,00", mask: "texto" },
+                            { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
+                        ],
+                        gerar: (d) => `CONTRATO DE LOCAÇÃO RESIDENCIAL\n\nLOCADOR: ${d.locador || '________________________________________'}\nLOCATÁRIO: ${d.locatario || '________________________________________'}\n\nO LOCADOR aluga o imóvel em: ${d.imovel || '________________________________________'} pelo valor mensal de R$ ${d.valor || '______'}.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura das Partes</div>`
+                    }
+                ]
             },
-            {
-                nome: "Contrato Simples de Aluguel",
-                campos: [
-                    { id: "locador", label: "Nome do Proprietário (Locador)", ph: "EX: PEDRO ALVES", mask: "maiusculo" },
-                    { id: "locatario", label: "Nome do Inquilino (Locatário)", ph: "EX: LUCAS MENDES", mask: "maiusculo" },
-                    { id: "imovel", label: "Endereço do Imóvel", ph: "EX: RUA DO COMÉRCIO, 45", mask: "maiusculo" },
-                    { id: "valor", label: "Valor Mensal (R$)", ph: "800,00", mask: "texto" },
-                    { id: "vencimento", label: "Dia do Vencimento", ph: "10", mask: "texto" },
-                    { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
-                ],
-                gerar: (d) => `CONTRATO SIMPLIFICADO DE LOCAÇÃO RESIDENCIAL\n\nLOCADOR: ${d.locador || '________________________________________'}\nLOCATÁRIO: ${d.locatario || '________________________________________'}\n\n1. O LOCADOR aluga ao LOCATÁRIO o imóvel situado em: ${d.imovel || '________________________________________'}.\n2. O valor do aluguel mensal é de R$ ${d.valor || '______'}, com vencimento todo dia ${d.vencimento || '___'} de cada mês.\n3. O LOCATÁRIO compromete-se a zelar pelo imóvel e arcar com as despesas de consumo.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Locador / Locatário</div>`
-            },
-            {
-                nome: "Procuração Particular Simples",
-                campos: [
-                    { id: "outorgante", label: "Seu Nome (Outorgante)", ph: "EX: ROBERTO CARLOS", mask: "maiusculo" },
-                    { id: "cpfOut", label: "Seu CPF", ph: "000.000.000-00", mask: "cpf" },
-                    { id: "outorgado", label: "Nome do Representante", ph: "EX: FERNANDA LIMA", mask: "maiusculo" },
-                    { id: "cpfOutorgado", label: "CPF do Representante", ph: "000.000.000-00", mask: "cpf" },
-                    { id: "poderes", label: "Poderes Concedidos", ph: "EX: RESOLVER PENDÊNCIAS NO DETRAN", mask: "maiusculo" },
-                    { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
-                ],
-                gerar: (d) => `PROCURAÇÃO PARTICULAR\n\nOUTORGANTE: ${d.outorgante || '________________________________________'}, inscrito(a) no CPF nº ${d.cpfOut || '__________________'}.\nOUTORGADO: ${d.outorgado || '________________________________________'}, inscrito(a) no CPF nº ${d.cpfOutorgado || '__________________'}.\n\nPODERES: Por este instrumento, o Outorgante concede ao Outorgado amplos poderes para ${d.poderes || '________________________________________'}, praticando todos os atos necessários para o fiel cumprimento deste mandato.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Outorgante</div>`
-            },
-            {
-                nome: "Recibo de Venda de Veículo",
-                campos: [
-                    { id: "vendedor", label: "Nome do Vendedor", ph: "EX: MARCOS VINICIUS", mask: "maiusculo" },
-                    { id: "comprador", label: "Nome do Comprador", ph: "EX: GABRIEL SANTOS", mask: "maiusculo" },
-                    { id: "veiculo", label: "Modelo / Ano / Marca", ph: "EX: FIAT UNO 2012", mask: "maiusculo" },
-                    { id: "placa", label: "Placa do Veículo", ph: "ABC-1D23", mask: "maiusculo" },
-                    { id: "valor", label: "Valor de Venda (R$)", ph: "18.000,00", mask: "texto" },
-                    { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
-                ],
-                gerar: (d) => `RECIBO DE COMPRA E VENDA DE VEÍCULO\n\nRecebi de ${d.comprador || '________________________________________'} a quantia de R$ ${d.valor || '______'} referente à venda do veículo abaixo especificado:\n\nVeículo: ${d.veiculo || '____________________'}\nPlaca: ${d.placa || '__________'}\n\nDou quitação do valor recebido, transferindo a posse do veículo no estado em que se encontra.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Vendedor (${d.vendedor || 'Vendedor'})</div>`
-            },
-            {
-                nome: "Declaração de Extravio/Perda",
-                campos: [
-                    { id: "nome", label: "Seu Nome Completo", ph: "EX: JULIANA PAES", mask: "maiusculo" },
-                    { id: "cpf", label: "Seu CPF", ph: "000.000.000-00", mask: "cpf" },
-                    { id: "docsPerdidos", label: "Documentos Perdidos", ph: "EX: CARTEIRA DE TRABALHO E RG", mask: "maiusculo" },
-                    { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
-                ],
-                gerar: (d) => `DECLARAÇÃO DE EXTRAVIO DE DOCUMENTOS\n\nEu, ${d.nome || '________________________________________'}, portador(a) do CPF nº ${d.cpf || '__________________'},\n\nDECLARO para os devidos fins de direito que perdi/extraviei os seguintes documentos:\n\n- ${d.docsPerdidos || '________________________________________________________________'}\n\nPor ser a expressão da verdade, firmo a presente declaração sob as penas da lei.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Declarante</div>`
-            },
-            {
-                nome: "Autorização de Viagem para Menor",
-                campos: [
-                    { id: "pai", label: "Nome do Responsável", ph: "EX: RODRIGO FARO", mask: "maiusculo" },
-                    { id: "cpfPai", label: "CPF do Responsável", ph: "000.000.000-00", mask: "cpf" },
-                    { id: "menor", label: "Nome do Menor", ph: "EX: LUCAS FARO", mask: "maiusculo" },
-                    { id: "acompanhante", label: "Nome do Acompanhante", ph: "EX: TIA MARIA", mask: "maiusculo" },
-                    { id: "destino", label: "Destino da Viagem", ph: "EX: SÃO PAULO / SP", mask: "maiusculo" },
-                    { id: "cidadeData", label: "Cidade e Data", ph: obterDataAtual(), mask: "texto" }
-                ],
-                gerar: (d) => `AUTORIZAÇÃO DE VIAGEM NACIONAL PARA MENOR\n\nEu, ${d.pai || '________________________________________'}, inscrito(a) no CPF nº ${d.cpfPai || '__________________'}, na qualidade de responsável legal,\n\nAUTORIZO o(a) menor ${d.menor || '________________________________________'} a viajar acompanhado(a) de ${d.acompanhante || '________________________________________'} com destino a ${d.destino || '____________________'}.\n\n\n${d.cidadeData || obterDataAtual()}\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Responsável Legal</div>`
-            },
-            {
-                nome: "Planilha de Fluxo de Caixa Diário",
-                campos: [
-                    { id: "empresa", label: "Nome da Empresa / Negócio", ph: "EX: MINHA LOJA", mask: "maiusculo" },
-                    { id: "mes", label: "Mês / Ano de Referência", ph: "EX: AGOSTO / 2026", mask: "maiusculo" }
-                ],
-                gerar: (d) => `CONTROLE DE FLUXO DE CAIXA DIÁRIO\nEMPRESA: ${d.empresa || '________________________________________'} | MÊS: ${d.mes || '____________'}\n\n+-----+----------------------------------+------------------+------------------+\n| DIA | DESCRIÇÃO DAS ENTRADAS/SAÍDAS   | ENTRADA (R$)     | SAÍDA (R$)       |\n+-----+----------------------------------+------------------+------------------+\n| 01  |                                  |                  |                  |\n| 02  |                                  |                  |                  |\n| 03  |                                  |                  |                  |\n| 04  |                                  |                  |                  |\n| 05  |                                  |                  |                  |\n| 06  |                                  |                  |                  |\n| 07  |                                  |                  |                  |\n| 08  |                                  |                  |                  |\n| 09  |                                  |                  |                  |\n| 10  |                                  |                  |                  |\n+-----+----------------------------------+------------------+------------------+\n| TOTAL DO MÊS:                          | R$               | R$               |\n+----------------------------------------+------------------+------------------+`
-            },
-            {
-                nome: "Folha de Ponto / Registro de Horários Mensal",
-                campos: [
-                    { id: "funcionario", label: "Nome do Funcionário", ph: "EX: CARLOS SILVA", mask: "maiusculo" },
-                    { id: "cargo", label: "Cargo / Função", ph: "EX: ATENDENTE", mask: "maiusculo" },
-                    { id: "mesAno", label: "Mês / Ano", ph: "EX: AGOSTO / 2026", mask: "maiusculo" }
-                ],
-                gerar: (d) => `FOLHA DE PONTO MENSAL DE TRABALHO\nNOME: ${d.funcionario || '________________________________________'} | CARGO: ${d.cargo || '____________________'}\nMÊS/ANO: ${d.mesAno || '____________'}\n\n+-----+--------+--------+--------+--------+-----------------------------------+\n| DIA | ENTRADA| SAÍDA  | ENTRADA| SAÍDA  | ASSINATURA / VISTO               |\n+-----+--------+--------+--------+--------+-----------------------------------+\n| 01  |   :    |   :    |   :    |   :    |                                   |\n| 02  |   :    |   :    |   :    |   :    |                                   |\n| 03  |   :    |   :    |   :    |   :    |                                   |\n| 04  |   :    |   :    |   :    |   :    |                                   |\n| 05  |   :    |   :    |   :    |   :    |                                   |\n| 06  |   :    |   :    |   :    |   :    |                                   |\n| 07  |   :    |   :    |   :    |   :    |                                   |\n+-----+--------+--------+--------+--------+-----------------------------------+\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Funcionário</div>`
-            },
-            {
-                nome: "Extra: Formulário de Pedido Simples",
-                campos: [],
-                gerar: () => `FORMULÁRIO DE PEDIDO DE COMPRA / SERVIÇO\n\nNOME DO CLIENTE: _____________________________________________________\nTELEFONE/WHATSAPP: ____________________ DATA: ____/____/________\n\n+----+----------------------------------+------+------------+----------------+\n| QTD| DESCRIÇÃO DO ITEM / SERVIÇO      | UNID | VALOR UNT. | VALOR TOTAL    |\n+----+----------------------------------+------+------------+----------------+\n|    |                                  |      | R$         | R$             |\n|    |                                  |      | R$         | R$             |\n|    |                                  |      | R$         | R$             |\n|    |                                  |      | R$         | R$             |\n|    |                                  |      | R$         | R$             |\n+----+----------------------------------+------+------------+----------------+\n| VALOR TOTAL DO PEDIDO:                                    | R$             |\n+-----------------------------------------------------------+----------------+\n\nOBSERVAÇÕES: _________________________________________________________________\n\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Cliente</div>`
-            },
-            {
-                nome: "Extra: Formulário de Orçamento de Serviço",
-                campos: [],
-                gerar: () => `ORÇAMENTO DE PRESTAÇÃO DE SERVIÇOS\n\nCLIENTE: _____________________________________________________________\nENDEREÇO: ____________________________________________________________\nTELEFONE: _____________________________ DATA VALIDADE: ____/____/______\n\nDESCRITIVO DOS SERVIÇOS E MATERIAIS:\n______________________________________________________________________\n______________________________________________________________________\n______________________________________________________________________\n______________________________________________________________________\n\nCONDICIONAL DE PAGAMENTO: [  ] Á VISTA  [  ] PIX  [  ] CARTÃO DE CRÉDITO\n\nVALOR TOTAL DO ORÇAMENTO: R$ ________________________\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Responsável do Orçamento</div>`
-            },
-            {
-                nome: "Extra: Lista de Checagem / Checklist Diário",
-                campos: [],
-                gerar: () => `CHECKLIST DIÁRIO DE TAREFAS E TAREFAS\nDATA: ____/____/________   RESPONSÁVEL: ______________________________\n\n[  ] 01. _____________________________________________________________\n[  ] 02. _____________________________________________________________\n[  ] 03. _____________________________________________________________\n[  ] 04. _____________________________________________________________\n[  ] 05. _____________________________________________________________\n[  ] 06. _____________________________________________________________\n[  ] 07. _____________________________________________________________\n[  ] 08. _____________________________________________________________\n[  ] 09. _____________________________________________________________\n[  ] 10. _____________________________________________________________\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Visto do Supervisor</div>`
-            }
+            { id: 4, titulo: "4. Procurações", desc: "Procurações particulares para representação comercial e pessoal.", modelos: [] },
+            { id: 5, titulo: "5. Veículos e Trânsito", desc: "Recibos de compra/venda, autorizações e transferência.", modelos: [] },
+            { id: 6, titulo: "6. Trabalho e Renda", desc: "Declarações de trabalho autônomo e prestação de serviços.", modelos: [] },
+            { id: 7, titulo: "7. Viagem e Menor", desc: "Autorizações de viagem nacional/internacional para menores.", modelos: [] },
+            { id: 8, titulo: "8. Gestão e Fluxo de Caixa", desc: "Planilhas e controles de fluxo de caixa diário.", modelos: [] },
+            { id: 9, titulo: "9. RH e Registro de Ponto", desc: "Folhas de ponto mensal e controle de horários de funcionários.", modelos: [] },
+            { id: 10, titulo: "10. Orçamentos de Serviço", desc: "Formulários e modelos de orçamento de prestação de serviços.", modelos: [] },
+            { id: 11, titulo: "11. Checklists e Listas", desc: "Listas de checagem diária e organização de tarefas.", modelos: [] },
+            { id: 12, titulo: "12. Requerimentos", desc: "Requerimentos gerais para órgãos, instituições e empresas.", modelos: [] },
+            { id: 13, titulo: "13. Termos de Responsabilidade", desc: "Termos de uso de equipamentos, entrega de chaves e devolução.", modelos: [] },
+            { id: 14, titulo: "14. Vendas e Comércio", desc: "Pedidos de venda simples e comprovantes comerciais.", modelos: [] },
+            { id: 15, titulo: "15. Atendimentos e Fichas", desc: "Fichas de atendimento, cadastro simples e formulários de recepção.", modelos: [] }
         ];
 
-        let naAbaPagamento = false;
+        let topicoAtivo = null;
+        let modeloAtivo = null;
 
-        // CARREGA DINAMICAMENTE OS CAMPOS DO PAINEL PRINCIPAL
-        function carregarCamposModelo() {
-            const index = document.getElementById('selectModelo').value;
-            const mod = listaModelos[index];
+        // RENDERIZA OS 15 TÓPICOS
+        function renderizarTopicos() {
+            const container = document.getElementById('topicosContainer');
+            container.innerHTML = '';
+            topicosData.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'topic-card';
+                card.onclick = () => selecionarTopico(t.id);
+                card.innerHTML = `
+                    <div class="topic-header">
+                        <span class="topic-title">${t.titulo}</span>
+                    </div>
+                    <p class="topic-desc">${t.desc}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // SELECIONA O TÓPICO E PREENCHE OS MODELOS
+        function selecionarTopico(id) {
+            topicoAtivo = topicosData.find(t => t.id === id);
+            const select = document.getElementById('selectModeloTopico');
+            select.innerHTML = '';
+
+            if(!topicoAtivo.modelos || topicoAtivo.modelos.length === 0) {
+                select.innerHTML = `<option value="">Modelo Padrão em Branco (${topicoAtivo.titulo})</option>`;
+            } else {
+                topicoAtivo.modelos.forEach((m, idx) => {
+                    select.innerHTML += `<option value="${idx}">${m.nome}</option>`;
+                });
+            }
+
+            document.getElementById('secaoGerador').classList.remove('hidden');
+            carregarModeloSelecionado();
+            window.scrollTo({ top: document.getElementById('secaoGerador').offsetTop - 20, behavior: 'smooth' });
+        }
+
+        function carregarModeloSelecionado() {
+            const idx = document.getElementById('selectModeloTopico').value;
             const container = document.getElementById('camposDinamicos');
             container.innerHTML = '';
 
-            if (mod.campos.length === 0) {
-                container.innerHTML = `<p style="font-size: 13px; color: var(--text-muted);">Este é um modelo de folha sem preenchimento. Você pode baixá-lo ou imprimi-lo diretamente para preencher à mão.</p>`;
+            if(!topicoAtivo.modelos || topicoAtivo.modelos.length === 0 || idx === "") {
+                modeloAtivo = {
+                    nome: topicoAtivo.titulo,
+                    campos: [],
+                    gerar: () => `${topicoAtivo.titulo.toUpperCase()}\n\nNOME: _____________________________________________________\nCPF/RG: ____________________ DATA: ____/____/________\n\nDESCRITIVO / CONTEÚDO:\n______________________________________________________________________\n______________________________________________________________________\n______________________________________________________________________\n\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Responsável</div>`
+                };
+                container.innerHTML = `<p style="font-size: 13px; color: var(--text-muted);">Folha sem preenchimento automático. Você pode baixá-la para preencher à mão.</p>`;
             } else {
-                mod.campos.forEach(c => {
+                modeloAtivo = topicoAtivo.modelos[idx];
+                modeloAtivo.campos.forEach(c => {
                     const group = document.createElement('div');
                     group.className = 'form-group';
                     group.innerHTML = `
@@ -621,49 +497,20 @@
                     container.appendChild(group);
                 });
             }
-
             atualizarDocumento();
         }
 
-        // CARREGA DINAMICAMENTE OS CAMPOS PARA A OPÇÃO DE EDIÇÃO PAGA (R$ 5,00)
-        function carregarCamposEdicaoPaga() {
-            const index = document.getElementById('selectModeloEdicaoPaga').value;
-            const mod = listaModelos[index];
-            const container = document.getElementById('containerCamposEdicaoPaga');
-            container.innerHTML = '';
-
-            if (mod.campos.length === 0) {
-                container.innerHTML = `<p style="font-size: 12px; color: var(--text-muted);">Este modelo não possui campos fixos. Deixe as instruções do que deseja na caixa de observações abaixo.</p>`;
-            } else {
-                mod.campos.forEach(c => {
-                    const group = document.createElement('div');
-                    group.className = 'form-group';
-                    group.innerHTML = `
-                        <label>${c.label}:</label>
-                        <input type="text" name="EdicaoPaga_${c.id}" placeholder="${c.ph}">
-                    `;
-                    container.appendChild(group);
-                });
-            }
-        }
-
-        // MÁSCARAS E FORMATAÇÃO AUTOMÁTICA NOS INPUTS
         function processarEntradaInput(el, tipo) {
-            if (tipo === "maiusculo") {
-                el.value = el.value.toUpperCase();
-            } else if (tipo === "cpf") {
+            if (tipo === "maiusculo") el.value = el.value.toUpperCase();
+            else if (tipo === "cpf") {
                 let v = el.value.replace(/\D/g, '');
                 if (v.length > 11) v = v.substring(0, 11);
-                v = v.replace(/(\d{3})(\d)/, '$1.$2');
-                v = v.replace(/(\d{3})(\d)/, '$1.$2');
-                v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
                 el.value = v;
             } else if (tipo === "rg") {
                 let v = el.value.replace(/\D/g, '');
                 if (v.length > 9) v = v.substring(0, 9);
-                v = v.replace(/(\d{2})(\d)/, '$1.$2');
-                v = v.replace(/(\d{3})(\d)/, '$1.$2');
-                v = v.replace(/(\d{3})(\d{1})$/, '$1-$2');
+                v = v.replace(/(\d{2})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1})$/, '$1-$2');
                 el.value = v;
             }
             atualizarDocumento();
@@ -671,137 +518,69 @@
 
         function aplicarMaiusculas(el) { el.value = el.value.toUpperCase(); }
 
-        // ATUALIZA A FOLHA A4 EM TEMPO REAL E BARRA DE PROGRESSO
         function atualizarDocumento() {
-            const index = document.getElementById('selectModelo').value;
-            const mod = listaModelos[index];
+            if(!modeloAtivo) return;
             let dados = {};
             let preenchidos = 0;
 
-            mod.campos.forEach(c => {
+            modeloAtivo.campos.forEach(c => {
                 const el = document.getElementById(`input_${c.id}`);
                 const val = el ? el.value.trim() : "";
                 dados[c.id] = val;
                 if (val !== "") preenchidos++;
             });
 
-            // Atualiza o HTML da Folha
-            document.getElementById('folhaA4Preview').innerHTML = mod.gerar(dados);
+            document.getElementById('folhaA4Preview').innerHTML = modeloAtivo.gerar(dados);
 
-            // Atualiza Progresso
-            const totalCampos = mod.campos.length;
+            const totalCampos = modeloAtivo.campos.length;
             const pct = totalCampos > 0 ? Math.round((preenchidos / totalCampos) * 100) : 100;
             document.getElementById('progressBarFill').style.width = pct + "%";
             document.getElementById('percentualTexto').innerText = pct + "%";
 
-            // Contador de Caracteres e Palavras
             const texto = document.getElementById('folhaA4Preview').innerText;
-            const numChars = texto.length;
-            const numPalavras = texto.trim() === "" ? 0 : texto.trim().split(/\s+/).length;
-            document.getElementById('contadorInfo').innerText = `${numChars} caracteres | ${numPalavras} palavras`;
+            document.getElementById('contadorInfo').innerText = `${texto.length} caracteres | ${texto.trim() === "" ? 0 : texto.trim().split(/\s+/).length} palavras`;
         }
 
-        // SALVA / BAIXA DIRETO EM PDF PREENCHIDO
         function baixarPDFDireto() {
             const elemento = document.getElementById('folhaA4Preview');
-            const index = document.getElementById('selectModelo').value;
-            const nomeArquivo = listaModelos[index].nome.toLowerCase().replace(/[^a-z0-9]/g, '_') + '.pdf';
-
             mostrarModal("Gerando PDF...", "Aguarde um instante, seu arquivo está sendo preparado para download.");
-
-            const opt = {
-                margin:       10,
-                filename:     nomeArquivo,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(elemento).save().then(() => {
-                fecharModal();
-            });
+            const opt = { margin: 10, filename: 'documento.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+            html2pdf().set(opt).from(elemento).save().then(() => fecharModal());
         }
 
-        // BAIXA O PDF EM BRANCO (SEM PREENCHIMENTO), COM ESPERA DE 3 SEGUNDOS SEM MOSTRAR CONTAGEM
         function baixarPDFEmBranco() {
-            const index = document.getElementById('selectModelo').value;
-            const mod = listaModelos[index];
-            const nomeArquivo = mod.nome.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_em_branco.pdf';
-
-            // Cria um container oculto para gerar a folha limpa
             const tempDiv = document.createElement('div');
             tempDiv.className = 'folha-a4';
             tempDiv.style.position = 'absolute';
             tempDiv.style.left = '-9999px';
-            tempDiv.style.fontFamily = document.getElementById('selectFonte').value;
-            tempDiv.style.fontSize = document.getElementById('selectTamanhoFonte').value;
-            tempDiv.innerHTML = mod.gerar({}); // Passa objeto vazio para gerar tudo com linhas de preenchimento
-
+            tempDiv.innerHTML = modeloAtivo.gerar({});
             document.body.appendChild(tempDiv);
 
-            // Exibe o modal informando o processamento
-            mostrarModalSemBotao("Processando Solicitação...", "Aguarde alguns segundos enquanto preparamos a folha em branco com os campos de assinatura para você...");
+            mostrarModalSemBotao("Processando...", "Aguarde enquanto preparamos a folha em branco para você...");
 
             setTimeout(() => {
-                const opt = {
-                    margin:       10,
-                    filename:     nomeArquivo,
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2 },
-                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-
+                const opt = { margin: 10, filename: 'documento_em_branco.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
                 html2pdf().set(opt).from(tempDiv).save().then(() => {
                     document.body.removeChild(tempDiv);
                     fecharModal();
                 });
-            }, 3000); // Exatos 3 segundos sem mostrar contagem
+            }, 3000);
         }
 
-        // COPIAR TEXTO DO PREVIEW
         function copiarTextoPreview() {
-            const txt = document.getElementById('folhaA4Preview').innerText;
-            navigator.clipboard.writeText(txt);
-            mostrarModal("Copiado!", "O texto do documento foi copiado para a sua área de transferência.");
+            navigator.clipboard.writeText(document.getElementById('folhaA4Preview').innerText);
+            mostrarModal("Copiado!", "Texto copiado para a área de transferência.");
         }
 
-        // LIMPAR FORMULÁRIO
         function limparFormulario() {
-            const inputs = document.querySelectorAll('#camposDinamicos input');
-            inputs.forEach(i => i.value = '');
+            document.querySelectorAll('#camposDinamicos input').forEach(i => i.value = '');
             atualizarDocumento();
         }
 
-        // ALTERADORES DE FONTE E VISUALIZAÇÃO
-        function alterarFontePreview() {
-            const fonte = document.getElementById('selectFonte').value;
-            document.getElementById('folhaA4Preview').style.fontFamily = fonte;
-        }
+        function alterarFontePreview() { document.getElementById('folhaA4Preview').style.fontFamily = document.getElementById('selectFonte').value; }
+        function alterarTamanhoPreview() { document.getElementById('folhaA4Preview').style.fontSize = document.getElementById('selectTamanhoFonte').value; }
+        function alterarZoomPreview() { document.getElementById('folhaA4Preview').style.transform = `scale(${document.getElementById('selectZoom').value})`; document.getElementById('folhaA4Preview').style.transformOrigin = `top center`; }
 
-        function alterarTamanhoPreview() {
-            const tam = document.getElementById('selectTamanhoFonte').value;
-            document.getElementById('folhaA4Preview').style.fontSize = tam;
-        }
-
-        function alterarZoomPreview() {
-            const zoom = document.getElementById('selectZoom').value;
-            document.getElementById('folhaA4Preview').style.transform = `scale(${zoom})`;
-            document.getElementById('folhaA4Preview').style.transformOrigin = `top center`;
-        }
-
-        // ALTERNADOR DE CAMPOS PARA O SERVIÇO DE R$ 5,00
-        function alternarCamposServico5Reais() {
-            const val = document.getElementById('selectServicoPed').value;
-            const box = document.getElementById('boxCampos5Reais');
-            if (val.includes("R$ 5,00")) {
-                box.style.display = 'flex';
-                carregarCamposEdicaoPaga();
-            } else {
-                box.style.display = 'none';
-            }
-        }
-
-        // MODAIS CUSTOMIZADOS
         function mostrarModal(titulo, mensagem) {
             document.getElementById('modalTitle').innerText = titulo;
             document.getElementById('modalMsg').innerText = mensagem;
@@ -816,17 +595,8 @@
             document.getElementById('customModal').classList.add('active');
         }
 
-        function fecharModal() {
-            document.getElementById('customModal').classList.remove('active');
-        }
-
-        function voltarPainel() {
-            if(naAbaPagamento) {
-                if(confirm("Você possui um pedido pendente. Deseja realmente voltar ao painel?")) window.location.href = 'index.html';
-            } else {
-                window.location.href = 'index.html';
-            }
-        }
+        function fecharModal() { document.getElementById('customModal').classList.remove('active'); }
+        function voltarPainel() { window.location.href = 'index.html'; }
 
         function toggleTheme() {
             const html = document.documentElement;
@@ -840,64 +610,47 @@
             }
         }
 
-        // MÁSCARA TELEFONE DO PEDIDO
         document.getElementById('ped_telefone').addEventListener('input', (e) => {
             let v = e.target.value.replace(/\D/g,'');
-            v=v.replace(/^(\d{2})(\d)/g,"($1) $2");
-            v=v.replace(/(\d)(\d{4})$/,"$1-$2");
+            v=v.replace(/^(\d{2})(\d)/g,"($1) $2").replace(/(\d)(\d{4})$/,"$1-$2");
             e.target.value = v;
         });
 
-        // ENVIO DO FORMULÁRIO DE PEDIDO POR EMAIL (FORMSUBMIT)
-        const form = document.getElementById('formModelos');
-        form.addEventListener('submit', async (e) => {
+        document.getElementById('formModelos').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button[type="submit"]');
+            const form = e.target;
+            const btn = form.querySelector('button[type="submit"]');
             btn.disabled = true;
             btn.innerText = "Enviando Pedido...";
 
             const formData = new FormData(form);
-            const pagamento = formData.get('Pagamento');
-            const servico = formData.get('Servico');
             const copias = formData.get('Quantidade_Copias') || 1;
-            
-            let totalUnitario = servico.includes("R$ 5,00") ? 5.00 : 0.50;
-            let totalGeral = (totalUnitario * copias).toFixed(2).replace('.', ',');
+            let totalGeral = (0.50 * copias).toFixed(2).replace('.', ',');
 
             try {
                 await fetch(form.action, { method: 'POST', body: formData, headers: {'Accept': 'application/json'} });
-                
-                naAbaPagamento = true;
                 document.getElementById('secaoPedido').classList.add('hidden');
-                document.querySelector('.gerador-grid').classList.add('hidden');
-                document.querySelector('.progress-box').classList.add('hidden');
+                document.getElementById('secaoGerador').classList.add('hidden');
                 
-                const tela = document.getElementById('telaSucesso');
                 const box = document.getElementById('boxPagamento');
-                
-                if(pagamento === 'PIX') {
-                    box.innerHTML = `
-                        <p style="font-size: 13px; color: var(--text-muted);">Total do Pedido (${copias} cópias):</p>
-                        <h2 style="color:var(--green); font-size: 28px; margin-bottom: 10px;">R$ ${totalGeral}</h2>
-                        <p style="font-size: 12px; font-weight:700;">Chave PIX (Telefone / Copia e Cola):</p>
-                        <p style="font-size:11px; margin-top:5px; word-break:break-all; background: var(--bg-card); padding: 10px; border-radius: 8px;">00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB</p>
-                    `;
-                } else {
-                    box.innerHTML = `<h2>Total: R$ ${totalGeral}</h2><p style="margin-top:5px;">Pagamento em dinheiro na retirada (${copias} cópias).</p>`;
-                }
-                
-                document.getElementById('btnWhats').href = `https://wa.me/5541999682836?text=Olá! Enviei um pedido (${servico}) com ${copias} via(s) no valor de R$ ${totalGeral}.`;
-                tela.classList.remove('hidden');
+                box.innerHTML = `
+                    <p style="font-size: 13px; color: var(--text-muted);">Total da Impressão (${copias} cópias):</p>
+                    <h2 style="color:var(--green); font-size: 28px; margin-bottom: 10px;">R$ ${totalGeral}</h2>
+                    <p style="font-size: 12px; font-weight:700;">Chave PIX:</p>
+                    <p style="font-size:11px; margin-top:5px; word-break:break-all; background: var(--bg-card); padding: 10px; border-radius: 8px;">00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB</p>
+                `;
+                document.getElementById('btnWhats').href = `https://wa.me/5541999682836?text=Olá! Enviei um pedido de impressão com ${copias} cópia(s) no valor de R$ ${totalGeral}.`;
+                document.getElementById('telaSucesso').classList.remove('hidden');
                 window.scrollTo(0,0);
             } catch(err) {
-                mostrarModal("Ops!", "Houve uma falha no envio. Verifique sua conexão e tente novamente.");
+                mostrarModal("Ops!", "Houve uma falha no envio. Tente novamente.");
                 btn.disabled = false;
-                btn.innerText = "Enviar Pedido por E-mail e Pagar 💳";
+                btn.innerText = "Enviar Pedido para Impressão 🖨️";
             }
         });
 
-        // INICIALIZA O PRIMEIRO MODELO
-        carregarCamposModelo();
+        // Inicializa a renderização das 15 categorias
+        renderizarTopicos();
     </script>
 </body>
 </html>
