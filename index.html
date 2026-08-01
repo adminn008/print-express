@@ -342,6 +342,16 @@
             margin-top: 4px;
         }
 
+        .aviso-multiarquivos {
+            background: var(--accent-light);
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 12px;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
         .price-box {
             background: var(--bg-input);
             border: 1px solid var(--border-color);
@@ -815,7 +825,7 @@
                 </div>
 
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label for="quantidade">Quantidade de Cópias / Folhas:</label>
+                    <label for="quantidade">Quantidade de Cópias de Cada Arquivo:</label>
                     <input type="number" id="quantidade" name="Quantidade de Copias" value="1" min="1">
                 </div>
 
@@ -830,6 +840,10 @@
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <label for="arquivo">Anexar Documento(s) – Máx. 10.00MB:</label>
                         <button type="button" class="btn-toggle-modo" id="btnToggleModo">✏️ Prefiro colar um texto</button>
+                    </div>
+
+                    <div class="aviso-multiarquivos">
+                        💡 <strong>Dica para enviar mais de 1 arquivo:</strong> No celular, <u>pressione e segure</u> sobre o primeiro arquivo para selecionar vários. No PC, segure a tecla <strong>Ctrl</strong> e clique em cada um.
                     </div>
                     
                     <div id="campoArquivoContainer">
@@ -861,6 +875,9 @@
 
                 <div class="form-group">
                     <label for="arquivo_doc">Anexar PDF / Imagem do Documento:</label>
+                    <div class="aviso-multiarquivos">
+                        💡 <strong>Dica:</strong> Pressione e segure o dedo no celular (ou segure Ctrl no PC) para marcar mais de um arquivo de uma vez.
+                    </div>
                     <input type="file" id="arquivo_doc" name="Anexo Documento Oficial[]" accept=".pdf,.png,.jpg,.jpeg" multiple>
                 </div>
             </div>
@@ -1206,16 +1223,21 @@
                     case "cobertura_total": precoUnitario = 2.00; break;
                     case "pb": default: precoUnitario = 0.50; break;
                 }
-                const qtd = parseInt(inputQtd.value) || 1;
-                subtotal = precoUnitario * qtd;
-                if (selectTipo.value === "media_cor" && qtd > 5) {
-                    desconto = (1.35 - 1.20) * qtd;
+                const copias = parseInt(inputQtd.value) || 1;
+                const totalArquivos = inputArquivo.files.length > 0 ? inputArquivo.files.length : 1;
+                const qtdTotalFolhas = copias * totalArquivos;
+
+                subtotal = precoUnitario * qtdTotalFolhas;
+                if (selectTipo.value === "media_cor" && qtdTotalFolhas > 5) {
+                    desconto = (1.35 - 1.20) * qtdTotalFolhas;
                 }
             } else if (servicoAtivo === 'doc') {
                 let precoDoc = 1.00;
                 if (selectDocOficial.value === 'boleto') precoDoc = 0.50;
-                const qtd = parseInt(inputQtdDoc.value) || 1;
-                subtotal = precoDoc * qtd;
+                const copias = parseInt(inputQtdDoc.value) || 1;
+                const totalArquivosDoc = document.getElementById("arquivo_doc").files.length > 0 ? document.getElementById("arquivo_doc").files.length : 1;
+                
+                subtotal = precoDoc * copias * totalArquivosDoc;
             } else if (servicoAtivo === 'dig') {
                 const qtd = parseInt(inputQtdDig.value) || 1;
                 subtotal = 2.00 * qtd;
@@ -1255,6 +1277,7 @@
         selectDocOficial.addEventListener("change", calcularValor);
         inputQtdDoc.addEventListener("input", calcularValor);
         inputQtdDig.addEventListener("input", calcularValor);
+        document.getElementById("arquivo_doc").addEventListener("change", calcularValor);
 
         // MODO ANEXAR / COLAR TEXTO
         const btnToggleModo = document.getElementById("btnToggleModo");
@@ -1271,11 +1294,13 @@
                 btnToggleModo.innerText = "📎 Prefiro anexar um arquivo";
                 inputArquivo.removeAttribute("required");
                 inputArquivo.value = ""; 
+                calcularValor();
             } else {
                 campoTextoContainer.classList.add("hidden");
                 campoArquivoContainer.classList.remove("hidden");
                 btnToggleModo.innerText = "✏️ Prefiro colar um texto";
                 if(servicoAtivo === 'a4') inputArquivo.setAttribute("required", "required");
+                calcularValor();
             }
         });
 
@@ -1325,6 +1350,8 @@
                 imgPreview.style.display = "none";
                 pdfPreview.style.display = "none";
             }
+
+            calcularValor();
         });
 
         // MÁSCARAS DE ENTRADA
