@@ -55,6 +55,34 @@
         h1 { color: var(--primary); font-size: 28px; font-weight: 800; }
         p.subtitle { color: var(--text-muted); font-size: 14px; }
 
+        /* CARROSSEL DE AVISOS */
+        .carousel-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .carousel-slide {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .carousel-slide.active { display: flex; }
+        .carousel-content { font-size: 13px; color: var(--text-main); flex: 1; }
+        .carousel-content strong { color: var(--primary); font-size: 14px; display: block; margin-bottom: 2px; }
+        .carousel-nav {
+            display: flex; gap: 6px; align-items: center;
+        }
+        .carousel-btn {
+            background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-main);
+            border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+        }
+
         /* BARRA DE PROGRESSO DO PREENCHIMENTO */
         .progress-box {
             background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 6px;
@@ -124,6 +152,12 @@
         }
         .btn-action:hover { background: var(--primary-hover); }
 
+        .btn-outline {
+            background: transparent; border: 2px solid var(--primary); color: var(--primary); padding: 12px 20px; border-radius: 12px;
+            font-weight: 800; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 8px;
+        }
+        .btn-outline:hover { background: var(--accent-light); }
+
         .btn-secundario {
             background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;
         }
@@ -170,6 +204,31 @@
             <h1>Gerador e Emissor de Documentos Oficial</h1>
             <p class="subtitle">Preencha os campos, veja a visualização em tempo real e faça o download direto do PDF.</p>
         </header>
+
+        <div class="carousel-container">
+            <div class="carousel-slide active" id="slide1">
+                <div class="carousel-content">
+                    <strong>💡 Recursos Gratuitos no Site:</strong>
+                    Você pode gerar, visualizar em tempo real e baixar PDFs preenchidos ou em branco totalmente grátis!
+                </div>
+            </div>
+            <div class="carousel-slide" id="slide2">
+                <div class="carousel-content">
+                    <strong>✍️ Serviço de Edição Profissional (R$ 5,00):</strong>
+                    Sem tempo para preencher? Selecione a opção no formulário que nossa equipe formata e preenche tudo para você!
+                </div>
+            </div>
+            <div class="carousel-slide" id="slide3">
+                <div class="carousel-content">
+                    <strong>🖨️ Impressão Rápida na Loja (R$ 0,50):</strong>
+                    Gere seu documento aqui e envie o pedido para apenas retirar impresso na PrintExpress.
+                </div>
+            </div>
+            <div class="carousel-nav">
+                <button class="carousel-btn" onclick="mudarSlide(-1)">❮</button>
+                <button class="carousel-btn" onclick="mudarSlide(1)">❯</button>
+            </div>
+        </div>
 
         <section class="tabela-precos">
             <h3 style="margin-bottom: 8px; color: var(--primary); font-size: 16px;">💰 Tabela de Serviços</h3>
@@ -227,8 +286,7 @@
                     </select>
                 </div>
 
-                <div id="camposDinamicos" style="display: flex; flex-direction: column; gap: 12px;">
-                    </div>
+                <div id="camposDinamicos" style="display: flex; flex-direction: column; gap: 12px;"></div>
 
                 <div class="contador-info" id="contadorInfo">0 caracteres | 0 palavras</div>
             </div>
@@ -268,10 +326,10 @@
                     </div>
                 </div>
 
-                <div class="folha-a4" id="folhaA4Preview">
-                    </div>
+                <div class="folha-a4" id="folhaA4Preview"></div>
 
-                <button class="btn-action" onclick="baixarPDFDireto()">💾 Baixar / Salvar em PDF (Download)</button>
+                <button class="btn-action" onclick="baixarPDFDireto()">💾 Baixar PDF Preenchido</button>
+                <button class="btn-outline" onclick="baixarPDFEmBranco()">✍️ Baixar PDF Sem Preenchimento (Assinar à Caneta)</button>
             </div>
         </div>
 
@@ -310,16 +368,24 @@
                 <div id="boxCampos5Reais" style="display: none; background: var(--bg-input); padding: 16px; border-radius: 12px; margin-top: 15px; border: 1px solid var(--border-color); flex-direction: column; gap: 12px;">
                     <p style="font-size: 12px; font-weight: 800; color: var(--primary);">📋 DADOS COMPLETOS PARA PREENCHIMENTO PELA PRINTEXPRESS (R$ 5,00):</p>
                     
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div class="form-group">
-                            <label>Seu CPF:</label>
-                            <input type="text" id="ped_cpf" name="CPF_Cliente" placeholder="000.000.000-00" oninput="aplicarMascaraCPF(this)">
-                        </div>
-                        <div class="form-group">
-                            <label>Seu RG:</label>
-                            <input type="text" id="ped_rg" name="RG_Cliente" placeholder="00.000.000-0" oninput="aplicarMascaraRG(this)">
-                        </div>
+                    <div class="form-group">
+                        <label>Qual modelo você deseja que a gente edite?</label>
+                        <select id="selectModeloEdicaoPaga" name="Modelo_Solicitado_Para_Edicao" onchange="carregarCamposEdicaoPaga()">
+                            <option value="0">1. Declaração de Residência</option>
+                            <option value="1">2. Recibo de Pagamento Simples</option>
+                            <option value="2">3. Declaração de Trabalho Autônomo</option>
+                            <option value="3">4. Contrato Simples de Aluguel</option>
+                            <option value="4">5. Procuração Particular Simples</option>
+                            <option value="5">6. Recibo de Compra e Venda de Veículo</option>
+                            <option value="6">7. Declaração de Extravio/Perda de Documentos</option>
+                            <option value="7">8. Autorização de Viagem para Menor</option>
+                            <option value="8">9. Planilha / Controle de Fluxo de Caixa Diário</option>
+                            <option value="9">10. Folha de Ponto / Registro de Horários Mensal</option>
+                        </select>
                     </div>
+
+                    <div id="containerCamposEdicaoPaga" style="display: flex; flex-direction: column; gap: 10px; background: var(--bg-card); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color);">
+                        </div>
 
                     <div class="form-group">
                         <label>E-mail para Envio da Prévia:</label>
@@ -366,11 +432,33 @@
         <div class="modal-card">
             <h3 id="modalTitle">Aviso</h3>
             <p id="modalMsg">Mensagem do sistema...</p>
-            <button class="modal-btn" onclick="fecharModal()">OK</button>
+            <button class="modal-btn" id="modalBtnOk" onclick="fecharModal()">OK</button>
         </div>
     </div>
 
     <script>
+        // CARROSSEL SCRIPT
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+
+        function mostrarSlide(index) {
+            slides.forEach(s => s.classList.remove('active'));
+            if (index >= slides.length) currentSlide = 0;
+            if (index < 0) currentSlide = slides.length - 1;
+            slides[currentSlide].classList.add('active');
+        }
+
+        function mudarSlide(direcao) {
+            currentSlide += direcao;
+            mostrarSlide(currentSlide);
+        }
+
+        setInterval(() => {
+            currentSlide++;
+            mostrarSlide(currentSlide);
+        }, 4000);
+
+
         // DATA ATUAL FORMATADA AUTOMÁTICA
         function obterDataAtual() {
             const hoje = new Date();
@@ -381,7 +469,7 @@
             return `Curitiba - PR, ${dia} de ${mes} de ${ano}`;
         }
 
-        // BASE DE DADOS DOS MODELOS DIVERSOS (MODELOS INICIAM COM VALORES VAZIOS "")
+        // BASE DE DADOS DOS MODELOS
         const listaModelos = [
             {
                 nome: "Declaração de Residência",
@@ -494,7 +582,6 @@
                 ],
                 gerar: (d) => `FOLHA DE PONTO MENSAL DE TRABALHO\nNOME: ${d.funcionario || '________________________________________'} | CARGO: ${d.cargo || '____________________'}\nMÊS/ANO: ${d.mesAno || '____________'}\n\n+-----+--------+--------+--------+--------+-----------------------------------+\n| DIA | ENTRADA| SAÍDA  | ENTRADA| SAÍDA  | ASSINATURA / VISTO               |\n+-----+--------+--------+--------+--------+-----------------------------------+\n| 01  |   :    |   :    |   :    |   :    |                                   |\n| 02  |   :    |   :    |   :    |   :    |                                   |\n| 03  |   :    |   :    |   :    |   :    |                                   |\n| 04  |   :    |   :    |   :    |   :    |                                   |\n| 05  |   :    |   :    |   :    |   :    |                                   |\n| 06  |   :    |   :    |   :    |   :    |                                   |\n| 07  |   :    |   :    |   :    |   :    |                                   |\n+-----+--------+--------+--------+--------+-----------------------------------+\n\n<div class="assinatura-box"><div class="linha-assinatura"></div>Assinatura do Funcionário</div>`
             },
-            // MODELOS EXTRAS SEM PREENCHIMENTO
             {
                 nome: "Extra: Formulário de Pedido Simples",
                 campos: [],
@@ -514,7 +601,7 @@
 
         let naAbaPagamento = false;
 
-        // CARREGA DINAMICAMENTE OS CAMPOS
+        // CARREGA DINAMICAMENTE OS CAMPOS DO PAINEL PRINCIPAL
         function carregarCamposModelo() {
             const index = document.getElementById('selectModelo').value;
             const mod = listaModelos[index];
@@ -536,6 +623,28 @@
             }
 
             atualizarDocumento();
+        }
+
+        // CARREGA DINAMICAMENTE OS CAMPOS PARA A OPÇÃO DE EDIÇÃO PAGA (R$ 5,00)
+        function carregarCamposEdicaoPaga() {
+            const index = document.getElementById('selectModeloEdicaoPaga').value;
+            const mod = listaModelos[index];
+            const container = document.getElementById('containerCamposEdicaoPaga');
+            container.innerHTML = '';
+
+            if (mod.campos.length === 0) {
+                container.innerHTML = `<p style="font-size: 12px; color: var(--text-muted);">Este modelo não possui campos fixos. Deixe as instruções do que deseja na caixa de observações abaixo.</p>`;
+            } else {
+                mod.campos.forEach(c => {
+                    const group = document.createElement('div');
+                    group.className = 'form-group';
+                    group.innerHTML = `
+                        <label>${c.label}:</label>
+                        <input type="text" name="EdicaoPaga_${c.id}" placeholder="${c.ph}">
+                    `;
+                    container.appendChild(group);
+                });
+            }
         }
 
         // MÁSCARAS E FORMATAÇÃO AUTOMÁTICA NOS INPUTS
@@ -561,24 +670,6 @@
         }
 
         function aplicarMaiusculas(el) { el.value = el.value.toUpperCase(); }
-        
-        function aplicarMascaraCPF(el) {
-            let v = el.value.replace(/\D/g, '');
-            if (v.length > 11) v = v.substring(0, 11);
-            v = v.replace(/(\d{3})(\d)/, '$1.$2');
-            v = v.replace(/(\d{3})(\d)/, '$1.$2');
-            v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-            el.value = v;
-        }
-
-        function aplicarMascaraRG(el) {
-            let v = el.value.replace(/\D/g, '');
-            if (v.length > 9) v = v.substring(0, 9);
-            v = v.replace(/(\d{2})(\d)/, '$1.$2');
-            v = v.replace(/(\d{3})(\d)/, '$1.$2');
-            v = v.replace(/(\d{3})(\d{1})$/, '$1-$2');
-            el.value = v;
-        }
 
         // ATUALIZA A FOLHA A4 EM TEMPO REAL E BARRA DE PROGRESSO
         function atualizarDocumento() {
@@ -610,11 +701,11 @@
             document.getElementById('contadorInfo').innerText = `${numChars} caracteres | ${numPalavras} palavras`;
         }
 
-        // SALVA / BAIXA DIRETO EM PDF (DOWNLOAD REAL)
+        // SALVA / BAIXA DIRETO EM PDF PREENCHIDO
         function baixarPDFDireto() {
             const elemento = document.getElementById('folhaA4Preview');
             const index = document.getElementById('selectModelo').value;
-            const nomeArquivo = listaModelos[index].nome.toLowerCase().replace(/[^a-z0-0]/g, '_') + '.pdf';
+            const nomeArquivo = listaModelos[index].nome.toLowerCase().replace(/[^a-z0-9]/g, '_') + '.pdf';
 
             mostrarModal("Gerando PDF...", "Aguarde um instante, seu arquivo está sendo preparado para download.");
 
@@ -629,6 +720,42 @@
             html2pdf().set(opt).from(elemento).save().then(() => {
                 fecharModal();
             });
+        }
+
+        // BAIXA O PDF EM BRANCO (SEM PREENCHIMENTO), COM ESPERA DE 3 SEGUNDOS SEM MOSTRAR CONTAGEM
+        function baixarPDFEmBranco() {
+            const index = document.getElementById('selectModelo').value;
+            const mod = listaModelos[index];
+            const nomeArquivo = mod.nome.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_em_branco.pdf';
+
+            // Cria um container oculto para gerar a folha limpa
+            const tempDiv = document.createElement('div');
+            tempDiv.className = 'folha-a4';
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.left = '-9999px';
+            tempDiv.style.fontFamily = document.getElementById('selectFonte').value;
+            tempDiv.style.fontSize = document.getElementById('selectTamanhoFonte').value;
+            tempDiv.innerHTML = mod.gerar({}); // Passa objeto vazio para gerar tudo com linhas de preenchimento
+
+            document.body.appendChild(tempDiv);
+
+            // Exibe o modal informando o processamento
+            mostrarModalSemBotao("Processando Solicitação...", "Aguarde alguns segundos enquanto preparamos a folha em branco com os campos de assinatura para você...");
+
+            setTimeout(() => {
+                const opt = {
+                    margin:       10,
+                    filename:     nomeArquivo,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2 },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                html2pdf().set(opt).from(tempDiv).save().then(() => {
+                    document.body.removeChild(tempDiv);
+                    fecharModal();
+                });
+            }, 3000); // Exatos 3 segundos sem mostrar contagem
         }
 
         // COPIAR TEXTO DO PREVIEW
@@ -668,15 +795,24 @@
             const box = document.getElementById('boxCampos5Reais');
             if (val.includes("R$ 5,00")) {
                 box.style.display = 'flex';
+                carregarCamposEdicaoPaga();
             } else {
                 box.style.display = 'none';
             }
         }
 
-        // MODAL CUSTOMIZADO
+        // MODAIS CUSTOMIZADOS
         function mostrarModal(titulo, mensagem) {
             document.getElementById('modalTitle').innerText = titulo;
             document.getElementById('modalMsg').innerText = mensagem;
+            document.getElementById('modalBtnOk').style.display = 'block';
+            document.getElementById('customModal').classList.add('active');
+        }
+
+        function mostrarModalSemBotao(titulo, mensagem) {
+            document.getElementById('modalTitle').innerText = titulo;
+            document.getElementById('modalMsg').innerText = mensagem;
+            document.getElementById('modalBtnOk').style.display = 'none';
             document.getElementById('customModal').classList.add('active');
         }
 
