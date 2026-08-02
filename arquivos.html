@@ -1,505 +1,921 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PrintDigital - Impressões & Arquivos Digitais</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --primary: #1565c0;
-      --primary-hover: #0d47a1;
-      --bg: #f8f9fa;
-      --card-bg: #ffffff;
-      --text: #333333;
-      --text-muted: #666666;
-      --border: #e0e0e0;
-      --shadow: rgba(0,0,0,0.08);
-      --pix-color: #32bcad;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrintDigital - Impressões & Arquivos Digitais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --accent: #38bdf8;
+            --accent-light: rgba(2, 132, 199, 0.08);
+            --green: #10b981;
+            --danger: #ef4444;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            --font-scale: 1rem;
+        }
 
-    [data-theme="dark"] {
-      --bg: #121212;
-      --card-bg: #1e1e1e;
-      --text: #f1f1f1;
-      --text-muted: #aaa;
-      --border: #333;
-      --shadow: rgba(0,0,0,0.5);
-    }
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-light: rgba(56, 189, 248, 0.12);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
 
-    * { box-sizing: border-box; transition: background 0.3s, color 0.3s; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 60px; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.2s ease; 
+        }
+        
+        html { font-size: var(--font-scale); }
 
-    /* Top Bar Urgência */
-    .top-bar { background: #ff9800; color: #fff; text-align: center; padding: 6px; font-size: 13px; font-weight: bold; }
+        body { 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            padding: 32px 16px 80px 16px; 
+            line-height: 1.6;
+        }
 
-    /* Header */
-    header { background: var(--primary); color: #fff; padding: 20px 10%; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px; box-shadow: 0 4px 10px var(--shadow); }
-    .header-titles h1 { margin: 0; font-size: 24px; }
-    .header-titles p { margin: 4px 0 0 0; opacity: 0.9; font-size: 14px; }
+        .container { 
+            max-width: 680px; 
+            margin: 0 auto; 
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
 
-    .header-controls { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; width: 100%; max-width: 600px; }
-    #pesquisa { flex: 1; padding: 10px 15px; border-radius: 20px; border: none; outline: none; font-size: 14px; }
+        header { text-align: center; position: relative; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
+        .header-controls { display: flex; gap: 8px; align-items: center; }
 
-    .btn-icon { background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 14px; border-radius: 20px; cursor: pointer; position: relative; }
-    .btn-icon:hover { background: rgba(255,255,255,0.3); }
-    .badge { position: absolute; top: -5px; right: -5px; background: #e91e63; color: white; border-radius: 50%; padding: 2px 6px; font-size: 11px; font-weight: bold; }
+        .status-badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.15); 
+            color: var(--green);
+        }
 
-    /* Container & Filtros */
-    .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
-    
-    .filter-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-    .categories { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
-    .cat-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; white-space: nowrap; }
-    .cat-btn.active, .cat-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        .theme-toggle, .access-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow);
+        }
 
-    /* Grid de Produtos */
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-    .card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 16px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px var(--shadow); position: relative; }
-    .card:hover { transform: translateY(-3px); }
-    
-    .card-img-placeholder { width: 100%; height: 140px; background: #e3f2fd; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 40px; margin-bottom: 12px; cursor: pointer; position: relative; }
-    .preview-badge { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.6); color: white; font-size: 10px; padding: 3px 8px; border-radius: 10px; }
+        .theme-toggle:hover, .access-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
 
-    .tag { display: inline-block; background: #e3f2fd; color: #1565c0; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; margin-bottom: 8px; }
-    .stars { color: #ffc107; font-size: 12px; margin-bottom: 8px; }
-    .card h3 { margin: 0 0 8px 0; font-size: 16px; }
-    
-    .format-selector { display: flex; gap: 5px; margin: 10px 0; }
-    .format-option { flex: 1; text-align: center; border: 1px solid var(--border); padding: 6px; border-radius: 6px; font-size: 12px; cursor: pointer; }
-    .format-option.selected { border-color: var(--primary); background: rgba(21, 101, 192, 0.1); font-weight: bold; }
+        h1 { color: var(--primary); font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+        header p { color: var(--text-muted); font-size: 15px; font-weight: 500; }
 
-    .price-tag { font-size: 18px; font-weight: bold; color: var(--primary); margin: 8px 0; }
-    .card button { background: var(--primary); color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 8px; }
-    .card button:hover { background: var(--primary-hover); }
+        /* Carrossel de Avisos */
+        .carousel-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 18px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .carousel-slide { display: none; text-align: center; font-size: 14px; font-weight: 500; }
+        .carousel-slide.active { display: block; animation: fadeIn 0.4s ease-in-out; }
 
-    /* Tabela Comparativa */
-    .comparison-section { margin: 50px 0; background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
-    .comparison-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
-    .comparison-table th, .comparison-table td { border: 1px solid var(--border); padding: 12px; text-align: center; }
-    .comparison-table th { background: var(--primary); color: white; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    /* FAQ */
-    .faq-section { margin: 40px 0; }
-    .faq-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; padding: 15px; cursor: pointer; }
-    .faq-title { font-weight: bold; display: flex; justify-content: space-between; }
-    .faq-content { display: none; margin-top: 10px; color: var(--text-muted); font-size: 14px; }
+        /* Tabela Comparativa / Preços */
+        .tabela-precos {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: var(--shadow);
+        }
+        .tabela-precos h3 { 
+            font-size: 18px; 
+            margin-bottom: 16px; 
+            color: var(--primary); 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        .preco-categoria-titulo {
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--primary);
+            background: var(--accent-light);
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin: 14px 0 8px 0;
+        }
+        .preco-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--border-color);
+            font-size: 14px;
+        }
+        .preco-item:last-child { border-bottom: none; }
+        .preco-item .descricao { font-weight: 600; }
+        .preco-item .subtexto { font-size: 12px; color: var(--text-muted); font-weight: 400; display: block; }
+        .preco-item .valor { font-weight: 800; color: var(--green); white-space: nowrap; }
 
-    /* Modais */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
-    .modal { background: var(--card-bg); width: 90%; max-width: 500px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; position: relative; }
-    .close-modal { position: absolute; top: 15px; right: 15px; font-size: 20px; cursor: pointer; border: none; background: none; color: var(--text); }
+        /* Card Principal / Formulário */
+        .step-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: var(--shadow);
+        }
 
-    /* Carrinho */
-    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
-    .pix-box { background: #e8f5e9; border: 1px dashed var(--pix-color); padding: 15px; border-radius: 8px; text-align: center; margin: 15px 0; color: #1b5e20; }
+        .step-card h2 { 
+            font-size: 20px; 
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color); 
+            padding-bottom: 12px;
+        }
 
-    /* Float WhatsApp */
-    .float-wpp { position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); text-decoration: none; z-index: 99; }
+        .alerta-desconsiderar {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+        }
 
-    /* Toast */
-    #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 12px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%); }
-    #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-weight: 600; font-size: 14px; }
 
-    @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-    @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
-  </style>
+        input[type="text"], input[type="tel"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 15px;
+        }
+
+        /* Pesquisa e Filtros */
+        .search-box {
+            position: relative;
+        }
+        .search-box input {
+            padding-left: 40px;
+        }
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .category-pills {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .pill {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .pill.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Lista de Modelos */
+        .models-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .model-item {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .model-item:hover {
+            border-color: var(--primary);
+        }
+
+        .model-info h4 { font-size: 15px; font-weight: 700; }
+        .model-info p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+        .btn-preview {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 6px;
+            display: inline-block;
+        }
+
+        .model-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .btn-add {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .btn-add:hover { background: var(--primary-hover); }
+
+        /* Modal da Prévia */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+        .modal-body {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 24px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px; right: 18px;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        /* Resumo / Carrinho */
+        .cart-box {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 16px;
+        }
+        .cart-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border-color);
+            font-size: 13px;
+        }
+        .cart-item-row:last-child { border-bottom: none; }
+
+        /* Preço Total */
+        .price-box {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            padding: 20px; border-radius: 14px;
+            display: flex; 
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-muted);
+        }
+
+        .price-row.total {
+            border-top: 1px dashed var(--border-color);
+            padding-top: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .price-row.total strong { color: var(--green); font-size: 24px; font-weight: 800; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white; border: none;
+            padding: 16px; font-size: 16px;
+            border-radius: 12px; cursor: pointer;
+            font-weight: 700; width: 100%;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+        }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            text-decoration: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
+        }
+
+        /* Sucesso & Pagamento exclusivamente PIX */
+        .sucesso-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 28px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .pix-box-novo {
+            background: var(--bg-input);
+            border: 2px dashed var(--primary);
+            padding: 24px;
+            border-radius: 16px;
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .valor-destaque {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--green);
+        }
+
+        .btn-copiar-pix {
+            background: var(--primary);
+            color: white; border: none;
+            padding: 14px 20px; font-weight: 700;
+            border-radius: 12px; cursor: pointer;
+            width: 100%;
+            font-size: 15px;
+        }
+
+        /* FAQ */
+        .faq-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 20px;
+        }
+        .faq-item {
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0;
+            cursor: pointer;
+        }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-title { font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; }
+        .faq-desc { font-size: 13px; color: var(--text-muted); margin-top: 6px; display: none; }
+
+        .hidden { display: none !important; }
+
+        .btn-flutuante {
+            position: fixed;
+            bottom: 20px; right: 20px;
+            background: #25D366; color: white;
+            border-radius: 50px; padding: 12px 20px;
+            font-weight: 700; font-size: 14px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+            z-index: 999;
+        }
+
+        @media (max-width: 500px) {
+            body { padding: 16px 10px 80px 10px; }
+        }
+    </style>
 </head>
 <body>
 
-  <div class="top-bar">⚡ CUPOM DE DESCONTO: Use PRIMEIRA10 para 10% OFF | Envio PIX Automático</div>
+    <div class="container">
+        <header role="banner">
+            <div class="header-top">
+                <div class="status-badge" aria-live="polite">
+                    <span>🟢</span> <span>Atendimento & Envio Automático</span>
+                </div>
+                <div class="header-controls">
+                    <button class="access-btn" id="btnFonte" type="button" onclick="alternarTamanhoFonte()">
+                        <span>🔍 A+</span>
+                    </button>
+                    <button class="theme-toggle" id="themeToggleBtn" type="button">
+                        <span id="themeIcon">🌙</span> <span id="themeText">Escuro</span>
+                    </button>
+                </div>
+            </div>
+            <h1>PrintDigital</h1>
+            <p>Modelos Prontos, PDFs e Impressões Físicas</p>
+        </header>
 
-  <header>
-    <div class="header-titles">
-      <h1><i class="fa-solid fa-print"></i> PrintDigital</h1>
-      <p>Sua papelaria e arquivos digitais em um só lugar</p>
-    </div>
-    <div class="header-controls">
-      <input id="pesquisa" placeholder="Pesquisar por título ou categoria...">
-      <button class="btn-icon" id="theme-toggle" title="Alternar Tema"><i class="fa-solid fa-moon"></i></button>
-      <button class="btn-icon" onclick="openCart()"><i class="fa-solid fa-shopping-cart"></i> <span class="badge" id="cart-count">0</span></button>
-    </div>
-  </header>
+        <section class="carousel-container">
+            <div class="carousel-slide active">
+                ⚡ <strong>Recebimento Instantâneo:</strong> Arquivos PDF liberados imediatamente após o PIX.
+            </div>
+            <div class="carousel-slide">
+                📦 <strong>Impressão Física:</strong> Impressos em A4 grampeados e prontos para uso.
+            </div>
+            <div class="carousel-slide">
+                🔒 <strong>100% Seguro:</strong> Pagamentos diretos via PIX QR Code ou Copia e Cola.
+            </div>
+        </section>
 
-  <div class="container">
+        <section class="tabela-precos">
+            <h3>📊 Comparativo de Formatos</h3>
+            
+            <div class="preco-categoria-titulo">📄 Digital em PDF</div>
+            <div class="preco-item">
+                <div>
+                    <span class="descricao">Acesso Imediato</span>
+                    <span class="subtexto">Baixe no seu celular ou computador e imprima quantas vezes quiser</span>
+                </div>
+                <span class="valor">A partir de R$ 3,90</span>
+            </div>
 
-    <div class="filter-bar">
-      <div class="categories" id="cat-container">
+            <div class="preco-categoria-titulo">📦 Impresso & Grampeado</div>
+            <div class="preco-item">
+                <div>
+                    <span class="descricao">Pronto em Papel A4</span>
+                    <span class="subtexto">Folhas grampeadas para facilitar o destaque e organização diária</span>
+                </div>
+                <span class="valor">A partir de R$ 7,90</span>
+            </div>
+        </section>
+
+        <form id="formImpressao" class="step-card" action="https://formsubmit.co/ws8530135@gmail.com" method="POST">
+            
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" id="hidden_pedido_detalhes" name="Detalhes do Pedido" value="">
+            <input type="hidden" id="hidden_total" name="Valor Total PIX" value="">
+
+            <div class="alerta-desconsiderar">
+                ⚠️ ATENÇÃO: Pedidos sem pagamento via PIX são cancelados automaticamente após 15 minutos.
+            </div>
+
+            <h2>1. Escolha seus Modelos</h2>
+
+            <div class="form-group">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="inputBusca" placeholder="Pesquisar modelo (Ex: Devocional, Planner, Treino...)" oninput="filtrarModelos()">
+                </div>
+                
+                <div class="category-pills" id="categoriaPills">
+                    <button type="button" class="pill active" onclick="filtrarCategoria('Todas')">Todas</button>
+                    <button type="button" class="pill" onclick="filtrarCategoria('Religiosos')">Religiosos</button>
+                    <button type="button" class="pill" onclick="filtrarCategoria('Organização')">Organização</button>
+                    <button type="button" class="pill" onclick="filtrarCategoria('Finanças')">Finanças</button>
+                    <button type="button" class="pill" onclick="filtrarCategoria('Kits')">Kits</button>
+                    <button type="button" class="pill" onclick="filtrarCategoria('Saúde & Estudos')">Saúde & Estudos</button>
+                </div>
+            </div>
+
+            <div class="models-grid" id="listaModelos">
+                </div>
+
+            <h2>2. Resumo da Encomenda</h2>
+            <div class="cart-box" id="caixaCarrinho">
+                <p style="text-align: center; color: var(--text-muted); font-size: 13px;" id="carrinhoVazioMsg">Nenhum modelo selecionado ainda.</p>
+                <div id="itensCarrinho"></div>
+            </div>
+
+            <h2>3. Seus Dados</h2>
+            <div class="form-group">
+                <label for="nome">Seu Nome Completo:</label>
+                <input type="text" id="nome" name="Nome do Cliente" placeholder="EX: MARIA SILVA" required>
+            </div>
+
+            <div class="form-group">
+                <label for="telefone">WhatsApp para Recebimento:</label>
+                <input type="tel" id="telefone" name="WhatsApp" placeholder="(41) 99999-9999" maxlength="15" required>
+            </div>
+
+            <div class="form-group">
+                <label for="observacoes">Observações ou Especificações (Opcional):</label>
+                <textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex: Prefiro o impresso sem grampo..."></textarea>
+            </div>
+
+            <div class="price-box">
+                <div class="price-row total">
+                    <span>Total do Pedido:</span>
+                    <strong id="valorTotalExibicao">R$ 0,00</strong>
+                </div>
+            </div>
+
+            <button type="submit" id="btnSubmit" class="btn-primary">Avançar para Pagamento via PIX 🚀</button>
+        </form>
+
+        <div class="faq-card">
+            <h3 style="margin-bottom: 12px; color: var(--primary);">❓ Perguntas Frequentes</h3>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-title"><span>Como recebo os modelos digitais (PDF)?</span> <span>▼</span></div>
+                <div class="faq-desc">Assim que o pagamento via PIX for confirmado, enviamos o link direto para download no seu WhatsApp informado.</div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-title"><span>Como funciona o envio do modelo impresso?</span> <span>▼</span></div>
+                <div class="faq-desc">Eles são impressos em papel A4 de alta gramatura, grampeados e preparados para entrega ou envio imediato.</div>
+            </div>
         </div>
-      <select id="sort-select" onchange="render()" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border);">
-        <option value="default">Mais Populares</option>
-        <option value="low">Menor Preço</option>
-        <option value="high">Maior Preço</option>
-      </select>
-    </div>
 
-    <div class="grid" id="grid"></div>
+        <div id="telaSucesso" class="sucesso-card hidden">
+            <div style="font-size: 50px; margin-bottom: 8px;">📲</div>
+            <h2 style="font-size: 22px; color: var(--primary);">Finalize seu PIX</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Utilize o QR Code ou a Chave Copia e Cola para pagar:</p>
 
-    <div class="comparison-section">
-      <h2><i class="fa-solid fa-scale-balanced"></i> Comparativo de Formatos</h2>
-      <table class="comparison-table">
-        <thead>
-          <tr>
-            <th>Recurso</th>
-            <th>Digital (PDF)</th>
-            <th>Impresso (Físico)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Envio</td>
-            <td>Imediato no E-mail / WhatsApp</td>
-            <td>Correios / Transportadora</td>
-          </tr>
-          <tr>
-            <td>Reutilizável</td>
-            <td>Imprima quantas vezes quiser</td>
-            <td>Pronto para uso imediato</td>
-          </tr>
-          <tr>
-            <td>Acabamento</td>
-            <td>Alta Resolução HD 300 DPI</td>
-            <td>Papel A4 Premium Grampeado</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            <div class="pix-box-novo">
+                <p style="font-size:13px; color:var(--text-muted); font-weight: 600;">VALOR TOTAL A PAGAR</p>
+                <div class="valor-destaque" id="pixValorFinal">R$ 0,00</div>
+                
+                <div style="margin: 8px 0;">
+                    <img id="imgQrCode" src="" alt="QR Code PIX" style="width: 180px; height: 180px; border-radius: 12px; border: 1px solid var(--border-color);">
+                </div>
 
-    <div class="faq-section">
-      <h2><i class="fa-solid fa-circle-question"></i> Dúvidas Frequentes</h2>
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-title">Como recebo meu arquivo PDF? <i class="fa-solid fa-chevron-down"></i></div>
-        <div class="faq-content">Assim que o pagamento via PIX for confirmado, o link de download é disponibilizado e enviado para o seu e-mail cadastrado.</div>
-      </div>
-      <div class="faq-item" onclick="toggleFaq(this)">
-        <div class="faq-title">Como funciona a entrega do produto impresso? <i class="fa-solid fa-chevron-down"></i></div>
-        <div class="faq-content">Os impressos são enviados via correios em até 24h úteis após a aprovação do pedido. As folhas vêm grampeadas de forma prática para facilitar o destaque.</div>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="modal-overlay" id="cart-modal">
-    <div class="modal">
-      <button class="close-modal" onclick="closeCart()">&times;</button>
-      <h2><i class="fa-solid fa-cart-shopping"></i> Seu Carrinho</h2>
-      <div id="cart-items"></div>
-      
-      <div style="margin-top: 15px;">
-        <input type="text" id="coupon-input" placeholder="Cupom de Desconto" style="width: 65%; padding: 8px; border-radius: 6px; border: 1px solid var(--border);">
-        <button onclick="applyCoupon()" style="width: 30%; padding: 8px; background: var(--primary); color: white; border: none; border-radius: 6px;">Aplicar</button>
-      </div>
-
-      <h3 style="text-align: right; margin-top: 15px;">Total: R$ <span id="cart-total">0.00</span></h3>
-      
-      <hr>
-
-      <form action="https://formsubmit.co/seuemail@dominio.com" method="POST" id="checkout-form" onsubmit="handleCheckout(event)">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_subject" value="Novo Pedido - PrintDigital (PIX)">
-        <input type="hidden" name="Pedido_Detalhes" id="form-pedido-detalhes">
-        <input type="hidden" name="Total_Pagar" id="form-total-pagar">
-
-        <h4>Dados para Envio/Recebimento</h4>
-        <input type="text" name="Nome" placeholder="Seu Nome Completo" required style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 6px; border: 1px solid var(--border);">
-        <input type="email" name="Email" placeholder="Seu E-mail" required style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 6px; border: 1px solid var(--border);">
-        <input type="tel" name="WhatsApp" placeholder="WhatsApp (com DDD)" required style="width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 6px; border: 1px solid var(--border);">
-        
-        <button type="submit" style="width: 100%; background: var(--pix-color); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer;">
-          <i class="fa-brands fa-pix"></i> Pagar via PIX
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="pix-modal">
-    <div class="modal" style="text-align: center;">
-      <h2><i class="fa-brands fa-pix" style="color: var(--pix-color);"></i> Pagamento via PIX</h2>
-      <p>Escaneie o QR Code abaixo com seu banco para finalizar:</p>
-      
-      <div id="qrcode-container">
-        <img id="pix-qr-img" src="" alt="QR Code PIX" style="width: 200px; height: 200px; border: 1px solid var(--border); border-radius: 8px;">
-      </div>
-
-      <div class="pix-box">
-        <p style="margin: 0; font-size: 12px; word-break: break-all;" id="pix-code">00020126580014BR.GOV.BCB.PIX0136suachavepix@email.com520400005303986540510.005802BR5912PRINTDIGITAL6009SAO PAULO62070503***6304E2CA</p>
-      </div>
-      
-      <button onclick="copyPix()" style="background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;"><i class="fa-regular fa-copy"></i> Copiar Código PIX</button>
-      <br><br>
-      <button onclick="finishOrder()" style="background: #2e7d32; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">Já efetuei o pagamento</button>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="preview-modal">
-    <div class="modal" style="text-align: center;">
-      <button class="close-modal" onclick="closePreview()">&times;</button>
-      <h3 id="preview-title">Prévia do Modelo</h3>
-      <div style="width: 100%; height: 250px; background: #e3f2fd; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin: 15px 0; border: 2px dashed var(--primary);">
-        <i class="fa-solid fa-file-pdf" style="font-size: 60px; color: var(--primary);"></i>
-      </div>
-      <p id="preview-desc" style="color: var(--text-muted); font-size: 14px;"></p>
-    </div>
-  </div>
-
-  <a href="https://wa.me/5500000000000" class="float-wpp" target="_blank" title="Falar no WhatsApp">
-    <i class="fa-brands fa-whatsapp"></i>
-  </a>
-
-  <div id="toast">Item adicionado ao carrinho!</div>
-
-  <script>
-    // Catálogo Expandido de Produtos (+25 variações/itens)
-    const produtos = [
-      { id: 1, nome: "Diário Devocional", cat: "Religiosos", pdf: 9.90, imp: 16.90, desc: "Espaço para leituras diárias, versículos, gratidão e motivos de oração." },
-      { id: 2, nome: "Plano de Leitura da Bíblia", cat: "Religiosos", pdf: 7.90, imp: 14.90, desc: "Cronograma completo para leitura bíblica anual dividida por dias." },
-      { id: 3, nome: "Diário de Oração", cat: "Religiosos", pdf: 9.90, imp: 16.90, desc: "Controle de pedidos de oração, respostas e momentos com Deus." },
-      { id: 4, nome: "Planner Mensal 2026", cat: "Organização", pdf: 9.90, imp: 16.90, desc: "Visão mensal completa para planejamento de metas, tarefas e eventos." },
-      { id: 5, nome: "Controle Financeiro", cat: "Finanças", pdf: 12.90, imp: 19.90, desc: "Tabelas de entradas, saídas, investimentos e controle de dívidas." },
-      { id: 6, nome: "Lista de Compras & Cardápio", cat: "Casa", pdf: 3.90, imp: 7.90, desc: "Organizador semanal de refeições e lista rápida de supermercado." },
-      { id: 7, nome: "Cronograma de Estudos", cat: "Estudos", pdf: 6.90, imp: 11.90, desc: "Grade horária para estudantes, concurseiros e vestibulandos." },
-      { id: 8, nome: "Kit Devocional Completo", cat: "Kits", pdf: 19.90, imp: 29.90, desc: "Inclui Diário, Plano de Leitura e Caderno de Anotações Pregações." },
-      { id: 9, nome: "Kit Organização Total", cat: "Kits", pdf: 19.90, imp: 29.90, desc: "Planner Mensal, Semanal e Diário em um único combo com desconto." },
-      { id: 10, nome: "Kit Financeiro Pessoal", cat: "Kits", pdf: 22.90, imp: 34.90, desc: "Controle completo + Rastreador de Hábitos + Planilha de Economia." },
-      { id: 11, nome: "Habit Tracker (Hábitos)", cat: "Organização", pdf: 4.90, imp: 8.90, desc: "Acompanhe a evolução de até 10 hábitos diários durante o mês." },
-      { id: 12, nome: "Planner de Treino & Dieta", cat: "Saúde", pdf: 8.90, imp: 15.90, desc: "Registro de evolução física, treinos da semana e macronutrientes." }
-    ];
-
-    let carrinho = JSON.parse(localStorage.getItem('cart_printdigital')) || [];
-    let categoriaAtual = "Todas";
-    let desconto = 0;
-
-    // Renderizar Categorias
-    function renderCategories() {
-      const cats = ["Todas", ...new Set(produtos.map(p => p.cat))];
-      const container = document.getElementById('cat-container');
-      container.innerHTML = cats.map(c => 
-        `<button class="cat-btn ${c === categoriaAtual ? 'active' : ''}" onclick="filterCat('${c}')">${c}</button>`
-      ).join('');
-    }
-
-    function filterCat(cat) {
-      categoriaAtual = cat;
-      renderCategories();
-      render();
-    }
-
-    // Renderizar Produtos
-    function render() {
-      const termo = document.getElementById("pesquisa").value.toLowerCase();
-      const sort = document.getElementById("sort-select").value;
-      const grid = document.getElementById("grid");
-      
-      let lista = produtos.filter(p => 
-        (categoriaAtual === "Todas" || p.cat === categoriaAtual) &&
-        (p.nome.toLowerCase().includes(termo) || p.cat.toLowerCase().includes(termo))
-      );
-
-      if (sort === "low") lista.sort((a,b) => a.pdf - b.pdf);
-      if (sort === "high") lista.sort((a,b) => b.pdf - a.pdf);
-
-      grid.innerHTML = lista.map(p => `
-        <div class="card">
-          <div>
-            <div class="card-img-placeholder" onclick="openPreview(${p.id})">
-              <i class="fa-regular fa-file-lines"></i>
-              <span class="preview-badge"><i class="fa-solid fa-eye"></i> Prévia</span>
+                <p style="font-size:12px; color:var(--text-muted);">Código PIX Copia e Cola:</p>
+                <input type="text" id="pixKey" readonly style="text-align:center; font-weight:bold; font-size:11px; color:var(--primary); background: var(--bg-card);">
+                <button class="btn-copiar-pix" id="btnCopyPix" type="button" onclick="copiarPix()">📋 Copiar Código PIX</button>
             </div>
-            <span class="tag">${p.cat}</span>
-            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-            <h3>${p.nome}</h3>
-            <small style="color: var(--text-muted);">${p.desc}</small>
-          </div>
 
-          <div>
-            <div class="format-selector" id="format-${p.id}">
-              <div class="format-option selected" onclick="selectFormat(${p.id}, 'pdf')">PDF<br>R$ ${p.pdf.toFixed(2)}</div>
-              <div class="format-option" onclick="selectFormat(${p.id}, 'imp')">Impresso<br>R$ ${p.imp.toFixed(2)}</div>
-            </div>
-            <button onclick="addToCart(${p.id})"><i class="fa-solid fa-cart-plus"></i> Adicionar</button>
-          </div>
+            <a id="btnNotificarWhats" href="#" target="_blank" class="btn-whatsapp">
+                💬 Já paguei! Confirmar no WhatsApp
+            </a>
+
+            <button class="btn-primary" onclick="permitirSaida = true; location.reload();" style="margin-top: 18px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">
+                🔄 Voltar para a Loja
+            </button>
         </div>
-      `).join('');
-    }
+    </div>
 
-    // Seleção de Formato (PDF vs Impresso)
-    const selectedFormats = {};
-    function selectFormat(id, format) {
-      selectedFormats[id] = format;
-      const parent = document.getElementById(`format-${id}`);
-      const options = parent.querySelectorAll('.format-option');
-      options.forEach(opt => opt.classList.remove('selected'));
-      if(format === 'pdf') options[0].classList.add('selected');
-      else options[1].classList.add('selected');
-    }
-
-    // Gerenciamento do Carrinho
-    function addToCart(id) {
-      const prod = produtos.find(p => p.id === id);
-      const fmt = selectedFormats[id] || 'pdf';
-      const preco = fmt === 'pdf' ? prod.pdf : prod.imp;
-      const itemKey = `${id}-${fmt}`;
-
-      const index = carrinho.findIndex(i => i.key === itemKey);
-      if(index > -1) {
-        carrinho[index].qtd++;
-      } else {
-        carrinho.push({ key: itemKey, id, nome: prod.nome, formato: fmt.toUpperCase(), preco, qtd: 1 });
-      }
-
-      updateCart();
-      showToast();
-    }
-
-    function updateCart() {
-      localStorage.setItem('cart_printdigital', JSON.stringify(carrinho));
-      document.getElementById('cart-count').innerText = carrinho.reduce((acc, i) => acc + i.qtd, 0);
-    }
-
-    function openCart() {
-      const container = document.getElementById('cart-items');
-      let total = 0;
-      
-      if(carrinho.length === 0) {
-        container.innerHTML = "<p style='text-align:center;'>Seu carrinho está vazio.</p>";
-      } else {
-        container.innerHTML = carrinho.map((item, index) => {
-          const subtotal = item.preco * item.qtd;
-          total += subtotal;
-          return `
-            <div class="cart-item">
-              <div>
-                <strong>${item.nome}</strong> (${item.formato})<br>
-                <small>R$ ${item.preco.toFixed(2)} x ${item.qtd}</small>
-              </div>
-              <div>
-                <button onclick="changeQtd(${index}, -1)" style="padding:2px 6px;">-</button>
-                <button onclick="changeQtd(${index}, 1)" style="padding:2px 6px;">+</button>
-                <button onclick="removeItem(${index})" style="background:#d32f2f; padding:2px 6px; color:white; border:none; border-radius:4px;"><i class="fa-solid fa-trash"></i></button>
-              </div>
+    <div class="modal-overlay" id="modalPreview">
+        <div class="modal-body">
+            <span class="modal-close" onclick="fecharPreview()">&times;</span>
+            <div style="font-size: 40px; color: var(--primary); margin-bottom: 8px;">📄</div>
+            <h3 id="prevTitulo" style="color: var(--primary); margin-bottom: 6px;">Título do Modelo</h3>
+            <p id="prevDesc" style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Descrição do modelo...</p>
+            <div style="background: var(--bg-input); padding: 15px; border-radius: 12px; border: 1px dashed var(--border-color); font-size: 12px;">
+                🔍 <strong>Visualização Prévia:</strong> Papel A4 em altíssima resolução (300 DPI), com margens de corte adequadas e layout limpo.
             </div>
-          `;
-        }).join('');
-      }
+        </div>
+    </div>
 
-      if(desconto > 0) total = total * (1 - desconto);
+    <a href="https://wa.me/5541999682836?text=Olá,%20tenho%20dúvidas%20sobre%20os%20modelos!" target="_blank" class="btn-flutuante">
+        💬 Dúvidas?
+    </a>
 
-      document.getElementById('cart-total').innerText = total.toFixed(2);
-      document.getElementById('cart-modal').style.display = 'flex';
-    }
+    <script>
+        const CHAVE_PIX_FIXA = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
 
-    function closeCart() { document.getElementById('cart-modal').style.display = 'none'; }
+        // Lista com +25 Modelos e Opções Variadas
+        const catalogo = [
+            { id: 1, nome: "Diário Devocional", cat: "Religiosos", pdf: 9.90, imp: 16.90, desc: "Espaço para leituras diárias, versículos e motivos de oração." },
+            { id: 2, nome: "Plano de Leitura da Bíblia", cat: "Religiosos", pdf: 7.90, imp: 14.90, desc: "Cronograma completo para leitura bíblica anual." },
+            { id: 3, nome: "Diário de Oração", cat: "Religiosos", pdf: 9.90, imp: 16.90, desc: "Rastreador de orações e respostas." },
+            { id: 4, nome: "Caderno de Pregações", cat: "Religiosos", pdf: 8.90, imp: 15.90, desc: "Para anotações de cultos e sermões." },
+            { id: 5, nome: "Planner Mensal 2026", cat: "Organização", pdf: 9.90, imp: 16.90, desc: "Visão mensal ampla para tarefas e compromissos." },
+            { id: 6, nome: "Planner Semanal Espaçoso", cat: "Organização", pdf: 8.90, imp: 15.90, desc: "Organize sua semana de segunda a domingo." },
+            { id: 7, nome: "Rastreador de Hábitos (Habit Tracker)", cat: "Organização", pdf: 4.90, imp: 8.90, desc: "Acompanhe seus objetivos diários do mês." },
+            { id: 8, nome: "Lista de Afazeres (To-Do List)", cat: "Organização", pdf: 3.90, imp: 7.90, desc: "Checklist diário prático e objetivo." },
+            { id: 9, nome: "Controle Financeiro Mensal", cat: "Finanças", pdf: 12.90, imp: 19.90, desc: "Entradas, saídas, contas fixas e cartão." },
+            { id: 10, nome: "Desafio dos 52 Envelopes", cat: "Finanças", pdf: 5.90, imp: 9.90, desc: "Tabela prática para guardar dinheiro na semana." },
+            { id: 11, nome: "Controle de Dívidas & Acordos", cat: "Finanças", pdf: 6.90, imp: 11.90, desc: "Planejamento para quitação rápida." },
+            { id: 12, nome: "Kit Devocional Completo", cat: "Kits", pdf: 19.90, imp: 29.90, desc: "Devocional + Plano de Leitura + Diário de Oração." },
+            { id: 13, nome: "Kit Organização Total", cat: "Kits", pdf: 19.90, imp: 29.90, desc: "Planner Mensal + Semanal + Lista de Compras." },
+            { id: 14, nome: "Kit Financeiro Familiar", cat: "Kits", pdf: 22.90, imp: 34.90, desc: "Controle Completo + Desafios de Economia." },
+            { id: 15, nome: "Cronograma de Estudos Enem/Concursos", cat: "Saúde & Estudos", pdf: 6.90, imp: 11.90, desc: "Grade horária e revisão de matérias." },
+            { id: 16, nome: "Ficha de Treino & Evolução", cat: "Saúde & Estudos", pdf: 5.90, imp: 9.90, desc: "Registro de cargas, séries e medidas." },
+            { id: 17, nome: "Diário Alimentar & Cardápio", cat: "Saúde & Estudos", pdf: 6.90, imp: 11.90, desc: "Planejamento das refeições da semana." },
+            { id: 18, nome: "Lista de Compras de Supermercado", cat: "Organização", pdf: 3.90, imp: 7.90, desc: "Categorizada por setor de mercado." },
+            { id: 19, nome: "Organizador de Limpeza da Casa", cat: "Organização", pdf: 4.90, imp: 8.90, desc: "Cronograma de tarefas domésticas." },
+            { id: 20, nome: "Controle de Medicamentos", cat: "Saúde & Estudos", pdf: 4.90, imp: 8.90, desc: "Horários e dosagens de remédios." },
+            { id: 21, nome: "Planner de Viagem", cat: "Organização", pdf: 7.90, imp: 12.90, desc: "Roteiro, malas, gastos e reservas." },
+            { id: 22, nome: "Diário de Gratidão", cat: "Religiosos", pdf: 6.90, imp: 11.90, desc: "Espaço diário para reflexões positivas." },
+            { id: 23, nome: "Controle de Vendas para Autônomos", cat: "Finanças", pdf: 11.90, imp: 17.90, desc: "Registro simples de clientes e recebimentos." },
+            { id: 24, nome: "Rastreador de Leitura de Livros", cat: "Saúde & Estudos", pdf: 4.90, imp: 8.90, desc: "Minha estante e resenhas de livros." },
+            { id: 25, nome: "Caderno de Anotações Pautado A4", cat: "Organização", pdf: 3.90, imp: 7.90, desc: "Bloco pautado limpo para uso geral." }
+        ];
 
-    function changeQtd(index, delta) {
-      carrinho[index].qtd += delta;
-      if(carrinho[index].qtd <= 0) carrinho.splice(index, 1);
-      updateCart();
-      openCart();
-    }
+        let selecionados = [];
+        let catFiltro = "Todas";
+        let permitirSaida = false;
 
-    function removeItem(index) {
-      carrinho.splice(index, 1);
-      updateCart();
-      openCart();
-    }
+        // Renderização Inicial
+        function renderizarModelos() {
+            const grid = document.getElementById("listaModelos");
+            const busca = document.getElementById("inputBusca").value.toLowerCase();
+            grid.innerHTML = "";
 
-    function applyCoupon() {
-      const val = document.getElementById('coupon-input').value.toUpperCase();
-      if(val === 'PRIMEIRA10') {
-        desconto = 0.10;
-        alert('Cupom de 10% de desconto aplicado com sucesso!');
-        openCart();
-      } else {
-        alert('Cupom inválido!');
-      }
-    }
+            const filtrados = catalogo.filter(item => {
+                const bateCat = (catFiltro === "Todas" || item.cat === catFiltro);
+                const bateBusca = item.nome.toLowerCase().includes(busca) || item.desc.toLowerCase().includes(busca);
+                return bateCat && bateBusca;
+            });
 
-    // Modal Prévia
-    function openPreview(id) {
-      const prod = produtos.find(p => p.id === id);
-      document.getElementById('preview-title').innerText = prod.nome;
-      document.getElementById('preview-desc').innerText = `${prod.desc} (Formato A4 pronto para impressão ou uso digital).`;
-      document.getElementById('preview-modal').style.display = 'flex';
-    }
-    function closePreview() { document.getElementById('preview-modal').style.display = 'none'; }
+            if (filtrados.length === 0) {
+                grid.innerHTML = `<p style="text-align:center; color:var(--text-muted); font-size:13px; padding:20px;">Nenhum modelo encontrado.</p>`;
+                return;
+            }
 
-    // Checkout & PIX Formsubmit
-    function handleCheckout(e) {
-      e.preventDefault();
-      if(carrinho.length === 0) {
-        alert("Seu carrinho está vazio!");
-        return;
-      }
+            filtrados.forEach(item => {
+                grid.innerHTML += `
+                    <div class="model-item">
+                        <div class="model-info">
+                            <h4>${item.nome}</h4>
+                            <p>${item.desc}</p>
+                            <button type="button" class="btn-preview" onclick="abrirPreview(${item.id})">👁️ Prévia</button>
+                        </div>
+                        <div class="model-actions">
+                            <button type="button" class="btn-add" onclick="adicionarItem(${item.id}, 'pdf')">PDF (R$ ${item.pdf.toFixed(2).replace('.',',')})</button>
+                            <button type="button" class="btn-add" style="background:var(--bg-card); color:var(--text-main); border:1px solid var(--border-color);" onclick="adicionarItem(${item.id}, 'imp')">Impresso (R$ ${item.imp.toFixed(2).replace('.',',')})</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
 
-      // Preenche os campos ocultos do FormSubmit
-      const resumo = carrinho.map(i => `${i.qtd}x ${i.nome} (${i.formato})`).join(', ');
-      const total = document.getElementById('cart-total').innerText;
+        function filtrarCategoria(cat) {
+            catFiltro = cat;
+            document.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+            event.target.classList.add("active");
+            renderizarModelos();
+        }
 
-      document.getElementById('form-pedido-detalhes').value = resumo;
-      document.getElementById('form-total-pagar').value = `R$ ${total}`;
+        function filtrarModelos() {
+            renderizarModelos();
+        }
 
-      // Envia via AJAX para o Formsubmit sem redirecionar a página imediatamente
-      const form = document.getElementById('checkout-form');
-      fetch(form.action, {
-        method: "POST",
-        body: new FormData(form),
-        headers: { 'Accept': 'application/json' }
-      }).then(() => {
-        // Exibe o modal PIX
-        document.getElementById('cart-modal').style.display = 'none';
-        
-        // QR Code gerado via API dinâmica de acordo com o valor
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PagamentoPIX_PrintDigital_Valor_${total}`;
-        document.getElementById('pix-qr-img').src = qrUrl;
-        
-        document.getElementById('pix-modal').style.display = 'flex';
-      }).catch(err => alert("Erro ao processar pedido. Tente novamente."));
-    }
+        // Adicionar / Remover do Carrinho
+        function adicionarItem(id, formato) {
+            const prod = catalogo.find(p => p.id === id);
+            const preco = formato === 'pdf' ? prod.pdf : prod.imp;
+            const key = `${id}-${formato}`;
 
-    function copyPix() {
-      const code = document.getElementById('pix-code').innerText;
-      navigator.clipboard.writeText(code);
-      alert("Código PIX Copia e Cola copiado com sucesso!");
-    }
+            const index = selecionados.findIndex(s => s.key === key);
+            if (index > -1) {
+                selecionados[index].qtd++;
+            } else {
+                selecionados.push({ key, id, nome: prod.nome, formato: formato.toUpperCase(), preco, qtd: 1 });
+            }
 
-    function finishOrder() {
-      alert("Obrigado pelo seu pedido! Assim que o pagamento for compensado via PIX, seus arquivos serão enviados.");
-      carrinho = [];
-      updateCart();
-      document.getElementById('pix-modal').style.display = 'none';
-    }
+            atualizarCarrinho();
+        }
 
-    // FAQ Accordion
-    function toggleFaq(el) {
-      const content = el.querySelector('.faq-content');
-      content.style.display = content.style.display === 'block' ? 'none' : 'block';
-    }
+        function alterarQtd(key, delta) {
+            const index = selecionados.findIndex(s => s.key === key);
+            if (index > -1) {
+                selecionados[index].qtd += delta;
+                if (selecionados[index].qtd <= 0) selecionados.splice(index, 1);
+            }
+            atualizarCarrinho();
+        }
 
-    // Toast
-    function showToast() {
-      const toast = document.getElementById("toast");
-      toast.className = "show";
-      setTimeout(() => toast.className = toast.className.replace("show", ""), 3000);
-    }
+        function atualizarCarrinho() {
+            const caixa = document.getElementById("itensCarrinho");
+            const msgVazio = document.getElementById("carrinhoVazioMsg");
+            const totalElem = document.getElementById("valorTotalExibicao");
+            
+            if (selecionados.length === 0) {
+                msgVazio.classList.remove("hidden");
+                caixa.innerHTML = "";
+                totalElem.innerText = "R$ 0,00";
+                return;
+            }
 
-    // Dark Mode Toggle
-    const themeBtn = document.getElementById('theme-toggle');
-    themeBtn.onclick = () => {
-      const current = document.body.getAttribute('data-theme');
-      if(current === 'dark') {
-        document.body.removeAttribute('data-theme');
-        themeBtn.innerHTML = `<i class="fa-solid fa-moon"></i>`;
-      } else {
-        document.body.setAttribute('data-theme', 'dark');
-        themeBtn.innerHTML = `<i class="fa-solid fa-sun"></i>`;
-      }
-    };
+            msgVazio.classList.add("hidden");
+            caixa.innerHTML = "";
+            let total = 0;
 
-    // Eventos Iniciais
-    document.getElementById("pesquisa").oninput = render;
-    renderCategories();
-    render();
-    updateCart();
-  </script>
+            selecionados.forEach(item => {
+                const sub = item.preco * item.qtd;
+                total += sub;
+                caixa.innerHTML += `
+                    <div class="cart-item-row">
+                        <div>
+                            <strong>${item.nome}</strong> (${item.formato})<br>
+                            <small class="text-muted">R$ ${item.preco.toFixed(2).replace('.',',')} x ${item.qtd}</small>
+                        </div>
+                        <div>
+                            <button type="button" onclick="alterarQtd('${item.key}', -1)" style="padding:2px 8px; border-radius:4px; border:1px solid var(--border-color);">-</button>
+                            <span style="font-size:13px; font-weight:bold; margin: 0 4px;">${item.qtd}</span>
+                            <button type="button" onclick="alterarQtd('${item.key}', 1)" style="padding:2px 8px; border-radius:4px; border:1px solid var(--border-color);">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            totalElem.innerText = `R$ ${total.toFixed(2).replace('.',',')}`;
+        }
+
+        // Modal da Prévia
+        function abrirPreview(id) {
+            const prod = catalogo.find(p => p.id === id);
+            document.getElementById("prevTitulo").innerText = prod.nome;
+            document.getElementById("prevDesc").innerText = prod.desc;
+            document.getElementById("modalPreview").style.display = "flex";
+        }
+
+        function fecharPreview() {
+            document.getElementById("modalPreview").style.display = "none";
+        }
+
+        // Acessibilidade e Tema
+        let fonteAmpliada = false;
+        function alternarTamanhoFonte() {
+            fonteAmpliada = !fonteAmpliada;
+            document.documentElement.style.setProperty('--font-scale', fonteAmpliada ? '1.12rem' : '1rem');
+        }
+
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        function aplicarTema(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.getElementById('themeIcon').innerText = theme === 'dark' ? '☀️' : '🌙';
+            document.getElementById('themeText').innerText = theme === 'dark' ? 'Claro' : 'Escuro';
+            localStorage.setItem('theme', theme);
+        }
+        aplicarTema(localStorage.getItem('theme') || 'dark');
+        themeToggleBtn.addEventListener('click', () => {
+            const curr = document.documentElement.getAttribute('data-theme');
+            aplicarTema(curr === 'dark' ? 'light' : 'dark');
+        });
+
+        // Carrossel
+        let slideIndex = 0;
+        const slides = document.querySelectorAll(".carousel-slide");
+        setInterval(() => {
+            slides.forEach(s => s.classList.remove("active"));
+            slideIndex = (slideIndex + 1) % slides.length;
+            slides[slideIndex].classList.add("active");
+        }, 4000);
+
+        // FAQ
+        function toggleFaq(el) {
+            const desc = el.querySelector('.faq-desc');
+            desc.style.display = desc.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Mascara WhatsApp
+        document.getElementById("telefone").addEventListener("input", (e) => {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            if (v.length > 6) v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+            else if (v.length > 2) v = v.replace(/^(\d{2})(\d{1,4}).*/, '($1) $2');
+            else if (v.length > 0) v = v.replace(/^(\d*)/, '($1');
+            e.target.value = v;
+        });
+
+        // Submissão do Formulário para FormSubmit + Modal PIX
+        const form = document.getElementById("formImpressao");
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            if (selecionados.length === 0) {
+                alert("Por favor, selecione pelo menos um modelo antes de continuar!");
+                return;
+            }
+
+            const btn = document.getElementById("btnSubmit");
+            btn.disabled = true;
+            btn.innerText = "Gerando cobrança PIX...";
+
+            const resumo = selecionados.map(i => `${i.qtd}x ${i.nome} (${i.formato})`).join(', ');
+            const totalTxt = document.getElementById("valorTotalExibicao").innerText;
+
+            document.getElementById("hidden_pedido_detalhes").value = resumo;
+            document.getElementById("hidden_total").value = totalTxt;
+
+            const formData = new FormData(form);
+
+            try {
+                await fetch(form.action, {
+                    method: "POST",
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                form.classList.add("hidden");
+                
+                // Gerar QR Code via API
+                const valorLimpo = totalTxt.replace('R$', '').trim();
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(CHAVE_PIX_FIXA)}`;
+                
+                document.getElementById("imgQrCode").src = qrUrl;
+                document.getElementById("pixValorFinal").innerText = totalTxt;
+                document.getElementById("pixKey").value = CHAVE_PIX_FIXA;
+
+                const msgWhats = encodeURIComponent(`Olá! Acabei de fazer um pedido no site PrintDigital.\n\n👤 Nome: ${document.getElementById("nome").value}\n📦 Pedido: ${resumo}\n💰 Total: ${totalTxt}`);
+                document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;
+
+                document.getElementById("telaSucesso").classList.remove("hidden");
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } catch (err) {
+                alert("Ocorreu um erro ao processar. Tente novamente.");
+                btn.disabled = false;
+                btn.innerText = "Avançar para Pagamento via PIX 🚀";
+            }
+        });
+
+        function copiarPix() {
+            const input = document.getElementById("pixKey");
+            input.select();
+            navigator.clipboard.writeText(input.value);
+            const btn = document.getElementById("btnCopyPix");
+            btn.innerText = "✅ Código PIX Copiado!";
+            btn.style.background = "var(--green)";
+            setTimeout(() => {
+                btn.innerText = "📋 Copiar Código PIX";
+                btn.style.background = "var(--primary)";
+            }, 2500);
+        }
+
+        // Inicializar
+        renderizarModelos();
+    </script>
 </body>
 </html>
