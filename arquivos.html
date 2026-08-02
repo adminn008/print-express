@@ -299,7 +299,7 @@
         }
         .btn-add:hover { background: var(--primary-hover); }
 
-        /* Modal da Prévia */
+        /* Modal da Prévia com Marca d'Água */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -327,6 +327,55 @@
             font-size: 22px;
             cursor: pointer;
             color: var(--text-muted);
+        }
+
+        /* Estilos de proteção e marca d'água */
+        .preview-wrapper {
+            position: relative;
+            background: var(--bg-input);
+            border-radius: 12px;
+            border: 1px dashed var(--border-color);
+            margin-top: 12px;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .preview-img-container {
+            position: relative;
+            width: 100%;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-img-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            pointer-events: none;
+            -webkit-user-drag: none;
+        }
+
+        .watermark-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .watermark-text {
+            transform: rotate(-30deg);
+            font-size: 24px;
+            font-weight: 800;
+            color: rgba(2, 132, 199, 0.25);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            white-space: nowrap;
         }
 
         /* Resumo / Carrinho */
@@ -559,7 +608,7 @@
             </div>
 
             <div class="models-grid" id="listaModelos">
-                </div>
+            </div>
 
             <h2>2. Resumo da Encomenda</h2>
             <div class="cart-box" id="caixaCarrinho">
@@ -639,8 +688,18 @@
             <div style="font-size: 40px; color: var(--primary); margin-bottom: 8px;">📄</div>
             <h3 id="prevTitulo" style="color: var(--primary); margin-bottom: 6px;">Título do Modelo</h3>
             <p id="prevDesc" style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Descrição do modelo...</p>
-            <div style="background: var(--bg-input); padding: 15px; border-radius: 12px; border: 1px dashed var(--border-color); font-size: 12px;">
-                🔍 <strong>Visualização Prévia:</strong> Papel A4 em altíssima resolução (300 DPI), com margens de corte adequadas e layout limpo.
+            
+            <div class="preview-wrapper" oncontextmenu="return false;">
+                <div class="preview-img-container">
+                    <img id="prevImagem" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'><rect width='100%' height='100%' fill='%23f1f5f9'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%2364748b' font-size='14'>Visualização de Exemplo A4</text></svg>" alt="Prévia Protegida" ondragstart="return false;">
+                    <div class="watermark-overlay">
+                        <span class="watermark-text">PRINTDIGITAL • PRÉVIA</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 12px; font-size: 11px; color: var(--text-muted);">
+                🔒 Visualização protegida. O arquivo original em altíssima qualidade será enviado sem marca d'água.
             </div>
         </div>
     </div>
@@ -652,7 +711,7 @@
     <script>
         const CHAVE_PIX_FIXA = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
 
-        // Lista com +25 Modelos e Opções Variadas
+        // Lista do Catálogo Atualizada
         const catalogo = [
             { id: 1, nome: "Diário Devocional", cat: "Religiosos", pdf: 9.90, imp: 16.90, desc: "Espaço para leituras diárias, versículos e motivos de oração." },
             { id: 2, nome: "Plano de Leitura da Bíblia", cat: "Religiosos", pdf: 7.90, imp: 14.90, desc: "Cronograma completo para leitura bíblica anual." },
@@ -678,7 +737,24 @@
             { id: 22, nome: "Diário de Gratidão", cat: "Religiosos", pdf: 6.90, imp: 11.90, desc: "Espaço diário para reflexões positivas." },
             { id: 23, nome: "Controle de Vendas para Autônomos", cat: "Finanças", pdf: 11.90, imp: 17.90, desc: "Registro simples de clientes e recebimentos." },
             { id: 24, nome: "Rastreador de Leitura de Livros", cat: "Saúde & Estudos", pdf: 4.90, imp: 8.90, desc: "Minha estante e resenhas de livros." },
-            { id: 25, nome: "Caderno de Anotações Pautado A4", cat: "Organização", pdf: 3.90, imp: 7.90, desc: "Bloco pautado limpo para uso geral." }
+            { id: 25, nome: "Caderno de Anotações Pautado A4", cat: "Organização", pdf: 3.90, imp: 7.90, desc: "Bloco pautado limpo para uso geral." },
+            
+            /* --- NOVOS 15 BLOCOS DE PDF ADICIONADOS --- */
+            { id: 26, nome: "Bloco de Notas Diário Minimalista", cat: "Organização", pdf: 4.90, imp: 8.90, desc: "Layout limpo para prioridades e anotações rápidas." },
+            { id: 27, nome: "Controle de Metas & Objetivos", cat: "Organização", pdf: 5.90, imp: 9.90, desc: "Definição de metas de curto, médio e longo prazo." },
+            { id: 28, nome: "Planner Diário com Grade Horária", cat: "Organização", pdf: 6.90, imp: 11.90, desc: "Organização compromisso por compromisso hora a hora." },
+            { id: 29, nome: "Controle de Assinaturas e Contas Fixas", cat: "Finanças", pdf: 4.90, imp: 8.90, desc: "Acompanhe serviços recorrentes, vencimentos e valores." },
+            { id: 30, nome: "Ficha de Leitura & Estudo Bíblico", cat: "Religiosos", pdf: 6.90, imp: 11.90, desc: "Análise profunda de capítulos e passagens bíblicas." },
+            { id: 31, nome: "Rastreador de Humor e Bem-Estar", cat: "Saúde & Estudos", pdf: 4.90, imp: 8.90, desc: "Acompanhe suas emoções e energia ao longo do mês." },
+            { id: 32, nome: "Organizador de Projetos Pessoais", cat: "Organização", pdf: 7.90, imp: 12.90, desc: "Etapas, prazos e recursos para seus projetos." },
+            { id: 33, nome: "Ficha de Avaliação Física", cat: "Saúde & Estudos", pdf: 5.90, imp: 9.90, desc: "Acompanhamento de medidas corpóreas e evolução." },
+            { id: 34, nome: "Planner Semanal de Estudos", cat: "Saúde & Estudos", pdf: 6.90, imp: 11.90, desc: "Distribuição de matérias, simulados e revisões." },
+            { id: 35, nome: "Controle de Encomendas & Envios", cat: "Finanças", pdf: 6.90, imp: 11.90, desc: "Gestão de pedidos para pequenas lojas e autônomos." },
+            { id: 36, nome: "Rastreador de Hidratação & Saúde", cat: "Saúde & Estudos", pdf: 3.90, imp: 7.90, desc: "Controle diário de consumo de água e vitaminas." },
+            { id: 37, nome: "Bloco de Ideias & Brainstorming", cat: "Organização", pdf: 4.90, imp: 8.90, desc: "Página pontilhada ideal para mapas mentais." },
+            { id: 38, nome: "Ficha de Atendimento ao Cliente", cat: "Finanças", pdf: 5.90, imp: 9.90, desc: "Registro rápido de contatos e historico de serviços." },
+            { id: 39, nome: "Diário de Jejum & Oração", cat: "Religiosos", pdf: 5.90, imp: 9.90, desc: "Acompanhamento de propósitos de jejum." },
+            { id: 40, nome: "Kit Produtividade & Foco", cat: "Kits", pdf: 18.90, imp: 28.90, desc: "Planner Horário + Tracker de Hábitos + Metas." }
         ];
 
         let selecionados = [];
