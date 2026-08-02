@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Loja de Impressões e Arquivos Digitais</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f4f4f4;margin:0}
+header{background:#1565c0;color:#fff;padding:20px;text-align:center}
+#pesquisa{width:90%;max-width:500px;padding:10px;border-radius:8px;border:1px solid #ccc}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;padding:20px}
+.card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.tag{display:inline-block;background:#e3f2fd;padding:4px 8px;border-radius:8px;font-size:12px}
+preco{font-weight:bold}
+button{margin-top:10px;background:#1565c0;color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
+small{color:#555}
+</style>
+</head>
+<body>
+<header>
+<h1>Loja de Impressões</h1>
+<p>PDFs e impressos</p>
+<input id="pesquisa" placeholder="Pesquisar...">
+</header>
+<div class="grid" id="grid"></div>
+<script>
+const produtos=[
+["Diário Devocional","Religiosos","PDF R$9,90 • Impresso R$16,90"],
+["Plano de Leitura da Bíblia","Religiosos","PDF R$7,90 • Impresso R$14,90"],
+["Diário de Oração","Religiosos","PDF R$9,90 • Impresso R$16,90"],
+["Planner Mensal","Organização","PDF R$9,90 • Impresso R$16,90"],
+["Controle Financeiro","Finanças","PDF R$12,90 • Impresso R$19,90"],
+["Lista de Compras","Casa","PDF R$3,90 • Impresso R$7,90"],
+["Cronograma de Estudos","Estudos","PDF R$6,90 • Impresso R$11,90"],
+["Kit Devocional","Kits","PDF R$19,90 • Impresso R$29,90"],
+["Kit Organização","Kits","PDF R$19,90 • Impresso R$29,90"],
+["Kit Financeiro","Kits","PDF R$22,90 • Impresso R$34,90"]
+];
+const grid=document.getElementById("grid");
+function render(f=""){
+grid.innerHTML="";
+produtos.filter(p=>p[0].toLowerCase().includes(f.toLowerCase())||p[1].toLowerCase().includes(f.toLowerCase())).forEach(p=>{
+grid.innerHTML+=`<div class="card"><span class="tag">${p[1]}</span><h3>${p[0]}</h3><p>${p[2]}</p><small>Impresso em papel A4. Produtos físicos são grampeados para facilitar o destaque das folhas.</small><br><button>Adicionar ao carrinho</button></div>`;
+});
+}
+render();
+pesquisa.oninput=e=>render(e.target.value);
+</script>
+</body>
+</html>
