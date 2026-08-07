@@ -58,13 +58,40 @@
         .price-table th, .price-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
         .price-table td strong { color: var(--green); }
 
-        .notice-box {
+        /* CARROSSEL DE AVISOS */
+        .carousel-container {
+            position: relative;
             background: rgba(2, 132, 199, 0.1);
             border-left: 4px solid var(--accent);
-            padding: 10px 12px;
             border-radius: 6px;
+            padding: 14px 16px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .carousel-slide {
+            display: none;
             font-size: 13px;
             color: #e0f2fe;
+            line-height: 1.4;
+        }
+        .carousel-slide.active { display: block; }
+        .carousel-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .carousel-btn {
+            background: var(--border);
+            color: var(--accent);
+            border: none;
+            padding: 2px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
         }
 
         /* FORMULÁRIO */
@@ -116,7 +143,7 @@
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 
-        /* NOVOS BOTÕES E BARRA DE PROGRESSO */
+        /* SCORE BAR */
         .score-bar-container {
             background: #0f172a;
             border: 1px solid var(--border);
@@ -230,7 +257,6 @@
             justify-content: center;
         }
 
-        /* FOLHA A4 PERFEITA (210mm x 297mm) */
         #curriculo-folha {
             background: white;
             color: #000000;
@@ -245,13 +271,11 @@
             position: relative;
         }
 
-        /* REGRAS P&B */
         #curriculo-folha h1, #curriculo-folha h2, #curriculo-folha h3, 
         #curriculo-folha p, #curriculo-folha span, #curriculo-folha div {
             color: #000000 !important;
         }
 
-        /* MODELOS P&B */
         .m-1 h1 { font-size: 22px; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 4px; font-weight: 700; }
         .m-1 h3 { font-size: 13px; margin-top: 12px; text-transform: uppercase; border-bottom: 1px solid #666; padding-bottom: 2px; font-weight: 700; }
 
@@ -291,7 +315,7 @@
         .cv-header-info { font-size: 11px; margin-bottom: 8px; }
         .cv-section-content { font-size: 12px; margin-top: 4px; line-height: var(--line-height-cv); white-space: pre-line; word-break: break-word; }
 
-        /* ESTILOS ADICIONADOS PARA GUIAS E KITS */
+        /* BADGES & CARDS */
         .badge-recommended {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: #0f172a;
@@ -336,6 +360,7 @@
             margin-top: 12px;
         }
 
+        /* MODAIS */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -356,10 +381,23 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 24px;
-            max-width: 520px;
+            max-width: 580px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
+        }
+
+        /* PREVIEW CARTA IMPRESSA NO MODAL */
+        #folha-carta-preview {
+            background: white;
+            color: #000;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 11px;
+            line-height: 1.4;
+            min-height: 140px;
+            border: 1px solid #cbd5e1;
+            white-space: pre-wrap;
         }
 
         /* TOAST */
@@ -466,7 +504,7 @@
                                 <strong>💼 Kit Primeiro Emprego</strong>
                                 <br><span class="badge-recommended" style="font-size: 9px; padding: 1px 5px;">⭐ Mais Completo</span>
                             </td>
-                            <td>2 CVs impressos A4 P&B + 1 Carta de Apresentação Editável + Brinde Especial</td>
+                            <td>2 CVs impressos A4 P&B + 1 Carta de Apresentação Impressa (Envio Automático dos PDFs)</td>
                             <td><strong>R$ 11,90</strong></td>
                         </tr>
                         <tr>
@@ -483,16 +521,31 @@
                 </table>
                 <div style="margin-top: 12px; text-align: right;">
                     <button class="btn-firebase" style="padding: 8px 14px; font-size: 12px; display: inline-block;" onclick="abrirModalKit()">
-                        💼 Solicitar Kit Primeiro Emprego (R$ 11,90)
+                        💼 Solicitar Kit Primeiro Emprego (a partir de R$ 11,90)
                     </button>
                 </div>
             </div>
 
             <div class="info-card">
-                <h3>📌 Avisos</h3>
-                <div class="notice-box">
-                    • O PDF é gerado rigorosamente na escala A4 (210x297mm) sem cortar margens.<br>
-                    • Ao clicar em <strong>"Enviar Pedido"</strong>, os dados do seu currículo são registrados na sua conta do Banco de Dados e você é redirecionado para a <code>aba principal</code>.
+                <h3>📌 Avisos e Orientações</h3>
+                <div class="carousel-container">
+                    <div class="carousel-slide active" id="slide-0">
+                        • <strong>Impressão sem cortes:</strong> O PDF do seu currículo é gerado rigorosamente na escala oficial A4 (210x297mm) sem cortar margens no papel.
+                    </div>
+                    <div class="carousel-slide" id="slide-1">
+                        • <strong>Acompanhamento:</strong> Ao clicar em <strong>"Enviar Pedido"</strong>, os dados são cadastrados no sistema e redirecionados para o seu painel de acompanhamento.
+                    </div>
+                    <div class="carousel-slide" id="slide-2">
+                        • <strong>Formato Impresso Kit:</strong> O Kit Primeiro Emprego é exclusivamente impresso. Não precisa baixar manualmente: os PDFs são enviados direto para nossa produção!
+                    </div>
+                    <div class="carousel-slide" id="slide-3">
+                        • <strong>Pagamento Seguro:</strong> Todos os pedidos confirmados redirecionam diretamente para a nossa <code>Aba de Pagamento</code> para concluir a compra com praticidade.
+                    </div>
+                    <div class="carousel-controls">
+                        <button class="carousel-btn" onclick="mudarSlide(-1)">❮ Anterior</button>
+                        <span id="slide-indicator" style="font-size:11px; color:var(--text-muted);">1 / 4</span>
+                        <button class="carousel-btn" onclick="mudarSlide(1)">Próximo ❯</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -776,7 +829,7 @@
 
             <div style="display: flex; gap: 10px;">
                 <button class="btn-download" style="width: 100%;" onclick="comprarGuiaWhats()">
-                    Comprar Agora
+                    Ir para Pagamento (R$ 4,90)
                 </button>
                 <button class="btn-mini" style="padding: 10px 16px; background: var(--border);" onclick="fecharModalGuia()">Fechar</button>
             </div>
@@ -789,39 +842,58 @@
             <h2 style="font-size: 18px; color: var(--accent); margin-top: 4px; margin-bottom: 8px;">💼 Kit Primeiro Emprego</h2>
             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Ideal para quem está iniciando sua vida profissional e deseja causar uma boa impressão nos processos seletivos.</p>
             
-            <div style="background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; margin-bottom: 14px;">
-                <strong style="color: var(--accent); display:block; margin-bottom:6px;">O Kit inclui:</strong>
+            <div style="background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; margin-bottom: 12px;">
+                <strong style="color: var(--accent); display:block; margin-bottom:6px;">O Kit inclui (Impresso):</strong>
                 <ul style="padding-left: 18px; color: #cbd5e1; line-height: 1.6;">
                     <li>📄 2 currículos impressos em papel A4 (preto e branco);</li>
-                    <li>✉️ 1 carta de apresentação personalizada (editável por você ou nós enviamos para impressão);</li>
-                    <li>🎁 Cartão exclusivo "10 Dicas para sua Entrevista de Emprego" (Brinde incluso).</li>
+                    <li>✉️ 1 carta de apresentação personalizada e impressa em papel A4.</li>
                 </ul>
             </div>
 
-            <div style="background: rgba(2, 132, 199, 0.1); border-left: 3px solid var(--accent); padding: 8px 10px; font-size: 11px; color: #e0f2fe; margin-bottom: 14px;">
-                <strong>O que é Carta de Apresentação?</strong> Um documento curto no qual você se apresenta formalmente ao recrutador, destacando sua motivação, principais qualidades e o porquê deseja a vaga.
-            </div>
-
-            <div class="form-group" style="margin-bottom: 10px;">
-                <label>Sua Carta de Apresentação (Editável):</label>
-                <textarea id="textoCartaKit" rows="3" placeholder="Prezado(a) Recrutador(a), venho através desta demonstrar meu interesse na vaga..."></textarea>
+            <div style="background: rgba(2, 132, 199, 0.1); border-left: 3px solid var(--accent); padding: 10px; font-size: 11px; color: #e0f2fe; margin-bottom: 14px; border-radius: 4px;">
+                <strong>💡 Por que o Kit custa R$ 11,90?</strong><br>
+                O valor base de <strong>R$ 11,90</strong> inclui a impressão física do material. Este kit é exclusivo para impressão: ao confirmar, os dois PDFs (Currículo + Carta) são enviados automaticamente para nossa produção via FormSubmit, sem que você precise baixá-los manualmente!<br><br>
+                <strong>E se eu precisar que vocês criem/editem meus documentos?</strong><br>
+                Caso você não tenha o currículo ou a carta prontos e precise do nosso serviço de criação/edição personalizada, o valor do kit passa para <strong>R$ 14,90</strong> devido ao tempo dedicado, diagramação e revisão profissional.
             </div>
 
             <div class="form-group" style="margin-bottom: 12px;">
-                <label>Serviço adicional de Currículo:</label>
-                <select id="opcEdicaoKit">
-                    <option value="Já possuo currículo pronto em PDF">Já possuo currículo pronto em PDF</option>
-                    <option value="Solicitar criação/edição junto ao Kit">Solicitar criação/edição do currículo junto ao Kit</option>
+                <label>Situação dos Documentos:</label>
+                <select id="opcEdicaoKit" onchange="atualizarPrecoKit()">
+                    <option value="pronto">Já tenho os textos prontos (Kit Impresso) - R$ 11,90</option>
+                    <option value="criacao">Preciso que criem/editem meu Currículo e Carta - R$ 14,90</option>
                 </select>
             </div>
 
+            <div style="background: #0f172a; border: 1px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 14px;">
+                <h4 style="font-size: 13px; color: var(--accent); margin-bottom: 8px;">✉️ Escolha o Modelo da Carta de Apresentação</h4>
+                
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label>Modelo:</label>
+                    <select id="selectModeloCarta" onchange="mudarModeloCarta()">
+                        <option value="1">Modelo 1: Formal / Tradicional</option>
+                        <option value="2">Modelo 2: Jovem Aprendiz / Primeiro Emprego</option>
+                        <option value="3">Modelo 3: Foco em Habilidades e Motivação</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label>Editar Conteúdo da Carta:</label>
+                    <textarea id="textoCartaKit" rows="4" oninput="atualizarCartaPreview()"></textarea>
+                </div>
+
+                <label style="font-size: 11px; margin-bottom: 4px;">👁️ Pré-visualização Automática da Carta (Impressão A4):</label>
+                <div id="folha-carta-preview"></div>
+            </div>
+
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <strong style="font-size: 20px; color: var(--green);">R$ 11,90</strong>
+                <span>Total do Pedido:</span>
+                <strong style="font-size: 22px; color: var(--green);" id="valorFinalKit">R$ 11,90</strong>
             </div>
 
             <div style="display: flex; gap: 10px;">
                 <button class="btn-firebase" style="width: 100%;" onclick="finalizarPedidoKit()">
-                    Confirmar & Solicitar Kit
+                    Confirmar & Ir para Pagamento
                 </button>
                 <button class="btn-mini" style="padding: 10px 16px; background: var(--border);" onclick="fecharModalKit()">Cancelar</button>
             </div>
@@ -891,6 +963,61 @@
 
         const EMAIL_FORMSUBMIT = "ws8530135@gmail.com";
 
+        /* SISTEMA DE CARROSSEL DE AVISOS */
+        let slideIndex = 0;
+        const totalSlides = 4;
+
+        window.mudarSlide = function(direcao) {
+            document.getElementById(`slide-${slideIndex}`).classList.remove('active');
+            slideIndex += direcao;
+            if (slideIndex >= totalSlides) slideIndex = 0;
+            if (slideIndex < 0) slideIndex = totalSlides - 1;
+            document.getElementById(`slide-${slideIndex}`).classList.add('active');
+            document.getElementById('slide-indicator').innerText = `${slideIndex + 1} / ${totalSlides}`;
+        };
+
+        // Auto rotação do carrossel a cada 6 segundos
+        setInterval(() => { window.mudarSlide(1); }, 6000);
+
+        /* MODELOS DE CARTA DE APRESENTAÇÃO */
+        const modelosCarta = {
+            "1": `Prezado(a) Recrutador(a),\n\nVenho por meio desta apresentar meu interesse na oportunidade de trabalho em sua organização. Sou uma pessoa altamente dedicada, pontual e comprometida em aprender novas rotinas operacionais.\n\nEstou à disposição para entrevistas e para contribuir da melhor forma possível com os objetivos da equipe.\n\nAtenciosamente,\n[SEU NOME COMPLETO]`,
+            "2": `Prezado(a) Responsável pela Seleção,\n\nEstou em busca da minha primeira oportunidade profissional como Jovem Aprendiz / Auxiliar. Possuo muita vontade de evoluir, boa comunicação, bom relacionamento interpessoal e facilidade de adaptação.\n\nGostaria de demonstrar minha motivação em fazer parte do time da empresa.\n\nAtenciosamente,\n[SEU NOME COMPLETO]`,
+            "3": `Prezada equipe de Recursos Humanos,\n\nEscrevo para candidatar-me às vagas disponíveis na empresa. Tenho domínio de ferramentas básicas de informática, foco na resolução de tarefas e facilidade de trabalho em equipe.\n\nBusco um espaço para colocar minhas habilidades em prática e agregar valor no dia a dia.\n\nAgradeço a atenção e aguardo um contato.\n\nAtenciosamente,\n[SEU NOME COMPLETO]`
+        };
+
+        window.mudarModeloCarta = function() {
+            const mod = document.getElementById("selectModeloCarta").value;
+            const nome = document.getElementById("nome").value.trim() || "[SEU NOME COMPLETO]";
+            let texto = modelosCarta[mod] || modelosCarta["1"];
+            texto = texto.replace("[SEU NOME COMPLETO]", nome);
+            document.getElementById("textoCartaKit").value = texto;
+            atualizarCartaPreview();
+        };
+
+        window.atualizarCartaPreview = function() {
+            const txt = document.getElementById("textoCartaKit").value;
+            document.getElementById("folha-carta-preview").innerText = txt || "Pré-visualização da carta...";
+        };
+
+        window.atualizarPrecoKit = function() {
+            const opc = document.getElementById("opcEdicaoKit").value;
+            const elemPreco = document.getElementById("valorFinalKit");
+            if(opc === "criacao") {
+                elemPreco.innerText = "R$ 14,90";
+            } else {
+                elemPreco.innerText = "R$ 11,90";
+            }
+        };
+
+        /* REDIRECIONAMENTO PARA PAGAMENTO */
+        function irParaPagamento(servico, valor, idPedido = "") {
+            mostrarToast("Redirecionando...", "Redirecionando para a aba de pagamentos...", "💳");
+            setTimeout(() => {
+                window.location.href = `pagamento.html?servico=${encodeURIComponent(servico)}&valor=${encodeURIComponent(valor)}&id=${encodeURIComponent(idPedido)}`;
+            }, 1200);
+        }
+
         window.mostrarToast = function(titulo, mensagem, icone = "⚠️") {
             document.getElementById("toastIcon").innerText = icone;
             document.getElementById("toastTitle").innerText = titulo;
@@ -915,7 +1042,7 @@
             input.value = v;
         };
 
-        /* FUNÇÕES MODAIS DOS GUIAS E KITS */
+        /* MODAIS */
         window.abrirModalGuia = function() {
             document.getElementById("modalGuia").classList.add("active");
         };
@@ -925,6 +1052,8 @@
 
         window.abrirModalKit = function() {
             document.getElementById("modalKit").classList.add("active");
+            mudarModeloCarta();
+            atualizarPrecoKit();
         };
         window.fecharModalKit = function() {
             document.getElementById("modalKit").classList.remove("active");
@@ -940,42 +1069,56 @@
         window.comprarGuiaWhats = function() {
             const tel = document.getElementById("whatsGuia").value.trim();
             if(!tel) {
-                mostrarToast("Atenção", "Por favor, informe seu WhatsApp para o envio do PDF.");
+                mostrarToast("Atenção", "Por favor, informe seu WhatsApp para a confirmação do pagamento.");
                 return;
             }
-
             fecharModalGuia();
-            mostrarToast("Pagamento Confirmado!", "Obrigado pela compra! Enviaremos o PDF em alguns minutos no WhatsApp, de acordo com o número de telefone colocado no site.", "📱");
-            
-            const msg = encodeURIComponent(`Olá! Comprei o *Guia Completo do Primeiro Emprego* (R$ 4,90).\n📱 Meu WhatsApp: ${tel}\nAguardando o envio do PDF!`);
-            setTimeout(() => {
-                window.open(`https://wa.me/5541999682836?text=${msg}`, '_blank');
-            }, 2500);
+            irParaPagamento("Guia Completo do Primeiro Emprego", "4.90");
         };
 
         window.finalizarPedidoKit = async function() {
             const nome = document.getElementById('nome').value.trim() || "Cliente Kit";
             const telefone = document.getElementById('telefone').value.trim();
             const carta = document.getElementById('textoCartaKit').value.trim();
-            const opcaoCv = document.getElementById('opcEdicaoKit').value;
+            const opcEdicao = document.getElementById('opcEdicaoKit').value;
+            const valor = opcEdicao === "criacao" ? 14.90 : 11.90;
+
+            mostrarToast("Enviando Pedido...", "Gerando arquivo de impressão e enviando automaticamente via FormSubmit...", "⏳");
 
             try {
-                await addDoc(collection(db, "pedidos"), {
+                // Envio dos dados via FormSubmit automaticamente (impressão)
+                const formData = new FormData();
+                formData.append("Cliente", nome);
+                formData.append("Telefone", telefone || "Não informado");
+                formData.append("Servico", "Kit Primeiro Emprego (2 CVs + 1 Carta Impressa)");
+                formData.append("Carta de Apresentacao", carta);
+                formData.append("Opcao", opcEdicao === "criacao" ? "Com Criação/Edição Profissional" : "Apenas Impressão dos Textos");
+                formData.append("Valor Total", `R$ ${valor.toFixed(2)}`);
+                formData.append("_subject", `Novo Pedido: Kit Primeiro Emprego - ${nome}`);
+
+                await fetch(`https://formsubmit.co/ajax/${EMAIL_FORMSUBMIT}`, {
+                    method: "POST",
+                    body: formData
+                });
+
+                // Registro no banco de dados Firebase
+                const docRef = await addDoc(collection(db, "pedidos"), {
                     servico: "Kit Primeiro Emprego",
                     cliente: nome,
                     telefone: telefone || "Não informado",
-                    cartaApresentacao: carta || "Não preenchida",
-                    opcaoCurriculo: opcaoCv,
-                    total: 11.90,
-                    status: "Pendente",
+                    cartaApresentacao: carta,
+                    opcao: opcEdicao,
+                    total: valor,
+                    status: "Aguardando Pagamento",
                     dataEnvio: serverTimestamp()
                 });
 
                 fecharModalKit();
-                mostrarToast("Pedido Registrado!", "Seu Kit Primeiro Emprego (R$ 11,90) foi solicitado com sucesso! Entraremos em contato via WhatsApp.", "💼");
+                irParaPagamento("Kit Primeiro Emprego", valor.toFixed(2), docRef.id);
+
             } catch(e) {
                 console.error(e);
-                mostrarToast("Erro", "Falha ao registrar o pedido do Kit.");
+                mostrarToast("Erro", "Falha ao registrar pedido do Kit. Tente novamente.");
             }
         };
 
@@ -1002,12 +1145,12 @@
             container.appendChild(div);
 
             fecharAdmin();
-            mostrarToast("Guia Cadastrado", "O novo Guia Digital foi adicionado com sucesso aos Produtos Relacionados!", "✅");
+            mostrarToast("Guia Cadastrado", "O novo Guia Digital foi adicionado com sucesso!", "✅");
         };
 
         window.salvarKitAdmin = function() {
             fecharAdmin();
-            mostrarToast("Kit Atualizado", "As configurações do Kit Primeiro Emprego foram salvas com sucesso!", "✅");
+            mostrarToast("Kit Atualizado", "As configurações do Kit Primeiro Emprego foram salvas!", "✅");
         };
 
         // FUNÇÃO DE LIMPAR TODOS OS CAMPOS
@@ -1146,7 +1289,6 @@
             document.getElementById("pv-formacao").innerText = formTxt || "Informe sua escolaridade.";
             document.getElementById("pv-cursos").innerText = cursosTxt || "Liste seus cursos complementares e habilidades.";
 
-            // Atualiza contadores
             document.getElementById("count-resumo").innerText = `${resumoTxt.length} carac.`;
             document.getElementById("count-experiencia").innerText = `${expTxt.length} carac.`;
             document.getElementById("count-formacao").innerText = `${formTxt.length} carac.`;
@@ -1169,7 +1311,6 @@
             document.getElementById("scoreText").innerText = `${pts}% Completo`;
         }
 
-        // GERAÇÃO DE PDF SEM CORTES PERFEITA
         window.baixarPDFSemCorte = function() {
             const nome = document.getElementById('nome').value.trim();
             if (!nome) {
@@ -1197,7 +1338,6 @@
             });
         };
 
-        // ENVIAR CURRÍCULO CORRIGIDO COM FORMULÁRIO E AVISO WHATSAPP
         window.enviarParaImpressaoFormSubmit = async function() {
             const nome = document.getElementById('nome').value.trim();
             const telefone = document.getElementById('telefone').value.trim();
@@ -1236,18 +1376,7 @@
                 });
 
                 if(res.ok) {
-                    const msgWhats = encodeURIComponent(`Olá! Acabei de mandar meu currículo pelo site para impressão P&B.\n\n👤 Nome: ${nome}\n📱 Contato: ${telefone}\n💰 Valor: R$ 0,50`);
-                    const urlWhats = `https://wa.me/5541999682836?text=${msgWhats}`;
-
-                    mostrarToast(
-                        "Pedido Enviado com Sucesso!", 
-                        `Seu currículo foi enviado para impressão P&B!\n\n💰 Valor: R$ 0,50 por folha na retirada.\n\nClique no botão do WhatsApp na tela para avisar a loja!`, 
-                        "🖨️"
-                    );
-
-                    // Abre o WhatsApp para confirmação
-                    setTimeout(() => { window.open(urlWhats, '_blank'); }, 1500);
-
+                    irParaPagamento("Impressão de Currículo P&B", "0.50");
                 } else {
                     mostrarToast("Erro no Envio", "Não foi possível registrar o pedido no servidor de e-mail.");
                 }
@@ -1257,7 +1386,6 @@
             }
         };
 
-        // SALVAR NO FIREBASE E REDIRECIONAR PARA PAINEL.HTML / INDEX.HTML
         window.enviarParaFirebaseEPainel = async function() {
             const nome = document.getElementById('nome').value.trim();
             const telefone = document.getElementById('telefone').value.trim();
@@ -1287,19 +1415,13 @@
                 modelo: document.getElementById('selectModelo').value,
                 servico: "Elaboração / Edição de Currículo",
                 total: 10.00,
-                status: "Pendente",
+                status: "Aguardando Pagamento",
                 dataEnvio: serverTimestamp()
             };
 
             try {
-                await addDoc(collection(db, "pedidos"), dadosCurriculo);
-                
-                mostrarToast("Sucesso!", "Currículo cadastrado no Banco de Dados! Redirecionando para a página principal...", "🚀");
-                
-                setTimeout(() => {
-                    window.location.href = "index.html";
-                }, 1500);
-
+                const docRef = await addDoc(collection(db, "pedidos"), dadosCurriculo);
+                irParaPagamento("Elaboração / Edição de Currículo", "10.00", docRef.id);
             } catch (err) {
                 console.error(err);
                 mostrarToast("Erro", "Falha ao salvar no banco de dados. Tente novamente.");
