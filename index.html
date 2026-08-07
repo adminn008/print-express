@@ -754,7 +754,7 @@
             </div>
         </div>
 
-        <form id="formImpressao" class="step-card" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data">
+        <form id="formImpressao" class="step-card" action="https://formsubmit.co/ajax/ws8530135@gmail.com" method="POST" enctype="multipart/form-data">
             
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="_template" value="table">
@@ -1369,20 +1369,92 @@
             e.target.value = v;
         });
 
-        // SUBMISSÃO DO FORMULÁRIO (PADRÃO NATIVO PARA PERMITIR UPLOAD DO FORMSUBMIT)
+                // SUBMISSÃO SILENCIOSA E ENVIO DE ANEXOS VIA FORMSUBMIT AJAX
         const form = document.getElementById("formImpressao");
         const btnSubmit = document.getElementById("btnSubmit");
 
-        form.addEventListener("submit", function (e) {
-            permitirSaida = true; // Libera o aviso de saída de página
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
             btnSubmit.disabled = true;
-            btnSubmit.innerText = "Enviando pedido com anexo(s)...";
+            btnSubmit.innerText = "Enviando pedido com arquivo...";
 
             const totalCalculado = calcularValor();
             document.getElementById("hidden_tipo_texto").value = servicoAtivo.toUpperCase();
             document.getElementById("hidden_total").value = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
-            
-            // Permite o envio HTTP padrão do HTML
+
+            const formData = new FormData(form);
+            const pagamentoSel = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
+            const clienteNome = inputNome.value;
+
+            try {
+                // Envio via endpoint AJAX do FormSubmit
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: formData,
+                    headers: { 
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    naAbaPagamento = true;
+                    permitirSaida = false;
+
+                    // Oculta blocos principais
+                    form.classList.add("hidden");
+                    document.getElementById("secaoPrecosVisual").classList.add("hidden");
+                    document.getElementById("secaoBanner").classList.add("hidden");
+                    document.getElementById("secaoCardChamativo").classList.add("hidden");
+                    document.getElementById("secaoFuturasAtualizacoes").classList.add("hidden");
+
+                    const telaSucesso = document.getElementById("telaSucesso");
+                    const boxPagamento = document.getElementById("boxDetalhesPagamento");
+
+                    if (pagamentoSel === "PIX") {
+                        boxPagamento.innerHTML = `
+                            <div class="pix-box-novo">
+                                <p style="font-size:14px; color:var(--text-muted); font-weight: 600;">VALOR TOTAL A PAGAR VIA PIX</p>
+                                <div class="valor-destaque">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
+                                
+                                <div style="margin: 10px 0;">
+                                    <img src="qrcode-pix.jpg" alt="QR Code PIX" style="max-width: 190px; width: 100%; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow);" onerror="this.style.display='none'">
+                                </div>
+
+                                <p style="font-size:13px; color:var(--text-muted);">Aperte o botão abaixo para copiar a chave copia e cola:</p>
+                                <input type="text" id="pixKey" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:11px; color:var(--primary); background: var(--bg-card);">
+                                <button class="btn-copiar-pix" id="btnCopyPix" type="button" onclick="copiarPix()">📋 Copiar Chave PIX</button>
+                            </div>
+                        `;
+                    } else {
+                        boxPagamento.innerHTML = `
+                            <div class="dinheiro-box-novo">
+                                <p style="font-size:14px; color:var(--text-muted); font-weight: 600;">VALOR A PAGAR NA RETIRADA</p>
+                                <div class="valor-destaque">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
+                                <div style="font-size: 32px; margin: 4px 0;">💵</div>
+                                <p style="font-size:14px; color:var(--text-main); font-weight: 500;">
+                                    Pagamento em <strong>Dinheiro</strong> no momento da retirada.
+                                </p>
+                                <p style="font-size:12px; color:var(--text-muted);">Se precisar de troco, entraremos em contato pelo WhatsApp!</p>
+                            </div>
+                        `;
+                    }
+
+                    const msgWhats = encodeURIComponent(`Olá! Acabei de enviar um pedido pelo site.\n\n👤 Nome: ${clienteNome}\n🛠️ Serviço: ${document.getElementById("hidden_servico_nome").value}\n💰 Total: R$ ${totalCalculado.toFixed(2).replace('.', ',')}\n💳 Pagamento: ${pagamentoSel}`);
+                    document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;
+
+                    telaSucesso.classList.remove("hidden");
+                    telaSucesso.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                } else {
+                    alert("Ocorreu um erro no servidor de e-mail. Verifique se os arquivos anexados não ultrapassam 5MB ou se o e-mail ws8530135@gmail.com já foi ativado no FormSubmit.");
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerText = "Enviar Pedido para Impressão 🚀";
+                }
+            } catch (error) {
+                alert("Erro de conexão ao enviar o formulário.");
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "Enviar Pedido para Impressão 🚀"; 
+            }
         });
 
         // COPIAR CHAVE PIX
