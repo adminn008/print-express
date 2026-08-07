@@ -1,74 +1,255 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Site em Manutenção</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja Digital & Guias Profissionais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --primary: #38bdf8;
+            --primary-hover: #0284c7;
+            --green: #10b981;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,Helvetica,sans-serif;
-}
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 24px 16px; line-height: 1.5; }
 
-body{
-    background:#111;
-    color:#fff;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
-    text-align:center;
-    padding:20px;
-}
+        .container { max-width: 1000px; margin: 0 auto; }
 
-.container{
-    max-width:700px;
-}
+        header { text-align: center; margin-bottom: 36px; }
+        header h1 { font-size: 28px; font-weight: 800; color: var(--primary); }
+        header p { color: var(--text-muted); font-size: 15px; margin-top: 6px; }
 
-h1{
-    font-size:clamp(2rem,5vw,4rem);
-    margin-bottom:20px;
-}
+        /* GRID DE PRODUTOS */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
 
-p{
-    font-size:clamp(1rem,2vw,1.3rem);
-    opacity:.85;
-    line-height:1.7;
-}
+        .product-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transition: transform 0.2s, border-color 0.2s;
+        }
 
-.loader{
-    width:70px;
-    height:70px;
-    border:6px solid rgba(255,255,255,.2);
-    border-top:6px solid #fff;
-    border-radius:50%;
-    margin:40px auto;
-    animation:spin 1s linear infinite;
-}
+        .product-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+        }
 
-@keyframes spin{
-    to{
-        transform:rotate(360deg);
-    }
-}
-</style>
+        .tag {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .tag-available { background: var(--green); color: #000; }
+        .tag-soon { background: #eab308; color: #000; }
+
+        .product-card h3 { font-size: 18px; color: #fff; margin-bottom: 8px; padding-right: 70px; }
+        .product-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; flex-grow: 1; }
+
+        .price-box { font-size: 22px; font-weight: 800; color: var(--green); margin-bottom: 14px; }
+        .price-box span { font-size: 12px; color: var(--text-muted); font-weight: 400; }
+
+        .btn-buy {
+            background: var(--primary);
+            color: #0f172a;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .btn-buy:hover { background: var(--primary-hover); color: #fff; }
+
+        .btn-disabled {
+            background: var(--border);
+            color: var(--text-muted);
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            width: 100%;
+            cursor: not-allowed;
+        }
+
+        /* MODAL CHECKOUT */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100;
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 480px;
+            width: 100%;
+        }
+
+        .modal-card h2 { font-size: 20px; color: var(--primary); margin-bottom: 12px; }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+        .form-group input {
+            width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--border);
+            border-radius: 8px; color: #fff; font-size: 14px;
+        }
+
+        .pay-options { display: flex; gap: 8px; margin: 12px 0; }
+        .pay-btn {
+            flex: 1; padding: 10px; background: #0f172a; border: 1px solid var(--border);
+            border-radius: 8px; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center;
+        }
+        .pay-btn.active { border-color: var(--primary); background: rgba(56, 189, 248, 0.15); }
+
+        .pix-box {
+            background: #0f172a; border: 1px dashed var(--primary); border-radius: 10px;
+            padding: 14px; text-align: center; margin-top: 12px;
+        }
+
+        .close-btn { background: transparent; border: none; color: var(--text-muted); font-size: 13px; cursor: pointer; width: 100%; margin-top: 10px; }
+    </style>
 </head>
-
 <body>
 
-<div class="container">
-    <h1>🚧 Site em Manutenção</h1>
+    <div class="container">
+        <header>
+            <h1>📚 Central de Materiais & Guias</h1>
+            <p>E-books exclusivos para acelerar sua entrada no mercado de trabalho</p>
+        </header>
 
-    <div class="loader"></div>
+        <div class="products-grid">
+            
+            <div class="product-card">
+                <span class="tag tag-available">Disponível</span>
+                <h3>Guia Completo do Primeiro Emprego</h3>
+                <p>Aprenda a estruturar seu currículo sem experiência, comportar-se na entrevista e destacar suas habilidades.</p>
+                <div class="price-box">R$ 4,90 <span>(PDF Digital)</span></div>
+                <button class="btn-buy" onclick="abrirCheckout('Guia Completo do Primeiro Emprego', 4.90)">Comprar Agora</button>
+            </div>
 
-    <p>
-        Estamos realizando melhorias no site.<br>
-        Em breve tudo estará disponível novamente.
-    </p>
-</div>
+            <div class="product-card">
+                <span class="tag tag-soon">Em Breve</span>
+                <h3>Manual de Entrevistas & Dinâmicas</h3>
+                <p>As perguntas mais frequentes de RH e como responder com segurança para conquistar a vaga.</p>
+                <div class="price-box">R$ 7,90 <span>(PDF Digital)</span></div>
+                <button class="btn-disabled" disabled>Lançamento em Breve</button>
+            </div>
 
+            <div class="product-card">
+                <span class="tag tag-soon">Em Breve</span>
+                <h3>Kit Modelos de Cartas de Apresentação</h3>
+                <p>Coleção com 10 modelos editáveis para Jovem Aprendiz, Estágio e Primeiro Emprego.</p>
+                <div class="price-box">R$ 5,90 <span>(TXT / DOC)</span></div>
+                <button class="btn-disabled" disabled>Lançamento em Breve</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalCheckout">
+        <div class="modal-card">
+            <h2 id="modalTitle">Finalizar Pedido</h2>
+            
+            <div class="form-group">
+                <label>Seu Nome Completo:</label>
+                <input type="text" id="custName" placeholder="Ex: Maria Souza">
+            </div>
+
+            <div class="form-group">
+                <label>WhatsApp para Receber o E-book:</label>
+                <input type="text" id="custPhone" placeholder="(41) 99999-9999">
+            </div>
+
+            <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Forma de Pagamento:</label>
+            <div class="pay-options">
+                <div class="pay-btn active" id="optPix" onclick="setPayMethod('pix')">📱 Pix</div>
+                <div class="pay-btn" id="optDinheiro" onclick="setPayMethod('dinheiro')">💵 Dinheiro (Retirada)</div>
+            </div>
+
+            <div class="pix-box" id="pixContainer">
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Escaneie o QR Code Pix:</p>
+                <img id="qrPix" src="" alt="QR Code" style="width: 130px; height: 130px; border-radius: 6px;">
+                <p style="font-size: 11px; color: var(--primary); margin-top: 6px; word-break: break-all;">Chave: ws8530135@gmail.com</p>
+            </div>
+
+            <button class="btn-buy" style="margin-top: 16px;" onclick="confirmarPedidoWhatsApp()">Confirmar e Enviar Comprovante</button>
+            <button class="close-btn" onclick="fecharCheckout()">Cancelar</button>
+        </div>
+    </div>
+
+    <script>
+        let prodAtual = '';
+        let valorAtual = 0;
+        let metPagamento = 'pix';
+        const CHAVE_PIX = "ws8530135@gmail.com";
+        const WHATSAPP_NUM = "5541999682836";
+
+        function abrirCheckout(nome, valor) {
+            prodAtual = nome;
+            valorAtual = valor;
+            document.getElementById('modalTitle').innerText = `${nome} - R$ ${valor.toFixed(2).replace('.', ',')}`;
+            
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(CHAVE_PIX)}`;
+            document.getElementById('qrPix').src = qrUrl;
+
+            document.getElementById('modalCheckout').classList.add('active');
+        }
+
+        function fecharCheckout() {
+            document.getElementById('modalCheckout').classList.remove('active');
+        }
+
+        function setPayMethod(tipo) {
+            metPagamento = tipo;
+            document.getElementById('optPix').classList.toggle('active', tipo === 'pix');
+            document.getElementById('optDinheiro').classList.toggle('active', tipo === 'dinheiro');
+            document.getElementById('pixContainer').style.display = tipo === 'pix' ? 'block' : 'none';
+        }
+
+        function confirmarPedidoWhatsApp() {
+            const nome = document.getElementById('custName').value.trim();
+            const fone = document.getElementById('custPhone').value.trim();
+
+            if(!nome || !fone) {
+                alert('Por favor, informe seu Nome e WhatsApp.');
+                return;
+            }
+
+            const pagTxt = metPagamento === 'pix' ? 'Pix' : 'Dinheiro na Retirada';
+            const msg = `Olá! Comprei o E-book:\n📘 *${prodAtual}*\n👤 Nome: ${nome}\n📱 WhatsApp: ${fone}\n💰 Valor: R$ ${valorAtual.toFixed(2).replace('.', ',')}\n💳 Pagamento: ${pagTxt}`;
+            
+            window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
+            fecharCheckout();
+        }
+    </script>
 </body>
 </html>
