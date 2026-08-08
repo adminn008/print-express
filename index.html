@@ -53,7 +53,6 @@
             line-height: 1.6;
         }
 
-        /* ACESSIBILIDADE - BOTÃO DE PULAR CONTEÚDO PARA TECLADO */
         .skip-link {
             position: absolute;
             top: -40px;
@@ -236,6 +235,18 @@
             display: block;
         }
 
+        .box-privacidade {
+            background: var(--accent-light);
+            border: 1px solid var(--primary);
+            border-radius: 14px;
+            padding: 14px 16px;
+            font-size: 13px;
+            color: var(--text-main);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
         .step-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -253,6 +264,17 @@
             color: var(--text-main); 
             border-bottom: 1px solid var(--border-color); 
             padding-bottom: 12px;
+        }
+
+        .alerta-desconsiderar {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
         }
 
         .form-group { display: flex; flex-direction: column; gap: 8px; }
@@ -318,6 +340,16 @@
             color: var(--primary);
             font-weight: 600;
             margin-top: 4px;
+        }
+
+        .aviso-multiarquivos {
+            background: var(--accent-light);
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 12px;
+            color: var(--text-main);
+            margin-bottom: 6px;
         }
 
         .price-box {
@@ -671,9 +703,9 @@
                 box-shadow: 0 4px 10px rgba(0,0,0,0.3);
                 backdrop-filter: blur(4px);
             ">
-                Tabela de Ilustração Visual de Impressão A4
+                
             </h3>
-            <img id="imgBanner" src="tabela_precos_impressao.jpg" alt="Tabela Visual de Impressão A4" class="banner-imagem" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x200/0284c7/ffffff?text=Coloque+sua+Imagem+Aqui';">
+            <img id="imgBanner" src="classificacao-img.jpg" alt="Tabela Visual Sobre Cores" class="banner-imagem" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x200/0284c7/ffffff?text=Coloque+sua+Imagem+Aqui';">
         </div>
 
         <div id="modalImagem" onclick="fecharImagem()" style="
@@ -714,6 +746,14 @@
             }
         </script>
 
+        <div class="box-privacidade">
+            <div style="font-size: 24px;">⚠️</div>
+            <div>
+                <strong>Importante:</strong><br>
+                A categoria escolhida pelo cliente será conferida antes da impressão. Se o arquivo possuir cobertura de tinta superior à categoria selecionada, o pedido será automaticamente reclassificado para o valor correspondente, e a impressão será realizada somente após a regularização do pagamento.
+            </div>
+        </div>
+
         <form id="formImpressao" class="step-card" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data">
             
             <input type="hidden" name="_captcha" value="false">
@@ -721,6 +761,10 @@
             <input type="hidden" id="hidden_servico_nome" name="Servico Selecionado" value="Impressao / Xerox A4">
             <input type="hidden" id="hidden_tipo_texto" name="Opcao de Impressao Detalhada" value="">
             <input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">
+
+            <div class="alerta-desconsiderar">
+                ⚠️ ATENÇÃO: Pedidos sem pagamento confirmado serão desconsiderados e cancelados automaticamente.
+            </div>
 
             <h2>Monte seu Pedido</h2>
 
@@ -757,6 +801,11 @@
                         <div style="font-size:13px; font-weight:700;">Digitalização</div>
                     </div>
 
+                    <div class="servico-card" onclick="window.location.href='loja.html'">
+    <div style="font-size:24px;">📝</div>
+    <div style="font-size:13px; font-weight:700;">Loja Digital & Serviços</div>
+</div>
+
                     <div class="servico-card disabled">
                         <div style="font-size:24px;">🎨</div>
                         <div style="font-size:13px; font-weight:700;">Canva <span style="font-size:10px; color:var(--primary); display:block;">(Em Breve)</span></div>
@@ -776,7 +825,7 @@
                 </div>
 
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label for="quantidade">Quantidade de Cópias / Folhas:</label>
+                    <label for="quantidade">Quantidade de Cópias de Cada Arquivo:</label>
                     <input type="number" id="quantidade" name="Quantidade de Copias" value="1" min="1">
                 </div>
 
@@ -792,9 +841,13 @@
                         <label for="arquivo">Anexar Documento(s) – Máx. 10.00MB:</label>
                         <button type="button" class="btn-toggle-modo" id="btnToggleModo">✏️ Prefiro colar um texto</button>
                     </div>
+
+                    <div class="aviso-multiarquivos">
+                        💡 <strong>Dica para enviar mais de 1 arquivo:</strong> No celular, <u>pressione e segure</u> sobre o primeiro arquivo para selecionar vários. No PC, segure a tecla <strong>Ctrl</strong> e clique em cada um.
+                    </div>
                     
                     <div id="campoArquivoContainer">
-                        <input type="file" id="arquivo" name="attachment" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+                        <input type="file" id="arquivo" name="attachment[]" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" multiple>
                         <div id="fileDetails" class="file-info hidden"></div>
                     </div>
 
@@ -822,7 +875,10 @@
 
                 <div class="form-group">
                     <label for="arquivo_doc">Anexar PDF / Imagem do Documento:</label>
-                    <input type="file" id="arquivo_doc" name="Anexo Documento Oficial" accept=".pdf,.png,.jpg,.jpeg">
+                    <div class="aviso-multiarquivos">
+                        💡 <strong>Dica:</strong> Pressione e segure o dedo no celular (ou segure Ctrl no PC) para marcar mais de um arquivo de uma vez.
+                    </div>
+                    <input type="file" id="arquivo_doc" name="Anexo Documento Oficial[]" accept=".pdf,.png,.jpg,.jpeg" multiple>
                 </div>
             </div>
 
@@ -847,10 +903,16 @@
             <div class="form-group">
                 <label>Serviços e Opções Extras:</label>
 
-                <label class="checkbox-card">
-                    <input type="checkbox" id="opt_amostra" name="Teste Amostra Impressao" value="Sim (+R$ 1,00)">
-                    <span>🖨️ <strong>Teste de Amostra de Impressão (+R$ 1,00):</strong> Impressão de uma folha de teste prévia para você conferir a qualidade antes do pedido total.</span>
-                </label>
+                <div class="form-group">
+                    <label>Pré-visualização do Arquivo:</label>
+                    <div id="previewContainer" class="hidden" style="text-align: center; margin-top: 8px;">
+                        <p style="font-size: 13px; font-weight: 600; color: var(--primary); margin-bottom: 8px;">
+                            👁️ Pré-visualização do seu arquivo/foto (Grátis):
+                        </p>
+                        <img id="imgPreview" src="" alt="Prévia da Imagem" style="max-width: 100%; max-height: 250px; border-radius: 12px; border: 1px solid var(--border-color); display: none; margin: 0 auto;">
+                        <iframe id="pdfPreview" src="" style="width: 100%; height: 250px; border-radius: 12px; border: 1px solid var(--border-color); display: none;"></iframe>
+                    </div>
+                </div>
 
                 <label class="checkbox-card">
                     <input type="checkbox" id="opt_armazenamento" name="Armazenamento Seguro 24h" value="Sim (Gratis)">
@@ -943,7 +1005,6 @@
                 <div class="atualizacao-item">💳 PIX Dinâmico com QR Code</div>
                 <div class="atualizacao-item">📤 Upload de Comprovante</div>
                 <div class="atualizacao-item">🔊 Notificação Sonora de Pedido</div>
-                <div class="atualizacao-item">👁️ Pré-visualização de PDF / Foto</div>
                 <div class="atualizacao-item">🔄 Conversor de Imagem para PDF</div>
             </div>
         </div>
@@ -991,7 +1052,7 @@
             }
         });
 
-        // NAVEGAÇÃO ENTRE PAGINAS DO SITE (2 CLIQUES SE PREENCHIDO/NA ABA PAGAMENTO)
+        // NAVEGAÇÃO ENTRE PAGINAS DO SITE
         function navegarComConfirmacao(url) {
             const precisaConfirmar = temCamposPreenchidos() || naAbaPagamento;
 
@@ -1141,8 +1202,6 @@
         const inputQtdDoc = document.getElementById("qtd_doc");
         const inputQtdDig = document.getElementById("qtd_paginas_digitalizar");
 
-        const optAmostra = document.getElementById("opt_amostra");
-
         const valorExibicao = document.getElementById("valorTotalExibicao");
         const subtotalExibicao = document.getElementById("subtotalExibicao");
         const descontoExibicao = document.getElementById("descontoExibicao");
@@ -1164,16 +1223,21 @@
                     case "cobertura_total": precoUnitario = 2.00; break;
                     case "pb": default: precoUnitario = 0.50; break;
                 }
-                const qtd = parseInt(inputQtd.value) || 1;
-                subtotal = precoUnitario * qtd;
-                if (selectTipo.value === "media_cor" && qtd > 5) {
-                    desconto = (1.35 - 1.20) * qtd;
+                const copias = parseInt(inputQtd.value) || 1;
+                const totalArquivos = inputArquivo.files.length > 0 ? inputArquivo.files.length : 1;
+                const qtdTotalFolhas = copias * totalArquivos;
+
+                subtotal = precoUnitario * qtdTotalFolhas;
+                if (selectTipo.value === "media_cor" && qtdTotalFolhas > 5) {
+                    desconto = (1.35 - 1.20) * qtdTotalFolhas;
                 }
             } else if (servicoAtivo === 'doc') {
                 let precoDoc = 1.00;
                 if (selectDocOficial.value === 'boleto') precoDoc = 0.50;
-                const qtd = parseInt(inputQtdDoc.value) || 1;
-                subtotal = precoDoc * qtd;
+                const copias = parseInt(inputQtdDoc.value) || 1;
+                const totalArquivosDoc = document.getElementById("arquivo_doc").files.length > 0 ? document.getElementById("arquivo_doc").files.length : 1;
+                
+                subtotal = precoDoc * copias * totalArquivosDoc;
             } else if (servicoAtivo === 'dig') {
                 const qtd = parseInt(inputQtdDig.value) || 1;
                 subtotal = 2.00 * qtd;
@@ -1184,10 +1248,6 @@
 
                 let totalDig = precoEfetivo * qtd;
                 desconto = subtotal - totalDig;
-            }
-
-            if (optAmostra.checked) {
-                extras += 1.00;
             }
 
             total = (subtotal - desconto) + extras;
@@ -1217,7 +1277,7 @@
         selectDocOficial.addEventListener("change", calcularValor);
         inputQtdDoc.addEventListener("input", calcularValor);
         inputQtdDig.addEventListener("input", calcularValor);
-        optAmostra.addEventListener("change", calcularValor);
+        document.getElementById("arquivo_doc").addEventListener("change", calcularValor);
 
         // MODO ANEXAR / COLAR TEXTO
         const btnToggleModo = document.getElementById("btnToggleModo");
@@ -1234,29 +1294,67 @@
                 btnToggleModo.innerText = "📎 Prefiro anexar um arquivo";
                 inputArquivo.removeAttribute("required");
                 inputArquivo.value = ""; 
+                calcularValor();
             } else {
                 campoTextoContainer.classList.add("hidden");
                 campoArquivoContainer.classList.remove("hidden");
                 btnToggleModo.innerText = "✏️ Prefiro colar um texto";
                 if(servicoAtivo === 'a4') inputArquivo.setAttribute("required", "required");
+                calcularValor();
             }
         });
 
-        // DETALHES DO ARQUIVO ANEXADO
+        // PRÉ-VISUALIZAÇÃO DE ARQUIVOS
         const fileDetails = document.getElementById("fileDetails");
+        const imgPreview = document.getElementById("imgPreview");
+        const pdfPreview = document.getElementById("pdfPreview");
+        const previewContainer = document.getElementById("previewContainer");
 
         inputArquivo.addEventListener("change", function() {
-            if (this.files && this.files[0]) {
-                const file = this.files[0];
-                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-                fileDetails.innerText = `📎 Arquivo selecionado: ${file.name} (${sizeMB} MB)`;
+            const files = this.files;
+
+            if (files.length > 0) {
+                let totalSizeMB = 0;
+                for (let i = 0; i < files.length; i++) {
+                    totalSizeMB += files[i].size;
+                }
+                totalSizeMB = (totalSizeMB / (1024 * 1024)).toFixed(2);
+
+                if (files.length === 1) {
+                    fileDetails.innerText = `📎 Arquivo selecionado: ${files[0].name} (${totalSizeMB} MB)`;
+                } else {
+                    fileDetails.innerText = `📎 ${files.length} arquivos selecionados (Total: ${totalSizeMB} MB)`;
+                }
+
                 fileDetails.classList.remove("hidden");
+                previewContainer.classList.remove("hidden");
+
+                const firstFile = files[0];
+                const fileURL = URL.createObjectURL(firstFile);
+
+                if (firstFile.type.startsWith("image/")) {
+                    imgPreview.src = fileURL;
+                    imgPreview.style.display = "block";
+                    pdfPreview.style.display = "none";
+                } else if (firstFile.type === "application/pdf") {
+                    pdfPreview.src = fileURL;
+                    pdfPreview.style.display = "block";
+                    imgPreview.style.display = "none";
+                } else {
+                    imgPreview.style.display = "none";
+                    pdfPreview.style.display = "none";
+                }
             } else {
                 fileDetails.classList.add("hidden");
+                previewContainer.classList.add("hidden");
+                imgPreview.style.display = "none";
+                pdfPreview.style.display = "none";
             }
+
+            calcularValor();
         });
 
-        // MÁSCARAS E PREENCHIMENTOS DA SUBMISSÃO
+        // MÁSCARAS DE ENTRADA
         const inputNome = document.getElementById("nome");
         const inputTel = document.getElementById("telefone");
 
@@ -1271,7 +1369,7 @@
             e.target.value = v;
         });
 
-        // SUBMISSÃO DO FORMULÁRIO COM TELA DE PAGAMENTO OBRIGATÓRIA
+        // SUBMISSÃO SILENCIOSA DO FORMULÁRIO E ABERTURA DA ABA DE PAGAMENTO
         const form = document.getElementById("formImpressao");
         const btnSubmit = document.getElementById("btnSubmit");
 
@@ -1289,6 +1387,7 @@
             const clienteNome = inputNome.value;
 
             try {
+                // ENVIA EM SEGUNDO PLANO VIA AJAX (SEM TELA DO FORMSUBMIT)
                 const response = await fetch(form.action, {
                     method: "POST",
                     body: formData,
@@ -1296,11 +1395,11 @@
                 });
 
                 if (response.ok) {
-                    // ATIVA MODO DE PAGAMENTO PENDENTE
+                    // ATIVA O BLOQUEIO DE TELA DA ABA DE PAGAMENTO (PIX OU DINHEIRO)
                     naAbaPagamento = true;
                     permitirSaida = false;
 
-                    // Oculta os blocos da página inicial
+                    // Oculta os blocos principais
                     form.classList.add("hidden");
                     document.getElementById("secaoPrecosVisual").classList.add("hidden");
                     document.getElementById("secaoBanner").classList.add("hidden");
@@ -1357,7 +1456,7 @@
             }
         });
 
-        // COPIAR PIX
+        // COPIAR CHAVE PIX
         function copiarPix() {
             const inputPix = document.getElementById("pixKey");
             const btnCopy = document.getElementById("btnCopyPix");
