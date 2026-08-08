@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PrintExpress - Impressões Rápidas & Serviços</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <script async src="https://tally.so/widgets/embed.js"></script>
-
     <style>
         :root {
             --bg-body: #f8fafc;
@@ -283,7 +280,7 @@
         .form-group { display: flex; flex-direction: column; gap: 8px; }
         label { font-weight: 600; font-size: 14px; color: var(--text-main); }
 
-        input[type="text"], input[type="tel"], input[type="number"], select, textarea {
+        input[type="text"], input[type="tel"], input[type="number"], input[type="file"], select, textarea {
             width: 100%;
             padding: 12px 16px;
             background: var(--bg-input);
@@ -337,6 +334,13 @@
         }
         .checkbox-card:hover { border-color: var(--primary); transform: translateX(2px); }
         .checkbox-card input[type="checkbox"] { margin-top: 3px; width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
+
+        .file-info {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 600;
+            margin-top: 4px;
+        }
 
         .price-box {
             background: var(--bg-input);
@@ -487,6 +491,18 @@
         }
         .btn-flutuante:hover { transform: scale(1.05); }
 
+        .btn-toggle-modo {
+            background: transparent;
+            border: 1px dashed var(--primary);
+            color: var(--primary);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
         .futuras-atualizacoes-card {
             background: var(--bg-card);
             border: 1px dashed var(--primary);
@@ -534,14 +550,6 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-        }
-        
-        .tally-container {
-            background: var(--bg-input);
-            border: 1px dashed var(--primary);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
         }
 
         @media (max-width: 500px) {
@@ -640,23 +648,103 @@
                 </div>
                 <span class="valor">R$ 2,00 <small>/ pág</small></span>
             </div>
+
+            <div class="preco-item">
+                <div>
+                    <span class="descricao">Digitalização Volume Médio</span>
+                    <span class="subtexto">5 a 10 páginas <span class="tag-desconto">🔥 Econômico</span></span>
+                </div>
+                <span class="valor">R$ 1,50 <small>/ pág</small></span>
+            </div>
+
+            <div class="preco-item">
+                <div>
+                    <span class="descricao">Digitalização Grande Volume</span>
+                    <span class="subtexto">Acima de 10 páginas</span>
+                </div>
+                <span class="valor">R$ 1,00 <small>/ pág</small></span>
+            </div>
+
+            <div class="preco-categoria-titulo">💼 Serviços Profissionais</div>
+
+            <div class="preco-item">
+                <div>
+                    <span class="descricao">Atualização / Elaboração de Currículo</span>
+                    <span class="subtexto">Formatado em PDF e pronto para enviar</span>
+                </div>
+                <span class="valor">A partir de R$ 10,00</span>
+            </div>
         </section>
 
-        <div id="secaoBanner" class="banner-imagem-container" style="position: relative; display: inline-block; width: 100%; max-width: 450px; margin: 0 auto;">
+        <div id="secaoBanner" class="banner-imagem-container" style="position: relative; display: inline-block; width: 100%; max-width: 450px; margin: 0 auto; cursor: pointer;" onclick="abrirImagem()">
+            <h3 style="
+                position: absolute; 
+                top: 12px; 
+                left: 50%; 
+                transform: translateX(-50%); 
+                background: rgba(15, 23, 42, 0.75); 
+                color: #ffffff; 
+                padding: 6px 16px; 
+                border-radius: 20px; 
+                font-size: 14px; 
+                font-weight: 700; 
+                text-align: center; 
+                white-space: nowrap; 
+                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                backdrop-filter: blur(4px);
+            ">
+                
+            </h3>
             <img id="imgBanner" src="classificacao-img.jpg" alt="Tabela Visual Sobre Cores" class="banner-imagem" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x200/0284c7/ffffff?text=Coloque+sua+Imagem+Aqui';">
         </div>
+
+        <div id="modalImagem" onclick="fecharImagem()" style="
+            display: none; 
+            position: fixed; 
+            z-index: 9999; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0, 0, 0, 0.85); 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        ">
+            <span style="
+                position: absolute; 
+                top: 15px; 
+                right: 25px; 
+                color: #fff; 
+                font-size: 35px; 
+                font-weight: bold; 
+                cursor: pointer;
+            ">&times;</span>
+            <img id="imgModal" alt="Visualização ampliada" style="max-width: 90%; max-height: 90%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        </div>
+
+        <script>
+            function abrirImagem() {
+                const srcOriginal = document.getElementById("imgBanner").src;
+                document.getElementById("imgModal").src = srcOriginal;
+                document.getElementById("modalImagem").style.display = "flex";
+            }
+
+            function fecharImagem() {
+                document.getElementById("modalImagem").style.display = "none";
+            }
+        </script>
 
         <div class="box-privacidade">
             <div style="font-size: 24px;">⚠️</div>
             <div>
                 <strong>Importante:</strong><br>
-                A categoria escolhida pelo cliente será conferida antes da impressão. Se o arquivo possuir cobertura de tinta superior à categoria selecionada, o pedido será reclassificado.
+                A categoria escolhida pelo cliente será conferida antes da impressão. Se o arquivo possuir cobertura de tinta superior à categoria selecionada, o pedido será automaticamente reclassificado para o valor correspondente, e a impressão será realizada somente após a regularização do pagamento.
             </div>
         </div>
 
-         <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-
-        <form id="formImpressao" class="step-card" action="https://tally.so/r/A7YR0B" method="POST" target="hidden_iframe">
+        <form id="formImpressao" class="step-card" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data">
             
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="_template" value="table">
@@ -670,15 +758,18 @@
 
             <h2>Monte seu Pedido</h2>
 
-            <div class="form-group tally-container">
-                <label style="color: var(--primary); font-weight: 800; font-size: 16px; margin-bottom: 8px;">1. Envie seus Dados e Arquivos Aqui:</label>
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Preencha seu nome, WhatsApp e envie os arquivos nesta caixinha abaixo primeiro.</p>
-                
-                <iframe data-tally-src="https://tally.so/embed/A7YR0B?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="200" frameborder="0" marginheight="0" marginwidth="0" title="Pedido de Impressão"></iframe>
+            <div class="form-group">
+                <label for="nome">Seu Nome Completo:</label>
+                <input type="text" id="nome" name="Nome do Cliente" placeholder="EX: JOÃO DA SILVA" required>
             </div>
 
             <div class="form-group">
-                <label style="color: var(--primary); font-weight: 800; font-size: 16px; margin-top: 10px;">2. Calcule o Valor do Serviço:</label>
+                <label for="telefone">WhatsApp para Contato:</label>
+                <input type="tel" id="telefone" name="WhatsApp" placeholder="(41) 99999-9999" maxlength="15" required>
+            </div>
+
+            <div class="form-group">
+                <label>Escolha o Serviço:</label>
                 <div class="servicos-grid">
                     <div class="servico-card selected" id="cardA4" onclick="trocarAbaServico('a4')">
                         <div style="font-size:24px;">📄</div>
@@ -700,6 +791,11 @@
                         <div style="font-size:13px; font-weight:700;">Digitalização</div>
                     </div>
 
+                    <div class="servico-card" onclick="window.location.href='modelos.html'">
+    <div style="font-size:24px;">📝</div>
+    <div style="font-size:13px; font-weight:700;">Modelos Rápidos</div>
+</div>
+
                     <div class="servico-card disabled">
                         <div style="font-size:24px;">🎨</div>
                         <div style="font-size:13px; font-weight:700;">Canva <span style="font-size:10px; color:var(--primary); display:block;">(Em Breve)</span></div>
@@ -719,9 +815,31 @@
                 </div>
 
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label for="quantidade">Total de Páginas a Imprimir:</label>
+                    <label for="quantidade">Quantidade de Cópias / Folhas:</label>
                     <input type="number" id="quantidade" name="Quantidade de Copias" value="1" min="1">
-                    <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Como seus arquivos foram enviados acima, digite aqui o total de páginas que o serviço vai dar para calcular o valor.</p>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="refile">✂️ Acabamento de Margem:</label>
+                    <select id="refile" name="Refile de Bordas">
+                        <option value="manter">Manter Bordas Padrão da Impressora</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <label for="arquivo">Anexar Documento(s) – Máx. 10.00MB:</label>
+                        <button type="button" class="btn-toggle-modo" id="btnToggleModo">✏️ Prefiro colar um texto</button>
+                    </div>
+                    
+                    <div id="campoArquivoContainer">
+                        <input type="file" id="arquivo" name="attachment[]" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" multiple>
+                        <div id="fileDetails" class="file-info hidden"></div>
+                    </div>
+
+                    <div id="campoTextoContainer" class="hidden">
+                        <textarea id="textoDireto" name="Texto para Impressao" rows="3" placeholder="Cole aqui o texto que deseja imprimir..."></textarea>
+                    </div>
                 </div>
             </div>
 
@@ -740,6 +858,11 @@
                     <label for="qtd_doc">Quantidade de Vias:</label>
                     <input type="number" id="qtd_doc" name="Quantidade Vias Doc" value="1" min="1">
                 </div>
+
+                <div class="form-group">
+                    <label for="arquivo_doc">Anexar PDF / Imagem do Documento:</label>
+                    <input type="file" id="arquivo_doc" name="Anexo Documento Oficial[]" accept=".pdf,.png,.jpg,.jpeg" multiple>
+                </div>
             </div>
 
             <div id="blocoDig" class="hidden">
@@ -747,16 +870,41 @@
                     <label for="qtd_paginas_digitalizar">Quantidade Estimada de Páginas para Digitalizar:</label>
                     <input type="number" id="qtd_paginas_digitalizar" name="Paginas para Digitalizar" value="1" min="1">
                     <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">
-                        💡 <strong>O que é digitalização?</strong> É o processo de pegar o seu papel físico e transformá-lo em um arquivo digital!
+                        💡 <strong>O que é digitalização?</strong> É o processo de pegar o seu papel físico e transformá-lo em um arquivo digital (PDF/Imagem) para enviar diretamente para o seu WhatsApp ou E-mail!
                     </p>
+                    <p style="font-size:12px; color:var(--primary); font-weight:600; margin-top:2px;">
+                        📉 <strong>Desconto Progressivo:</strong> 1-4 págs: R$ 2,00 | 5-10 págs: R$ 1,50 | 10+ págs: R$ 1,00/pág.
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="horario_digitalizacao">Horário Estimado de Ir Levar os Documentos:</label>
+                    <input type="text" id="horario_digitalizacao" name="Horario para Digitalizar" placeholder="Ex: Hoje às 14:30">
                 </div>
             </div>
 
             <div class="form-group">
                 <label>Serviços e Opções Extras:</label>
+
+                <div class="form-group">
+                    <label>Pré-visualização do Arquivo:</label>
+                    <div id="previewContainer" class="hidden" style="text-align: center; margin-top: 8px;">
+                        <p style="font-size: 13px; font-weight: 600; color: var(--primary); margin-bottom: 8px;">
+                            👁️ Pré-visualização do seu arquivo/foto (Grátis):
+                        </p>
+                        <img id="imgPreview" src="" alt="Prévia da Imagem" style="max-width: 100%; max-height: 250px; border-radius: 12px; border: 1px solid var(--border-color); display: none; margin: 0 auto;">
+                        <iframe id="pdfPreview" src="" style="width: 100%; height: 250px; border-radius: 12px; border: 1px solid var(--border-color); display: none;"></iframe>
+                    </div>
+                </div>
+
                 <label class="checkbox-card">
                     <input type="checkbox" id="opt_armazenamento" name="Armazenamento Seguro 24h" value="Sim (Gratis)">
-                    <span>💾 <strong>Armazenamento Seguro por 24h (Grátis):</strong> Garantia de eliminação permanente.</span>
+                    <span>💾 <strong>Armazenamento Seguro por 24h (Grátis):</strong> Garantia de eliminação permanente de todos os seus arquivos do servidor após o pedido.</span>
+                </label>
+
+                <label class="checkbox-card">
+                    <input type="checkbox" id="opt_suporte" name="Suporte Atendimento Direto Site" value="Sim (Gratis)">
+                    <span>💬 <strong>Suporte Direto e Atendimento (Grátis):</strong> Canais rápidos dentro do próprio site para tirar dúvidas e acompanhar seu envio.</span>
                 </label>
             </div>
 
@@ -786,17 +934,25 @@
                     <span>Desconto Aplicado:</span>
                     <span id="descontoExibicao">- R$ 0,00</span>
                 </div>
+                <div class="price-row" id="rowExtra" style="display: none; color: var(--primary);">
+                    <span>Adicionais Selecionados:</span>
+                    <span id="extraExibicao">+ R$ 0,00</span>
+                </div>
                 <div class="price-row total">
                     <span>Valor Estimado:</span>
                     <strong id="valorTotalExibicao">R$ 0,50</strong>
                 </div>
             </div>
 
-            <button type="submit" id="btnSubmit" class="btn-primary">Finalizar Pedido e Ver Pagamento 🚀</button>
+            <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido para Impressão 🚀</button>
         </form>
 
         <div id="secaoCardChamativo" class="card-chamativo">
             <h3 style="font-size: 18px; color: var(--primary);">✨ Impressão Rápida e com Alta Qualidade!</h3>
+            <p style="font-size: 14px; color: var(--text-muted);">
+                Seus arquivos são impressos com cores vibrantes e nitidez total. Dúvidas? Fale diretamente conosco pelo WhatsApp!
+            </p>
+            
             <div class="status-fila">
                 ⚡ <strong>Tempo Médio de Produção:</strong> 5 a 15 minutos após a confirmação.
             </div>
@@ -805,7 +961,7 @@
         <div id="telaSucesso" class="sucesso-card hidden">
             <div style="font-size: 60px; margin-bottom: 8px;">🎉</div>
             <h2 style="font-size: 24px; color: var(--primary);">Pedido Confirmado!</h2>
-            <p style="color: var(--text-muted); font-size: 15px; margin-top: 4px;">Tudo certo! Lembre-se de conferir se enviou os arquivos na caixinha acima.</p>
+            <p style="color: var(--text-muted); font-size: 15px; margin-top: 4px;">Tudo certo! Já recebemos sua solicitação.</p>
 
             <div id="boxDetalhesPagamento"></div>
 
@@ -814,13 +970,27 @@
             </a>
 
             <div class="alerta-pagamento-pendente">
-                ⚠️ Não feche esta página antes de realizar o pagamento!
+                ⚠️ Não feche esta página antes de realizar o pagamento do pedido!
             </div>
+
             <button class="btn-primary" onclick="permitirSaida = true; window.onbeforeunload = null; location.reload();" style="margin-top: 18px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">
                 🔄 Fazer Novo Pedido
             </button>
         </div>
 
+        <div id="secaoFuturasAtualizacoes" class="futuras-atualizacoes-card">
+            <h3>🚀 Futuras Atualizações & Recursos em Breve</h3>
+            <div class="atualizacoes-grid">
+                <div class="atualizacao-item">🎨 Gerador de Cartão / Panfleto</div>
+                <div class="atualizacao-item">✨ Solicitação de Arte Personalizada</div>
+                <div class="atualizacao-item">🛵 Entrega Presencial</div>
+                <div class="atualizacao-item">📅 Agendamento de Horário</div>
+                <div class="atualizacao-item">💳 PIX Dinâmico com QR Code</div>
+                <div class="atualizacao-item">📤 Upload de Comprovante</div>
+                <div class="atualizacao-item">🔊 Notificação Sonora de Pedido</div>
+                <div class="atualizacao-item">🔄 Conversor de Imagem para PDF</div>
+            </div>
+        </div>
     </div>
 
     <a href="https://wa.me/5541999682836?text=Olá,%20preciso%20de%20ajuda%20com%20meu%20pedido!" target="_blank" class="btn-flutuante" aria-label="Suporte via WhatsApp">
@@ -843,12 +1013,18 @@
             document.documentElement.style.setProperty('--font-scale', fonteAmpliada ? '1.12rem' : '1rem');
         }
 
-        // VERIFICA SE HÁ CAMPOS PREENCHIDOS (Ajustado pois Tally assumiu os inputs de nome/telefone)
+        // VERIFICA SE HÁ CAMPOS PREENCHIDOS NO FORMULÁRIO
         function temCamposPreenchidos() {
+            const nome = document.getElementById("nome").value.trim();
+            const tel = document.getElementById("telefone").value.trim();
+            const arqA4 = document.getElementById("arquivo").files.length;
+            const arqDoc = document.getElementById("arquivo_doc").files.length;
+            const texto = document.getElementById("textoDireto").value.trim();
             const obs = document.getElementById("observacoes").value.trim();
-            return (obs.length > 0);
+            return (nome.length > 0 || tel.length > 0 || arqA4 > 0 || arqDoc > 0 || texto.length > 0 || obs.length > 0);
         }
 
+        // CONFIRMAÇÃO OBRIGATÓRIA ANTES DE FECHAR A ABA / ATUALIZAR
         window.addEventListener("beforeunload", function (e) {
             if (!permitirSaida && (temCamposPreenchidos() || naAbaPagamento)) {
                 e.preventDefault();
@@ -859,6 +1035,7 @@
             }
         });
 
+        // NAVEGAÇÃO ENTRE PAGINAS DO SITE
         function navegarComConfirmacao(url) {
             const precisaConfirmar = temCamposPreenchidos() || naAbaPagamento;
 
@@ -880,6 +1057,29 @@
                 window.location.href = url;
             }
         }
+
+        // TECLA ESC COM LOGICA DE 2 CLIQUES / CONFIRMAÇÃO
+        let escCount = 0;
+        window.addEventListener("keydown", function(e) {
+            if (e.key === "Escape") {
+                const precisaConfirmar = temCamposPreenchidos() || naAbaPagamento;
+
+                if (!precisaConfirmar) {
+                    permitirSaida = true;
+                    history.back();
+                    return;
+                }
+
+                escCount++;
+                if (escCount === 1) {
+                    alert("⚠️ Pressione ESC novamente para confirmar a saída do site.");
+                    setTimeout(() => escCount = 0, 3000);
+                } else if (escCount >= 2) {
+                    permitirSaida = true;
+                    history.back();
+                }
+            }
+        });
 
         // HORÁRIO DA LOJA
         function checarStatusLoja() {
@@ -952,23 +1152,33 @@
             document.getElementById("blocoDoc").classList.add("hidden");
             document.getElementById("blocoDig").classList.add("hidden");
 
+            const inputArqA4 = document.getElementById("arquivo");
+            const inputArqDoc = document.getElementById("arquivo_doc");
+
             if (servico === 'a4') {
                 document.getElementById("cardA4").classList.add("selected");
                 document.getElementById("blocoA4").classList.remove("hidden");
                 document.getElementById("hidden_servico_nome").value = "Impressao / Xerox A4";
+                if(!modoTextoAtivo) inputArqA4.setAttribute("required", "required");
+                inputArqDoc.removeAttribute("required");
             } else if (servico === 'doc') {
                 document.getElementById("cardDoc").classList.add("selected");
                 document.getElementById("blocoDoc").classList.remove("hidden");
                 document.getElementById("hidden_servico_nome").value = "Documentos Oficiais";
+                inputArqA4.removeAttribute("required");
+                inputArqDoc.setAttribute("required", "required");
             } else if (servico === 'dig') {
                 document.getElementById("cardDig").classList.add("selected");
                 document.getElementById("blocoDig").classList.remove("hidden");
                 document.getElementById("hidden_servico_nome").value = "Digitalização / Escaneamento";
+                inputArqA4.removeAttribute("required");
+                inputArqDoc.removeAttribute("required");
             }
+
             calcularValor();
         }
 
-        // CÁLCULO DE VALOR (Adaptado sem a leitura da quantidade de arquivos do Input antigo)
+        // CÁLCULO DE VALOR EM TEMPO REAL
         const selectTipo = document.getElementById("tipo_impressao");
         const inputQtd = document.getElementById("quantidade");
         const selectDocOficial = document.getElementById("tipo_doc_oficial");
@@ -978,12 +1188,15 @@
         const valorExibicao = document.getElementById("valorTotalExibicao");
         const subtotalExibicao = document.getElementById("subtotalExibicao");
         const descontoExibicao = document.getElementById("descontoExibicao");
+        const extraExibicao = document.getElementById("extraExibicao");
         const rowDesconto = document.getElementById("rowDesconto");
+        const rowExtra = document.getElementById("rowExtra");
 
         function calcularValor() {
             let total = 0;
             let subtotal = 0;
             let desconto = 0;
+            let extras = 0;
 
             if (servicoAtivo === 'a4') {
                 let precoUnitario = 0.50;
@@ -993,18 +1206,16 @@
                     case "cobertura_total": precoUnitario = 2.00; break;
                     case "pb": default: precoUnitario = 0.50; break;
                 }
-                const qtdTotalFolhas = parseInt(inputQtd.value) || 1;
-
-                subtotal = precoUnitario * qtdTotalFolhas;
-                if (selectTipo.value === "media_cor" && qtdTotalFolhas > 5) {
-                    desconto = (1.35 - 1.20) * qtdTotalFolhas;
+                const qtd = parseInt(inputQtd.value) || 1;
+                subtotal = precoUnitario * qtd;
+                if (selectTipo.value === "media_cor" && qtd > 5) {
+                    desconto = (1.35 - 1.20) * qtd;
                 }
             } else if (servicoAtivo === 'doc') {
                 let precoDoc = 1.00;
                 if (selectDocOficial.value === 'boleto') precoDoc = 0.50;
-                const copias = parseInt(inputQtdDoc.value) || 1;
-                
-                subtotal = precoDoc * copias;
+                const qtd = parseInt(inputQtdDoc.value) || 1;
+                subtotal = precoDoc * qtd;
             } else if (servicoAtivo === 'dig') {
                 const qtd = parseInt(inputQtdDig.value) || 1;
                 subtotal = 2.00 * qtd;
@@ -1017,7 +1228,7 @@
                 desconto = subtotal - totalDig;
             }
 
-            total = (subtotal - desconto);
+            total = (subtotal - desconto) + extras;
 
             subtotalExibicao.innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
 
@@ -1026,6 +1237,13 @@
                 descontoExibicao.innerText = `- R$ ${desconto.toFixed(2).replace('.', ',')}`;
             } else {
                 rowDesconto.style.display = "none";
+            }
+
+            if (extras > 0) {
+                rowExtra.style.display = "flex";
+                extraExibicao.innerText = `+ R$ ${extras.toFixed(2).replace('.', ',')}`;
+            } else {
+                rowExtra.style.display = "none";
             }
 
             valorExibicao.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
@@ -1038,73 +1256,177 @@
         inputQtdDoc.addEventListener("input", calcularValor);
         inputQtdDig.addEventListener("input", calcularValor);
 
-        // SUBMISSÃO
-        const form = document.getElementById("formImpressao");
-        const btnSubmit = document.getElementById("btnSubmit");
-        let enviandoPedido = false; 
-        const iframeOculto = document.getElementById("hidden_iframe");
+        // MODO ANEXAR / COLAR TEXTO
+        const btnToggleModo = document.getElementById("btnToggleModo");
+        const campoArquivoContainer = document.getElementById("campoArquivoContainer");
+        const campoTextoContainer = document.getElementById("campoTextoContainer");
+        const inputArquivo = document.getElementById("arquivo");
+        let modoTextoAtivo = false;
 
-        function mostrarTelaSucesso() {
-            const totalCalculado = calcularValor();
-            const pagamentoSel = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
-
-            naAbaPagamento = true;
-            permitirSaida = false;
-
-            form.classList.add("hidden");
-            document.getElementById("secaoPrecosVisual").classList.add("hidden");
-            document.getElementById("secaoCardChamativo").classList.add("hidden");
-
-            const telaSucesso = document.getElementById("telaSucesso");
-            const boxPagamento = document.getElementById("boxDetalhesPagamento");
-
-            if (pagamentoSel === "PIX") {
-                boxPagamento.innerHTML = `
-                    <div class="pix-box-novo">
-                        <p style="font-size:14px; color:var(--text-muted); font-weight: 600;">VALOR TOTAL A PAGAR VIA PIX</p>
-                        <div class="valor-destaque">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
-                        
-                        <p style="font-size:13px; color:var(--text-muted);">Aperte o botão abaixo para copiar a chave copia e cola:</p>
-                        <input type="text" id="pixKey" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:11px; color:var(--primary); background: var(--bg-card);">
-                        <button class="btn-copiar-pix" id="btnCopyPix" type="button" onclick="copiarPix()">📋 Copiar Chave PIX</button>
-                    </div>
-                `;
+        btnToggleModo.addEventListener("click", () => {
+            modoTextoAtivo = !modoTextoAtivo;
+            if(modoTextoAtivo) {
+                campoArquivoContainer.classList.add("hidden");
+                campoTextoContainer.classList.remove("hidden");
+                btnToggleModo.innerText = "📎 Prefiro anexar um arquivo";
+                inputArquivo.removeAttribute("required");
+                inputArquivo.value = ""; 
             } else {
-                boxPagamento.innerHTML = `
-                    <div class="dinheiro-box-novo">
-                        <p style="font-size:14px; color:var(--text-muted); font-weight: 600;">VALOR A PAGAR NA RETIRADA</p>
-                        <div class="valor-destaque">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
-                        <div style="font-size: 32px; margin: 4px 0;">💵</div>
-                        <p style="font-size:14px; color:var(--text-main); font-weight: 500;">
-                            Pagamento em <strong>Dinheiro</strong> no momento da retirada.
-                        </p>
-                    </div>
-                `;
-            }
-
-            const msgWhats = encodeURIComponent(`Olá! Enviei meus dados e arquivos pelo formulário do Tally no site.\n\n🛠️ Serviço: ${document.getElementById("hidden_servico_nome").value}\n💰 Total Estimado: R$ ${totalCalculado.toFixed(2).replace('.', ',')}\n💳 Pagamento: ${pagamentoSel}`);
-            document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;
-
-            telaSucesso.classList.remove("hidden");
-            telaSucesso.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        iframeOculto.addEventListener("load", function() {
-            if (enviandoPedido) {
-                mostrarTelaSucesso();
-                enviandoPedido = false; 
+                campoTextoContainer.classList.add("hidden");
+                campoArquivoContainer.classList.remove("hidden");
+                btnToggleModo.innerText = "✏️ Prefiro colar um texto";
+                if(servicoAtivo === 'a4') inputArquivo.setAttribute("required", "required");
             }
         });
 
-        form.addEventListener("submit", (e) => {
+        // PRÉ-VISUALIZAÇÃO DE ARQUIVOS
+        const fileDetails = document.getElementById("fileDetails");
+        const imgPreview = document.getElementById("imgPreview");
+        const pdfPreview = document.getElementById("pdfPreview");
+        const previewContainer = document.getElementById("previewContainer");
+
+        inputArquivo.addEventListener("change", function() {
+            const files = this.files;
+
+            if (files.length > 0) {
+                let totalSizeMB = 0;
+                for (let i = 0; i < files.length; i++) {
+                    totalSizeMB += files[i].size;
+                }
+                totalSizeMB = (totalSizeMB / (1024 * 1024)).toFixed(2);
+
+                if (files.length === 1) {
+                    fileDetails.innerText = `📎 Arquivo selecionado: ${files[0].name} (${totalSizeMB} MB)`;
+                } else {
+                    fileDetails.innerText = `📎 ${files.length} arquivos selecionados (Total: ${totalSizeMB} MB)`;
+                }
+
+                fileDetails.classList.remove("hidden");
+                previewContainer.classList.remove("hidden");
+
+                const firstFile = files[0];
+                const fileURL = URL.createObjectURL(firstFile);
+
+                if (firstFile.type.startsWith("image/")) {
+                    imgPreview.src = fileURL;
+                    imgPreview.style.display = "block";
+                    pdfPreview.style.display = "none";
+                } else if (firstFile.type === "application/pdf") {
+                    pdfPreview.src = fileURL;
+                    pdfPreview.style.display = "block";
+                    imgPreview.style.display = "none";
+                } else {
+                    imgPreview.style.display = "none";
+                    pdfPreview.style.display = "none";
+                }
+            } else {
+                fileDetails.classList.add("hidden");
+                previewContainer.classList.add("hidden");
+                imgPreview.style.display = "none";
+                pdfPreview.style.display = "none";
+            }
+        });
+
+        // MÁSCARAS DE ENTRADA
+        const inputNome = document.getElementById("nome");
+        const inputTel = document.getElementById("telefone");
+
+        inputNome.addEventListener("input", (e) => e.target.value = e.target.value.toUpperCase());
+
+        inputTel.addEventListener("input", (e) => {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            if (v.length > 6) v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+            else if (v.length > 2) v = v.replace(/^(\d{2})(\d{1,4}).*/, '($1) $2');
+            else if (v.length > 0) v = v.replace(/^(\d*)/, '($1');
+            e.target.value = v;
+        });
+
+        // SUBMISSÃO SILENCIOSA DO FORMULÁRIO E ABERTURA DA ABA DE PAGAMENTO
+        const form = document.getElementById("formImpressao");
+        const btnSubmit = document.getElementById("btnSubmit");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
             btnSubmit.disabled = true;
-            btnSubmit.innerText = "Gerando pagamento... Aguarde ⏳";
+            btnSubmit.innerText = "Enviando pedido...";
 
             const totalCalculado = calcularValor();
             document.getElementById("hidden_tipo_texto").value = servicoAtivo.toUpperCase();
             document.getElementById("hidden_total").value = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
 
-            enviandoPedido = true; 
+            const formData = new FormData(form);
+            const pagamentoSel = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
+            const clienteNome = inputNome.value;
+
+            try {
+                // ENVIA EM SEGUNDO PLANO VIA AJAX (SEM TELA DO FORMSUBMIT)
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (response.ok) {
+                    // ATIVA O BLOQUEIO DE TELA DA ABA DE PAGAMENTO (PIX OU DINHEIRO)
+                    naAbaPagamento = true;
+                    permitirSaida = false;
+
+                    // Oculta os blocos principais
+                    form.classList.add("hidden");
+                    document.getElementById("secaoPrecosVisual").classList.add("hidden");
+                    document.getElementById("secaoBanner").classList.add("hidden");
+                    document.getElementById("secaoCardChamativo").classList.add("hidden");
+                    document.getElementById("secaoFuturasAtualizacoes").classList.add("hidden");
+
+                    const telaSucesso = document.getElementById("telaSucesso");
+                    const boxPagamento = document.getElementById("boxDetalhesPagamento");
+
+                    if (pagamentoSel === "PIX") {
+                        boxPagamento.innerHTML = `
+                            <div class="pix-box-novo">
+                                <p style="font-size:14px; color:var(--text-muted); font-weight: 600;">VALOR TOTAL A PAGAR VIA PIX</p>
+                                <div class="valor-destaque">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
+                                
+                                <div style="margin: 10px 0;">
+                                    <img src="qrcode-pix.jpg" alt="QR Code PIX" style="max-width: 190px; width: 100%; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow);" onerror="this.style.display='none'">
+                                </div>
+
+                                <p style="font-size:13px; color:var(--text-muted);">Aperte o botão abaixo para copiar a chave copia e cola:</p>
+                                <input type="text" id="pixKey" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:11px; color:var(--primary); background: var(--bg-card);">
+                                <button class="btn-copiar-pix" id="btnCopyPix" type="button" onclick="copiarPix()">📋 Copiar Chave PIX</button>
+                            </div>
+                        `;
+                    } else {
+                        boxPagamento.innerHTML = `
+                            <div class="dinheiro-box-novo">
+                                <p style="font-size:14px; color:var(--text-muted); font-weight: 600;">VALOR A PAGAR NA RETIRADA</p>
+                                <div class="valor-destaque">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
+                                <div style="font-size: 32px; margin: 4px 0;">💵</div>
+                                <p style="font-size:14px; color:var(--text-main); font-weight: 500;">
+                                    Pagamento em <strong>Dinheiro</strong> no momento da retirada.
+                                </p>
+                                <p style="font-size:12px; color:var(--text-muted);">Se precisar de troco, entraremos em contato pelo WhatsApp!</p>
+                            </div>
+                        `;
+                    }
+
+                    const msgWhats = encodeURIComponent(`Olá! Acabei de enviar um pedido pelo site.\n\n👤 Nome: ${clienteNome}\n🛠️ Serviço: ${document.getElementById("hidden_servico_nome").value}\n💰 Total: R$ ${totalCalculado.toFixed(2).replace('.', ',')}\n💳 Pagamento: ${pagamentoSel}`);
+                    document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;
+
+                    telaSucesso.classList.remove("hidden");
+                    telaSucesso.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                } else {
+                    alert("Erro ao enviar o pedido. Tente novamente.");
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerText = "Enviar Pedido para Impressão 🚀";
+                }
+            } catch (error) {
+                alert("Erro de conexão ao enviar o formulário.");
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "Enviar Pedido para Impressão 🚀"; 
+            }
         });
 
         // COPIAR CHAVE PIX
