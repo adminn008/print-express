@@ -1374,72 +1374,82 @@
         // SUBMISSÃO USANDO IFRAME OCULTO (GARANTE O UPLOAD E MANTÉM NA MESMA PÁGINA)
         const form = document.getElementById("formImpressao");
         const btnSubmit = document.getElementById("btnSubmit");
+        
+        let enviandoPedido = false; // Controle de envio
+        const iframeOculto = document.getElementById("hidden_iframe");
+
+        // Função isolada da tela de sucesso
+        function mostrarTelaSucesso() {
+            const totalCalculado = calcularValor();
+            const clienteNome = inputNome.value;
+            const pagamentoSel = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
+
+            naAbaPagamento = true;
+            permitirSaida = false;
+
+            // Oculta os blocos principais
+            form.classList.add("hidden");
+            document.getElementById("secaoPrecosVisual").classList.add("hidden");
+            document.getElementById("secaoBanner").classList.add("hidden");
+            document.getElementById("secaoCardChamativo").classList.add("hidden");
+            document.getElementById("secaoFuturasAtualizacoes").classList.add("hidden");
+
+            const telaSucesso = document.getElementById("telaSucesso");
+            const boxPagamento = document.getElementById("boxDetalhesPagamento");
+
+            if (pagamentoSel === "PIX") {
+                boxPagamento.innerHTML = `
+                    <div class="pix-box-novo">
+                        <p style="font-size:14px; color:var(--text-muted); font-weight: 600;">VALOR TOTAL A PAGAR VIA PIX</p>
+                        <div class="valor-destaque">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
+                        
+                        <div style="margin: 10px 0;">
+                            <img src="qrcode-pix.jpg" alt="QR Code PIX" style="max-width: 190px; width: 100%; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow);" onerror="this.style.display='none'">
+                        </div>
+
+                        <p style="font-size:13px; color:var(--text-muted);">Aperte o botão abaixo para copiar a chave copia e cola:</p>
+                        <input type="text" id="pixKey" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:11px; color:var(--primary); background: var(--bg-card);">
+                        <button class="btn-copiar-pix" id="btnCopyPix" type="button" onclick="copiarPix()">📋 Copiar Chave PIX</button>
+                    </div>
+                `;
+            } else {
+                boxPagamento.innerHTML = `
+                    <div class="dinheiro-box-novo">
+                        <p style="font-size:14px; color:var(--text-muted); font-weight: 600;">VALOR A PAGAR NA RETIRADA</p>
+                        <div class="valor-destaque">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
+                        <div style="font-size: 32px; margin: 4px 0;">💵</div>
+                        <p style="font-size:14px; color:var(--text-main); font-weight: 500;">
+                            Pagamento em <strong>Dinheiro</strong> no momento da retirada.
+                        </p>
+                        <p style="font-size:12px; color:var(--text-muted);">Se precisar de troco, entraremos em contato pelo WhatsApp!</p>
+                    </div>
+                `;
+            }
+
+            const msgWhats = encodeURIComponent(`Olá! Acabei de enviar um pedido pelo site.\n\n👤 Nome: ${clienteNome}\n🛠️ Serviço: ${document.getElementById("hidden_servico_nome").value}\n💰 Total: R$ ${totalCalculado.toFixed(2).replace('.', ',')}\n💳 Pagamento: ${pagamentoSel}`);
+            document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;
+
+            telaSucesso.classList.remove("hidden");
+            telaSucesso.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Fica "escutando" quando o iframe terminar de carregar
+        iframeOculto.addEventListener("load", function() {
+            if (enviandoPedido) {
+                mostrarTelaSucesso();
+                enviandoPedido = false; // Reseta o status
+            }
+        });
 
         form.addEventListener("submit", (e) => {
-            // Repare que NÃO usamos e.preventDefault() aqui.
-            // O formulário vai ser enviado de forma nativa para o target="hidden_iframe"
-            
             btnSubmit.disabled = true;
-            btnSubmit.innerText = "Enviando pedido com arquivo(s)...";
+            btnSubmit.innerText = "Enviando arquivo(s)... Aguarde ⏳";
 
             const totalCalculado = calcularValor();
             document.getElementById("hidden_tipo_texto").value = servicoAtivo.toUpperCase();
             document.getElementById("hidden_total").value = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
 
-            const pagamentoSel = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
-            const clienteNome = inputNome.value;
-
-            // Aguarda 1 segundo para garantir que o navegador disparou o envio,
-            // e então exibe a tela de PIX/Dinheiro na tela principal.
-            setTimeout(() => {
-                naAbaPagamento = true;
-                permitirSaida = false;
-
-                // Oculta os blocos principais
-                form.classList.add("hidden");
-                document.getElementById("secaoPrecosVisual").classList.add("hidden");
-                document.getElementById("secaoBanner").classList.add("hidden");
-                document.getElementById("secaoCardChamativo").classList.add("hidden");
-                document.getElementById("secaoFuturasAtualizacoes").classList.add("hidden");
-
-                const telaSucesso = document.getElementById("telaSucesso");
-                const boxPagamento = document.getElementById("boxDetalhesPagamento");
-
-                if (pagamentoSel === "PIX") {
-                    boxPagamento.innerHTML = `
-                        <div class="pix-box-novo">
-                            <p style="font-size:14px; color:var(--text-muted); font-weight: 600;">VALOR TOTAL A PAGAR VIA PIX</p>
-                            <div class="valor-destaque">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
-                            
-                            <div style="margin: 10px 0;">
-                                <img src="qrcode-pix.jpg" alt="QR Code PIX" style="max-width: 190px; width: 100%; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow);" onerror="this.style.display='none'">
-                            </div>
-
-                            <p style="font-size:13px; color:var(--text-muted);">Aperte o botão abaixo para copiar a chave copia e cola:</p>
-                            <input type="text" id="pixKey" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:11px; color:var(--primary); background: var(--bg-card);">
-                            <button class="btn-copiar-pix" id="btnCopyPix" type="button" onclick="copiarPix()">📋 Copiar Chave PIX</button>
-                        </div>
-                    `;
-                } else {
-                    boxPagamento.innerHTML = `
-                        <div class="dinheiro-box-novo">
-                            <p style="font-size:14px; color:var(--text-muted); font-weight: 600;">VALOR A PAGAR NA RETIRADA</p>
-                            <div class="valor-destaque">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
-                            <div style="font-size: 32px; margin: 4px 0;">💵</div>
-                            <p style="font-size:14px; color:var(--text-main); font-weight: 500;">
-                                Pagamento em <strong>Dinheiro</strong> no momento da retirada.
-                            </p>
-                            <p style="font-size:12px; color:var(--text-muted);">Se precisar de troco, entraremos em contato pelo WhatsApp!</p>
-                        </div>
-                    `;
-                }
-
-                const msgWhats = encodeURIComponent(`Olá! Acabei de enviar um pedido pelo site.\n\n👤 Nome: ${clienteNome}\n🛠️ Serviço: ${document.getElementById("hidden_servico_nome").value}\n💰 Total: R$ ${totalCalculado.toFixed(2).replace('.', ',')}\n💳 Pagamento: ${pagamentoSel}`);
-                document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;
-
-                telaSucesso.classList.remove("hidden");
-                telaSucesso.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 800); // tempo de espera de milissegundos
+            enviandoPedido = true; // Ativa a flag para o iframe "saber" que o envio rolou
         });
 
         // COPIAR CHAVE PIX
