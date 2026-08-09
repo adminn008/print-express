@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loja Digital, Serviços & Guias Profissionais</title>
+    <title>Loja Digital, Serviços & Kits Impressos</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,12 +13,13 @@
             --primary: #38bdf8;
             --primary-hover: #0284c7;
             --green: #10b981;
+            --red: #ef4444;
             --text: #f8fafc;
             --text-muted: #94a3b8;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 24px 16px; line-height: 1.5; padding-bottom: 90px; }
+        body { background-color: var(--bg); color: var(--text); padding: 24px 16px; line-height: 1.5; padding-bottom: 100px; }
 
         .container { max-width: 1100px; margin: 0 auto; }
 
@@ -110,7 +111,33 @@
             text-align: center;
         }
 
-        /* FLUTUANTE DO CARRINHO */
+        /* TOAST DE NOTIFICAÇÃO BONITO */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: var(--green);
+            color: #000;
+            text-align: center;
+            border-radius: 8px;
+            padding: 12px;
+            position: fixed;
+            z-index: 200;
+            right: 20px;
+            bottom: 90px;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: opacity 0.3s, transform 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* BARRA FLUTUANTE DO CARRINHO */
         .cart-bar {
             position: fixed; bottom: 0; left: 0; width: 100%; background: #1e293b;
             border-top: 2px solid var(--primary); padding: 16px; display: flex;
@@ -121,10 +148,11 @@
         .btn-cart-checkout {
             background: var(--green); color: #000; border: none; padding: 10px 20px;
             border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 14px;
+            transition: opacity 0.2s;
         }
         .btn-cart-checkout:hover { opacity: 0.9; }
 
-        /* MODAL CHECKOUT */
+        /* MODAL CHECKOUT MELHORADO */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px);
@@ -152,12 +180,21 @@
             border-radius: 8px; color: #fff; font-size: 14px;
         }
 
-        .pay-options { display: flex; gap: 8px; margin: 12px 0; }
-        .pay-btn {
-            flex: 1; padding: 10px; background: #0f172a; border: 1px solid var(--border);
-            border-radius: 8px; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center;
+        /* SEÇÃO DE PAGAMENTO MAIS BONITA */
+        .payment-container {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 12px;
         }
-        .pay-btn.active { border-color: var(--primary); background: rgba(56, 189, 248, 0.15); }
+        .pay-options { display: flex; gap: 10px; margin-bottom: 12px; }
+        .pay-btn {
+            flex: 1; padding: 12px 8px; background: #0f172a; border: 2px solid var(--border);
+            border-radius: 10px; color: var(--text-muted); font-size: 13px; font-weight: 700; cursor: pointer; text-align: center;
+            transition: all 0.2s;
+        }
+        .pay-btn.active { border-color: var(--primary); background: rgba(56, 189, 248, 0.15); color: var(--primary); }
 
         .pix-box {
             background: #0f172a; border: 1px dashed var(--primary); border-radius: 10px;
@@ -168,29 +205,50 @@
             display: flex; gap: 6px; margin-top: 8px;
         }
         .pix-copy-area input {
-            flex: 1; padding: 6px 8px; background: #1e293b; border: 1px solid var(--border);
+            flex: 1; padding: 8px; background: #1e293b; border: 1px solid var(--border);
             border-radius: 6px; color: #fff; font-size: 11px;
         }
         .btn-copy {
-            background: var(--primary); color: #0f172a; border: none; padding: 6px 12px;
+            background: var(--primary); color: #0f172a; border: none; padding: 8px 12px;
             border-radius: 6px; font-weight: 700; font-size: 11px; cursor: pointer;
         }
         .btn-copy:hover { background: var(--primary-hover); color: #fff; }
 
+        .summary-list {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .summary-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .btn-remove-item {
+            background: transparent; border: none; color: var(--red); font-size: 12px; cursor: pointer; font-weight: 700;
+        }
+        .btn-remove-item:hover { text-decoration: underline; }
+
         .close-btn { background: transparent; border: none; color: var(--text-muted); font-size: 13px; cursor: pointer; width: 100%; margin-top: 10px; }
-        
-        .summary-list { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; background: #0f172a; padding: 8px; border-radius: 6px; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <header>
-            <h1>📚 Central de Serviços, Materiais & Ferramentas</h1>
-            <p>E-books, templates, utilitários e serviços digitais para acelerar sua rotina</p>
+            <h1>📚 Central de Serviços, Materiais & Funções</h1>
+            <p>E-books, funções extras e kits impressos para facilitar o seu dia a dia</p>
         </header>
 
-        <h2 class="section-title">✨ Disponível Agora</h2>
+        <h2 class="section-title">✨ Disponíveis Agora</h2>
         <div class="products-grid">
             <div class="product-card">
                 <span class="tag tag-available">Disponível</span>
@@ -209,126 +267,126 @@
             </div>
         </div>
 
-        <h2 class="section-title">🚀 Novos Utilitários & Ferramentas Digitais (Disponíveis)</h2>
+        <h2 class="section-title">🛠️ 15 Funções Extras & Kits Práticos Impressos</h2>
         <div class="products-grid">
             <div class="product-card">
-                <span class="tag tag-available">Novo</span>
-                <h3>Gerador de Ideias para Reels e TikTok</h3>
-                <p>Lista com 50 ganchos virais prontos para preencher e bombar seus vídeos curtos nas redes sociais.</p>
-                <div class="price-box">R$ 6,90 <span>(PDF Digital)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Gerador de Ideias para Reels e TikTok', 6.90)">Adicionar ao Carrinho</button>
+                <span class="tag tag-available">Função</span>
+                <h3>Serviço de Digitação Rápida (Até 5 páginas)</h3>
+                <p>Envie seu texto manuscrito ou escaneado e receba digitado e limpo em arquivo Word formatado.</p>
+                <div class="price-box">R$ 10,00 <span>(Serviço)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Serviço de Digitação Rápida', 10.00)">Adicionar ao Carrinho</button>
             </div>
 
             <div class="product-card">
-                <span class="tag tag-available">Novo</span>
-                <h3>Planilha de Metas de Longo Prazo e Sonhos</h3>
-                <p>Controle financeiro e de passos práticos para conquistar sua moto, viagem ou independência.</p>
-                <div class="price-box">R$ 8,00 <span>(Planilha)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Planilha de Metas de Longo Prazo e Sonhos', 8.00)">Adicionar ao Carrinho</button>
+                <span class="tag tag-available">Função</span>
+                <h3>Configuração de Contas e Segurança no Celular</h3>
+                <p>Ajuda remota passo a passo para criar e-mail seguro, configurar backup automático e proteger redes.</p>
+                <div class="price-box">R$ 15,00 <span>(Suporte)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Configuração de Contas e Segurança no Celular', 15.00)">Adicionar ao Carrinho</button>
             </div>
 
             <div class="product-card">
-                <span class="tag tag-available">Novo</span>
-                <h3>Pack de Artes Editáveis para Canva (30 Templates)</h3>
-                <p>Artes profissionais prontas para comércios locais, prestadores de serviço e criadores de conteúdo.</p>
-                <div class="price-box">R$ 12,90 <span>(Link Canva)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Pack de Artes Editáveis para Canva (30 Templates)', 12.90)">Adicionar ao Carrinho</button>
+                <span class="tag tag-available">Função</span>
+                <h3>Criação de Cartão de Visita Digital Interativo</h3>
+                <p>Cartão personalizado com botões clicáveis direto para seu WhatsApp, Instagram e Chave Pix.</p>
+                <div class="price-box">R$ 12,00 <span>(Digital)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Criação de Cartão de Visita Digital Interativo', 12.00)">Adicionar ao Carrinho</button>
             </div>
 
             <div class="product-card">
-                <span class="tag tag-available">Novo</span>
-                <h3>Guia Prático de Inglês para Viagem e Aeroporto</h3>
-                <p>As frases e termos mais essenciais traduzidos e fonéticos para você não passar perrengue.</p>
-                <div class="price-box">R$ 5,50 <span>(PDF Digital)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Guia Prático de Inglês para Viagem e Aeroporto', 5.50)">Adicionar ao Carrinho</button>
+                <span class="tag tag-available">Função</span>
+                <h3>Formatação e Criação de Apresentação em Slides</h3>
+                <p>Transformamos suas anotações em um slide moderno, animado e profissional para trabalhos escolares.</p>
+                <div class="price-box">R$ 14,00 <span>(Serviço)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Formatação de Apresentação em Slides', 14.00)">Adicionar ao Carrinho</button>
             </div>
 
             <div class="product-card">
-                <span class="tag tag-available">Novo</span>
-                <h3>Manual de Roteiros para Vídeos de Vendas</h3>
-                <p>Estruturas validadas de copywriting para vender qualquer produto ou serviço conversando na câmera.</p>
-                <div class="price-box">R$ 9,90 <span>(PDF Digital)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Manual de Roteiros para Vídeos de Vendas', 9.90)">Adicionar ao Carrinho</button>
+                <span class="tag tag-available">Função</span>
+                <h3>Elaboração de Carta de Apresentação de Emprego</h3>
+                <p>Texto personalizado e persuasivo para anexar junto ao seu currículo e se destacar nas vagas.</p>
+                <div class="price-box">R$ 7,50 <span>(PDF/Word)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Elaboração de Carta de Apresentação', 7.50)">Adicionar ao Carrinho</button>
             </div>
 
             <div class="product-card">
-                <span class="tag tag-available">Novo</span>
-                <h3>Planilha Gestão de Tarefas Estilo Trello (Excel)</h3>
-                <p>Kanban automatizado dentro do próprio Excel para organizar sua rotina sem precisar de aplicativos pagos.</p>
-                <div class="price-box">R$ 7,90 <span>(Planilha)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Planilha Gestão de Tarefas Estilo Trello', 7.90)">Adicionar ao Carrinho</button>
+                <span class="tag tag-available">Kit Impresso</span>
+                <h3>Kit 20 Desenhos de Anime em Preto e Branco para Pintar</h3>
+                <p>Caderno impresso com os personagens mais famosos em traços limpos ideal para colorir e treinar.</p>
+                <div class="price-box">R$ 12,90 <span>(Impresso)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Kit 20 Desenhos de Anime P&B para Pintar', 12.90)">Adicionar ao Carrinho</button>
             </div>
 
             <div class="product-card">
-                <span class="tag tag-available">Novo</span>
-                <h3>Mini-Guia de Edição de Vídeo no CapCut Celular</h3>
-                <p>Dicas de cortes rápidos, transições dinâmicas e legendas automáticas que prendem a atenção.</p>
-                <div class="price-box">R$ 6,00 <span>(PDF Digital)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Mini-Guia de Edição de Vídeo no CapCut Celular', 6.00)">Adicionar ao Carrinho</button>
+                <span class="tag tag-available">Kit Impresso</span>
+                <h3>Kit Mandalas Antiestresse (15 Páginas)</h3>
+                <p>Folhas impressas em alta qualidade com mandalas detalhadas para foco, relaxamento e passatempo.</p>
+                <div class="price-box">R$ 8,90 <span>(Impresso)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Kit Mandalas Antiestresse', 8.90)">Adicionar ao Carrinho</button>
             </div>
 
             <div class="product-card">
-                <span class="tag tag-available">Novo</span>
-                <h3>Guia Rápido de Contratos para Prestadores de Serviço</h3>
-                <p>Modelo simples de contrato de prestação de serviços para garantir segurança nos seus acordos freelance.</p>
-                <div class="price-box">R$ 10,00 <span>(Word/PDF)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Guia Rápido de Contratos para Prestadores de Serviço', 10.00)">Adicionar ao Carrinho</button>
+                <span class="tag tag-available">Kit Impresso</span>
+                <h3>Caderno de Caligrafia Criativa e Lettering (Pronto)</h3>
+                <p>Folhas pontilhadas e guiadas impressas para você treinar letras bonitas, títulos e traços firmes.</p>
+                <div class="price-box">R$ 9,90 <span>(Impresso)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Caderno de Caligrafia Criativa e Lettering', 9.90)">Adicionar ao Carrinho</button>
             </div>
 
             <div class="product-card">
-                <span class="tag tag-available">Novo</span>
-                <h3>Planner Digital Diário Sem Anos (PDF Interativo)</h3>
-                <p>Organize suas semanas, prioridades e hábitos em qualquer tablet ou celular com caneta stylus.</p>
-                <div class="price-box">R$ 8,50 <span>(PDF Digital)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Planner Digital Diário Sem Anos', 8.50)">Adicionar ao Carrinho</button>
+                <span class="tag tag-available">Kit Impresso</span>
+                <h3>Kit Passatempo: Caça-Palavras & Cruzadinhas</h3>
+                <p>Bloco impresso com 20 desafios variados de raciocínio lógico e vocabulário para todas as idades.</p>
+                <div class="price-box">R$ 7,90 <span>(Impresso)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Kit Passatempo: Caça-Palavras & Cruzadinhas', 7.90)">Adicionar ao Carrinho</button>
             </div>
 
             <div class="product-card">
-                <span class="tag tag-available">Novo</span>
-                <h3>Guia de Fotografia com o Celular para Produtos</h3>
-                <p>Como usar a luz natural, enquadramentos e limpeza de lente para fotos que parecem de estúdio.</p>
-                <div class="price-box">R$ 5,90 <span>(PDF Digital)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Guia de Fotografia com o Celular para Produtos', 5.90)">Adicionar ao Carrinho</button>
+                <span class="tag tag-available">Kit Impresso</span>
+                <h3>Kit 15 Desenhos de Carros Esportivos Clássicos P&B</h3>
+                <p>Imagens em preto e branco com contornos detalhados de supermáquinas para colorir ou colecionar.</p>
+                <div class="price-box">R$ 10,00 <span>(Impresso)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Kit 15 Desenhos de Carros Esportivos P&B', 10.00)">Adicionar ao Carrinho</button>
             </div>
 
             <div class="product-card">
-                <span class="tag tag-available">Novo</span>
-                <h3>Gerador de Respostas Prontas para Atendimento no WhatsApp</h3>
-                <p>Scripts inteligentes para fechar vendas, tirar dúvidas e responder clientes grossos com elegância.</p>
-                <div class="price-box">R$ 7,50 <span>(PDF Digital)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Gerador de Respostas Prontas para WhatsApp', 7.50)">Adicionar ao Carrinho</button>
+                <span class="tag tag-available">Função</span>
+                <h3>Revisão Ortográfica e Gramatical de Textos</h3>
+                <p>Correção completa de erros de português, pontuação e coesão em redações, trabalhos ou cartas.</p>
+                <div class="price-box">R$ 8,00 <span>(Serviço)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Revisão Ortográfica e Gramatical', 8.00)">Adicionar ao Carrinho</button>
             </div>
 
             <div class="product-card">
-                <span class="tag tag-available">Novo</span>
-                <h3>Kit de Ícones e Capas para Destaques do Instagram</h3>
-                <p>Mais de 50 ícones minimalistas para deixar o perfil do seu negócio muito mais profissional e organizado.</p>
-                <div class="price-box">R$ 4,90 <span>(Pack de Imagens)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Kit de Ícones e Capas para Destaques do Instagram', 4.90)">Adicionar ao Carrinho</button>
+                <span class="tag tag-available">Função</span>
+                <h3>Assistência Remota para Instalação de Aplicativos Úteis</h3>
+                <p>Te ajudamos a baixar, configurar e usar ferramentas seguras de estudo, planilhas ou produtividade.</p>
+                <div class="price-box">R$ 10,00 <span>(Serviço)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Assistência Remota de Apps', 10.00)">Adicionar ao Carrinho</button>
             </div>
 
             <div class="product-card">
-                <span class="tag tag-available">Novo</span>
-                <h3>Guia de Introdução à Inteligência Artificial (IA)</h3>
-                <p>Como usar ferramentas gratuitas de IA para criar textos, ideias de negócios e otimizar pesquisas.</p>
-                <div class="price-box">R$ 6,50 <span>(PDF Digital)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Guia de Introdução à Inteligência Artificial', 6.50)">Adicionar ao Carrinho</button>
+                <span class="tag tag-available">Função</span>
+                <h3>Criação de Cronograma de Estudos Personalizado</h3>
+                <p>Organizamos sua rotina de horários com base nas suas provas, compromissos e tempo livre.</p>
+                <div class="price-box">R$ 9,00 <span>(Digital)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Cronograma de Estudos Personalizado', 9.00)">Adicionar ao Carrinho</button>
             </div>
 
             <div class="product-card">
-                <span class="tag tag-available">Novo</span>
-                <h3>Planilha de Controle de Estoque Simples para Pequenos Negócios</h3>
-                <p>Controle entradas, saídas e produtos que estão acabando sem complicação tecnológica.</p>
-                <div class="price-box">R$ 9,00 <span>(Planilha)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Planilha de Controle de Estoque Simples', 9.00)">Adicionar ao Carrinho</button>
+                <span class="tag tag-available">Kit Impresso</span>
+                <h3>Kit Desenhos Paisagens e Natureza para Pintar</h3>
+                <p>15 modelos impressos de florestas, praias e horizontes em traços simples em preto e branco.</p>
+                <div class="price-box">R$ 9,50 <span>(Impresso)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Kit Desenhos Paisagens e Natureza', 9.50)">Adicionar ao Carrinho</button>
             </div>
 
             <div class="product-card">
-                <span class="tag tag-available">Novo</span>
-                <h3>Checklist de Viagem Perfeita (Mochila ou Mala)</h3>
-                <p>Nunca mais esqueça carregador, documentos ou remédios importantes antes de pegar a estrada ou voo.</p>
-                <div class="price-box">R$ 3,90 <span>(PDF Digital)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Checklist de Viagem Perfeita', 3.90)">Adicionar ao Carrinho</button>
+                <span class="tag tag-available">Função</span>
+                <h3>Organização de Fotos e Criação de Mini Álbum Digital</h3>
+                <p>Selecionamos, limpamos fotos duplicadas e organizamos suas memórias em uma pasta digital segura.</p>
+                <div class="price-box">R$ 15,00 <span>(Serviço)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Organização de Fotos Digital', 15.00)">Adicionar ao Carrinho</button>
             </div>
         </div>
 
@@ -349,11 +407,13 @@
         </div>
     </div>
 
+    <div id="toast">✨ Item adicionado ao carrinho com sucesso!</div>
+
     <div class="cart-bar" id="cartBar" style="display: none;">
         <div class="cart-info">
-            Itens no carrinho: <span id="cartCount">0</span> | Subtotal: <span id="cartSubtotal">R$ 0,00</span>
+            Itens: <span id="cartCount">0</span> | Subtotal/Total: <span id="cartSubtotal">R$ 0,00</span>
         </div>
-        <button class="btn-cart-checkout" onclick="abrirCheckoutCarrinho()">Finalizar Compra 🚀</button>
+        <button class="btn-cart-checkout" onclick="abrirCheckoutCarrinho()">Finalizar Pedido 🚀</button>
     </div>
 
     <div class="modal-overlay" id="modalCheckout">
@@ -372,21 +432,23 @@
                 <input type="text" id="custPhone" placeholder="(41) 99999-9999">
             </div>
 
-            <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Forma de Pagamento:</label>
-            <div class="pay-options">
-                <div class="pay-btn active" id="optPix" onclick="setPayMethod('pix')">📱 Pix</div>
-                <div class="pay-btn" id="optDinheiro" onclick="setPayMethod('dinheiro')">💵 Dinheiro (Retirada)</div>
-            </div>
-
-            <div class="pix-box" id="pixContainer">
-                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Escaneie o QR Code Pix ou copie a chave:</p>
-                <img id="qrPix" src="qrcode-pix.jpg" alt="QR Code Pix" style="width: 130px; height: 130px; border-radius: 6px; background: #fff; padding: 4px;">
-                
-                <div class="pix-copy-area">
-                    <input type="text" id="pixCopiaCola" readonly>
-                    <button class="btn-copy" onclick="copiarPix()">Copiar Pix</button>
+            <div class="payment-container">
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 8px;">Forma de Pagamento:</label>
+                <div class="pay-options">
+                    <div class="pay-btn active" id="optPix" onclick="setPayMethod('pix')">📱 Pix Rápido</div>
+                    <div class="pay-btn" id="optDinheiro" onclick="setPayMethod('dinheiro')">💵 Dinheiro (Retirada)</div>
                 </div>
-                <p style="font-size: 11px; color: var(--primary); margin-top: 6px; word-break: break-all;">Chave: ws8530135@gmail.com</p>
+
+                <div class="pix-box" id="pixContainer">
+                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Escaneie o QR Code ou copie a chave abaixo:</p>
+                    <img id="qrPix" src="qrcode-pix.jpg" alt="QR Code Pix" style="width: 120px; height: 120px; border-radius: 6px; background: #fff; padding: 4px;">
+                    
+                    <div class="pix-copy-area">
+                        <input type="text" id="pixCopiaCola" readonly>
+                        <button class="btn-copy" onclick="copiarPix()">Copiar Chave</button>
+                    </div>
+                    <p style="font-size: 11px; color: var(--primary); margin-top: 6px; word-break: break-all;">Chave: ws8530135@gmail.com</p>
+                </div>
             </div>
 
             <button class="btn-buy" style="margin-top: 16px;" onclick="confirmarPedidoWhatsApp()">Confirmar e Enviar no WhatsApp</button>
@@ -400,10 +462,28 @@
         const CHAVE_PIX = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
         const WHATSAPP_NUM = "5541999682836";
 
+        function mostrarToast(mensagem) {
+            const toast = document.getElementById('toast');
+            toast.innerText = mensagem;
+            toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
         function adicionarAoCarrinho(nome, valor) {
             carrinho.push({ nome, valor });
             atualizarBarraCarrinho();
-            alert(`"${nome}" foi adicionado ao seu carrinho!`);
+            mostrarToast(`✨ "${nome}" adicionado!`);
+        }
+
+        function removerDoCarrinho(index) {
+            const removido = carrinho.splice(index, 1);
+            atualizarBarraCarrinho();
+            if(carrinho.length > 0) {
+                abrirCheckoutCarrinho(); // Atualiza a lista no modal se ainda tiver itens
+            } else {
+                fecharCheckout();
+            }
+            mostrarToast(`🗑️ Item removido do carrinho.`);
         }
 
         function atualizarBarraCarrinho() {
@@ -425,9 +505,13 @@
             const subtotal = carrinho.reduce((acc, item) => acc + item.valor, 0);
             document.getElementById('modalTitle').innerText = `Finalizar Pedido (Total: R$ ${subtotal.toFixed(2).replace('.', ',')})`;
             
-            let resumoHTML = '<strong>Itens selecionados:</strong><br>';
+            let resumoHTML = '<strong style="color: #fff; display:block; margin-bottom:6px;">Itens no seu carrinho:</strong>';
             carrinho.forEach((item, idx) => {
-                resumoHTML += `${idx + 1}. ${item.nome} - R$ ${item.valor.toFixed(2).replace('.', ',')}<br>`;
+                resumoHTML += `
+                    <div class="summary-item">
+                        <span>${item.nome} - <strong>R$ ${item.valor.toFixed(2).replace('.', ',')}</strong></span>
+                        <button class="btn-remove-item" onclick="removerDoCarrinho(${idx})">Remover</button>
+                    </div>`;
             });
             document.getElementById('modalSummary').innerHTML = resumoHTML;
             
@@ -451,7 +535,7 @@
             inputCopia.select();
             inputCopia.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(inputCopia.value).then(() => {
-                alert('Chave Pix Copia e Cola copiada com sucesso!');
+                mostrarToast('📋 Chave Pix copiada com sucesso!');
             }).catch(() => {
                 alert('Erro ao tentar copiar. Selecione manualmente.');
             });
