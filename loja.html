@@ -18,7 +18,7 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 24px 16px; line-height: 1.5; }
+        body { background-color: var(--bg); color: var(--text); padding: 24px 16px; line-height: 1.5; padding-bottom: 90px; }
 
         .container { max-width: 1100px; margin: 0 auto; }
 
@@ -110,6 +110,20 @@
             text-align: center;
         }
 
+        /* FLUTUANTE DO CARRINHO */
+        .cart-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: #1e293b;
+            border-top: 2px solid var(--primary); padding: 16px; display: flex;
+            justify-content: space-between; align-items: center; z-index: 90; box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
+        }
+        .cart-info { font-size: 14px; font-weight: 600; }
+        .cart-info span { color: var(--green); font-size: 16px; font-weight: 800; }
+        .btn-cart-checkout {
+            background: var(--green); color: #000; border: none; padding: 10px 20px;
+            border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 14px;
+        }
+        .btn-cart-checkout:hover { opacity: 0.9; }
+
         /* MODAL CHECKOUT */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -164,14 +178,16 @@
         .btn-copy:hover { background: var(--primary-hover); color: #fff; }
 
         .close-btn { background: transparent; border: none; color: var(--text-muted); font-size: 13px; cursor: pointer; width: 100%; margin-top: 10px; }
+        
+        .summary-list { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; background: #0f172a; padding: 8px; border-radius: 6px; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <header>
-            <h1>📚 Central de Serviços, Materiais & Guias</h1>
-            <p>E-books, resumos e serviços digitais para acelerar sua rotina</p>
+            <h1>📚 Central de Serviços, Materiais & Ferramentas</h1>
+            <p>E-books, templates, utilitários e serviços digitais para acelerar sua rotina</p>
         </header>
 
         <h2 class="section-title">✨ Disponível Agora</h2>
@@ -181,256 +197,171 @@
                 <h3>Guia Completo do Primeiro Emprego</h3>
                 <p>Aprenda a estruturar seu currículo sem experiência, comportar-se na entrevista e destacar suas habilidades.</p>
                 <div class="price-box">R$ 4,90 <span>(PDF Digital)</span></div>
-                <button class="btn-buy" onclick="abrirCheckout('Guia Completo do Primeiro Emprego', 4.90)">Comprar Agora</button>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Guia Completo do Primeiro Emprego', 4.90)">Adicionar ao Carrinho</button>
             </div>
-        </div>
 
-        <div class="product-grid">
+            <div class="product-card">
                 <span class="tag tag-available">Disponível</span>
                 <h3>Guia de Currículo para Jovem Aprendiz</h3>
                 <p>Modelo e orientações práticas focadas para quem busca a primeira oportunidade de menor/jovem aprendiz.</p>
                 <div class="price-box">R$ 4,90 <span>(PDF Digital)</span></div>
-                <button class="btn-buy" onclick="abrirCheckout('Guia Completo do Primeiro Emprego', 4.90)">Comprar Agora</button>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Guia de Currículo para Jovem Aprendiz', 4.90)">Adicionar ao Carrinho</button>
+            </div>
+        </div>
+
+        <h2 class="section-title">🚀 Novos Utilitários & Ferramentas Digitais (Disponíveis)</h2>
+        <div class="products-grid">
+            <div class="product-card">
+                <span class="tag tag-available">Novo</span>
+                <h3>Gerador de Ideias para Reels e TikTok</h3>
+                <p>Lista com 50 ganchos virais prontos para preencher e bombar seus vídeos curtos nas redes sociais.</p>
+                <div class="price-box">R$ 6,90 <span>(PDF Digital)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Gerador de Ideias para Reels e TikTok', 6.90)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-card">
+                <span class="tag tag-available">Novo</span>
+                <h3>Planilha de Metas de Longo Prazo e Sonhos</h3>
+                <p>Controle financeiro e de passos práticos para conquistar sua moto, viagem ou independência.</p>
+                <div class="price-box">R$ 8,00 <span>(Planilha)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Planilha de Metas de Longo Prazo e Sonhos', 8.00)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-card">
+                <span class="tag tag-available">Novo</span>
+                <h3>Pack de Artes Editáveis para Canva (30 Templates)</h3>
+                <p>Artes profissionais prontas para comércios locais, prestadores de serviço e criadores de conteúdo.</p>
+                <div class="price-box">R$ 12,90 <span>(Link Canva)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Pack de Artes Editáveis para Canva (30 Templates)', 12.90)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-card">
+                <span class="tag tag-available">Novo</span>
+                <h3>Guia Prático de Inglês para Viagem e Aeroporto</h3>
+                <p>As frases e termos mais essenciais traduzidos e fonéticos para você não passar perrengue.</p>
+                <div class="price-box">R$ 5,50 <span>(PDF Digital)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Guia Prático de Inglês para Viagem e Aeroporto', 5.50)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-card">
+                <span class="tag tag-available">Novo</span>
+                <h3>Manual de Roteiros para Vídeos de Vendas</h3>
+                <p>Estruturas validadas de copywriting para vender qualquer produto ou serviço conversando na câmera.</p>
+                <div class="price-box">R$ 9,90 <span>(PDF Digital)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Manual de Roteiros para Vídeos de Vendas', 9.90)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-card">
+                <span class="tag tag-available">Novo</span>
+                <h3>Planilha Gestão de Tarefas Estilo Trello (Excel)</h3>
+                <p>Kanban automatizado dentro do próprio Excel para organizar sua rotina sem precisar de aplicativos pagos.</p>
+                <div class="price-box">R$ 7,90 <span>(Planilha)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Planilha Gestão de Tarefas Estilo Trello', 7.90)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-card">
+                <span class="tag tag-available">Novo</span>
+                <h3>Mini-Guia de Edição de Vídeo no CapCut Celular</h3>
+                <p>Dicas de cortes rápidos, transições dinâmicas e legendas automáticas que prendem a atenção.</p>
+                <div class="price-box">R$ 6,00 <span>(PDF Digital)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Mini-Guia de Edição de Vídeo no CapCut Celular', 6.00)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-card">
+                <span class="tag tag-available">Novo</span>
+                <h3>Guia Rápido de Contratos para Prestadores de Serviço</h3>
+                <p>Modelo simples de contrato de prestação de serviços para garantir segurança nos seus acordos freelance.</p>
+                <div class="price-box">R$ 10,00 <span>(Word/PDF)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Guia Rápido de Contratos para Prestadores de Serviço', 10.00)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-card">
+                <span class="tag tag-available">Novo</span>
+                <h3>Planner Digital Diário Sem Anos (PDF Interativo)</h3>
+                <p>Organize suas semanas, prioridades e hábitos em qualquer tablet ou celular com caneta stylus.</p>
+                <div class="price-box">R$ 8,50 <span>(PDF Digital)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Planner Digital Diário Sem Anos', 8.50)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-card">
+                <span class="tag tag-available">Novo</span>
+                <h3>Guia de Fotografia com o Celular para Produtos</h3>
+                <p>Como usar a luz natural, enquadramentos e limpeza de lente para fotos que parecem de estúdio.</p>
+                <div class="price-box">R$ 5,90 <span>(PDF Digital)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Guia de Fotografia com o Celular para Produtos', 5.90)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-card">
+                <span class="tag tag-available">Novo</span>
+                <h3>Gerador de Respostas Prontas para Atendimento no WhatsApp</h3>
+                <p>Scripts inteligentes para fechar vendas, tirar dúvidas e responder clientes grossos com elegância.</p>
+                <div class="price-box">R$ 7,50 <span>(PDF Digital)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Gerador de Respostas Prontas para WhatsApp', 7.50)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-card">
+                <span class="tag tag-available">Novo</span>
+                <h3>Kit de Ícones e Capas para Destaques do Instagram</h3>
+                <p>Mais de 50 ícones minimalistas para deixar o perfil do seu negócio muito mais profissional e organizado.</p>
+                <div class="price-box">R$ 4,90 <span>(Pack de Imagens)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Kit de Ícones e Capas para Destaques do Instagram', 4.90)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-card">
+                <span class="tag tag-available">Novo</span>
+                <h3>Guia de Introdução à Inteligência Artificial (IA)</h3>
+                <p>Como usar ferramentas gratuitas de IA para criar textos, ideias de negócios e otimizar pesquisas.</p>
+                <div class="price-box">R$ 6,50 <span>(PDF Digital)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Guia de Introdução à Inteligência Artificial', 6.50)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-card">
+                <span class="tag tag-available">Novo</span>
+                <h3>Planilha de Controle de Estoque Simples para Pequenos Negócios</h3>
+                <p>Controle entradas, saídas e produtos que estão acabando sem complicação tecnológica.</p>
+                <div class="price-box">R$ 9,00 <span>(Planilha)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Planilha de Controle de Estoque Simples', 9.00)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-card">
+                <span class="tag tag-available">Novo</span>
+                <h3>Checklist de Viagem Perfeita (Mochila ou Mala)</h3>
+                <p>Nunca mais esqueça carregador, documentos ou remédios importantes antes de pegar a estrada ou voo.</p>
+                <div class="price-box">R$ 3,90 <span>(PDF Digital)</span></div>
+                <button class="btn-buy" onclick="adicionarAoCarrinho('Checklist de Viagem Perfeita', 3.90)">Adicionar ao Carrinho</button>
             </div>
         </div>
 
         <h2 class="section-title">📘 Guias & E-books (Em Breve)</h2>
         <div class="products-grid">
-            
             <div class="product-card">
                 <span class="tag tag-soon">Em Breve</span>
                 <h3>Planilha de Controle Financeiro Pessoal</h3>
                 <p>Organize seus ganhos e gastos mensais de forma automatizada e visual pelo Excel ou Google Sheets.</p>
                 <button class="btn-disabled" disabled>Lançamento em Breve</button>
             </div>
-
             <div class="product-card">
                 <span class="tag tag-soon">Em Breve</span>
                 <h3>Checklist Básico para Primeira Entrevista</h3>
                 <p>Passo a passo rápido com o que levar, como se vestir e o que evitar falar na sua primeira entrevista.</p>
                 <button class="btn-disabled" disabled>Lançamento em Breve</button>
             </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Kit Produtividade Total (Pomodoro & Foco)</h3>
-                <p>E-book com técnicas avançadas de gerenciamento de tempo e foco inabalável para tarefas intensas.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Manual do Freelancer Iniciante</h3>
-                <p>O passo a passo para conseguir seus primeiros clientes cobrando por serviços digitais na internet.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Guia Prático de Redes Sociais para Negócios</h3>
-                <p>Como criar posts atraentes, usar hashtags corretas e engajar seguidores para vender mais.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Checklist Anti-Procrastinação</h3>
-                <p>Método dinâmico e prático para destravar tarefas difíceis e vencer a preguiça no dia a dia.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Guia de Autoconfiança e Oratória Básica</h3>
-                <p>Dicas certeiras para perder o medo de falar em público, reuniões ou apresentações escolares.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Guia de Entrevistas de Emprego</h3>
-                <p>Dicas práticas das perguntas mais comuns no RH e como se posicionar com confiança.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Guia do Primeiro Dia de Trabalho</h3>
-                <p>Como causar uma boa impressão, postura profissional e integração rápida na equipe.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Guia de Organização Financeira</h3>
-                <p>Aprenda a organizar seus ganhos, controlar gastos e planejar suas economias pessoais.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Guia para Organizar seus Documentos</h3>
-                <p>Mantenha seus documentos P&B, digitais e pessoais prontos para contratações rápido.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Guia Geral de Currículos</h3>
-                <p>Dicas para atualização de perfil profissional, transição de carreira e formatos atualizados.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>E-book: Hábitos de Alta Performance</h3>
-                <p>Pequenas mudanças na rotina diária para aumentar sua produtividade e foco nos estudos e trabalho.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Manual do Jovem Empreendedor</h3>
-                <p>Conceitos iniciais para quem quer começar a vender produtos ou serviços digitais na internet.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Guia de Comunicação Assertiva</h3>
-                <p>Como falar em público, expressar suas ideias com clareza e evitar mal-entendidos profissionais.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
         </div>
+    </div>
 
-        <h2 class="section-title">🎓 Estudos & Concursos (Em Breve)</h2>
-        <div class="products-grid">
-            
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Modelo de Cronograma de Estudos Semanal</h3>
-                <p>Planilha simples para organizar suas horas de estudo sem sobrecarregar a rotina.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Guia de Redação do ENEM</h3>
-                <p>Estruturas nota 1000, conectivos essenciais e repertórios coringa para a prova.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Resumos para Concursos</h3>
-                <p>Mapas mentais e resumos objetivos das disciplinas mais cobradas em provas públicas.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Kit de Simulados e Questões Comentadas</h3>
-                <p>Banco de questões selecionadas com gabaritos detalhados para fixação do conteúdo.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Guia de Memorização e Foco</h3>
-                <p>Técnicas científicas de estudo ativo para reter muito mais informações em menos tempo.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Manual de Matemática Básica para Concursos</h3>
-                <p>Fórmulas explicadas do zero, frações, regra de três e porcentagem sem enrolação.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
+    <div class="cart-bar" id="cartBar" style="display: none;">
+        <div class="cart-info">
+            Itens no carrinho: <span id="cartCount">0</span> | Subtotal: <span id="cartSubtotal">R$ 0,00</span>
         </div>
-
-        <h2 class="section-title">🛠️ Serviços Digitação & Celular (Em Breve)</h2>
-        <div class="products-grid">
-            
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Revisão Rápida de Texto (Até 2 páginas)</h3>
-                <p>Correção gramatical, pontuação e formatação profissional de textos curtos ou trabalhos escolares.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Manuscrito para Word</h3>
-                <p>Digitalização profissional de folhas escritas à mão para documentos formatados no Word.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Configuração de Celular</h3>
-                <p>Serviço completo: Criar conta Google, Instalar WhatsApp, Fazer Backup, Transferir Dados e E-mail.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Criação de Cartão de Visita Digital</h3>
-                <p>Cartão interativo em PDF/Imagem com botões clicáveis para WhatsApp, Redes Sociais e Pix.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Instalação e Configuração de Aplicativos de Banco</h3>
-                <p>Ajuda profissional para instalar, verificar segurança e configurar chaves em aplicativos financeiros.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Limpeza e Otimização de Armazenamento do Celular</h3>
-                <p>Remoção de arquivos duplicados, cache e organização de pastas para liberar espaço e melhorar o desempenho.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Formatação e Criação de Apresentações em Slides</h3>
-                <p>Transformação de textos simples em slides modernos, bonitos e profissionais para trabalhos ou reuniões.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Elaboração de Carta de Apresentação Profissional</h3>
-                <p>Texto personalizado e persuasivo para acompanhar seu currículo em vagas disputadas.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Suporte para Emissão de Certidões e Documentos Online</h3>
-                <p>Auxílio no preenchimento de formulários e solicitação de certidões e guias em sites governamentais.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-soon">Em Breve</span>
-                <h3>Backup e Organização de Fotos na Nuvem</h3>
-                <p>Configuração do Google Photos ou Drive para salvar e organizar todas as suas memórias com segurança.</p>
-                <button class="btn-disabled" disabled>Lançamento em Breve</button>
-            </div>
-
-        </div>
+        <button class="btn-cart-checkout" onclick="abrirCheckoutCarrinho()">Finalizar Compra 🚀</button>
     </div>
 
     <div class="modal-overlay" id="modalCheckout">
         <div class="modal-card">
             <h2 id="modalTitle">Finalizar Pedido</h2>
             
+            <div class="summary-list" id="modalSummary"></div>
+
             <div class="form-group">
                 <label>Seu Nome Completo:</label>
                 <input type="text" id="custName" placeholder="Ex: Maria Souza">
@@ -464,30 +395,43 @@
     </div>
 
     <script>
-        let prodAtual = '';
-        let valorAtual = 0;
+        let carrinho = [];
         let metPagamento = 'pix';
         const CHAVE_PIX = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
         const WHATSAPP_NUM = "5541999682836";
 
-        function abrirCheckout(nome, valor) {
-            prodAtual = nome;
-            valorAtual = valor;
-            
-            if(valor === 0) {
-                document.getElementById('modalTitle').innerText = `${nome} - Gratuito`;
-                document.getElementById('pixContainer').style.display = 'none';
-                document.getElementById('optDinheiro').style.display = 'none';
-                document.getElementById('optPix').style.display = 'none';
-            } else {
-                document.getElementById('modalTitle').innerText = `${nome} - R$ ${valor.toFixed(2).replace('.', ',')}`;
-                document.getElementById('pixContainer').style.display = 'block';
-                document.getElementById('optDinheiro').style.display = 'block';
-                document.getElementById('optPix').style.display = 'block';
-                
-                document.getElementById('pixCopiaCola').value = CHAVE_PIX;
-            }
+        function adicionarAoCarrinho(nome, valor) {
+            carrinho.push({ nome, valor });
+            atualizarBarraCarrinho();
+            alert(`"${nome}" foi adicionado ao seu carrinho!`);
+        }
 
+        function atualizarBarraCarrinho() {
+            const qtd = carrinho.length;
+            const subtotal = carrinho.reduce((acc, item) => acc + item.valor, 0);
+            
+            document.getElementById('cartCount').innerText = qtd;
+            document.getElementById('cartSubtotal').innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+            
+            const cartBar = document.getElementById('cartBar');
+            if(qtd > 0) {
+                cartBar.style.display = 'flex';
+            } else {
+                cartBar.style.display = 'none';
+            }
+        }
+
+        function abrirCheckoutCarrinho() {
+            const subtotal = carrinho.reduce((acc, item) => acc + item.valor, 0);
+            document.getElementById('modalTitle').innerText = `Finalizar Pedido (Total: R$ ${subtotal.toFixed(2).replace('.', ',')})`;
+            
+            let resumoHTML = '<strong>Itens selecionados:</strong><br>';
+            carrinho.forEach((item, idx) => {
+                resumoHTML += `${idx + 1}. ${item.nome} - R$ ${item.valor.toFixed(2).replace('.', ',')}<br>`;
+            });
+            document.getElementById('modalSummary').innerHTML = resumoHTML;
+            
+            document.getElementById('pixCopiaCola').value = CHAVE_PIX;
             document.getElementById('modalCheckout').classList.add('active');
         }
 
@@ -522,12 +466,14 @@
                 return;
             }
 
-            let pagTxt = 'Grátis';
-            if(valorAtual > 0) {
-                pagTxt = metPagamento === 'pix' ? 'Pix' : 'Dinheiro na Retirada';
-            }
+            const subtotal = carrinho.reduce((acc, item) => acc + item.valor, 0);
+            let pagTxt = metPagamento === 'pix' ? 'Pix' : 'Dinheiro na Retirada';
 
-            const msg = `Olá! Solicitei o item:\n📘 *${prodAtual}*\n👤 Nome: ${nome}\n📱 WhatsApp: ${fone}\n💰 Valor: R$ ${valorAtual.toFixed(2).replace('.', ',')}\n💳 Pagamento: ${pagTxt}`;
+            let msg = `Olá! Gostaria de fechar o pedido:\n`;
+            carrinho.forEach(item => {
+                msg += `- *${item.nome}* (R$ ${item.valor.toFixed(2).replace('.', ',')})\n`;
+            });
+            msg += `\n👤 Nome: ${nome}\n📱 WhatsApp: ${fone}\n💰 *Subtotal/Total: R$ ${subtotal.toFixed(2).replace('.', ',')}*\n💳 Pagamento: ${pagTxt}`;
             
             window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
             fecharCheckout();
