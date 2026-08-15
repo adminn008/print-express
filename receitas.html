@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabor & Arte - Seu Livro de Receitas Personalizado</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .recipe-card:hover { transform: translateY(-4px); }
+        .kitchen-mode { font-size: 1.12em; }
+        .kitchen-mode .kitchen-step, .kitchen-mode .kitchen-ingredient { padding: 1rem !important; font-size: 1.08rem; }
+        .kitchen-mode .kitchen-step-number { width: 2rem !important; height: 2rem !important; font-size: .95rem !important; }
+        .dark-mode-sa { background:#1c1917 !important; color:#f5f5f4 !important; }
+        .dark-mode-sa .bg-white { background:#292524 !important; color:#f5f5f4 !important; }
+        .dark-mode-sa .text-stone-800, .dark-mode-sa .text-stone-900 { color:#f5f5f4 !important; }
+        .dark-mode-sa .text-stone-500, .dark-mode-sa .text-stone-600, .dark-mode-sa .text-stone-700 { color:#d6d3d1 !important; }
+        .dark-mode-sa .bg-stone-50, .dark-mode-sa .bg-stone-100 { background:#292524 !important; }
+        .dark-mode-sa .border-stone-200, .dark-mode-sa .border-stone-300 { border-color:#44403c !important; }
+
+        @media print {
+            body * { visibility: hidden !important; }
+            #recipeDetailContainer, #recipeDetailContainer * { visibility: visible !important; }
+            #recipeDetailContainer { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; border: 0 !important; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800 flex flex-col min-h-screen">
+
+    <!-- Top Floating Player & Screen Lock Bar -->
+    <div class="bg-stone-900 text-stone-100 text-xs sm:text-sm py-2 px-4 sticky top-0 z-50 flex justify-between items-center shadow-md">
+        <!-- Screen Lock Controls -->
+        <button id="wakeLockBtn" onclick="toggleWakeLock()" class="flex items-center gap-2 bg-stone-800 hover:bg-stone-700 px-3 py-1.5 rounded-full transition">
+            <i id="wakeLockIcon" class="fa-solid fa-sun text-yellow-500"></i>
+            <span id="wakeLockStatus">🔆 Tela acesa: DESATIVADA</span>
+        </button>
+
+        <!-- Audio Playlist Player -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            <button onclick="prevTrack()" class="text-stone-300 hover:text-white px-1 text-xs sm:text-sm">
+                <i class="fa-solid fa-backward-step"></i>
+            </button>
+            <button onclick="toggleAudio()" class="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded-full font-medium transition">
+                <i id="audioIcon" class="fa-solid fa-play text-xs"></i>
+                <span id="audioText" class="hidden sm:inline">Música ambiente</span>
+            </button>
+            <button onclick="nextTrack()" class="text-stone-300 hover:text-white px-1 text-xs sm:text-sm">
+                <i class="fa-solid fa-forward-step"></i>
+            </button>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.3" class="w-16 accent-brand-500 cursor-pointer hidden md:block" onchange="adjustVolume(this.value)">
+            <audio id="bgAudio" onended="handleTrackEnd()">
+                <source id="audioSource" src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=acoustic-guitars-ambient-112224.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="bg-white border-b border-stone-200 sticky top-[41px] z-40">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="#" onclick="showSection('home')" class="flex items-center gap-2 text-2xl font-bold text-brand-600 tracking-tight">
+                <i class="fa-solid fa-utensils"></i> Sabor & Arte
+            </a>
+
+            <div class="flex items-center gap-4">
+                <button onclick="scrollToFeatures()" class="hidden sm:flex items-center gap-2 bg-stone-100 text-stone-700 border border-stone-200 hover:bg-stone-200 font-semibold px-4 py-2 rounded-xl transition">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Recursos</span>
+                </button>
+                <button onclick="showSection('my-book')" class="relative flex items-center gap-2 bg-brand-50 text-brand-600 border border-brand-200 hover:bg-brand-100 font-semibold px-4 py-2 rounded-xl transition">
+                    <i class="fa-solid fa-heart text-red-500"></i>
+                    <span>Meu livro</span>
+                    <span id="bookBadge" class="bg-brand-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6">
+
+        <!-- SECTION: HOME / CATALOG -->
+        <section id="sec-home">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-r from-brand-500 to-amber-600 text-white rounded-3xl p-6 sm:p-10 mb-8 text-center shadow-lg">
+                <h1 class="text-3xl sm:text-5xl font-black mb-3">Sua cozinha, suas regras.</h1>
+                <p class="text-brand-100 text-base sm:text-lg max-w-2xl mx-auto mb-6">
+                    Encontre suas receitas favoritas, escolha as melhores e monte seu próprio livro digital ou impresso personalizado.
+                </p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <a href="#recipes-grid" class="bg-white text-brand-600 font-bold px-6 py-3 rounded-xl shadow-md hover:bg-brand-50 transition">Ver receitas</a>
+                    <button onclick="showSection('my-book')" class="bg-brand-700 text-white font-bold px-6 py-3 rounded-xl shadow-md hover:bg-brand-800 transition">❤️ Meu livro</button>
+                </div>
+            </div>
+
+            <!-- Search and Filter Bar -->
+            <div class="mb-8 space-y-4">
+                <div class="relative max-w-lg mx-auto">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"></i>
+                    <input type="text" id="searchInput" oninput="filterRecipes()" placeholder="Buscar por nome ou ingrediente..." class="w-full pl-11 pr-4 py-3 rounded-2xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white shadow-sm text-lg">
+                </div>
+
+                <!-- Categories Horizontal Scroll -->
+                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar" id="categoriesBar">
+                    <!-- Dynamic Categories Here -->
+                </div>
+            </div>
+
+            <!-- Recipes Grid -->
+            <div id="recipes-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Recipes dynamic cards -->
+            </div>
+
+
+            <div class="mt-8 bg-white rounded-3xl border border-stone-200 shadow-sm p-6">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-bold text-brand-600 uppercase tracking-wider">Sabor & Arte</p>
+                        <h2 class="text-2xl font-black text-stone-800 mt-1">🍳 Muito mais que um livro de receitas</h2>
+                        <p class="text-stone-500 text-sm mt-1">Lista de compras, temporizadores, favoritos, avaliações, modo cozinha e muito mais.</p>
+                    </div>
+                    <button onclick="openToolsFromHome()" class="bg-brand-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-brand-700 transition">✨ Ver recursos</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: RECIPE DETAIL -->
+        <section id="sec-recipe-detail" class="hidden">
+            <button onclick="showSection('home')" class="mb-4 text-brand-600 font-medium flex items-center gap-2 hover:underline">
+                <i class="fa-solid fa-arrow-left"></i> Voltar para receitas
+            </button>
+            <div id="recipeDetailContainer" class="bg-white rounded-3xl shadow-sm border border-stone-200 overflow-hidden max-w-4xl mx-auto">
+                <!-- Dynamic Content -->
+            </div>
+        </section>
+
+        <!-- SECTION: MY BOOK -->
+        <section id="sec-my-book" class="hidden">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-stone-800 flex items-center gap-2">
+                    <i class="fa-solid fa-book-bookmark text-brand-500"></i> Meu Livro de Receitas
+                </h2>
+                <button onclick="showSection('home')" class="text-brand-600 font-medium hover:underline text-sm sm:text-base">
+                    ← Continuar escolhendo
+                </button>
+            </div>
+
+            <div id="myBookList" class="space-y-4 mb-8">
+                <!-- Selected Recipes list -->
+            </div>
+
+            <div id="myBookActions" class="space-y-5">
+                <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div>
+                            <h3 class="font-bold text-lg">📖 Seu livro está salvo neste dispositivo</h3>
+                            <p class="text-stone-500 text-sm">Você pode continuar usando suas receitas mesmo sem criar um PDF.</p>
+                        </div>
+                        <button type="button" onclick="printAllComingSoon()" class="w-full sm:w-auto bg-stone-100 text-stone-500 border border-stone-200 font-bold px-7 py-3 rounded-xl cursor-not-allowed">
+                            🖨️ Imprimir todas as receitas / PDF <span class="text-xs ml-1">(Em breve)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+                        <div>
+                            <h3 class="text-xl font-black text-stone-800">✨ Ferramentas do Sabor & Arte</h3>
+                            <p class="text-sm text-stone-500">Recursos grátis e recursos Premium que podem chegar ao site.</p>
+                        </div>
+                        <button onclick="showSection('home')" class="text-brand-600 font-semibold hover:underline">Explorar receitas</button>
+                    </div>
+                    <div id="featureGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+                </div>
+            </div>
+        </section>
+
+
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-stone-900 text-stone-400 text-sm py-8 border-t border-stone-800 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 text-center space-y-3">
+            <p class="font-bold text-white text-base">Sabor & Arte © 2026</p>
+            <p class="text-xs max-w-md mx-auto text-stone-500">Transforme suas memórias culinárias em um livro digital exclusivo. Todas as receitas são testadas e verificadas.</p>
+        </div>
+    </footer>
+
+    <!-- JS Application Script -->
+    <script>
+        // --- REAL RECIPES DATABASE (52 COMPLETE REAL RECIPES) ---
+        const recipesData = [
+            {
+                id: 1, name: "Bolo de Cenoura com Cobertura de Chocolate", category: "Sobremesas", prepTime: "45 min", yield: "8 porções",
+                image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80",
+                description: "O clássico bolo de cenoura macio com calda fofinha de chocolate e casquinha crocante.",
+                ingredients: ["3 cenouras médias picadas", "3 ovos inteiros", "1 xícara de óleo", "2 xícaras de açúcar", "2 xícaras de farinha de trigo", "1 colher (sopa) de fermento em pó", "Calda: 1 colher (sopa) de manteiga, 3 colheres de cacau, 1 xícara de açúcar, 1/2 xícara de leite"],
+                instructions: ["Bata as cenouras, ovos e óleo no liquidificador.", "Em uma tigela, misture o açúcar e a farinha de trigo.", "Junte a mistura do liquidificador e mexa bem.", "Adicione o fermento e misture delicadamente.", "Asse em forno pré-aquecido a 180°C por 40 minutos.", "Ferva os ingredientes da calda até engrossar e despeje sobre o bolo."]
+            },
+            {
+                id: 2, name: "Macarrão Carbonara Tradicional", category: "Massas", prepTime: "20 min", yield: "2 porções",
+                image: "https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=600&q=80",
+                description: "A autêntica receita italiana feita apenas com gemas, queijo pecorino ou parmesão e bacon/pancetta.",
+                ingredients: ["200g de macarrão espaguete", "100g de bacon ou pancetta em cubos", "3 gemas de ovo", "1 ovo inteiro", "50g de queijo parmesão ralado", "Pimenta-do-reino moída na hora a gosto"],
+                instructions: ["Cozinhe a massa em água fervente com sal.", "Frite o bacon em uma frigideira até dourar. Desligue o fogo.", "Misture as gemas, o ovo inteiro, o queijo e a pimenta em uma tigela.", "Junte o macarrão quente ao bacon na frigideira com o fogo desligado.", "Adicione a mistura de ovos com um pouco da água do cozimento e mexa bem para formar um creme."]
+            },
+            {
+                id: 3, name: "Frango Xadrez Rápido", category: "Frango", prepTime: "25 min", yield: "4 porções",
+                image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80",
+                description: "Prato saboroso com cubos de frango, legumes crocantes e molho de soja encorpado.",
+                ingredients: ["500g de peito de frango em cubos", "1 pimentão vermelho e 1 verde em cubos", "1 cebola em cubos", "2 dentes de alho picados", "1/2 xícara de molho shoyu", "1 colher (sopa) de amido de milho dissolvido em 1/2 xícara de água", "Amendoim torrado a gosto"],
+                instructions: ["Refogue o frango até dourar e reserve.", "Na mesma panela, refogue o alho, cebola e pimentões até ficarem levemente macios.", "Retorne o frango à panela, adicione o shoyu e o amido de milho.", "Cozinhe até o molho engrossar e finalize com amendoim."]
+            },
+            {
+                id: 4, name: "Salada Caesar com Frango Grelhado", category: "Saladas", prepTime: "15 min", yield: "2 porções",
+                image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80",
+                description: "Salada fresca com molho cremoso caseiro, tiras de frango e croutons crocantes.",
+                ingredients: ["1 pé de alface-americana higienizada", "1 peito de frango grelhado e fatiado", "1/2 xícara de croutons", "50g de parmesão em lascas", "Molho: 3 colheres de maionese, 1 dente de alho ralado, 1 colher de limão, 2 colheres de azeite"],
+                instructions: ["Misture os ingredientes do molho até formar uma emulsão.", "Rasgue as folhas de alface em uma saladeira.", "Adicione o frango, croutons e lascas de queijo.", "Regue com o molho e sirva."]
+            },
+            {
+                id: 5, name: "Sopa de Feijão Econômica", category: "Sopas", prepTime: "30 min", yield: "6 porções",
+                image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80",
+                description: "Uma sopa quentinha e reconfortante aproveitando feijão cozido e macarrão curto.",
+                ingredients: ["3 xícaras de feijão cozido com caldo", "1 xícara de macarrão para sopa", "100g de calabresa picada", "1 cebola e 2 dentes de alho picados", "1 cenoura picada", "Cheiro-verde e sal a gosto"],
+                instructions: ["Bata o feijão no liquidificador com 2 xícaras de água e reserve.", "Frite a calabresa, alho e cebola em uma panela.", "Adicione o feijão batido e a cenoura picada.", "Assim que ferver, junte o macarrão e cozinhe até ficar macio.", "Ajuste o sal e coloque cheiro-verde."]
+            },
+            {
+                id: 6, name: "Pudim de Leite Condensado Lisinho", category: "Sobremesas", prepTime: "60 min", yield: "8 porções",
+                image: "https://images.unsplash.com/photo-1528975604071-b4dc52a2d18c?auto=format&fit=crop&w=600&q=80",
+                description: "A sobremesa mais amada do Brasil com calda perfeita de caramelo.",
+                ingredients: ["1 lata de leite condensado", "1 lata de leite (mesma medida)", "3 ovos inteiros", "1 xícara de açúcar (para a calda)"],
+                instructions: ["Derreta o açúcar na fôrma de pudim até virar caramelo.", "Bata o leite condensado, leite e ovos no liquidificador por 3 minutos.", "Despeje a mistura na fôrma caramelizada.", "Asse em banho-maria no forno a 180°C por 1 hora.", "Deixe esfriar completamente antes de desenformar."]
+            },
+            {
+                id: 7, name: "Strogonoff de Carne Tradicional", category: "Carnes", prepTime: "35 min", yield: "4 porções",
+                image: "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=600&q=80",
+                description: "Tiras de alcatra ou filé mignon ao molho cremoso com cogumelos e batata palha.",
+                ingredients: ["600g de carne cortada em tiras", "1 caixa de creme de leite", "2 colheres (sopa) de extrato de tomate", "2 colheres (sopa) de ketchup", "1 colher (sopa) de mostarda", "100g de cogumelos fatiados", "1 cebola picada"],
+                instructions: ["Doure a carne em uma frigideira bem quente com azeite.", "Adicione a cebola e os cogumelos e refogue por 3 minutos.", "Adicione o extrato de tomate, ketchup e mostarda.", "Desligue o fogo e misture o creme de leite.", "Sirva com arroz branco e batata palha."]
+            },
+            {
+                id: 8, name: "Filé de Peixe ao Molho de Camarão", category: "Peixes", prepTime: "30 min", yield: "3 porções",
+                image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=600&q=80",
+                description: "Filé de tilápia ou pescada grelhado coberto por molho de tomate cremoso com camarões.",
+                ingredients: ["500g de filés de peixe", "200g de camarões limpos", "1 lata de tomate pelado", "2 dentes de alho", "1/2 garrafa de leite de coco", "Azeite, sal, limão e coentro a gosto"],
+                instructions: ["Tempere os filés com sal e limão e grelhe em uma frigideira. Reserve.", "Na mesma panela, doure o alho e refogue os camarões rapidamente por 2 minutos.", "Adicione o tomate pelado e o leite de coco, deixando apurar por 5 minutos.", "Coloque o molho sobre os filés grelhados e salpique coentro."]
+            },
+            {
+                id: 9, name: "Arroz de Forno Cremoso com Frango", category: "Arroz", prepTime: "30 min", yield: "6 porções",
+                image: "https://images.unsplash.com/photo-1536304929831-ee1ca9d44906?auto=format&fit=crop&w=600&q=80",
+                description: "Uma excelente receita para reaproveitar sobrou de arroz de forma deliciosa e gratinada.",
+                ingredients: ["3 xícaras de arroz cozido", "2 xícaras de frango desfiado temperado", "1 lata de milho verde", "1 copo de requeijão cremoso", "200g de queijo muçarela ralado", "1/2 xícara de molho de tomate"],
+                instructions: ["Em um refratário, misture o arroz, o frango desfiado, o milho e o molho de tomate.", "Espalhe o requeijão por cima da mistura.", "Cubra com bastante queijo muçarela.", "Leve ao forno a 200°C por 15 minutos até derreter e gratinar."]
+            },
+            {
+                id: 10, name: "Pão de Queijo Mineiro Caseiro", category: "Pães", prepTime: "40 min", yield: "25 unidades",
+                image: "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?auto=format&fit=crop&w=600&q=80",
+                description: "O tradicional pão de queijo quentinho, crocante por fora e macio por dentro.",
+                ingredients: ["500g de polvilho azedo", "1 xícara de leite", "1/2 xícara de óleo", "1 colher (chá) de sal", "2 ovos", "200g de queijo meia cura ou parmesão ralado"],
+                instructions: ["Ferva o leite com o óleo e o sal.", "Escalde o polvilho com essa mistura quente e mexa com uma colher.", "Espere esfriar, adicione os ovos e o queijo e sove até formar uma massa homogênea.", "Faça bolinhas e asse em forno pré-aquecido a 200°C por 25 minutos."]
+            },
+            {
+                id: 11, name: "Bolo de Fubá com Goiabada", category: "Bolos", prepTime: "50 min", yield: "10 porções",
+                image: "https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?auto=format&fit=crop&w=600&q=80",
+                description: "Acompanhamento perfeito para o café com pedaços derretidos de goiabada.",
+                ingredients: ["3 ovos", "1 xícara de óleo", "1 xícara de leite", "1 xícara de açúcar", "1 xícara de fubá", "1 xícara de farinha de trigo", "1 colher (sopa) de fermento", "100g de goiabada em cubos passados na farinha"],
+                instructions: ["Bata os ingredientes líquidos e o açúcar no liquidificador.", "Adicione o fubá e a farinha de trigo e bata até misturar.", "Misture o fermento delicadamente.", "Despeje em uma fôrma untada e distribua os cubos de goiabada por cima.", "Asse a 180°C por 40 minutos."]
+            },
+            {
+                id: 12, name: "Cookies de Chocolate Crocantes", category: "Biscoitos", prepTime: "25 min", yield: "15 unidades",
+                image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=600&q=80",
+                description: "Biscoitos macios por dentro e recheados com gotas de chocolate.",
+                ingredients: ["100g de manteiga derretida", "1/2 xícara de açúcar mascavo", "1/4 xícara de açúcar cristal", "1 ovo", "1 e 1/2 xícara de farinha de trigo", "1/2 colher (chá) de bicarbonato", "100g de gotas de chocolate"],
+                instructions: ["Misture os açúcares com a manteiga e adicione o ovo.", "Peneire a farinha e o bicarbonato e junte à massa.", "Adicione as gotas de chocolate.", "Modelos bolinhas e coloque em assadeira com papel manteiga.", "Asse a 180°C por 12 a 15 minutos."]
+            },
+            {
+                id: 13, name: "Torta de Frango de Liquidificador", category: "Café da tarde", prepTime: "45 min", yield: "8 porções",
+                image: "https://images.unsplash.com/photo-1621236378699-8597faf6a176?auto=format&fit=crop&w=600&q=80",
+                description: "Prática, rápida e fofinha para o lanche da tarde de toda a família.",
+                ingredients: ["3 ovos", "2 xícaras de leite", "1/2 xícara de óleo", "2 xícaras de farinha de trigo", "1 colher de fermento em pó", "50g de parmesão ralado", "300g de frango desfiado temperado com milho e ervilha"],
+                instructions: ["Bata os líquidos, farinha, fermento e parmesão no liquidificador.", "Despeje metade da massa em uma fôrma untada.", "Coloque todo o recheio de frango por cima.", "Cubra com o restante da massa e asse a 180°C por 35 a 40 minutos."]
+            },
+            {
+                id: 14, name: "Limonada Suíça Cremosa", category: "Bebidas", prepTime: "10 min", yield: "4 copos",
+                image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80",
+                description: "Refrescante, fácil de fazer e com aquele toque especial do leite condensado.",
+                ingredients: ["3 limões tahiti inteiros lavados", "1 litro de água bem gelada", "1/2 lata de leite condensado", "Cubos de gelo a gosto"],
+                instructions: ["Corte as pontas dos limões e corte-os em 4 partes, retirando o miolo branco.", "Bata os limões com a água no liquidificador usando a função pulsar por 10 segundos.", "Coe rapidamente em uma peneira.", "Volte o suco coado ao liquidificador, adicione o leite condensado e o gelo e bata até espumar.", "Sirva imediatamente."]
+            },
+            {
+                id: 15, name: "Omelete de Forno Econômica", category: "Receitas econômicas", prepTime: "20 min", yield: "3 porções",
+                image: "https://images.unsplash.com/photo-1510693206972-df098062cb71?auto=format&fit=crop&w=600&q=80",
+                description: "Refeição completa, barata e nutritiva usando ovos e legumes variados.",
+                ingredients: ["5 ovos inteiros", "1/2 xícara de leite", "1 tomate picado", "1/2 cebola picada", "1/2 xícara de seleta de legumes", "50g de queijo picado", "Sal e pimenta a gosto"],
+                instructions: ["Bata os ovos com o leite, sal e pimenta em um refratário.", "Adicione o tomate, cebola, legumes e queijo.", "Misture tudo diretamente no refratário untado.", "Asse em forno a 180°C por 20 minutos até dourar."]
+            },
+            {
+                id: 16, name: "Escondidinho de Carne Seca com Mandioca", category: "Carnes", prepTime: "50 min", yield: "6 porções",
+                image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80",
+                description: "Purê aveludado de mandioca recheado com carne seca desfiada e bem acebolada.",
+                ingredients: ["800g de mandioca cozida e amassada", "500g de carne seca dessalgada, cozida e desfiada", "1 cebola grande em rodelas", "2 colheres de manteiga", "1/2 xícara de leite", "200g de queijo coalho ou muçarela ralada"],
+                instructions: ["Faça um purê misturando a mandioca amassada, a manteiga e o leite no fogo médio.", "Em outra panela, refogue a carne seca com a cebola até dourar.", "Em um refratário, faça uma camada de purê, depois a carne seca e cubra com o restante do purê.", "Polvilhe o queijo e leve ao forno para gratinar."]
+            },
+            {
+                id: 17, name: "Panqueca de Carne Moída com Molho Vermelho", category: "Massas", prepTime: "40 min", yield: "4 porções",
+                image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=600&q=80",
+                description: "Massa leve de panqueca recheada com carne moída bem temperadinha.",
+                ingredients: ["Massa: 1 e 1/2 xícara de leite, 1 xícara de farinha de trigo, 2 ovos, 1 pitada de sal", "Recheio: 400g de carne moída refogada", "1 sachê de molho de tomate", "100g de queijo ralado"],
+                instructions: ["Bata no liquidificador os ingredientes da massa.", "Faça os discos de panqueca em uma frigideira antiaderente untada.", "Recheie cada disco com carne moída e enrole.", "Disponha em um refratário, cubra com o molho de tomate quente e queijo por cima."]
+            },
+            {
+                id: 18, name: "Frango a Passarinho Crocante", category: "Frango", prepTime: "35 min", yield: "4 porções",
+                image: "https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=600&q=80",
+                description: "Pedaços de frango crocantes temperados com bastante alho e cheiro-verde.",
+                ingredients: ["1kg de frango a passarinho", "4 dentes de alho amassados", "Suco de 1 limão", "2 colheres (sopa) de amido de milho", "Sal, pimenta-do-reino e cheiro-verde a gosto", "Óleo para fritar"],
+                instructions: ["Tempere o frango com alho, limão, sal e pimenta.", "Polvilhe o amido de milho por cima e misture bem.", "Frite os pedaços em óleo quente até ficarem bem dourados e crocantes.", "Escorra em papel toalha e finalize com bastante cheiro-verde."]
+            },
+            {
+                id: 19, name: "Moqueca de Peixe Baiana", category: "Peixes", prepTime: "40 min", yield: "5 porções",
+                image: "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=600&q=80",
+                description: "Postas de peixe cozidas com leite de coco, pimentões e azeite de dendê.",
+                ingredients: ["800g de postas de peixe (cação ou robalo)", "200ml de leite de coco", "2 colheres (sopa) de azeite de dendê", "1 pimentão vermelho e 1 amarelo fatiados", "2 tomates e 1 cebola fatiados", "Coentro a gosto"],
+                instructions: ["Em uma panela (de preferência de barro), faça camadas de cebola, tomate e pimentão.", "Coloque as postas de peixe temperadas com sal e limão sobre os legumes.", "Repita as camadas de legumes.", "Regue com o leite de coco e o azeite de dendê.", "Cozinhe em fogo brando por 25 minutos e finalize com coentro."]
+            },
+            {
+                id: 20, name: "Arroz Piamontese Cremoso", category: "Arroz", prepTime: "20 min", yield: "4 porções",
+                image: "https://images.unsplash.com/photo-1536304929831-ee1ca9d44906?auto=format&fit=crop&w=600&q=80",
+                description: "Acompanhamento sofisticado e fácil feito com champignon e bastante queijo.",
+                ingredients: ["3 xícaras de arroz branco cozido quente", "1 caixa de creme de leite", "100g de queijo muçarela ou prato ralado", "50g de champignon em fatias", "2 colheres de manteiga", "2 colheres de queijo parmesão"],
+                instructions: ["Em uma panela, derreta a manteiga e refogue ligeiramente os champignons.", "Adicione o creme de leite e os queijos até derreterem em fogo baixo.", "Incorpore o arroz cozido e mexa bem até ficar super cremoso.", "Sirva imediatamente."]
+            },
+            {
+                id: 21, name: "Salada Caprese Tradicional", category: "Saladas", prepTime: "10 min", yield: "2 porções",
+                image: "https://images.unsplash.com/photo-1592417817098-8f3d69106093?auto=format&fit=crop&w=600&q=80",
+                description: "Entrada leve italiana com tomates frescos, muçarela de búfala e manjericão.",
+                ingredients: ["2 tomates maduros e firmes em rodelas", "150g de muçarela de búfala em rodelas", "Folhas de manjericão fresco a gosto", "Azeite de oliva extra virgem", "Sal e pimenta moída a gosto"],
+                instructions: ["Em um prato, intercale rodelas de tomate e rodelas de muçarela de búfala.", "Decore com as folhas de manjericão fresco.", "Regue generosamente com azeite de oliva.", "Tempere com sal e pimenta moída na hora."]
+            },
+            {
+                id: 22, name: "Caldo Verde Português", category: "Sopas", prepTime: "35 min", yield: "6 porções",
+                image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80",
+                description: "Caldo encorpado de batatas com couve fininha e rodelas de calabresa.",
+                ingredients: ["500g de batatas descascadas", "1 linguiça calabresa fatiada em rodelas", "2 xícaras de couve manteiga cortada bem fininha", "1 litro de água", "1 cebola e 2 dentes de alho", "Azeite de oliva e sal"],
+                instructions: ["Cozinhe as batatas com a cebola e alho na água até amolecerem.", "Bata tudo no liquidificador até obter um creme liso.", "Em uma panela, frite as rodelas de calabresa e junte o creme de batata.", "Deixe ferver, ajuste o sal, adicione a couve e desligue o fogo após 2 minutos."]
+            },
+            {
+                id: 23, name: "Pão Caseiro Fofinho de Vó", category: "Pães", prepTime: "90 min", yield: "2 pães grandes",
+                image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80",
+                description: "Pão doce macio que desfia ao cortar, ideal para tomar com manteiga.",
+                ingredients: ["1kg de farinha de trigo", "10g de fermento biológico seco", "1/2 xícara de açúcar", "1 xícara de leite morno", "1/2 xícara de óleo", "2 ovos", "1 pitada de sal"],
+                instructions: ["Misture o fermento, açúcar e leite morno e deixe descansar 10 minutos.", "Adicione os ovos, óleo e sal.", "Vá acrescentando a farinha aos poucos e sove bem até soltar das mãos.", "Deixe a massa crescer por 45 minutos. Modele os pães e deixe crescer mais 30 minutos.", "Asse em forno a 180°C por 35 minutos."]
+            },
+            {
+                id: 24, name: "Bolo de Laranja com Calda", category: "Bolos", prepTime: "45 min", yield: "8 porções",
+                image: "https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?auto=format&fit=crop&w=600&q=80",
+                description: "Bolo perfumado e molhadinho com suco natural de laranja.",
+                ingredients: ["2 laranjas inteiras (sem casca e sem sementes)", "1/2 xícara de óleo", "3 ovos", "2 xícaras de açúcar", "2 xícaras de farinha de trigo", "1 colher de fermento", "Calda: 1 xícara de suco de laranja com 1/2 xícara de açúcar"],
+                instructions: ["Bata no liquidificador as laranjas, óleo, ovos e açúcar.", "Transfira para uma tigela e misture a farinha e o fermento.", "Asse em fôrma untada a 180°C por 40 minutos.", "Ferva o suco com o açúcar por 3 minutos e regue o bolo ainda quente."]
+            },
+            {
+                id: 25, name: "Sequilhos de Maizena que Derretem na Boca", category: "Biscoitos", prepTime: "30 min", yield: "30 unidades",
+                image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=600&q=80",
+                description: "Biscoitinhos delicados de leite condensado com amido de milho.",
+                ingredients: ["500g de amido de milho", "1 lata de leite condensado", "200g de manteiga em temperatura ambiente"],
+                instructions: ["Em uma tigela, misture a manteiga e o leite condensado.", "Adicione o amido de milho aos poucos até formar uma massa firme que não gruda.", "Faça pequenas bolinhas, coloque em assadeira e amasse levemente com um garfo.", "Asse a 180°C por cerca de 15 minutos (sem deixar dourar por cima)."]
+            },
+            {
+                id: 26, name: "Mousse de Maracujá Cremoso", category: "Sobremesas", prepTime: "15 min", yield: "6 porções",
+                image: "https://images.unsplash.com/photo-1528975604071-b4dc52a2d18c?auto=format&fit=crop&w=600&q=80",
+                description: "Sobremesa gelada, leve e equilibrada entre o doce e o azedinho.",
+                ingredients: ["1 lata de leite condensado", "1 caixa de creme de leite", "1 xícara de suco concentrado de maracujá", "Sementes de 1 maracujá para decorar"],
+                instructions: ["Bata no liquidificador o leite condensado, creme de leite e suco por 5 minutos.", "Despeje em taças individuais ou em um refratário.", "Decore com as sementes de maracujá por cima.", "Leve à geladeira por no mínimo 3 horas antes de servir."]
+            },
+            {
+                id: 27, name: "Batata Recheada com Frango e Requeijão", category: "Receitas rápidas", prepTime: "30 min", yield: "2 porções",
+                image: "https://images.unsplash.com/photo-1510693206972-df098062cb71?auto=format&fit=crop&w=600&q=80",
+                description: "Refeição prática e satisfatória no micro-ondas e forno.",
+                ingredients: ["2 batatas grandes", "1 xícara de frango desfiado temperado", "3 colheres de requeijão", "50g de bacon frito em cubos", "Queijo parmesão para gratinar"],
+                instructions: ["Lave as batatas, faça furos com um garfo e cozinhe no micro-ondas por 8 a 10 minutos.", "Corte uma tampa superior e retire parte do miolo com uma colher.", "Misture o miolo com o frango e o requeijão.", "Recheie as batatas, cubra com parmesão e bacon e leve ao forno para gratinar."]
+            },
+            {
+                id: 28, name: "Chá Gelado de Pêssego Caseiro", category: "Bebidas", prepTime: "15 min", yield: "1,5 litros",
+                image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80",
+                description: "Bebida ultra refrescante para dias quentes sem conservantes.",
+                ingredients: ["1 litro de água", "4 sachês de chá preto", "3 pêssegos frescos picados", "Suco de 1/2 limão", "Açúcar ou adoçante a gosto", "Gelo"],
+                instructions: ["Ferva a água e faça a infusão com os sachês de chá preto por 5 minutos. Deixe esfriar.", "No liquidificador, bata os pêssegos com o suco de limão e o chá frio.", "Coe em uma peneira fina e adoce a gosto.", "Sirva em uma jarra com muito gelo e fatias de pêssego."]
+            },
+            {
+                id: 29, name: "Cupim Assado na Panela de Pressão", category: "Carnes", prepTime: "60 min", yield: "6 porções",
+                image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80",
+                description: "Carne extremamente macia que desmancha na boca com molho acebolado.",
+                ingredients: ["1,2kg de cupim em um pedaço", "2 cebolas grandes cortadas em rodelas", "4 dentes de alho picados", "1/2 xícara de shoyu", "1 lata de cerveja preta", "Sal e pimenta a gosto"],
+                instructions: ["Tempere a carne com alho, sal e pimenta.", "Na panela de pressão, faça uma cama com as cebolas.", "Coloque a carne por cima e adicione o shoyu e a cerveja preta.", "Tampe a panela e cozinhe por 50 minutos após pegar pressão.", "Fatie a carne e sirva com o molho reduzido da panela."]
+            },
+            {
+                id: 30, name: "Fricassê de Frango Cremoso", category: "Frango", prepTime: "35 min", yield: "5 porções",
+                image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80",
+                description: "O clássico almoço de domingo com molho de milho e batata palha por cima.",
+                ingredients: ["500g de frango desfiado temperado", "1 lata de milho verde", "1 copo de requeijão", "1 caixa de creme de leite", "200g de muçarela fatiada", "Batata palha a gosto"],
+                instructions: ["Bata no liquidificador o milho, o requeijão e o creme de leite.", "Em uma panela, misture o frango desfiado com o creme batido e deixe aquecer.", "Transfira para um refratário, cubra com a muçarela.", "Leve ao forno até o queijo derreter e cubra com batata palha."]
+            },
+            {
+                id: 31, name: "Iscas de Peixe Empanadas Crocantes", category: "Peixes", prepTime: "25 min", yield: "4 porções",
+                image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=600&q=80",
+                description: "Petisco sequinho por fora e suculento por dentro.",
+                ingredients: ["500g de filé de peixe cortado em iscas", "Suco de 1 limão", "2 dentes de alho picados", "1 xícara de farinha de trigo", "1 xícara de farinha de rosca", "2 ovos batidos", "Sal e pimenta a gosto"],
+                instructions: ["Tempere o peixe com sal, pimenta, alho e limão.", "Passe as iscas na farinha de trigo, depois nos ovos batidos e por último na farinha de rosca.", "Frite em óleo quente até dourar.", "Sirva com molho tártaro ou limão."]
+            },
+            {
+                id: 32, name: "Arroz Carreteiro Simples", category: "Arroz", prepTime: "30 min", yield: "4 porções",
+                image: "https://images.unsplash.com/photo-1536304929831-ee1ca9d44906?auto=format&fit=crop&w=600&q=80",
+                description: "Prato caipira saboroso com sobra de churrasco ou carne seca.",
+                ingredients: ["2 xícaras de arroz cru", "300g de carne picadinha (churrasco ou carne seca)", "1 linguiça calabresa picada", "1 cebola e 2 dentes de alho picados", "1 tomate picado", "Cheiro-verde a gosto"],
+                instructions: ["Frite a calabresa e a carne na própria gordura.", "Adicione a cebola, o alho e o tomate e refogue.", "Adicione o arroz cru e frite por 2 minutos.", "Cubra com água fervente e cozinhe até o arroz ficar macio.", "Finalize com cheiro-verde."]
+            },
+            {
+                id: 33, name: "Salada de Macarrão com Atum (Farfalle)", category: "Saladas", prepTime: "20 min", yield: "5 porções",
+                image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80",
+                description: "Prato frio refrescante e completo para dias quentes.",
+                ingredients: ["250g de macarrão gravatinha cozido al dente", "2 latas de atum escorrido", "1 lata de milho e ervilha", "1/2 xícara de azeitonas fatiadas", "1 xícara de maionese", "Azeite e sal a gosto"],
+                instructions: ["Em uma tigela grande, misture o macarrão já frio com o atum desfiado.", "Adicione o milho, ervilha e azeitonas.", "Incorpore a maionese até ficar bem cremoso.", "Acerte o sal e leve à geladeira por 1 hora antes de servir."]
+            },
+            {
+                id: 34, name: "Sopa de Abóbora Cabotiá com Gengibre", category: "Sopas", prepTime: "30 min", yield: "4 porções",
+                image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80",
+                description: "Sopa aveludada, termogênica e cheia de sabor.",
+                ingredients: ["1/2 abóbora cabotiá descascada e em cubos", "1 pedaço pequeno de gengibre ralado", "1 cebola picada", "2 dentes de alho", "750ml de caldo de legumes", "Azeite e sal a gosto"],
+                instructions: ["Refogue a cebola, o alho e o gengibre no azeite.", "Junte a abóbora e o caldo de legumes e cozinhe até a abóbora ficar bem macia.", "Bata tudo no liquidificador ou mixer até virar um creme homogêneo.", "Sirva bem quente com um fio de azeite."]
+            },
+            {
+                id: 35, name: "Pão de Alho Especial para Churrasco", category: "Pães", prepTime: "20 min", yield: "6 pães",
+                image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80",
+                description: "Acompanhamento indispensável para o churrasco com muito queijo.",
+                ingredients: ["6 pães franceses", "200g de maionese", "150g de requeijão", "3 dentes de alho bem amassados", "100g de muçarela ralada", "Cheiro-verde picado a gosto"],
+                instructions: ["Misture a maionese, requeijão, alho, muçarela e cheiro-verde até criar um patê.", "Faça cortes transversais nos pães sem separar as fatias totalmente.", "Passe generosamente o creme entre as fatias e por cima.", "Asse na churrasqueira ou no forno a 200°C por 12 minutos até dourar."]
+            },
+            {
+                id: 36, name: "Bolo de Chocolate Fofinho de Liquidificador", category: "Bolos", prepTime: "40 min", yield: "10 porções",
+                image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80",
+                description: "Super prático e muito chocolatudo para o lanche.",
+                ingredients: ["3 ovos", "1 xícara de leite quente", "1/2 xícara de óleo", "1 xícara de açúcar", "1 xícara de cacau em pó", "2 xícaras de farinha de trigo", "1 colher de fermento"],
+                instructions: ["Bata os ovos, óleo, leite e açúcar no liquidificador.", "Adicione o cacau e a farinha e bata rapidamente.", "Misture o fermento com uma colher.", "Asse em fôrma untada a 180°C por 35 minutos."]
+            },
+            {
+                id: 37, name: "Biscoito de Polvilho Assado", category: "Biscoitos", prepTime: "30 min", yield: "40 unidades",
+                image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=600&q=80",
+                description: "Leve, crocante e sem glúten para petiscar.",
+                ingredients: ["500g de polvilho azedo", "1 xícara de água fervente", "1/2 xícara de óleo", "1 colher (chá) de sal", "2 ovos"],
+                instructions: ["Escalde o polvilho com a água fervente e óleo misturados.", "Deixe esfriar um pouco e junte os ovos e o sal, sovando bem.", "Coloque a massa num saco de confeiteiro e modele palitos em assadeira.", "Asse a 200°C por 20 minutos."]
+            },
+            {
+                id: 38, name: "Torta Madalena de Carne Moída", category: "Café da tarde", prepTime: "45 min", yield: "6 porções",
+                image: "https://images.unsplash.com/photo-1621236378699-8597faf6a176?auto=format&fit=crop&w=600&q=80",
+                description: "Torta salgada tradicional coberta por purê de batatas macio.",
+                ingredients: ["500g de carne moída refogada com temperos", "1kg de batatas cozidas e amassadas", "2 colheres de manteiga", "1/2 xícara de leite", "100g de queijo muçarela ralado"],
+                instructions: ["Faça um purê consistente com a batata, manteiga e leite.", "Em um refratário, coloque toda a carne moída refogada no fundo.", "Cubra com o purê de batatas de forma uniforme.", "Polvilhe a muçarela e leve ao forno para gratinar."]
+            },
+            {
+                id: 39, name: "Batida de Morango com Leite Condensado (Sem Álcool)", category: "Bebidas", prepTime: "5 min", yield: "3 copos",
+                image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80",
+                description: "Cremosa e deliciosa para festas e reuniões.",
+                ingredients: ["1 caixa de morangos higienizados", "1/2 lata de leite condensado", "200ml de guaraná gelado", "Gelo a gosto"],
+                instructions: ["Coloque os morangos, leite condensado e guaraná no liquidificador.", "Bata por 2 minutos até ficar bem homogêneo.", "Adicione o gelo e bata rapidamente na função pulsar.", "Sirva em copos decorados com morango."]
+            },
+            {
+                id: 40, name: "Macarrão de Panela de Pressão Econômico", category: "Receitas econômicas", prepTime: "15 min", yield: "5 porções",
+                image: "https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=600&q=80",
+                description: "Refeição completa pronta em apenas 3 minutos de pressão.",
+                ingredients: ["500g de macarrão penne", "1 lata de molho de tomate", "1 lata de creme de leite", "1 linguiça calabresa fatiada", "2 xícaras de água", "200g de muçarela picada"],
+                instructions: ["Na panela de pressão, coloque a calabresa, o macarrão cru, o molho de tomate e a água.", "Tampe e conte 3 minutos após pegar pressão. Desligue e tire a pressão imediatamente.", "Abra a panela, misture o creme de leite e a muçarela até derreter."]
+            },
+            {
+                id: 41, name: "Rondelli de Presunto e Queijo com Massa de Pastel", category: "Receitas rápidas", prepTime: "25 min", yield: "4 porções",
+                image: "https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=600&q=80",
+                description: "Truque incrível usando massa pronta de pastel para um almoço rápido.",
+                ingredients: ["1 rolo de massa de pastel pronta", "200g de presunto fatiado", "200g de muçarela fatiada", "1 sachê de molho de tomate temperado", "Queijo ralado a gosto"],
+                instructions: ["Abra a massa de pastel e faça uma camada de presunto e uma de queijo.", "Enrole como rocambole bem firme.", "Corte em fatias de 2 cm e disponha em um refratário.", "Regue com o molho de tomate quente e cubra com queijo ralado.", "Asse a 180°C por 20 minutos."]
+            },
+            {
+                id: 42, name: "Lasanha à Bolonhesa", category: "Massas", prepTime: "50 min", yield: "6 porções",
+                image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=600&q=80",
+                description: "O clássico prato italiano com bastante molho de carne e queijo derretido.",
+                ingredients: ["500g de massa para lasanha pré-cozida", "600g de carne moída com molho vermelho", "300g de muçarela fatiada", "300g de presunto fatiado", "50g de parmesão ralado"],
+                instructions: ["Em um refratário grande, espalhe uma camada de molho no fundo.", "Alterne camadas de massa, presunto, muçarela e molho de carne.", "Finalize com molho e bastante queijo parmesão ralado.", "Leve ao forno a 180°C por 30 minutos."]
+            },
+            {
+                id: 43, name: "Ceviche de Peixe Branco Fresco", category: "Peixes", prepTime: "20 min", yield: "3 porções",
+                image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=600&q=80",
+                description: "Entrada peruana leve e aromática marinada no limão.",
+                ingredients: ["400g de filé de tilápia ou robalo em cubos", "Suco de 4 limões", "1 cebola roxa em fatias finas", "1 pimenta dedo-de-moça sem sementes picada", "Coentro fresco picado e sal a gosto"],
+                instructions: ["Coloque os cubos de peixe em uma tigela e cubra com o suco de limão.", "Adicione a cebola roxa, a pimenta e o sal.", "Deixe marinar na geladeira por 15 minutos até o peixe mudar de cor.", "Finalize com coentro fresco e sirva bem gelado."]
+            },
+            {
+                id: 44, name: "Arroz Grego Colorido", category: "Arroz", prepTime: "20 min", yield: "5 porções",
+                image: "https://images.unsplash.com/photo-1536304929831-ee1ca9d44906?auto=format&fit=crop&w=600&q=80",
+                description: "Arroz alegre com passas, ervilhas e pimentões para acompanhar assados.",
+                ingredients: ["3 xícaras de arroz cozido soltinho", "1/2 xícara de pimentão vermelho em cubinhos", "1/2 xícara de pimentão amarelo em cubinhos", "1/2 xícara de uvas-passas", "1/2 xícara de ervilhas frescas", "Manteiga e cheiro-verde"],
+                instructions: ["Em uma panela grande, derreta a manteiga e refogue os pimentões e a ervilha.", "Junte as uvas-passas e misture.", "Adicione o arroz cozido e misture delicadamente em fogo baixo.", "Salpique cheiro-verde e sirva."]
+            },
+            {
+                id: 45, name: "Sopa de Cebola Gratinada", category: "Sopas", prepTime: "40 min", yield: "3 porções",
+                image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80",
+                description: "Receita clássica francesa com torradas e queijo derretido por cima.",
+                ingredients: ["4 cebolas grandes fatiadas fino", "2 colheres de manteiga", "1 litro de caldo de carne", "1/2 xícara de vinho branco", "Fatias de pão baguete", "150g de queijo gruyère ou muçarela"],
+                instructions: ["Refogue as cebolas na manteiga em fogo baixo por 20 minutos até caramelizarem.", "Adicione o vinho branco e deixe evaporar.", "Junte o caldo de carne e cozinhe por 15 minutos.", "Sirva em tigelas individuais, coloque uma torrada por cima e cubra com queijo.", "Leve ao forno para gratinar."]
+            },
+            {
+                id: 46, name: "Bolo de Banana Fácil com Canela", category: "Bolos", prepTime: "45 min", yield: "8 porções",
+                image: "https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?auto=format&fit=crop&w=600&q=80",
+                description: "Aproveite bananas bem maduras para um bolo super perfumado.",
+                ingredients: ["4 bananas maduras amassadas", "3 ovos", "1/2 xícara de óleo", "1 e 1/2 xícara de açúcar", "2 xícaras de farinha de trigo", "1 colher (sopa) de canela em pó", "1 colher de fermento"],
+                instructions: ["Misture as bananas amassadas com os ovos, óleo e açúcar.", "Peneire a farinha de trigo e a canela e junte à mistura.", "Adicione o fermento e mexa delicadamente.", "Despeje em fôrma untada e polvilhada com açúcar e canela.", "Asse a 180°C por 40 minutos."]
+            },
+            {
+                id: 47, name: "Biscoito Amanteigado de Goiabada (Goiabinha)", category: "Biscoitos", prepTime: "35 min", yield: "25 unidades",
+                image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=600&q=80",
+                description: "Massa amanteigada enrolada com tiras de goiabada.",
+                ingredients: ["200g de manteiga", "1/2 xícara de açúcar", "2 e 1/2 xícaras de farinha de trigo", "100g de goiabada cortada em tiras finas"],
+                instructions: ["Misture a manteiga, açúcar e farinha até formar uma massa macia.", "Abra a massa entre plásticos e corte em quadrados pequenos.", "Coloque uma tira de goiabada no centro e dobre duas pontas opostas.", "Asse em forno a 180°C por 15 minutos até dourar levemente por baixo."]
+            },
+            {
+                id: 48, name: "Smoothie de Frutas Vermelhas", category: "Bebidas", prepTime: "5 min", yield: "2 copos",
+                image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80",
+                description: "Bebida cremosa, geladinha e saudável para qualquer hora.",
+                ingredients: ["1 xícara de frutas vermelhas congeladas (morango, amora, mirtilo)", "1 copo de iogurte natural", "100ml de leite ou bebida vegetal", "1 colher de mel"],
+                instructions: ["Coloque todos os ingredientes no liquidificador.", "Bata em velocidade alta por 2 minutos até ficar extremamente cremoso.", "Sirva imediatamente em copos altos."]
+            },
+            {
+                id: 49, name: "Farofa de Banana Econômica", category: "Receitas econômicas", prepTime: "15 min", yield: "4 porções",
+                image: "https://images.unsplash.com/photo-1510693206972-df098062cb71?auto=format&fit=crop&w=600&q=80",
+                description: "Acompanhamento crocante com toque agridoce delicioso.",
+                ingredients: ["2 xícaras de farinha de mandioca torrada", "2 bananas-da-terra ou prata fatiadas", "2 colheres de manteiga", "1/2 cebola picada", "Sal e cheiro-verde a gosto"],
+                instructions: ["Derreta a manteiga e doure as fatias de banana. Reserve as bananas.", "Na mesma panela, refogue a cebola até dourar.", "Junte a farinha de mandioca e mexa em fogo baixo até torrar levemente.", "Retorne as bananas, acerte o sal e finalize com cheiro-verde."]
+            },
+            {
+                id: 50, name: "Costelinha de Porco ao Molho Barbecue", category: "Carnes", prepTime: "80 min", yield: "4 porções",
+                image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80",
+                description: "Costelinha assada suculenta que solta do osso.",
+                ingredients: ["1kg de costelinha suína em peça", "1 xícara de molho barbecue", "2 dentes de alho amassados", "Suco de 1 limão", "Sal, pimenta e papel alumínio"],
+                instructions: ["Tempere a costelinha com alho, limão, sal e pimenta.", "Pincele metade do molho barbecue sobre a peça.", "Embale bem em papel alumínio e asse a 200°C por 1 hora.", "Retire o papel alumínio, pincele o restante do molho e volte ao forno por 15 minutos para dourar."]
+            },
+            {
+                id: 51, name: "Salpicão de Frango Tradicional", category: "Frango", prepTime: "25 min", yield: "6 porções",
+                image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80",
+                description: "Prato farto e fresco para acompanhar refeições com batata palha.",
+                ingredients: ["500g de frango desfiado", "1 cenoura grande ralada", "1/2 xícara de uvas-passas", "1 lata de milho", "1 maçã verde em cubinhos", "1 xícara de maionese", "Batata palha para cobrir"],
+                instructions: ["Em uma tigela grande, misture o frango desfiado, cenoura, milho, uva-passa e maçã.", "Adicione a maionese e misture bem.", "Tempere com azeite e sal.", "Leve à geladeira e cubra com batata palha na hora de servir."]
+            },
+            {
+                id: 52, name: "Crepioca Recheada de Queijo e Peito de Peru", category: "Café da tarde", prepTime: "10 min", yield: "1 porção",
+                image: "https://images.unsplash.com/photo-1510693206972-df098062cb71?auto=format&fit=crop&w=600&q=80",
+                description: "Lanche rápido, prático e proteico para qualquer hora do dia.",
+                ingredients: ["1 ovo", "2 colheres (sopa) de massa pronta para tapioca", "1 pitada de sal", "2 fatias de queijo muçarela", "2 fatias de peito de peru"],
+                instructions: ["Bata o ovo com a tapioca e o sal usando um garfo.", "Despeje em uma frigideira antiaderente aquecida.", "Quando firmar, vire o disco e recheie com o queijo e peito de peru.", "Dobre ao meio, espere o queijo derreter e sirva quente."]
+            }
+        ];
+
+        // --- PLAYLIST AUDIO TRACKS ---
+        const playlist = [
+            { title: "Acoustic Guitars Ambient", src: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=acoustic-guitars-ambient-112224.mp3" },
+            { title: "Soft Piano & Guitar", src: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c823055e.mp3?filename=relaxing-light-piano-109010.mp3" },
+            { title: "Acoustic Breeze", src: "https://cdn.pixabay.com/download/audio/2021/11/25/audio_9182a44131.mp3?filename=ambient-acoustic-guitar-10332.mp3" },
+            { title: "Forest & River", src: "https://cdn.pixabay.com/download/audio/2021/08/09/audio_6b294070f5.mp3?filename=forest-with-small-river-birds-and-nature-field-recording-6735.mp3" },
+            { title: "Sunrise", src: "https://cdn.pixabay.com/download/audio/2022/07/04/audio_477fb4c391.mp3?filename=sunrise-114326.mp3" },
+            { title: "Deep in the Dell", src: "https://cdn.pixabay.com/download/audio/2022/11/23/audio_af8f60c3a6.mp3?filename=deep-in-the-dell-126916.mp3" },
+            { title: "Please Calm My Mind", src: "https://cdn.pixabay.com/download/audio/2022/11/11/audio_84306ee149.mp3?filename=please-calm-my-mind-125566.mp3" },
+            { title: "Inspiring Ambient", src: "https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe92c21.mp3?filename=inspiring-cinematic-ambient-116199.mp3" },
+            { title: "Birds in the Morning", src: "https://cdn.pixabay.com/download/audio/2022/03/09/audio_0dda787382.mp3?filename=birds-in-the-morning-24147.mp3" },
+            { title: "Always With Me", src: "https://cdn.pixabay.com/download/audio/2022/02/18/audio_b3c6f0c96f.mp3?filename=always-with-me-always-with-you-long-21256.mp3" }
+        ];
+
+        let currentTrackIndex = 0;
+
+        // --- APP STATE ---
+        let selectedRecipeIds = JSON.parse(localStorage.getItem('my_recipe_book')) || [];
+        let activeCategory = 'Todas';
+        let coverColorClass = 'bg-amber-700';
+        let wakeLock = null;
+
+        // PIX: nenhuma chave é inventada. O arquivo enviado não contém a chave oficial.
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            renderRecipesGrid();
+            updateBookBadge();
+        });
+
+        // --- RENDER CATEGORIES ---
+        const categories = ['Todas', 'Sobremesas', 'Massas', 'Carnes', 'Frango', 'Peixes', 'Arroz', 'Saladas', 'Sopas', 'Pães', 'Bolos', 'Biscoitos', 'Café da tarde', 'Bebidas', 'Receitas rápidas', 'Receitas econômicas'];
+
+        function renderCategories() {
+            const container = document.getElementById('categoriesBar');
+            container.innerHTML = categories.map(cat => `
+                <button onclick="selectCategory('${cat}')" class="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition ${activeCategory === cat ? 'bg-brand-600 text-white shadow-sm' : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'}">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        function selectCategory(cat) {
+            activeCategory = cat;
+            renderCategories();
+            renderRecipesGrid();
+        }
+
+        // --- RENDER RECIPES GRID ---
+        function renderRecipesGrid() {
+            const grid = document.getElementById('recipes-grid');
+            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+
+            const filtered = recipesData.filter(r => {
+                const matchesCat = activeCategory === 'Todas' || r.category === activeCategory;
+                const matchesSearch = r.name.toLowerCase().includes(searchTerm) || r.description.toLowerCase().includes(searchTerm);
+                return matchesCat && matchesSearch;
+            });
+
+            if(filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-stone-500">Nenhuma receita encontrada.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(recipe => {
+                const isSaved = selectedRecipeIds.includes(recipe.id);
+                return `
+                <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col recipe-card">
+                    <img src="${recipe.image}" alt="${recipe.name}" class="w-full h-48 object-cover cursor-pointer" onclick="openRecipeDetail(${recipe.id})">
+                    <div class="p-5 flex-grow flex flex-col justify-between space-y-4">
+                        <div>
+                            <span class="text-xs font-bold text-brand-600 uppercase tracking-wider">${recipe.category}</span>
+                            <h3 class="text-lg font-bold text-stone-800 hover:text-brand-600 cursor-pointer transition mt-1" onclick="openRecipeDetail(${recipe.id})">${recipe.name}</h3>
+                            <p class="text-stone-500 text-sm mt-2 line-clamp-2">${recipe.description}</p>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-xs text-stone-500 border-t border-stone-100 pt-3">
+                                <span><i class="fa-regular fa-clock"></i> ${recipe.prepTime}</span>
+                                <span><i class="fa-solid fa-utensils"></i> ${recipe.yield}</span>
+                            </div>
+                            <button onclick="toggleSaveRecipe(${recipe.id})" class="w-full py-2.5 px-4 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 ${isSaved ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-brand-50 text-brand-600 border border-brand-200 hover:bg-brand-100'}">
+                                <i class="${isSaved ? 'fa-solid fa-check' : 'fa-regular fa-heart'}"></i>
+                                ${isSaved ? '✓ Adicionada ao meu livro' : '♡ Adicionar ao meu livro'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function filterRecipes() {
+            renderRecipesGrid();
+        }
+
+        // --- RECIPE DETAIL ---
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({
+                '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;'
+            }[char]));
+        }
+
+        function getRecipeEnhancements(recipe) {
+            const steps = recipe.instructions || [];
+            const ingredients = recipe.ingredients || [];
+            const ingredientText = ingredients.join(' ').toLowerCase();
+            const stepText = steps.join(' ').toLowerCase();
+
+            let difficulty = steps.length >= 6 ? 'Médio' : 'Fácil';
+            if (/panela de pressão|banho-maria/.test(recipe.name.toLowerCase() + ' ' + stepText)) difficulty = 'Médio';
+
+            const tags = [recipe.category];
+            if (/forno|asse|assar/.test(stepText)) tags.push('Forno');
+            if (/liquidificador/.test(stepText)) tags.push('Liquidificador');
+            if (/frit/.test(stepText)) tags.push('Fritura');
+            if (/geladeira|gelado|gelada/.test(stepText)) tags.push('Gelado');
+            if (/rápid/.test(recipe.category.toLowerCase()) || parseInt(recipe.prepTime) <= 20) tags.push('Rápida');
+
+            const tips = [];
+            if (/forno|asse|assar/.test(stepText)) tips.push('Preaqueça o forno antes de colocar a receita para assar e acompanhe o ponto indicado nas etapas.');
+            if (/liquidificador/.test(stepText)) tips.push('Bata os ingredientes pelo tempo indicado e evite ultrapassar a capacidade do aparelho.');
+            if (/frit/.test(stepText)) tips.push('Frite em pequenas quantidades para evitar queda excessiva da temperatura do óleo.');
+            if (/massa|farinha|polvilho/.test(ingredientText)) tips.push('Misture a massa apenas até atingir a textura indicada no preparo.');
+            if (!tips.length) tips.push('Separe e meça os ingredientes antes de começar. Isso facilita o preparo e evita interrupções.');
+
+            const attention = [];
+            if (/panela de pressão/.test(stepText + ' ' + recipe.name.toLowerCase())) attention.push('Use a panela de pressão conforme as instruções do fabricante e só abra depois de liberar a pressão com segurança.');
+            if (/ovo|gema|frango|carne|peixe|camar/.test(ingredientText)) attention.push('Cozinhe completamente os ingredientes de origem animal e evite deixar a preparação pronta em temperatura ambiente por longos períodos.');
+            if (/óleo para fritar|frit/.test(ingredientText + ' ' + stepText)) attention.push('Tenha cuidado com óleo quente e mantenha o cabo da panela voltado para dentro.');
+            if (!attention.length) attention.push('Ajuste sal e temperos somente depois de provar a preparação, quando isso for possível.');
+
+            const substitutions = [];
+            if (/parmesão|parmesao/.test(ingredientText)) substitutions.push('Parmesão pode ser substituído por outro queijo duro ralado de sabor semelhante.');
+            if (/muçarela|mucarela/.test(ingredientText)) substitutions.push('Muçarela pode ser substituída por queijo prato em preparações que precisam derreter.');
+            if (/leite/.test(ingredientText)) substitutions.push('Quando a preparação permitir, o leite pode ser substituído por bebida vegetal sem açúcar, considerando a mudança de sabor e textura.');
+            if (/manteiga/.test(ingredientText)) substitutions.push('Em preparações salgadas, manteiga pode ser substituída por margarina culinária, observando a diferença de sabor.');
+            if (!substitutions.length) substitutions.push('Não há uma substituição universal indicada para os ingredientes principais desta receita; prefira manter a formulação original.');
+
+            let storage = 'Depois de pronta, mantenha refrigerada em recipiente fechado e siga os cuidados de conservação dos ingredientes utilizados.';
+            if (/bebidas|saladas/.test(recipe.category.toLowerCase())) storage = 'Mantenha refrigerada, em recipiente fechado, e consuma preferencialmente em curto prazo para preservar textura e frescor.';
+            if (/biscoitos|pães|bolos/.test(recipe.category.toLowerCase())) storage = 'Depois de esfriar completamente, guarde em recipiente bem fechado, em local fresco e seco; recheios ou coberturas perecíveis devem ser refrigerados.';
+
+            let serving = 'Sirva logo após atingir o ponto indicado na receita.';
+            if (/sobremesas/.test(recipe.category.toLowerCase())) serving = 'Sirva gelada ou na temperatura adequada ao tipo de sobremesa, conforme o preparo.';
+            if (/sopas/.test(recipe.category.toLowerCase())) serving = 'Sirva quente, acompanhada de pão ou torradas se desejar.';
+            if (/saladas/.test(recipe.category.toLowerCase())) serving = 'Sirva fresca e adicione o molho próximo do momento de servir para preservar a textura.';
+            if (/bebidas/.test(recipe.category.toLowerCase())) serving = 'Sirva imediatamente, de preferência bem gelada quando indicado no preparo.';
+
+            const curiosities = {
+                2: 'A carbonara é uma preparação italiana tradicionalmente associada à região do Lácio, especialmente Roma.',
+                21: 'A salada Caprese é associada à ilha de Capri, na Itália, e combina tomate, muçarela e manjericão.',
+                43: 'O ceviche é uma preparação tradicional da costa do Peru e de outros países da América Latina.',
+                45: 'A sopa de cebola gratinada é uma preparação clássica da culinária francesa.',
+                19: 'A moqueca baiana é uma preparação brasileira marcada pelo uso de leite de coco e azeite de dendê.',
+                10: 'O pão de queijo é uma preparação tradicional muito associada à culinária de Minas Gerais.'
+            };
+
+            return {
+                cookTime: recipe.cookTime || 'Não informado',
+                totalTime: recipe.totalTime || recipe.prepTime,
+                difficulty, tags: [...new Set(tags)], tips, attention, substitutions,
+                storage, serving, curiosity: curiosities[recipe.id] || ''
+            };
+        }
+
+        function openRecipeDetail(id) {
+            const recipe = recipesData.find(r => r.id === id);
+            if(!recipe) return;
+            const meta = getRecipeEnhancements(recipe);
+            rememberRecentRecipe(id);
+            const isSaved = selectedRecipeIds.includes(recipe.id);
+            const container = document.getElementById('recipeDetailContainer');
+
+            container.innerHTML = `
+                <div id="printRecipeArea">
+                    <img src="${escapeHTML(recipe.image)}" alt="${escapeHTML(recipe.name)}" class="w-full h-64 sm:h-80 object-cover">
+                    <div id="recipeContent" class="p-6 sm:p-8 space-y-7">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b pb-6">
+                            <div>
+                                <span class="text-xs font-bold text-brand-600 uppercase tracking-wider">${escapeHTML(recipe.category)}</span>
+                                <h1 class="text-2xl sm:text-3xl font-black text-stone-900 mt-1">${escapeHTML(recipe.name)}</h1>
+                                <p class="text-stone-600 text-sm mt-2">${escapeHTML(recipe.description)}</p>
+                                <div class="flex flex-wrap gap-3 text-stone-500 text-sm mt-3">
+                                    <span>⏱️ Preparo: ${escapeHTML(recipe.prepTime)}</span>
+                                    <span>🔥 Cozimento: ${escapeHTML(meta.cookTime)}</span>
+                                    <span>⏱️ Total: ${escapeHTML(meta.totalTime)}</span>
+                                    <span>🍽️ Rendimento: ${escapeHTML(recipe.yield)}</span>
+                                    <span>📊 Dificuldade: ${escapeHTML(meta.difficulty)}</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mt-3">${meta.tags.map(tag => `<span class="text-xs bg-stone-100 border border-stone-200 rounded-full px-3 py-1 text-stone-600">#${escapeHTML(tag)}</span>`).join('')}</div>
+                            </div>
+                            <div class="no-print flex flex-col gap-2 shrink-0">
+                                <button onclick="toggleSaveRecipe(${recipe.id}); openRecipeDetail(${recipe.id});" class="py-3 px-6 rounded-xl font-bold transition flex items-center justify-center gap-2 ${isSaved ? 'bg-emerald-600 text-white' : 'bg-brand-600 text-white hover:bg-brand-700'}">
+                                    <i class="${isSaved ? 'fa-solid fa-check' : 'fa-regular fa-heart'}"></i>
+                                    ${isSaved ? '✓ No seu livro' : '♡ Adicionar ao meu livro'}
+                                </button>
+                                <button onclick="printRecipe(${recipe.id})" class="py-2.5 px-4 rounded-xl font-bold border border-stone-300 hover:bg-stone-50">🖨️ Imprimir esta receita</button>
+                                <button onclick="shareRecipe(${recipe.id})" class="py-2.5 px-4 rounded-xl font-bold border border-stone-300 hover:bg-stone-50">📱 Compartilhar receita</button>
+                            </div>
+                        </div>
+
+                        <div class="no-print bg-amber-50 border border-amber-100 rounded-2xl p-4 text-center">
+                            <div class="text-amber-500 text-lg">★★★★★</div>
+                            <p class="font-semibold text-stone-800 mt-1">Gostou desta receita?</p>
+                            <div class="flex justify-center gap-2 mt-2">
+                                ${[1,2,3,4,5].map(i => `<button type="button" class="text-xl text-amber-500" onclick="setLocalRating(${recipe.id}, ${i})" data-rating-id="${recipe.id}" aria-label="${i} estrela${i>1?'s':''}">★</button>`).join('')}
+                            </div>
+                            <p id="ratingMessage-${recipe.id}" class="text-xs text-stone-500 mt-1">Avaliação salva neste dispositivo.</p>
+                        </div>
+
+                        <div class="no-print flex flex-wrap gap-2">
+                            <button onclick="toggleKitchenMode()" class="px-4 py-2 rounded-xl bg-stone-100 border border-stone-200 font-semibold">🍳 Modo cozinha</button>
+                            <button onclick="toggleWakeLock()" class="px-4 py-2 rounded-xl bg-stone-100 border border-stone-200 font-semibold">🔆 Manter tela acesa</button>
+                            <button onclick="toggleAudio()" class="px-4 py-2 rounded-xl bg-stone-100 border border-stone-200 font-semibold">🎵 Música ambiente</button>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-bold text-stone-800 mb-3">🛒 Ingredientes</h3>
+                            <ul class="space-y-2">${recipe.ingredients.map(ing => `<li class="kitchen-ingredient flex items-start gap-2 text-stone-700 border-b border-stone-100 pb-2"><i class="fa-solid fa-check text-brand-500 mt-1 text-xs"></i><span>${escapeHTML(ing)}</span></li>`).join('')}</ul>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-bold text-stone-800 mb-3">👨‍🍳 Modo de Preparo</h3>
+                            <ol class="space-y-3">${recipe.instructions.map((step, idx) => `<li class="kitchen-step flex gap-3 text-stone-700 border border-stone-100 rounded-xl p-3"><span class="kitchen-step-number bg-brand-100 text-brand-700 font-bold rounded-full w-6 h-6 flex items-center justify-center text-xs shrink-0">${idx + 1}</span><span>${escapeHTML(step)}</span></li>`).join('')}</ol>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-brand-50 rounded-2xl p-5"><h3 class="font-bold mb-2">💡 Dicas</h3><ul class="space-y-2 text-sm text-stone-700">${meta.tips.map(x=>`<li>• ${escapeHTML(x)}</li>`).join('')}</ul></div>
+                            <div class="bg-amber-50 rounded-2xl p-5"><h3 class="font-bold mb-2">⚠️ Atenção</h3><ul class="space-y-2 text-sm text-stone-700">${meta.attention.map(x=>`<li>• ${escapeHTML(x)}</li>`).join('')}</ul></div>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-stone-50 rounded-2xl p-5"><h3 class="font-bold mb-2">🔄 Possíveis substituições</h3><ul class="space-y-2 text-sm text-stone-700">${meta.substitutions.map(x=>`<li>• ${escapeHTML(x)}</li>`).join('')}</ul></div>
+                            <div class="bg-stone-50 rounded-2xl p-5"><h3 class="font-bold mb-2">📦 Como armazenar</h3><p class="text-sm text-stone-700">${escapeHTML(meta.storage)}</p></div>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-stone-50 rounded-2xl p-5"><h3 class="font-bold mb-2">🍽️ Sugestão para servir</h3><p class="text-sm text-stone-700">${escapeHTML(meta.serving)}</p></div>
+                            ${meta.curiosity ? `<div class="bg-stone-50 rounded-2xl p-5"><h3 class="font-bold mb-2">📖 Curiosidade</h3><p class="text-sm text-stone-700">${escapeHTML(meta.curiosity)}</p></div>` : ''}
+                        </div>
+                    </div>
+                </div>`;
+            showSection('recipe-detail');
+        }
+
+        function toggleKitchenMode() {
+            document.getElementById('recipeDetailContainer')?.classList.toggle('kitchen-mode');
+        }
+
+        function printRecipe(id) {
+            openRecipeDetail(id);
+            setTimeout(() => window.print(), 100);
+        }
+
+        async function shareRecipe(id) {
+            const recipe = recipesData.find(r => r.id === id);
+            if (!recipe) return;
+            const data = { title: recipe.name, text: `${recipe.name} — ${recipe.description}`, url: `${window.location.href.split('#')[0]}#receita-${recipe.id}` };
+            if (navigator.share) {
+                try { await navigator.share(data); } catch (_) {}
+            } else {
+                try { await navigator.clipboard.writeText(`${data.title}\n${data.text}`); alert('Receita copiada para a área de transferência.'); }
+                catch (_) { alert('O compartilhamento nativo não está disponível neste dispositivo.'); }
+            }
+        }
+
+        // --- BOOK SELECTION LOGIC ---
+        function toggleSaveRecipe(id) {
+            if(selectedRecipeIds.includes(id)) {
+                selectedRecipeIds = selectedRecipeIds.filter(item => item !== id);
+            } else {
+                selectedRecipeIds.push(id);
+            }
+            localStorage.setItem('my_recipe_book', JSON.stringify(selectedRecipeIds));
+            updateBookBadge();
+            renderRecipesGrid();
+            renderMyBookList();
+        }
+
+        function updateBookBadge() {
+            document.getElementById('bookBadge').innerText = selectedRecipeIds.length;
+        }
+
+        // --- MY BOOK VIEW ---
+        function renderMyBookList() {
+            const container = document.getElementById('myBookList');
+            const selectedRecipes = recipesData.filter(r => selectedRecipeIds.includes(r.id));
+
+            if(selectedRecipes.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-8 rounded-2xl border text-center space-y-3">
+                        <p class="text-stone-500">Seu livro ainda está vazio.</p>
+                        <button onclick="showSection('home')" class="bg-brand-600 text-white font-bold px-4 py-2 rounded-xl text-sm">Navegar pelas receitas</button>
+                    </div>
+                `;
+                document.getElementById('myBookActions').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('myBookActions').classList.remove('hidden');
+
+            container.innerHTML = selectedRecipes.map((recipe, index) => `
+                <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <span class="text-stone-400 font-bold text-sm">${index + 1}</span>
+                        <img src="${recipe.image}" alt="${recipe.name}" class="w-16 h-16 rounded-xl object-cover">
+                        <div>
+                            <h4 class="font-bold text-stone-800">${recipe.name}</h4>
+                            <span class="text-xs text-brand-600 font-medium">${recipe.category}</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleSaveRecipe(${recipe.id})" class="text-red-500 hover:bg-red-50 p-2 rounded-xl transition">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // --- CUSTOMIZATION ---
+        function updateBookPreview() {
+            document.getElementById('previewTitle').innerText = document.getElementById('bookTitleInput').value || 'Minhas Receitas';
+            document.getElementById('previewAuthor').innerText = document.getElementById('bookAuthorInput').value || 'Cozinha';
+        }
+
+        function setCoverTheme(colorClass) {
+            const preview = document.getElementById('coverPreview');
+            preview.classList.remove(coverColorClass);
+            preview.classList.add(colorClass);
+            coverColorClass = colorClass;
+        }
+
+        function toggleOrderType() {
+            // Managed visually by inputs
+        }
+
+        // --- SECTIONS NAVIGATION ---
+        function showSection(sectionId) {
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(`sec-${sectionId}`).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if(sectionId === 'my-book') renderMyBookList();
+        }
+
+        // --- WAKE LOCK API ---
+        async function toggleWakeLock() {
+            const statusSpan = document.getElementById('wakeLockStatus');
+            const icon = document.getElementById('wakeLockIcon');
+
+            if (!('wakeLock' in navigator)) {
+                alert('O recurso de manter a tela acesa não é suportado por este navegador.');
+                return;
+            }
+
+            if (wakeLock !== null) {
+                await wakeLock.release();
+                wakeLock = null;
+                statusSpan.innerText = '🔆 Tela acesa: DESATIVADA';
+                icon.classList.remove('text-amber-400');
+            } else {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    statusSpan.innerText = '🔆 Tela acesa: ATIVADA';
+                    icon.classList.add('text-amber-400');
+                } catch (err) {
+                    alert('Não foi possível ativar a tela acesa.');
+                }
+            }
+        }
+
+        // --- AUDIO CONTROLS & PLAYLIST ---
+        function playTrack(index) {
+            const audio = document.getElementById('bgAudio');
+            const source = document.getElementById('audioSource');
+            const icon = document.getElementById('audioIcon');
+
+            currentTrackIndex = index;
+            source.src = playlist[currentTrackIndex].src;
+            audio.load();
+            audio.play();
+            icon.className = 'fa-solid fa-pause text-xs';
+        }
+
+        function toggleAudio() {
+            const audio = document.getElementById('bgAudio');
+            const icon = document.getElementById('audioIcon');
+
+            if (audio.paused) {
+                audio.play();
+                icon.className = 'fa-solid fa-pause text-xs';
+            } else {
+                audio.pause();
+                icon.className = 'fa-solid fa-play text-xs';
+            }
+        }
+
+        function nextTrack() {
+            let nextIndex = (currentTrackIndex + 1) % playlist.length;
+            playTrack(nextIndex);
+        }
+
+        function prevTrack() {
+            let prevIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+            playTrack(prevIndex);
+        }
+
+        function handleTrackEnd() {
+            nextTrack();
+        }
+
+        function adjustVolume(val) {
+            document.getElementById('bgAudio').volume = val;
+        }
+
+
+        // ============================================================
+        // Sabor & Arte — recursos offline
+        // ============================================================
+        const featureCatalog = [
+            {icon:'🛒', name:'Lista de compras', type:'free', desc:'Transforme os ingredientes das receitas selecionadas em uma lista.'},
+            {icon:'⏱️', name:'Temporizador de cozinha', type:'free', desc:'Cronômetro rápido para não perder o ponto.'},
+            {icon:'📝', name:'Notas pessoais', type:'free', desc:'Guarde observações suas em cada receita.'},
+            {icon:'☑️', name:'Checklist de ingredientes', type:'free', desc:'Marque ingredientes conforme separa.'},
+            {icon:'👨‍🍳', name:'Modo cozinha', type:'free', desc:'Texto maior e etapas mais fáceis de acompanhar.'},
+            {icon:'❤️', name:'Favoritos', type:'free', desc:'Mantenha suas receitas preferidas no Meu Livro.'},
+            {icon:'⭐', name:'Avaliar receita', type:'free', desc:'Dê de 1 a 5 estrelas e guarde sua avaliação neste dispositivo.'},
+            {icon:'📱', name:'Compartilhar receita', type:'free', desc:'Compartilhe usando o recurso nativo do aparelho.'},
+            {icon:'🖨️', name:'Imprimir uma receita', type:'free', desc:'Imprima somente a receita que estiver aberta.'},
+            {icon:'🎲', name:'Receita surpresa', type:'free', desc:'Escolha uma receita aleatória entre as 52.'},
+            {icon:'📅', name:'Receita do dia', type:'free', desc:'Uma sugestão diária que muda automaticamente.'},
+            {icon:'🕘', name:'Histórico recente', type:'free', desc:'Veja as últimas receitas que abriu.'},
+            {icon:'🔎', name:'Buscar por ingrediente', type:'free', desc:'Encontre receitas pelo que você tem em casa.'},
+            {icon:'🌙', name:'Modo noturno', type:'free', desc:'Reduza o brilho visual para cozinhar à noite.'},
+            {icon:'🔊', name:'Playlist ambiente', type:'free', desc:'Mais músicas para acompanhar o preparo.'},
+            {icon:'🔆', name:'Tela sempre acesa', type:'free', desc:'Evita que a tela apague durante o preparo, quando suportado.'},
+            {icon:'📊', name:'Informações da receita', type:'free', desc:'Tempo, rendimento, dificuldade, tags e detalhes.'},
+            {icon:'📋', name:'Plano semanal', type:'premium', desc:'Monte uma programação de receitas para a semana.'},
+            {icon:'🥕', name:'Despensa inteligente', type:'premium', desc:'Controle ingredientes que você já tem em casa.'},
+            {icon:'📚', name:'Coleções Premium', type:'premium', desc:'Coleções temáticas e recursos extras — em desenvolvimento.'}
+        ];
+
+        function renderFeatureGrid() {
+            const grid=document.getElementById('featureGrid');
+            if(!grid) return;
+            grid.innerHTML=featureCatalog.map((f,i)=>`
+                <button type="button" onclick="runFeature(${i})"
+                    class="text-left bg-stone-50 hover:bg-brand-50 border border-stone-200 hover:border-brand-200 rounded-2xl p-4 transition group">
+                    <div class="flex items-start justify-between gap-2">
+                        <span class="text-2xl">${f.icon}</span>
+                        <span class="text-[10px] font-black uppercase tracking-wide px-2 py-1 rounded-full ${f.type==='premium'?'bg-amber-100 text-amber-700':'bg-emerald-100 text-emerald-700'}">
+                            ${f.type==='premium'?'Premium':'Grátis'}
+                        </span>
+                    </div>
+                    <h4 class="font-bold text-stone-800 mt-3 group-hover:text-brand-600">${f.name}</h4>
+                    <p class="text-xs text-stone-500 mt-1">${f.desc}</p>
+                </button>`).join('');
+        }
+
+        function runFeature(index) {
+            const f=featureCatalog[index];
+            if(!f) return;
+            if(f.type==='premium'){
+                alert(`✨ ${f.name}\\n\\nRecurso Premium — em breve. Estamos preparando essa função para uma próxima versão.`);
+                return;
+            }
+            const actions={
+                'Lista de compras': openShoppingList,
+                'Temporizador de cozinha': openKitchenTimer,
+                'Notas pessoais': openNotes,
+                'Checklist de ingredientes': openIngredientChecklist,
+                'Modo cozinha': () => { if(selectedRecipeIds[0]) openRecipeDetail(selectedRecipeIds[0]); else alert('Abra uma receita primeiro.'); },
+                'Favoritos': () => showSection('my-book'),
+                'Avaliar receita': () => { if(selectedRecipeIds[0]) openRecipeDetail(selectedRecipeIds[0]); else alert('Abra uma receita para avaliar.'); },
+                'Compartilhar receita': () => { if(selectedRecipeIds[0]) shareRecipe(selectedRecipeIds[0]); else alert('Abra uma receita primeiro.'); },
+                'Imprimir uma receita': () => { if(selectedRecipeIds[0]) printRecipe(selectedRecipeIds[0]); else alert('Abra uma receita primeiro.'); },
+                'Receita surpresa': randomRecipe,
+                'Receita do dia': dailyRecipe,
+                'Histórico recente': showRecentRecipes,
+                'Buscar por ingrediente': ingredientSearch,
+                'Modo noturno': toggleDarkMode,
+                'Playlist ambiente': toggleAudio,
+                'Tela sempre acesa': toggleWakeLock,
+                'Informações da receita': () => { if(selectedRecipeIds[0]) openRecipeDetail(selectedRecipeIds[0]); else alert('Abra uma receita primeiro.'); }
+            };
+            (actions[f.name]||(()=>{}))();
+        }
+
+        function scrollToFeatures(){
+            showSection('my-book');
+            setTimeout(()=>document.getElementById('featureGrid')?.scrollIntoView({behavior:'smooth',block:'start'}),100);
+        }
+        function openToolsFromHome(){ scrollToFeatures(); }
+
+        function printAllComingSoon(){
+            alert('🖨️ Imprimir todas as receitas / PDF\\n\\nEm breve! Esta versão funciona sem gerar ou enviar PDF automaticamente.');
+        }
+
+        // Shopping list
+        function getShoppingList(){ return JSON.parse(localStorage.getItem('sa_shopping_list')||'[]'); }
+        function saveShoppingList(list){ localStorage.setItem('sa_shopping_list',JSON.stringify(list)); }
+        function openShoppingList(){
+            const selected=recipesData.filter(r=>selectedRecipeIds.includes(r.id));
+            if(!selected.length){ alert('Adicione pelo menos uma receita ao Meu Livro.'); return; }
+            const current=getShoppingList();
+            selected.flatMap(r=>r.ingredients||[]).forEach(x=>{ if(!current.includes(x)) current.push(x); });
+            saveShoppingList(current);
+            const done=current.filter((_,i)=>false);
+            const msg=current.slice(0,20).map((x,i)=>`${i+1}. ${x}`).join('\\n');
+            if(confirm(`🛒 Lista de compras\\n\\n${msg}\\n\\nOK = limpar lista\\nCancelar = manter`)){
+                saveShoppingList([]);
+            }
+        }
+
+        // Timer
+        let kitchenTimer=null, kitchenTimerEnd=0;
+        function openKitchenTimer(){
+            const raw=prompt('⏱️ Quantos minutos deseja marcar?', '10');
+            if(raw===null) return;
+            const mins=parseInt(raw,10);
+            if(!Number.isFinite(mins)||mins<=0){ alert('Informe um número de minutos válido.'); return; }
+            clearInterval(kitchenTimer);
+            kitchenTimerEnd=Date.now()+mins*60000;
+            kitchenTimer=setInterval(()=>{
+                const left=Math.max(0,kitchenTimerEnd-Date.now());
+                document.title=`⏱️ ${Math.ceil(left/1000)}s • Sabor & Arte`;
+                if(left<=0){
+                    clearInterval(kitchenTimer); kitchenTimer=null; document.title='Sabor & Arte - Seu Livro de Receitas Personalizado';
+                    alert('⏰ Tempo concluído!');
+                }
+            },500);
+            alert(`⏱️ Temporizador iniciado por ${mins} minuto(s).`);
+        }
+
+        function openNotes(){
+            const id=selectedRecipeIds[0];
+            if(!id){ alert('Adicione ou abra uma receita primeiro.'); return; }
+            const r=recipesData.find(x=>x.id===id);
+            const key=`sa_note_${id}`;
+            const current=localStorage.getItem(key)||'';
+            const note=prompt(`📝 Nota para ${r?.name||'esta receita'}:`,current);
+            if(note!==null) localStorage.setItem(key,note);
+        }
+
+        function openIngredientChecklist(){
+            const id=selectedRecipeIds[0];
+            if(!id){ alert('Adicione uma receita ao Meu Livro primeiro.'); return; }
+            const r=recipesData.find(x=>x.id===id);
+            const checked=JSON.parse(localStorage.getItem(`sa_checked_${id}`)||'[]');
+            const lines=(r.ingredients||[]).map((x,i)=>`${checked.includes(i)?'☑':'☐'} ${i+1}. ${x}`).join('\\n');
+            alert(`☑️ Checklist de ${r.name}\\n\\n${lines}\\n\\nUse a Lista de compras para separar os ingredientes.`);
+        }
+
+        function randomRecipe(){
+            if(!recipesData.length)return;
+            const r=recipesData[Math.floor(Math.random()*recipesData.length)];
+            openRecipeDetail(r.id);
+        }
+        function dailyRecipe(){
+            if(!recipesData.length)return;
+            const day=Math.floor(Date.now()/86400000);
+            openRecipeDetail(recipesData[day%recipesData.length].id);
+        }
+
+        function rememberRecentRecipe(id){
+            const key='sa_recent';
+            let a=JSON.parse(localStorage.getItem(key)||'[]').filter(x=>x!==id);
+            a.unshift(id); a=a.slice(0,8);
+            localStorage.setItem(key,JSON.stringify(a));
+        }
+        function showRecentRecipes(){
+            const ids=JSON.parse(localStorage.getItem('sa_recent')||'[]');
+            if(!ids.length){ alert('Você ainda não abriu receitas recentemente.'); return; }
+            const names=ids.map(id=>recipesData.find(r=>r.id===id)?.name).filter(Boolean);
+            alert('🕘 Receitas recentes\\n\\n'+names.map((n,i)=>`${i+1}. ${n}`).join('\\n'));
+        }
+
+        function ingredientSearch(){
+            const q=prompt('🔎 Qual ingrediente você tem em casa?');
+            if(!q)return;
+            const term=q.toLowerCase();
+            const found=recipesData.filter(r=>(r.ingredients||[]).some(i=>i.toLowerCase().includes(term)));
+            if(!found.length){ alert(`Nenhuma das 52 receitas contém "${q}".`); return; }
+            const msg=found.slice(0,12).map(r=>`• ${r.name}`).join('\\n');
+            if(confirm(`🔎 Encontrei ${found.length} receita(s):\\n\\n${msg}\\n\\nOK para abrir a primeira.`)) openRecipeDetail(found[0].id);
+        }
+
+        function toggleDarkMode(){
+            document.body.classList.toggle('dark-mode-sa');
+            const on=document.body.classList.contains('dark-mode-sa');
+            localStorage.setItem('sa_dark',on?'1':'0');
+        }
+
+        // A avaliação é real como interação do usuário e fica salva no dispositivo.
+        // Sem um servidor/banco de dados, não é possível somar avaliações entre usuários.
+        function setLocalRating(id,rating){
+            localStorage.setItem(`recipe_rating_${id}`,String(rating));
+            const el=document.getElementById(`ratingMessage-${id}`);
+            if(el) el.textContent=`Sua avaliação: ${'★'.repeat(rating)}${'☆'.repeat(5-rating)} • salva neste dispositivo`;
+            const buttons=document.querySelectorAll(`[data-rating-id="${id}"]`);
+            buttons.forEach((b,i)=>b.classList.toggle('opacity-40',i+1!==rating));
+        }
+
+        document.addEventListener('DOMContentLoaded',()=>{
+            renderFeatureGrid();
+            const dark=localStorage.getItem('sa_dark')==='1';
+            if(dark) document.body.classList.add('dark-mode-sa');
+        });
+    </script>
+</body>
+</html>
