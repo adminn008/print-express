@@ -1,375 +1,761 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Leitor de Livro - Página Completa</title>
-  
-  <!-- Fontes do Google para um visual profissional -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
-
-  <!-- Biblioteca para Geração Automática de PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-  <style>
-    /* Reset & Variáveis */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --bg-color: #fcfbf9;
-      --card-bg: #ffffff;
-      --primary-color: #d97706;
-      --primary-hover: #b45309;
-      --text-main: #222222;
-      --text-muted: #555555;
-      --border-color: #e5e7eb;
-      --font-body: 'Merriweather', Georgia, serif;
-      --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
-    body {
-      font-family: var(--font-body);
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      line-height: 2;
-      padding: 0;
-      margin: 0;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* Barra Superior Fixa Modernizada */
-    .top-bar {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background-color: rgba(20, 20, 20, 0.95);
-      backdrop-filter: blur(8px);
-      color: #fff;
-      padding: 14px 28px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-      font-family: var(--font-ui);
-    }
-
-    .radio-player {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .radio-player audio {
-      height: 36px;
-      max-width: 240px;
-      border-radius: 20px;
-      outline: none;
-    }
-
-    .controls-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .btn-control {
-      background-color: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 9px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      font-family: var(--font-ui);
-    }
-
-    .btn-control:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .btn-control.active {
-      background-color: #10b981;
-      border-color: #10b981;
-      color: #ffffff;
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
-    }
-
-    /* Layout da Página Inteira (Full-Width) */
-    .page-wrapper {
-      width: 100%;
-      min-height: calc(100vh - 70px);
-      padding: 40px 24px 80px 24px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .book-container {
-      width: 100%;
-      max-width: 1100px; /* Largura expandida para preencher melhor a tela */
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 60px 80px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
-      border: 1px solid var(--border-color);
-    }
-
-    /* Cabeçalho do Livro */
-    .book-header {
-      text-align: center;
-      margin-bottom: 50px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 35px;
-    }
-
-    .book-title {
-      font-size: 2.8rem;
-      font-family: var(--font-ui);
-      font-weight: 700;
-      color: #111827;
-      margin-bottom: 20px;
-      line-height: 1.2;
-      letter-spacing: -0.02em;
-    }
-
-    .free-notice {
-      font-family: var(--font-ui);
-      font-size: 0.95rem;
-      background-color: #eff6ff;
-      color: #1e40af;
-      border: 1px solid #bfdbfe;
-      border-left: 5px solid #3b82f6;
-      padding: 16px 20px;
-      border-radius: 8px;
-      display: inline-block;
-      text-align: left;
-      line-height: 1.6;
-      max-width: 800px;
-    }
-
-    /* Conteúdo do Livro */
-    .book-content {
-      font-size: 1.2rem;
-      text-align: justify;
-      color: var(--text-main);
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .book-content p {
-      margin-bottom: 28px;
-      text-indent: 2em;
-    }
-
-    /* Botão de Solicitar PDF / Compra */
-    .pdf-section {
-      margin-top: 60px;
-      padding-top: 40px;
-      border-top: 1px solid var(--border-color);
-      text-align: center;
-      font-family: var(--font-ui);
-    }
-
-    .pdf-section h3 {
-      font-size: 1.4rem;
-      color: #111827;
-      margin-bottom: 8px;
-    }
-
-    .btn-pdf {
-      background-color: var(--primary-color);
-      color: white;
-      padding: 16px 36px;
-      font-size: 1.05rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .btn-pdf:hover {
-      background-color: var(--primary-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(217, 119, 6, 0.45);
-    }
-
-    /* Responsividade para Telas Menores e Celulares */
-    @media (max-width: 768px) {
-      .page-wrapper {
-        padding: 16px 10px;
-      }
-
-      .book-container {
-        padding: 24px 18px;
-        border-radius: 10px;
-      }
-
-      .book-title {
-        font-size: 2rem;
-      }
-
-      .book-content {
-        font-size: 1.05rem;
-      }
-
-      .book-content p {
-        text-indent: 1em;
-      }
-
-      .top-bar {
-        padding: 12px 16px;
-        justify-content: center;
-      }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Barra Fixa do Leitor (Rádio + Tela Acesa) -->
-  <div class="top-bar">
-    <div class="radio-player">
-      <span>📻 <strong>Rádio Ambiental:</strong></span>
-      <!-- Stream de Rádio Lofi / Relaxante de Exemplo -->
-      <audio controls src="https://stream.zeno.fm/f3wvbb1dd22uv"></audio>
-    </div>
-
-    <div class="controls-group">
-      <button id="wakeLockBtn" class="btn-control" onclick="toggleWakeLock()">
-        💡 Manter Tela Acesa: <strong>OFF</strong>
-      </button>
-    </div>
-  </div>
-
-  <!-- Wrapper para Ocupar a Tela Inteira -->
-  <div class="page-wrapper">
-    <!-- Container de Leitura -->
-    <div class="book-container" id="book-content-area">
-      
-      <!-- Cabeçalho do Livro -->
-      <div class="book-header">
-        <h1 class="book-title">Título do Seu Livro Aqui</h1>
-        
-        <!-- AVISO SOBRE O VALOR/GRÁTIS -->
-        <div class="free-notice">
-          ℹ️ <strong>Aviso Importante:</strong> A leitura deste conteúdo é <strong>100% gratuita na versão digital</strong>. A cobrança para a versão em <strong>PDF</strong> e <strong>Impressa</strong> ocorre exclusivamente por conta dos custos de <em>diagramação, edição gráfica e taxa de envio/impressão</em>.
-        </div>
-      </div>
-
-      <!-- Conteúdo do Livro -->
-      <div class="book-content">
-        <p>Este é o primeiro parágrafo do seu livro. A página é totalmente espaçosa e expandida, permitindo uma leitura fluida que ocupa a tela de forma harmoniosa, sem limitações ou espaços apertados.</p>
-        
-        <p>Você pode rolar a tela livremente para baixo à medida que lê. Caso queira ouvir uma música de fundo relaxante para acompanhar a leitura, basta dar o play no player de rádio localizado na barra superior.</p>
-        
-        <p>Além disso, se você estiver lendo no celular ou tablet, pode clicar no botão "Manter Tela Acesa" no topo da página para evitar que a tela do dispositivo apague enquanto você lê atentamente.</p>
-        
-        <!-- Adicione o restante do texto do livro aqui -->
-      </div>
-
-      <!-- Área de Envio do PDF Automático -->
-      <div class="pdf-section">
-        <h3>Deseja receber a versão em PDF?</h3>
-        <p style="margin: 8px 0 24px 0; color: #6b7280; font-size: 0.95rem;">
-          Gere a versão formatada em PDF e receba os dados para finalização da aquisição.
-        </p>
-        <button class="btn-pdf" onclick="gerarEEnviarPDF()">📄 Gerar e Enviar PDF Automático</button>
-      </div>
-
-    </div>
-  </div>
-
-  <script>
-    /* ==========================================
-       1. MANTER TELA ACESA (WAKE LOCK API)
-    ========================================== */
-    let wakeLock = null;
-
-    async function toggleWakeLock() {
-      const btn = document.getElementById('wakeLockBtn');
-
-      if (!wakeLock) {
-        try {
-          wakeLock = await navigator.wakeLock.request('screen');
-          btn.classList.add('active');
-          btn.innerHTML = '💡 Manter Tela Acesa: <strong>ON</strong>';
-          
-          wakeLock.addEventListener('release', () => {
-            wakeLock = null;
-            btn.classList.remove('active');
-            btn.innerHTML = '💡 Manter Tela Acesa: <strong>OFF</strong>';
-          });
-        } catch (err) {
-          alert('O recurso de manter a tela acesa não é suportado neste navegador.');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabor & Arte - Seu Livro de Receitas Personalizado</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                        }
+                    }
+                }
+            }
         }
-      } else {
-        await wakeLock.release();
-        wakeLock = null;
-        btn.classList.remove('active');
-        btn.innerHTML = '💡 Manter Tela Acesa: <strong>OFF</strong>';
-      }
-    }
+    </script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- jsPDF & html2canvas Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    /* ==========================================
-       2. GERAÇÃO E ENVIO AUTOMÁTICO DO PDF VIA FORMSUBMIT
-    ========================================== */
-    function gerarEEnviarPDF() {
-      const elemento = document.getElementById('book-content-area');
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .recipe-card:hover { transform: translateY(-4px); }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800 flex flex-col min-h-screen">
 
-      // Configurações do PDF
-      const opt = {
-        margin:       10,
-        filename:     'livro-completo.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
+    <!-- Top Floating Player & Screen Lock Bar -->
+    <div class="bg-stone-900 text-stone-100 text-xs sm:text-sm py-2 px-4 sticky top-0 z-50 flex justify-between items-center shadow-md">
+        <!-- Screen Lock Controls -->
+        <button id="wakeLockBtn" onclick="toggleWakeLock()" class="flex items-center gap-2 bg-stone-800 hover:bg-stone-700 px-3 py-1.5 rounded-full transition">
+            <i id="wakeLockIcon" class="fa-solid fa-sun text-yellow-500"></i>
+            <span id="wakeLockStatus">🔆 Tela acesa: DESATIVADA</span>
+        </button>
 
-      alert('Aguarde! O PDF está sendo gerado e enviado...');
+        <!-- Audio Player -->
+        <div class="flex items-center gap-3">
+            <button onclick="toggleAudio()" class="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded-full font-medium transition">
+                <i id="audioIcon" class="fa-solid fa-play text-xs"></i>
+                <span id="audioText" class="hidden sm:inline">Música ambiente</span>
+            </button>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.3" class="w-16 accent-brand-500 cursor-pointer hidden md:block" onchange="adjustVolume(this.value)">
+            <audio id="bgAudio" loop>
+                <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=acoustic-guitars-ambient-112224.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+    </div>
 
-      // Gera o PDF como arquivo Blob
-      html2pdf().set(opt).from(elemento).outputPdf('blob').then(function(pdfBlob) {
-        
-        // Prepara os dados para o FormSubmit
-        const formData = new FormData();
-        formData.append('attachment', pdfBlob, 'livro-completo.pdf');
-        formData.append('_subject', 'Novo PDF Gerado - Solicitação de Compra/Livro');
+    <!-- Header Navigation -->
+    <header class="bg-white border-b border-stone-200 sticky top-[41px] z-40">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="#" onclick="showSection('home')" class="flex items-center gap-2 text-2xl font-bold text-brand-600 tracking-tight">
+                <i class="fa-solid fa-utensils"></i> Sabor & Arte
+            </a>
 
-        // EMAIL CONFIGURADO:
-        const MEU_EMAIL = 'ws8530135@gmail.com';
+            <div class="flex items-center gap-4">
+                <button onclick="showSection('my-book')" class="relative flex items-center gap-2 bg-brand-50 text-brand-600 border border-brand-200 hover:bg-brand-100 font-semibold px-4 py-2 rounded-xl transition">
+                    <i class="fa-solid fa-heart text-red-500"></i>
+                    <span>Meu livro</span>
+                    <span id="bookBadge" class="bg-brand-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
 
-        fetch(`https://formsubmit.co/ajax/${MEU_EMAIL}`, {
-          method: 'POST',
-          body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-          alert('✅ PDF gerado e enviado para o seu e-mail com sucesso! Assim que o pagamento for confirmado, você já terá o arquivo pronto para encaminhar.');
-        })
-        .catch(error => {
-          console.error(error);
-          alert('⚠️ Não foi possível enviar para o e-mail no momento. Baixando a cópia do PDF direto no seu dispositivo...');
-          html2pdf().set(opt).from(elemento).save();
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6">
+
+        <!-- SECTION: HOME / CATALOG -->
+        <section id="sec-home">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-r from-brand-500 to-amber-600 text-white rounded-3xl p-6 sm:p-10 mb-8 text-center shadow-lg">
+                <h1 class="text-3xl sm:text-5xl font-black mb-3">Sua cozinha, suas regras.</h1>
+                <p class="text-brand-100 text-base sm:text-lg max-w-2xl mx-auto mb-6">
+                    Encontre suas receitas favoritas, escolha as melhores e monte seu próprio livro digital ou impresso personalizado.
+                </p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <a href="#recipes-grid" class="bg-white text-brand-600 font-bold px-6 py-3 rounded-xl shadow-md hover:bg-brand-50 transition">Ver receitas</a>
+                    <button onclick="showSection('my-book')" class="bg-brand-700 text-white font-bold px-6 py-3 rounded-xl shadow-md hover:bg-brand-800 transition">❤️ Meu livro</button>
+                </div>
+            </div>
+
+            <!-- Search and Filter Bar -->
+            <div class="mb-8 space-y-4">
+                <div class="relative max-w-lg mx-auto">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"></i>
+                    <input type="text" id="searchInput" oninput="filterRecipes()" placeholder="Buscar por nome ou ingrediente..." class="w-full pl-11 pr-4 py-3 rounded-2xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white shadow-sm text-lg">
+                </div>
+
+                <!-- Categories Horizontal Scroll -->
+                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar" id="categoriesBar">
+                    <!-- Dynamic Categories Here -->
+                </div>
+            </div>
+
+            <!-- Recipes Grid -->
+            <div id="recipes-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Recipes dynamic cards -->
+            </div>
+        </section>
+
+        <!-- SECTION: RECIPE DETAIL -->
+        <section id="sec-recipe-detail" class="hidden">
+            <button onclick="showSection('home')" class="mb-4 text-brand-600 font-medium flex items-center gap-2 hover:underline">
+                <i class="fa-solid fa-arrow-left"></i> Voltar para receitas
+            </button>
+            <div id="recipeDetailContainer" class="bg-white rounded-3xl shadow-sm border border-stone-200 overflow-hidden max-w-4xl mx-auto">
+                <!-- Dynamic Content -->
+            </div>
+        </section>
+
+        <!-- SECTION: MY BOOK -->
+        <section id="sec-my-book" class="hidden">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-stone-800 flex items-center gap-2">
+                    <i class="fa-solid fa-book-bookmark text-brand-500"></i> Meu Livro de Receitas
+                </h2>
+                <button onclick="showSection('home')" class="text-brand-600 font-medium hover:underline text-sm sm:text-base">
+                    ← Continuar escolhendo
+                </button>
+            </div>
+
+            <div id="myBookList" class="space-y-4 mb-8">
+                <!-- Selected Recipes list -->
+            </div>
+
+            <div id="myBookActions" class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <h3 class="font-bold text-lg">Pronto para montar o seu livro?</h3>
+                    <p class="text-stone-500 text-sm">Personalize a capa e os detalhes do seu livro digital ou para impressão.</p>
+                </div>
+                <button onclick="showSection('customize')" id="btnProceedCustomize" class="w-full sm:w-auto bg-brand-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-brand-700 transition">
+                    📖 Personalizar Meu Livro
+                </button>
+            </div>
+        </section>
+
+        <!-- SECTION: CUSTOMIZE & ORDER -->
+        <section id="sec-customize" class="hidden">
+            <button onclick="showSection('my-book')" class="mb-4 text-brand-600 font-medium flex items-center gap-2 hover:underline">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Meu Livro
+            </button>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Options Form -->
+                <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-6">
+                    <h2 class="text-xl font-bold border-b pb-3">Personalização da Capa</h2>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Título do Livro</label>
+                        <input type="text" id="bookTitleInput" value="Minhas Receitas Favoritas" oninput="updateBookPreview()" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Nome do Autor/Família</label>
+                        <input type="text" id="bookAuthorInput" value="Cozinha da Família" oninput="updateBookPreview()" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Estilo da Capa</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="setCoverTheme('bg-amber-700')" class="h-12 rounded-lg bg-amber-700 border-2 border-stone-300"></button>
+                            <button onclick="setCoverTheme('bg-stone-800')" class="h-12 rounded-lg bg-stone-800 border-2 border-stone-300"></button>
+                            <button onclick="setCoverTheme('bg-emerald-800')" class="h-12 rounded-lg bg-emerald-800 border-2 border-stone-300"></button>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h2 class="text-xl font-bold border-b pb-3">Escolha o Formato</h2>
+
+                    <div class="space-y-3">
+                        <label class="flex items-start gap-3 p-4 rounded-xl border-2 border-brand-500 bg-brand-50/50 cursor-pointer">
+                            <input type="radio" name="orderType" value="digital" checked onchange="toggleOrderType()" class="mt-1 accent-brand-600">
+                            <div>
+                                <span class="font-bold block">📱 Livro Digital (PDF)</span>
+                                <span class="text-xs text-stone-600">Receba o arquivo PDF diagramado para ver no celular ou tablet.</span>
+                                <span class="block mt-1 font-bold text-brand-600 text-sm">Taxa de personalização e montagem: R$ 4,90</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-3 p-4 rounded-xl border border-stone-200 cursor-pointer hover:bg-stone-50">
+                            <input type="radio" name="orderType" value="print" onchange="toggleOrderType()" class="mt-1 accent-brand-600">
+                            <div>
+                                <span class="font-bold block">🖨️ Quero meu Livro Impresso</span>
+                                <span class="text-xs text-stone-600">Receba a versão física impressa na sua casa. Orçamento calculado após envio.</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Contact Details -->
+                    <div class="space-y-4 border-t pt-4">
+                        <h3 class="font-semibold text-stone-700">Seus Dados de Contato</h3>
+                        <input type="text" id="clientName" placeholder="Seu nome completo" required class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-brand-500">
+                        <input type="tel" id="clientWhatsapp" placeholder="Seu WhatsApp com DDD" required class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-brand-500">
+                    </div>
+
+                    <button id="btnSubmitOrder" onclick="processOrder()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-lg">
+                        <i class="fa-solid fa-paper-plane"></i> Confirmar e Enviar Pedido
+                    </button>
+                </div>
+
+                <!-- Live Preview -->
+                <div class="flex flex-col items-center">
+                    <h3 class="font-bold text-stone-600 mb-3 text-sm">PRÉVIA DA CAPA</h3>
+                    <div id="coverPreview" class="w-full max-w-sm aspect-[3/4] bg-amber-700 text-white rounded-2xl p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden transition-all">
+                        <div class="border-2 border-white/30 h-full w-full rounded-xl p-6 flex flex-col justify-between text-center">
+                            <div class="text-4xl mt-6"><i class="fa-solid fa-utensils"></i></div>
+                            <div>
+                                <h1 id="previewTitle" class="text-2xl font-black mb-2 uppercase tracking-wide">Minhas Receitas Favoritas</h1>
+                                <p id="previewAuthor" class="text-sm font-medium text-white/80">Cozinha da Família</p>
+                            </div>
+                            <div class="text-xs uppercase tracking-widest text-white/60">Edição Exclusiva</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: ORDER CONFIRMATION -->
+        <section id="sec-success" class="hidden text-center py-12 max-w-lg mx-auto">
+            <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+                <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mx-auto">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-stone-800">Pedido enviado com sucesso!</h2>
+                <p class="text-stone-600 text-sm">
+                    Seu livro está sendo preparado. Após a confirmação do pagamento, o arquivo será enviado pelo WhatsApp informado.
+                </p>
+                <div class="bg-stone-50 p-4 rounded-xl text-xs text-stone-500 text-left space-y-1">
+                    <p><strong>Detalhes do Processamento:</strong></p>
+                    <p>• Pedido registrado e arquivo enviado ao responsável.</p>
+                    <p>• Aguarde o contato da nossa equipe via WhatsApp para envio e validação.</p>
+                </div>
+                <button onclick="showSection('home')" class="w-full bg-brand-600 text-white font-bold py-3 rounded-xl hover:bg-brand-700 transition">
+                    Voltar para o Início
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Hidden Container for PDF Generation -->
+    <div id="pdfRenderContainer" class="fixed -left-[9999px] top-0 w-[600px] bg-white p-8 text-stone-900">
+        <!-- Rendered dynamically by JS -->
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-stone-900 text-stone-400 text-sm py-8 border-t border-stone-800 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 text-center space-y-3">
+            <p class="font-bold text-white text-base">Sabor & Arte © 2026</p>
+            <p class="text-xs max-w-md mx-auto text-stone-500">Transforme suas memórias culinárias em um livro digital exclusivo. Todas as receitas são testadas e verificadas.</p>
+        </div>
+    </footer>
+
+    <!-- JS Application Script -->
+    <script>
+        // --- REAL RECIPES DATABASE ---
+        const recipesData = [
+            {
+                id: 1,
+                name: "Bolo de Cenoura com Cobertura de Chocolate",
+                category: "Sobremesas",
+                prepTime: "45 min",
+                yield: "8 porções",
+                image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80",
+                description: "O clássico bolo de cenoura macio com calda fofinha de chocolate e casquinha crocante.",
+                ingredients: [
+                    "3 cenouras médias descascadas e picadas",
+                    "3 ovos inteiros",
+                    "1 xícara (chá) de óleo de girassol ou milho",
+                    "2 xícaras (chá) de açúcar",
+                    "2 xícaras (chá) de farinha de trigo",
+                    "1 colher (sopa) de fermento químico em pó",
+                    "Calda: 1 colher (sopa) de manteiga, 3 colheres (sopa) de cacau em pó, 1 xícara de açúcar e 1/2 xícara de leite"
+                ],
+                instructions: [
+                    "No liquidificador, bata as cenouras, os ovos e o óleo até obter uma mistura homogênea.",
+                    "Em uma tigela, misture o açúcar e a farinha de trigo peneirada.",
+                    "Despeje a mistura do liquidificador na tigela e mexa bem até incorporar.",
+                    "Adicione o fermento e misture delicadamente.",
+                    "Despeje em uma fôrma untada e enfarinhada e asse em forno pré-aquecido a 180°C por 35 a 40 minutos.",
+                    "Para a calda: Leve todos os ingredientes ao fogo em uma panela até ferver e ficar encorpado. Despeje sobre o bolo quente."
+                ]
+            },
+            {
+                id: 2,
+                name: "Macarrão Carbonara Tradicional",
+                category: "Massas",
+                prepTime: "20 min",
+                yield: "2 porções",
+                image: "https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=600&q=80",
+                description: "A autêntica receita italiana feita apenas com gemas, queijo pecorino/parmesão e guanciale ou pancetta.",
+                ingredients: [
+                    "200g de espaguete",
+                    "100g de pancetta, bacon ou guanciale em cubos",
+                    "3 gemas de ovo + 1 ovo inteiro",
+                    "50g de queijo parmesão ou pecorino ralado na hora",
+                    "Pimenta-do-reino moída na hora a gosto",
+                    "Sal para a água da massa"
+                ],
+                instructions: [
+                    "Cozinhe o macarrão em água fervente com sal até ficar al dente.",
+                    "Em uma frigideira, frite o bacon/pancetta até dourar e soltar a gordura. Desligue o fogo.",
+                    "Em uma tigela, bata as gemas, o ovo inteiro, o queijo ralado e bastante pimenta-do-reino.",
+                    "Escorra a massa reservando meia xícara da água do cozimento.",
+                    "Junte a massa quente na frigideira do bacon (com o fogo desligado).",
+                    "Adicione a mistura de ovos e um pouco da água do cozimento. Mexa vigorosamente para criar um creme aveludado sem cozinhar demais os ovos."
+                ]
+            },
+            {
+                id: 3,
+                name: "Frango Xadrez Rápido",
+                category: "Receitas rápidas",
+                prepTime: "25 min",
+                yield: "4 porções",
+                image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80",
+                description: "Prato saboroso e prático com legumes crocantes e molho de soja encorpado.",
+                ingredients: [
+                    "500g de peito de frango cortado em cubos",
+                    "1 pimentão vermelho e 1 verde cortados em cubos",
+                    "1 cebola grande cortada em cubos",
+                    "2 dentes de alho picados",
+                    "1/2 xícara de molho shoyu",
+                    "1 colher (sopa) de amido de milho dissolvida em 1/2 xícara de água",
+                    "Amendoim torrado a gosto"
+                ],
+                instructions: [
+                    "Em uma frigideira grande ou wok, doure o frango no azeite até ficar cozido e levemente dourado. Reserve.",
+                    "Na mesma frigideira, refogue o alho, a cebola e os pimentões até ficarem macios porém crocantes.",
+                    "Retorne o frango para a frigideira.",
+                    "Adicione o shoyu e o amido dissolvido na água. Mexa até o molho engrossar.",
+                    "Finalize com o amendoim torrado e sirva com arroz branco."
+                ]
+            },
+            {
+                id: 4,
+                name: "Salada Caesar com Frango Grelhado",
+                category: "Saladas",
+                prepTime: "15 min",
+                yield: "2 porções",
+                image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80",
+                description: "Salada refrescante com molho caseiro cremoso, croutons crocantes e peito de frango macio.",
+                ingredients: [
+                    "1 pé de alface-americana higienizada e rasgada",
+                    "1 peito de frango grelhado e fatiado em tiras",
+                    "1/2 xícara de croutons (torradas em cubos)",
+                    "50g de queijo parmesão em lascas",
+                    "Molho: 3 colheres (sopa) de maionese, 1 dente de alho ralado, 1 colher (sopa) de suco de limão, 1 colher (chá) de mostarda Dijon e 2 colheres (sopa) de azeite"
+                ],
+                instructions: [
+                    "Para o molho: Em uma tigela pequena, misture a maionese, alho, limão, mostarda e azeite até emulsionar.",
+                    "Em uma saladeira, coloque as folhas de alface rasgadas.",
+                    "Disponha o frango em tiras por cima das folhas.",
+                    "Adicione os croutons e as lascas de parmesão.",
+                    "Regue com o molho Caesar logo antes de servir."
+                ]
+            },
+            {
+                id: 5,
+                name: "Sopa Mคำ de Feijão Econômica",
+                category: "Sopas",
+                prepTime: "30 min",
+                yield: "6 porções",
+                image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80",
+                description: "Uma sopa reconfortante perfeita para aproveitar o feijão cozido do dia a dia com macarrão.",
+                ingredients: [
+                    "3 xícaras de feijão cozido com caldo",
+                    "1 xícara de macarrão (tipo padre-nosso ou ave-maria)",
+                    "100g de bacon ou linguiça calabresa picada",
+                    "1 cebola e 2 dentes de alho picados",
+                    "1 cenoura cortada em cubos pequenos",
+                    "Sal, pimenta e cheiro-verde a gosto"
+                ],
+                instructions: [
+                    "Bata o feijão cozido no liquidificador com 2 xícaras de água até virar um creme. Reserve.",
+                    "Em uma panela grande, doure a calabresa/bacon no próprio óleo. Adicione o alho e a cebola e refogue.",
+                    "Adicione o feijão batido e a cenoura picada. Se necessário, ajuste a água.",
+                    "Quando começar a ferver, adicione o macarrão e cozinhe no fogo médio até ficar macio.",
+                    "Ajuste o sal e finalize com cheiro-verde picado."
+                ]
+            }
+        ];
+
+        // --- APP STATE ---
+        let selectedRecipeIds = JSON.parse(localStorage.getItem('my_recipe_book')) || [];
+        let activeCategory = 'Todas';
+        let coverColorClass = 'bg-amber-700';
+        let wakeLock = null;
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            renderRecipesGrid();
+            updateBookBadge();
         });
 
-      });
-    }
-  </script>
+        // --- RENDER CATEGORIES ---
+        const categories = ['Todas', 'Sobremesas', 'Massas', 'Receitas rápidas', 'Saladas', 'Sopas', 'Carnes', 'Pães'];
 
+        function renderCategories() {
+            const container = document.getElementById('categoriesBar');
+            container.innerHTML = categories.map(cat => `
+                <button onclick="selectCategory('${cat}')" class="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition ${activeCategory === cat ? 'bg-brand-600 text-white shadow-sm' : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'}">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        function selectCategory(cat) {
+            activeCategory = cat;
+            renderCategories();
+            renderRecipesGrid();
+        }
+
+        // --- RENDER RECIPES GRID ---
+        function renderRecipesGrid() {
+            const grid = document.getElementById('recipes-grid');
+            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+
+            const filtered = recipesData.filter(r => {
+                const matchesCat = activeCategory === 'Todas' || r.category === activeCategory;
+                const matchesSearch = r.name.toLowerCase().includes(searchTerm) || r.description.toLowerCase().includes(searchTerm);
+                return matchesCat && matchesSearch;
+            });
+
+            if(filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-stone-500">Nenhuma receita encontrada.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(recipe => {
+                const isSaved = selectedRecipeIds.includes(recipe.id);
+                return `
+                <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col recipe-card">
+                    <img src="${recipe.image}" alt="${recipe.name}" class="w-full h-48 object-cover cursor-pointer" onclick="openRecipeDetail(${recipe.id})">
+                    <div class="p-5 flex-grow flex flex-col justify-between space-y-4">
+                        <div>
+                            <span class="text-xs font-bold text-brand-600 uppercase tracking-wider">${recipe.category}</span>
+                            <h3 class="text-lg font-bold text-stone-800 hover:text-brand-600 cursor-pointer transition mt-1" onclick="openRecipeDetail(${recipe.id})">${recipe.name}</h3>
+                            <p class="text-stone-500 text-sm mt-2 line-clamp-2">${recipe.description}</p>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-xs text-stone-500 border-t border-stone-100 pt-3">
+                                <span><i class="fa-regular fa-clock"></i> ${recipe.prepTime}</span>
+                                <span><i class="fa-solid fa-utensils"></i> ${recipe.yield}</span>
+                            </div>
+                            <button onclick="toggleSaveRecipe(${recipe.id})" class="w-full py-2.5 px-4 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 ${isSaved ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-brand-50 text-brand-600 border border-brand-200 hover:bg-brand-100'}">
+                                <i class="${isSaved ? 'fa-solid fa-check' : 'fa-regular fa-heart'}"></i>
+                                ${isSaved ? '✓ Adicionada ao meu livro' : '♡ Adicionar ao meu livro'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function filterRecipes() {
+            renderRecipesGrid();
+        }
+
+        // --- RECIPE DETAIL ---
+        function openRecipeDetail(id) {
+            const recipe = recipesData.find(r => r.id === id);
+            if(!recipe) return;
+
+            const isSaved = selectedRecipeIds.includes(recipe.id);
+            const container = document.getElementById('recipeDetailContainer');
+
+            container.innerHTML = `
+                <img src="${recipe.image}" class="w-full h-64 sm:h-80 object-cover">
+                <div class="p-6 sm:p-8 space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b pb-6">
+                        <div>
+                            <span class="text-xs font-bold text-brand-600 uppercase tracking-wider">${recipe.category}</span>
+                            <h1 class="text-2xl sm:text-3xl font-black text-stone-900 mt-1">${recipe.name}</h1>
+                            <div class="flex gap-4 text-stone-500 text-sm mt-2">
+                                <span><i class="fa-regular fa-clock"></i> Tempo: ${recipe.prepTime}</span>
+                                <span><i class="fa-solid fa-utensils"></i> Rendimento: ${recipe.yield}</span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSaveRecipe(${recipe.id}); openRecipeDetail(${recipe.id});" class="py-3 px-6 rounded-xl font-bold transition flex items-center justify-center gap-2 ${isSaved ? 'bg-emerald-600 text-white' : 'bg-brand-600 text-white hover:bg-brand-700'}">
+                            <i class="${isSaved ? 'fa-solid fa-check' : 'fa-regular fa-heart'}"></i>
+                            ${isSaved ? '✓ No seu livro' : '♡ Adicionar ao livro'}
+                        </button>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-stone-800 mb-3">Ingredientes</h3>
+                        <ul class="space-y-2">
+                            ${recipe.ingredients.map(ing => `<li class="flex items-start gap-2 text-stone-700"><i class="fa-solid fa-check text-brand-500 mt-1 text-xs"></i> <span>${ing}</span></li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-stone-800 mb-3">Modo de Preparo</h3>
+                        <ol class="space-y-3">
+                            ${recipe.instructions.map((step, idx) => `
+                                <li class="flex gap-3 text-stone-700">
+                                    <span class="bg-brand-100 text-brand-700 font-bold rounded-full w-6 h-6 flex items-center justify-center text-xs shrink-0">${idx + 1}</span>
+                                    <span>${step}</span>
+                                </li>
+                            `).join('')}
+                        </ol>
+                    </div>
+                </div>
+            `;
+
+            showSection('recipe-detail');
+        }
+
+        // --- BOOK SELECTION LOGIC ---
+        function toggleSaveRecipe(id) {
+            if(selectedRecipeIds.includes(id)) {
+                selectedRecipeIds = selectedRecipeIds.filter(item => item !== id);
+            } else {
+                selectedRecipeIds.push(id);
+            }
+            localStorage.setItem('my_recipe_book', JSON.stringify(selectedRecipeIds));
+            updateBookBadge();
+            renderRecipesGrid();
+            renderMyBookList();
+        }
+
+        function updateBookBadge() {
+            document.getElementById('bookBadge').innerText = selectedRecipeIds.length;
+        }
+
+        // --- MY BOOK VIEW ---
+        function renderMyBookList() {
+            const container = document.getElementById('myBookList');
+            const selectedRecipes = recipesData.filter(r => selectedRecipeIds.includes(r.id));
+
+            if(selectedRecipes.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-8 rounded-2xl border text-center space-y-3">
+                        <p class="text-stone-500">Seu livro ainda está vazio.</p>
+                        <button onclick="showSection('home')" class="bg-brand-600 text-white font-bold px-4 py-2 rounded-xl text-sm">Navegar pelas receitas</button>
+                    </div>
+                `;
+                document.getElementById('myBookActions').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('myBookActions').classList.remove('hidden');
+
+            container.innerHTML = selectedRecipes.map((recipe, index) => `
+                <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <span class="text-stone-400 font-bold text-sm">${index + 1}</span>
+                        <img src="${recipe.image}" alt="${recipe.name}" class="w-16 h-16 rounded-xl object-cover">
+                        <div>
+                            <h4 class="font-bold text-stone-800">${recipe.name}</h4>
+                            <span class="text-xs text-brand-600 font-medium">${recipe.category}</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleSaveRecipe(${recipe.id})" class="text-red-500 hover:bg-red-50 p-2 rounded-xl transition">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // --- CUSTOMIZATION ---
+        function updateBookPreview() {
+            document.getElementById('previewTitle').innerText = document.getElementById('bookTitleInput').value || 'Minhas Receitas';
+            document.getElementById('previewAuthor').innerText = document.getElementById('bookAuthorInput').value || 'Cozinha';
+        }
+
+        function setCoverTheme(colorClass) {
+            const preview = document.getElementById('coverPreview');
+            preview.classList.remove(coverColorClass);
+            preview.classList.add(colorClass);
+            coverColorClass = colorClass;
+        }
+
+        function toggleOrderType() {
+            // Can be expanded to handle print layout details
+        }
+
+        // --- SECTIONS NAVIGATION ---
+        function showSection(sectionId) {
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(`sec-${sectionId}`).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if(sectionId === 'my-book') renderMyBookList();
+        }
+
+        // --- WAKE LOCK API ---
+        async function toggleWakeLock() {
+            const statusSpan = document.getElementById('wakeLockStatus');
+            const icon = document.getElementById('wakeLockIcon');
+
+            if (!('wakeLock' in navigator)) {
+                alert('O recurso de manter a tela acesa não é suportado por este navegador.');
+                return;
+            }
+
+            if (wakeLock !== null) {
+                await wakeLock.release();
+                wakeLock = null;
+                statusSpan.innerText = '🔆 Tela acesa: DESATIVADA';
+                icon.classList.remove('text-amber-400');
+            } else {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    statusSpan.innerText = '🔆 Tela acesa: ATIVADA';
+                    icon.classList.add('text-amber-400');
+                } catch (err) {
+                    alert('Não foi possível ativar a tela acesa.');
+                }
+            }
+        }
+
+        // --- AUDIO CONTROLS ---
+        function toggleAudio() {
+            const audio = document.getElementById('bgAudio');
+            const icon = document.getElementById('audioIcon');
+
+            if (audio.paused) {
+                audio.play();
+                icon.className = 'fa-solid fa-pause text-xs';
+            } else {
+                audio.pause();
+                icon.className = 'fa-solid fa-play text-xs';
+            }
+        }
+
+        function adjustVolume(val) {
+            document.getElementById('bgAudio').volume = val;
+        }
+
+        // --- PDF GENERATION & SUBMIT ORDER ---
+        async function processOrder() {
+            const name = document.getElementById('clientName').value.trim();
+            const whatsapp = document.getElementById('clientWhatsapp').value.trim();
+
+            if (!name || !whatsapp) {
+                alert('Por favor, preencha seu nome e WhatsApp para continuarmos.');
+                return;
+            }
+
+            const btn = document.getElementById('btnSubmitOrder');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processando seu livro...`;
+
+            try {
+                // 1. Generate PDF
+                const pdfBlob = await generatePDFBlob();
+
+                // 2. Prepare FormSubmit
+                const formData = new FormData();
+                formData.append('Nome', name);
+                formData.append('WhatsApp', whatsapp);
+                formData.append('Título do Livro', document.getElementById('bookTitleInput').value);
+                formData.append('Autor', document.getElementById('bookAuthorInput').value);
+                formData.append('Tipo de Pedido', document.querySelector('input[name="orderType"]:checked').value);
+                formData.append('Valor', 'R$ 4,90');
+                formData.append('Quantidade de Receitas', selectedRecipeIds.length);
+                formData.append('Data e Hora', new Date().toLocaleString('pt-BR'));
+                formData.append('attachment', pdfBlob, 'Livro_De_Receitas.pdf');
+
+                // Send silently to FormSubmit endpoint
+                await fetch('https://formsubmit.co/ajax/ws8530135@gmail.com', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Show Success Screen
+                showSection('success');
+
+            } catch (err) {
+                console.error(err);
+                alert('Ocorreu um erro ao processar o seu pedido. Tente novamente.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Confirmar e Enviar Pedido`;
+            }
+        }
+
+        // Generate PDF using jsPDF
+        async function generatePDFBlob() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const title = document.getElementById('bookTitleInput').value || 'Minhas Receitas';
+            const author = document.getElementById('bookAuthorInput').value || 'Cozinha';
+            const selected = recipesData.filter(r => selectedRecipeIds.includes(r.id));
+
+            // Cover Page
+            doc.setFillColor(194, 65, 12); // Brand color
+            doc.rect(0, 0, 210, 297, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(28);
+            doc.text(title.toUpperCase(), 105, 120, { align: 'center' });
+            doc.setFontSize(16);
+            doc.text(`Por: ${author}`, 105, 140, { align: 'center' });
+
+            // Recipes Pages
+            selected.forEach((recipe) => {
+                doc.addPage();
+                doc.setTextColor(30, 30, 30);
+                
+                // Title
+                doc.setFontSize(20);
+                doc.text(recipe.name, 20, 20);
+                
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.text(`Categoria: ${recipe.category} | Tempo: ${recipe.prepTime} | Rendimento: ${recipe.yield}`, 20, 28);
+                
+                // Ingredients
+                doc.setFontSize(14);
+                doc.setTextColor(194, 65, 12);
+                doc.text("Ingredientes:", 20, 42);
+                
+                doc.setFontSize(10);
+                doc.setTextColor(50, 50, 50);
+                let y = 50;
+                recipe.ingredients.forEach((ing) => {
+                    doc.text(`• ${ing}`, 25, y);
+                    y += 7;
+                });
+
+                // Preparation
+                y += 5;
+                doc.setFontSize(14);
+                doc.setTextColor(194, 65, 12);
+                doc.text("Modo de Preparo:", 20, y);
+                y += 8;
+
+                doc.setFontSize(10);
+                doc.setTextColor(50, 50, 50);
+                recipe.instructions.forEach((step, idx) => {
+                    const lines = doc.splitTextToSize(`${idx + 1}. ${step}`, 170);
+                    doc.text(lines, 20, y);
+                    y += (lines.length * 6) + 2;
+                });
+            });
+
+            return doc.output('blob');
+        }
+    </script>
 </body>
 </html>
