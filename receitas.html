@@ -1,6 +1,297 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leitor de Livro - Página Completa</title>
+  
+  <!-- Biblioteca para Geração Automática de PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    /* Estilos Gerais da Página de Leitura */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background-color: #f9f6f0;
+      color: #2c2c2c;
+      line-height: 1.8;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Barra Superior Fixa (Rádio + Controles de Tela) */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: #1a1a1a;
+      color: #fff;
+      padding: 12px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      font-family: Arial, sans-serif;
+    }
+
+    .radio-player {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .radio-player audio {
+      height: 32px;
+      max-width: 220px;
+    }
+
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-control {
+      background-color: #333;
+      color: #fff;
+      border: 1px solid #555;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.2s;
+    }
+
+    .btn-control:hover {
+      background-color: #444;
+    }
+
+    .btn-control.active {
+      background-color: #27ae60;
+      border-color: #27ae60;
+    }
+
+    /* Container Principal do Livro (Espaços para Leitura) */
+    .book-container {
+      max-width: 850px;
+      margin: 40px auto;
+      padding: 40px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+
+    /* Título e Avisos */
+    .book-header {
+      text-align: center;
+      margin-bottom: 40px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 25px;
+    }
+
+    .book-title {
+      font-size: 2.4rem;
+      color: #111;
+      margin-bottom: 12px;
+    }
+
+    .free-notice {
+      font-family: Arial, sans-serif;
+      font-size: 0.95rem;
+      background-color: #eef6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      padding: 12px 18px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-top: 10px;
+      text-align: left;
+      line-height: 1.5;
+    }
+
+    /* Conteúdo do Livro (Livre para rolar) */
+    .book-content {
+      font-size: 1.15rem;
+      text-align: justify;
+      color: #333;
+    }
+
+    .book-content p {
+      margin-bottom: 20px;
+      text-indent: 1.5em;
+    }
+
+    /* Botão de Solicitar PDF / Compra */
+    .pdf-section {
+      margin-top: 50px;
+      padding-top: 30px;
+      border-top: 2px solid #eee;
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+
+    .btn-pdf {
+      background-color: #d97706;
+      color: white;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .btn-pdf:hover {
+      background-color: #b45309;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra Fixa do Leitor (Rádio + Tela Acesa) -->
+  <div class="top-bar">
+    <div class="radio-player">
+      <span>📻 <strong>Rádio Ambiental:</strong></span>
+      <!-- Stream de Rádio Lofi / Relaxante de Exemplo -->
+      <audio controls src="https://stream.zeno.fm/f3wvbb1dd22uv"></audio>
+    </div>
+
+    <div class="controls-group">
+      <button id="wakeLockBtn" class="btn-control" onclick="toggleWakeLock()">
+        💡 Manter Tela Acesa: <strong>OFF</strong>
+      </button>
+    </div>
+  </div>
+
+  <!-- Container de Leitura -->
+  <div class="book-container" id="book-content-area">
+    
+    <!-- Cabeçalho do Livro -->
+    <div class="book-header">
+      <h1 class="book-title">Título do Seu Livro Aqui</h1>
+      
+      <!-- AVISO SOBRE O VALOR/GRÁTIS -->
+      <div class="free-notice">
+        ℹ️ <strong>Aviso Importante:</strong> A leitura deste conteúdo é <strong>100% gratuita na versão digital</strong>. A cobrança para a versão em <strong>PDF</strong> e <strong>Impressa</strong> ocorre exclusivamente por conta dos custos de <em>diagramação, edição gráfica e taxa de envio/impressão</em>.
+      </div>
+    </div>
+
+    <!-- Conteúdo do Livro -->
+    <div class="book-content">
+      <p>Este é o primeiro parágrafo do seu livro. A página é totalmente espaçosa, permitindo uma leitura fluida, sem os limites incômodos de uma janela modal ou pop-up pequeno.</p>
+      
+      <p>Você pode rolar a tela livremente para baixo à medida que lê. Caso queira ouvir uma música de fundo relaxante para acompanhar a leitura, basta dar o play no player de rádio localizado na barra superior.</p>
+      
+      <p>Além disso, se você estiver lendo no celular ou tablet, pode clicar no botão "Manter Tela Acesa" no topo da página para evitar que a tela do dispositivo apague enquanto você lê atentamente.</p>
+      
+      <!-- Adicione o restante do texto do livro aqui -->
+    </div>
+
+    <!-- Área de Envio do PDF Automático -->
+    <div class="pdf-section">
+      <h3>Deseja receber a versão em PDF?</h3>
+      <p style="margin: 10px 0 20px 0; color: #666; font-size: 0.9rem;">
+        Gere a versão formatada em PDF e receba os dados para finalização da aquisição.
+      </p>
+      <button class="btn-pdf" onclick="gerarEEnviarPDF()">📄 Gerar e Enviar PDF Automático</button>
+    </div>
+
+  </div>
+
+  <script>
+    /* ==========================================
+       1. MANTER TELA ACESA (WAKE LOCK API)
+    ========================================== */
+    let wakeLock = null;
+
+    async function toggleWakeLock() {
+      const btn = document.getElementById('wakeLockBtn');
+
+      if (!wakeLock) {
+        try {
+          wakeLock = await navigator.wakeLock.request('screen');
+          btn.classList.add('active');
+          btn.innerHTML = '💡 Manter Tela Acesa: <strong>ON</strong>';
+          
+          wakeLock.addEventListener('release', () => {
+            wakeLock = null;
+            btn.classList.remove('active');
+            btn.innerHTML = '💡 Manter Tela Acesa: <strong>OFF</strong>';
+          });
+        } catch (err) {
+          alert('O recurso de manter a tela acesa não é suportado neste navegador.');
+        }
+      } else {
+        await wakeLock.release();
+        wakeLock = null;
+        btn.classList.remove('active');
+        btn.innerHTML = '💡 Manter Tela Acesa: <strong>OFF</strong>';
+      }
+    }
+
+    /* ==========================================
+       2. GERAÇÃO E ENVIO AUTOMÁTICO DO PDF VIA FORMSUBMIT
+    ========================================== */
+    function gerarEEnviarPDF() {
+      const elemento = document.getElementById('book-content-area');
+
+      // Configurações do PDF
+      const opt = {
+        margin:       10,
+        filename:     'livro-completo.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      alert('Aguarde! O PDF está sendo gerado e enviado...');
+
+      // Gera o PDF como arquivo Blob
+      html2pdf().set(opt).from(elemento).outputPdf('blob').then(function(pdfBlob) {
+        
+        // Prepara os dados para o FormSubmit
+        const formData = new FormData();
+        formData.append('attachment', pdfBlob, 'livro-completo.pdf');
+        formData.append('_subject', 'Novo PDF Gerado - Solicitação de Compra/Livro');
+
+        // SUBSTUTUA O EMAIL ABAIXO PELO SEU EMAIL REAL:
+        const MEU_EMAIL = 'ws8530135@gmail.com';
+
+        fetch(`https://formsubmit.co/ajax/${MEU_EMAIL}`, {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert('✅ PDF gerado e enviado para o seu e-mail com sucesso! Assim que o pagamento for confirmado, você já terá o arquivo pronto para encaminhar.');
+        })
+        .catch(error => {
+          console.error(error);
+          alert('⚠️ Não foi possível enviar para o e-mail no momento. Baixando a cópia do PDF direto no seu dispositivo...');
+          html2pdf().set(opt).from(elemento).save();
+        });
+
+      });
+    }
+  </script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monte seu Livro de Receitas Personalizado</title>
