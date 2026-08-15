@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monte seu Livro de Receitas Personalizado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --primary: #38bdf8;
+            --primary-hover: #0284c7;
+            --green: #10b981;
+            --red: #ef4444;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 24px 16px; line-height: 1.5; padding-bottom: 120px; }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        header { text-align: center; margin-bottom: 36px; }
+        header h1 { font-size: 28px; font-weight: 800; color: var(--primary); }
+        header p { color: var(--text-muted); font-size: 15px; margin-top: 6px; }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+            margin: 32px 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* GRID DE PRODUTOS / RECEITAS */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+        }
+
+        .tag {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .tag-available { background: var(--green); color: #000; }
+
+        .product-card h3 { font-size: 16px; color: #fff; margin-bottom: 8px; padding-right: 85px; }
+        .product-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; flex-grow: 1; }
+
+        /* ESTILOS ESPECÍFICOS DO LIVRO DE RECEITAS */
+        .recipe-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        @media(min-width: 768px) {
+            .recipe-controls { flex-direction: row; justify-content: space-between; align-items: center; }
+        }
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+        }
+        .filter-scroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .filter-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary);
+            color: #0f172a;
+            border-color: var(--primary);
+        }
+
+        .recipe-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+        .btn-favorite {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+        .btn-favorite.added {
+            background: var(--green);
+            color: #000;
+            border-color: var(--green);
+        }
+
+        .btn-buy {
+            background: var(--primary);
+            color: #0f172a;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .btn-buy:hover { background: var(--primary-hover); color: #fff; }
+
+        /* TOAST DE NOTIFICAÇÃO */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: var(--green);
+            color: #000;
+            text-align: center;
+            border-radius: 8px;
+            padding: 12px;
+            position: fixed;
+            z-index: 200;
+            right: 20px;
+            bottom: 130px;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: opacity 0.3s, transform 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* BARRA FLUTUANTE DO CARRINHO E LIVRO */
+        .cart-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: #1e293b;
+            border-top: 2px solid var(--primary); padding: 14px 20px; display: flex;
+            justify-content: space-between; align-items: center; z-index: 90; box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
+            flex-wrap: wrap; gap: 10px;
+        }
+        .cart-info { font-size: 13px; font-weight: 600; display: flex; gap: 15px; align-items: center; }
+        .cart-info span { color: var(--green); font-size: 15px; font-weight: 800; }
+        .cart-actions-group { display: flex; gap: 10px; }
+        .btn-cart-checkout {
+            background: var(--green); color: #000; border: none; padding: 10px 16px;
+            border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px;
+        }
+        .btn-my-book {
+            background: var(--primary); color: #0f172a; border: none; padding: 10px 16px;
+            border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px;
+        }
+
+        /* MODAL GERAL / CHECKOUT / LIVRO / DETALHES DA RECEITA */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100;
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 540px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-card h2 { font-size: 20px; color: var(--primary); margin-bottom: 12px; }
+
+        .recipe-details-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 14px;
+        }
+        .recipe-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 14px 0 6px 0;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 4px;
+        }
+        .recipe-list {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-left: 18px;
+            margin-bottom: 12px;
+        }
+        .recipe-list li { margin-bottom: 4px; }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--border);
+            border-radius: 8px; color: #fff; font-size: 14px;
+        }
+
+        .payment-container {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 12px;
+        }
+        .pay-options { display: flex; gap: 10px; margin-bottom: 12px; }
+        .pay-btn {
+            flex: 1; padding: 12px 8px; background: #0f172a; border: 2px solid var(--border);
+            border-radius: 10px; color: var(--text-muted); font-size: 13px; font-weight: 700; cursor: pointer; text-align: center;
+        }
+        .pay-btn.active { border-color: var(--primary); background: rgba(56, 189, 248, 0.15); color: var(--primary); }
+
+        .pix-box {
+            background: #0f172a; border: 1px dashed var(--primary); border-radius: 10px;
+            padding: 14px; text-align: center; margin-top: 12px;
+        }
+        .pix-copy-area { display: flex; gap: 6px; margin-top: 8px; }
+        .pix-copy-area input { flex: 1; padding: 8px; background: #1e293b; border: 1px solid var(--border); border-radius: 6px; color: #fff; font-size: 11px; }
+        .btn-copy { background: var(--primary); color: #0f172a; border: none; padding: 8px 12px; border-radius: 6px; font-weight: 700; font-size: 11px; cursor: pointer; }
+
+        .summary-list {
+            font-size: 13px; color: var(--text-muted); margin-bottom: 12px; background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+        }
+        .summary-item {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .btn-remove-item { background: transparent; border: none; color: var(--red); font-size: 12px; cursor: pointer; font-weight: 700; }
+        .close-btn { background: transparent; border: none; color: var(--text-muted); font-size: 13px; cursor: pointer; width: 100%; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🍳 Monte seu Livro de Receitas</h1>
+            <p>Escolha suas receitas favoritas, veja o passo a passo e monte seu próprio livro personalizado</p>
+        </header>
+
+        <!-- CONTROLES E FILTROS -->
+        <div class="recipe-controls">
+            <input type="text" id="recipeSearch" class="search-input" placeholder="🔍 Buscar receita pelo nome..." oninput="filtrarReceitas()">
+            <div class="filter-scroll" id="categoryFilters">
+                <button class="filter-btn active" onclick="selecionarCategoria('Todas', this)">Todas</button>
+                <button class="filter-btn" onclick="selecionarCategoria('Sobremesas', this)">🍰 Sobremesas</button>
+                <button class="filter-btn" onclick="selecionarCategoria('Massas', this)">🍝 Massas</button>
+                <button class="filter-btn" onclick="selecionarCategoria('Carnes', this)">🍗 Carnes</button>
+                <button class="filter-btn" onclick="selecionarCategoria('Almoço', this)">🍚 Almoço</button>
+                <button class="filter-btn" onclick="selecionarCategoria('Pães', this)">🥖 Pães</button>
+                <button class="filter-btn" onclick="selecionarCategoria('Café da tarde', this)">☕ Café da tarde</button>
+                <button class="filter-btn" onclick="selecionarCategoria('Saladas', this)">🥗 Saladas</button>
+                <button class="filter-btn" onclick="selecionarCategoria('Sopas', this)">🍲 Sopas</button>
+                <button class="filter-btn" onclick="selecionarCategoria('Bebidas', this)">🍹 Bebidas</button>
+                <button class="filter-btn" onclick="selecionarCategoria('Doces', this)">🍪 Doces</button>
+                <button class="filter-btn" onclick="selecionarCategoria('Rápidas', this)">⚡ Rápidas</button>
+                <button class="filter-btn" onclick="selecionarCategoria('Econômicas', this)">💰 Econômicas</button>
+            </div>
+        </div>
+
+        <!-- GRID DE RECEITAS -->
+        <div class="products-grid" id="recipesGrid">
+            <!-- 52 Receitas serão injetadas via JavaScript -->
+        </div>
+    </div>
+
+    <!-- TOAST DE NOTIFICAÇÃO -->
+    <div id="toast">✨ Item adicionado com sucesso!</div>
+
+    <!-- BARRA FLUTUANTE INFERIOR -->
+    <div class="cart-bar">
+        <div class="cart-info">
+            <div>Carrinho: <span id="cartCount">0</span> item(ns) | <span id="cartSubtotal">R$ 0,00</span></div>
+            <div>❤️ Livro: <span id="favCount">0</span> receita(s)</div>
+        </div>
+        <div class="cart-actions-group">
+            <button class="btn-my-book" onclick="abrirMeuLivro()">📖 Meu Livro (<span id="favCountBtn">0</span>)</button>
+            <button class="btn-cart-checkout" onclick="abrirCheckoutCarrinho()">Finalizar Pedido 🚀</button>
+        </div>
+    </div>
+
+    <!-- MODAL DETALHES DA RECEITA (AO CLICAR NO CARD) -->
+    <div class="modal-overlay" id="modalDetalhesReceita">
+        <div class="modal-card">
+            <h2 id="modalRecipeTitle">Nome da Receita</h2>
+            <img id="modalRecipeImg" src="" alt="Foto da receita" class="recipe-details-img">
+            <p id="modalRecipeDesc" style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;"></p>
+            <div id="modalRecipeMeta" style="font-size: 12px; color: var(--primary); font-weight: 700; margin-bottom: 12px;"></div>
+
+            <div class="recipe-section-title">🛒 Ingredientes</div>
+            <ul id="modalRecipeIngredientes" class="recipe-list"></ul>
+
+            <div class="recipe-section-title">👨‍🍳 Modo de Preparo</div>
+            <ol id="modalRecipePreparo" class="recipe-list"></ol>
+
+            <button class="btn-buy" id="btnModalAddBook" style="margin-top: 12px;">Adicionar ao meu Livro</button>
+            <button class="close-btn" onclick="fecharDetalhesReceita()">← Voltar para a lista</button>
+        </div>
+    </div>
+
+    <!-- MODAL "MEU LIVRO" / MONTAGEM -->
+    <div class="modal-overlay" id="modalMeuLivro">
+        <div class="modal-card">
+            <h2>📖 Meu Livro de Receitas</h2>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Você selecionou <strong id="favCountModal" style="color: var(--primary);">0</strong> receitas.</p>
+            
+            <div class="summary-list" id="favsListSummary"></div>
+
+            <div class="form-group">
+                <label>Título da Capa do Livro:</label>
+                <select id="bookTitleOption">
+                    <option value="Meu Livro de Receitas">Meu Livro de Receitas</option>
+                    <option value="Minhas Receitas Favoritas">Minhas Receitas Favoritas</option>
+                    <option value="Receitas da Família">Receitas da Família</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 16px;">
+                <button class="btn-buy" style="background: var(--green); color: #000;" onclick="abrirOpcoesLivro()">📖 Montar meu Livro</button>
+            </div>
+            <button class="close-btn" onclick="fecharModalLivro()">← Continuar escolhendo receitas</button>
+        </div>
+    </div>
+
+    <!-- MODAL OPÇÕES DE COMPRA DO LIVRO (DIGITAL OU IMPRESSO) -->
+    <div class="modal-overlay" id="modalOpcoesLivro">
+        <div class="modal-card">
+            <h2>📖 Escolha o Formato do seu Livro</h2>
+            
+            <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid var(--primary); border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+                <h3 style="font-size: 15px; color: var(--primary); margin-bottom: 4px;">📱 Livro Digital Personalizado</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Receba suas receitas favoritas reunidas em um único PDF organizado para acessar offline com capa, índice e paginação.</p>
+                <div style="font-size: 16px; font-weight: 800; color: var(--green); margin-bottom: 8px;">R$ 4,90 <span style="font-size: 11px; font-weight: 400; color: var(--text-muted);">(Taxa de personalização e montagem)</span></div>
+                <button class="btn-buy" onclick="adicionarLivroDigitalCarrinho()">Adicionar Livro Digital ao Carrinho</button>
+            </div>
+
+            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--green); border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+                <h3 style="font-size: 15px; color: var(--green); margin-bottom: 4px;">🖨️ Quero meu Livro Impresso</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;" id="infoImpressoTexto">Calculando páginas e valor...</p>
+                <div style="font-size: 16px; font-weight: 800; color: var(--green); margin-bottom: 8px;" id="infoImpressoPreco">R$ 0,00</div>
+                <button class="btn-buy" style="background: var(--green); color: #000;" onclick="solicitarLivroImpresso()">Solicitar Livro Impresso</button>
+            </div>
+
+            <button class="close-btn" onclick="fecharOpcoesLivro()">Voltar para a seleção</button>
+        </div>
+    </div>
+
+    <!-- MODAL CHECKOUT GERAL -->
+    <div class="modal-overlay" id="modalCheckout">
+        <div class="modal-card">
+            <h2 id="modalTitle">Finalizar Pedido</h2>
+            
+            <div class="summary-list" id="modalSummary"></div>
+
+            <div class="form-group">
+                <label>Seu Nome Completo:</label>
+                <input type="text" id="custName" placeholder="Ex: Maria Souza">
+            </div>
+
+            <div class="form-group">
+                <label>WhatsApp para Contato/Recebimento:</label>
+                <input type="text" id="custPhone" placeholder="(41) 99999-9999">
+            </div>
+
+            <div class="payment-container">
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 8px;">Forma de Pagamento:</label>
+                <div class="pay-options">
+                    <div class="pay-btn active" id="optPix" onclick="setPayMethod('pix')">📱 Pix Rápido</div>
+                    <div class="pay-btn" id="optDinheiro" onclick="setPayMethod('dinheiro')">💵 Dinheiro (Retirada)</div>
+                </div>
+
+                <div class="pix-box" id="pixContainer">
+                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Escaneie o QR Code ou copie a chave abaixo:</p>
+                    <img id="qrPix" src="qrcode-pix.jpg" alt="QR Code Pix" style="width: 120px; height: 120px; border-radius: 6px; background: #fff; padding: 4px;">
+                    
+                    <div class="pix-copy-area">
+                        <input type="text" id="pixCopiaCola" readonly>
+                        <button class="btn-copy" onclick="copiarPix()">Copiar Chave</button>
+                    </div>
+                    <p style="font-size: 11px; color: var(--primary); margin-top: 6px; word-break: break-all;">Chave: ws8530135@gmail.com</p>
+                </div>
+            </div>
+
+            <button class="btn-buy" style="margin-top: 16px;" onclick="confirmarPedidoWhatsApp()">Confirmar e Enviar no WhatsApp</button>
+            <button class="close-btn" onclick="fecharCheckout()">Cancelar</button>
+        </div>
+    </div>
+
+    <script>
+        // BANCO DE DADOS COM 52 RECEITAS COMPLETAS COM INGREDIENTES E PASSO A PASSO
+        const receitasBD = [
+            { id: 1, nome: "Bolo de Fubá Cremoso", categoria: "Sobremesas", tempo: "45 min", rendimento: "10 fatias", desc: "Bolo tradicional de fubá com textura cremosa que derrete na boca.", ingredientes: ["3 ovos", "2 xícaras de açúcar", "2 xícaras de fubá", "3 colheres de farinha", "2 colheres de manteiga", "1L de leite", "1 colher de fermento"], preparo: ["Bata no liquidificador os ovos, açúcar, leite, manteiga e o fubá.", "Adicione a farinha de trigo e bata novamente.", "Desligue e misture o fermento delicadamente com uma colher.", "Despeje em fôrma untada e enfarinhada.", "Asse em forno médio (180°C) pré-aquecido por cerca de 40 minutos."], foto: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400", tags: ["Sobremesas", "Rápidas", "Café da tarde"] },
+            { id: 2, nome: "Pão de Queijo Caseiro", categoria: "Pães", tempo: "30 min", rendimento: "25 unidades", desc: "Pão de queijo mineiro autêntico, crocante por fora e macio por dentro.", ingredientes: ["500g polvilho azedo", "1 xícara de leite", "1/2 xícara de óleo", "2 ovos", "200g queijo minas curado ralado", "1 colher (chá) de sal"], preparo: ["Ferva o leite com o óleo e o sal.", "Despeje sobre o polvilho em uma tigela para escaldar e misture bem.", "Espere amornar e adicione os ovos um a um, sovando a massa.", "Adicione o queijo ralado e misture até ficar homogêneo.", "Faça bolinhas e asse em forno médio (200°C) por 30 minutos."], foto: "https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=400", tags: ["Pães", "Café da tarde", "Econômicas"] },
+            { id: 3, nome: "Macarrão à Carbonara Original", categoria: "Massas", tempo: "25 min", rendimento: "2 porções", desc: "Clássico italiano com ovos, queijo pecorino e bacon crocante.", ingredientes: ["200g espaguete", "100g bacon picado", "2 gemas e 1 ovo inteiro", "50g queijo parmesão ralado", "Pimenta-do-reino moída na hora"], preparo: ["Cozinhe o espaguete em água salgada até ficar al dente.", "Em uma frigideira, frite o bacon até ficar crocante.", "Em uma tigela, bata os ovos, as gemas e o queijo ralado.", "Escorra a massa e misture imediatamente ao bacon quente.", "Desligue o fogo e adicione a mistura de ovos, mexendo rápido para criar um creme."], foto: "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=400", tags: ["Massas", "Almoço", "Rápidas"] },
+            { id: 4, nome: "Frango Assado com Batatas", categoria: "Carnes", tempo: "1h 15 min", rendimento: "4 porções", desc: "Frango suculento assado no forno com batatas douradas.", ingredientes: ["1kg de cortes de frango", "4 batatas médias cortadas", "3 dentes de alho amassados", "Suco de 1 limão", "Azeite, sal, pimenta e alecrim"], preparo: ["Tempere o frango com alho, limão, sal e pimenta.", "Em uma assadeira, disponha o frango e as batatas.", "Regue tudo com bastante azeite e polvilhe alecrim.", "Cubra com papel alumínio e asse por 40 min a 200°C.", "Retire o papel alumínio e deixe dourar por mais 20 minutos."], foto: "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=400", tags: ["Carnes", "Almoço", "Econômicas"] },
+            { id: 5, nome: "Arroz Branco Soltinho", categoria: "Almoço", tempo: "20 min", rendimento: "4 porções", desc: "O clássico arroz brasileiro perfeito, soltinho e saboroso.", ingredientes: ["2 xícaras de arroz", "4 xícaras de água fervente", "2 dentes de alho picados", "1/2 cebola picada", "2 colheres de óleo", "1 colher (chá) de sal"], preparo: ["Refogue o alho e a cebola no óleo até dourar levemente.", "Adicione o arroz e frite por cerca de 2 minutos.", "Adicione a água fervente e o sal.", "Cozinhe em fogo médio com a panela semitampada até a água secar.", "Tampe a panela, desligue o fogo e aguarde 5 minutos antes de servir."], foto: "https://images.unsplash.com/photo-1516685018646-549198525c1b?w=400", tags: ["Almoço", "Rápidas", "Econômicas"] },
+            { id: 6, nome: "Sopa de Legumes com Carne", categoria: "Sopas", tempo: "40 min", rendimento: "6 porções", desc: "Sopa nutritiva e quentinha, ideal para dias frios.", ingredientes: ["300g de acém em cubos", "2 batatas picadas", "2 cenouras picadas", "1 xícara de macarrão para sopa", "1 litro de água", "Sal e tempero verde a gosto"], preparo: ["Na panela de pressão, doure a carne com temperos.", "Adicione a água e os legumes picados.", "Cozinhe na pressão por 15 minutos após chiá.", "Retire a pressão, adicione o macarrão e cozinhe com a panela aberta até amaciar."], foto: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400", tags: ["Sopas", "Econômicas"] },
+            { id: 7, nome: "Salada Caesar com Frango", categoria: "Saladas", tempo: "20 min", rendimento: "2 porções", desc: "Alface americana fresca com frango grelhado e molho especial.", ingredientes: ["1 pé de alface americana", "1 peito de frango grelhado em tiras", "Croutons a gosto", "Queijo parmesão ralado", "4 colheres de molho Caesar"], preparo: ["Lave e rasgue as folhas de alface.", "Disponha a alface em uma saladeira.", "Adicione as tiras de frango grelhado e os croutons.", "Regue com o molho Caesar e finalize com bastante parmesão."], foto: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400", tags: ["Saladas", "Rápidas"] },
+            { id: 8, nome: "Suco Verde Detox", categoria: "Bebidas", tempo: "5 min", rendimento: "2 copos", desc: "Suco refrescante e nutritivo com couve, limão e gengibre.", ingredientes: ["2 folhas de couve higienizadas", "Suco de 1 limão", "1 rodela pequena de gengibre", "300ml de água gelada", "Açúcar ou mel a gosto"], preparo: ["Coloque todos os ingredientes no liquidificador.", "Bata bem por 2 minutos.", "Coe se achar necessário e sirva com pedras de gelo."], foto: "https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400", tags: ["Bebidas", "Rápidas"] },
+            { id: 9, nome: "Brigadeiro de Panela", categoria: "Doces", tempo: "15 min", rendimento: "15 docinhos", desc: "O docinho mais amado do Brasil, cremoso e irresistível.", ingredientes: ["1 lata de leite condensado", "1 colher (sopa) de manteiga", "3 colheres de chocolate em pó", "Granulado para confeitar"], preparo: ["Em uma panela, misture o leite condensado, manteiga e chocolate.", "Cozinhe em fogo baixo mexendo sempre.", "Quando descolar do fundo da panela, desligue.", "Deixe esfriar, faça bolinhas e passe no granulado."], foto: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=400", tags: ["Doces", "Sobremesas", "Rápidas"] },
+            { id: 10, nome: "Bolo de Chocolate Prático", categoria: "Sobremesas", tempo: "40 min", rendimento: "12 fatias", desc: "Bolo fofinho de chocolate feito no liquidificador.", ingredientes: ["3 ovos", "1 xícara de açúcar", "1 xícara de achocolatado", "2 xícaras de farinha de trigo", "1 xícara de leite", "1/2 xícara de óleo", "1 colher de fermento"], preparo: ["Bata no liquidificador os ovos, óleo, leite, açúcar e achocolatado.", "Misture com a farinha em uma tigela.", "Adicione o fermento e mexa levemente.", "Asse em forno médio pré-aquecido a 180°C por 35 minutos."], foto: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400", tags: ["Sobremesas", "Café da tarde", "Doces"] },
+            { id: 11, nome: "Lasanha à Bolonhesa", categoria: "Massas", tempo: "50 min", rendimento: "6 porções", desc: "Camadas intercaladas de massa, molho de carne e muito queijo.", ingredientes: ["500g massa para lasanha", "500g carne moída", "2 molhos de tomate", "300g queijo mussarela", "300g presunto", "Temperos a gosto"], preparo: ["Cozinhe a carne moída temperada e adicione os molhos de tomate.", "Em um refratário, faça uma camada de molho, massa, presunto e queijo.", "Repita as camadas até finalizar os ingredientes.", "Cubra com mussarela e asse a 200°C por 30 minutos."], foto: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400", tags: ["Massas", "Almoço"] },
+            { id: 12, nome: "Strogonoff de Frango", categoria: "Carnes", tempo: "30 min", rendimento: "4 porções", desc: "Cubos de frango macios em creme de leite e molho de tomate.", ingredientes: ["500g peito de frango em cubos", "1 caixa de creme de leite", "2 colheres de ketchup", "1 colher de mostarda", "1/2 cebola picada", "Batata palha para acompanhar"], preparo: ["Refogue a cebola e doure o frango temperado.", "Adicione o ketchup e a mostarda e misture bem.", "Desligue o fogo e adicione o creme de leite.", "Sirva quente acompanhado de arroz e batata palha."], foto: "https://images.unsplash.com/photo-1547496582-17704780282d?w=400", tags: ["Carnes", "Almoço", "Rápidas"] },
+            { id: 13, nome: "Panqueca de Carne Moída", categoria: "Massas", tempo: "40 min", rendimento: "8 unidades", desc: "Massa leve recheada com carne bem temperada e molho de tomate.", ingredientes: ["1 xícara de leite", "1 xícara de farinha de trigo", "1 ovo", "300g carne moída refogada", "1 xícara de molho de tomate"], preparo: ["Bata o leite, trigo e ovo no liquidificador.", "Faça os discos finos em uma frigideira antiaderente.", "Recheie cada disco com a carne moída e enrole.", "Coloque em um refratário, cubra com molho de tomate e leve ao forno por 10 min."], foto: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=400", tags: ["Massas", "Econômicas"] },
+            { id: 14, nome: "Escondidinho de Mandioca", categoria: "Carnes", tempo: "45 min", rendimento: "5 porções", desc: "Purê de mandioca cremoso com recheio de carne seca ou moída.", ingredientes: ["500g mandioca cozida e espremida", "2 colheres de manteiga", "1/2 xícara de leite", "400g carne seca desfiada e temperada", "Queijo ralado"], preparo: ["Faça um purê misturando a mandioca, manteiga e leite.", "Em um refratário, coloque metade do purê.", "Adicione a carne seca e cubra com o restante do purê.", "Polvilhe queijo e leve para gratinar no forno."], foto: "https://images.unsplash.com/photo-1544025162-d76694265947?w=400", tags: ["Carnes", "Almoço"] },
+            { id: 15, nome: "Torta de Frango de Liquidificador", categoria: "Pães", tempo: "45 min", rendimento: "8 fatias", desc: "Massa salgada rápida recheada com frango desfiado.", ingredientes: ["2 xícaras de leite", "1 xícara de óleo", "3 ovos", "2 xícaras de farinha", "1 colher de fermento", "300g frango desfiado temperado"], preparo: ["Bata os líquidos e a farinha no liquidificador. Adicione o fermento por último.", "Despeje metade da massa na assadeira.", "Coloque o recheio de frango desfiado.", "Cubra com o restante da massa e asse a 180°C por 40 minutos."], foto: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400", tags: ["Pães", "Café da tarde"] },
+            { id: 16, nome: "Pudim de Leite Condensado", categoria: "Sobremesas", tempo: "1h 10 min", rendimento: "8 fatias", desc: "O pudim tradicional lisinho e com calda caramelizada perfeita.", ingredientes: ["1 lata de leite condensado", "2 medidas da lata de leite", "3 ovos", "1 xícara de açúcar para a calda"], preparo: ["Derreta o açúcar na fôrma de pudim até formar o caramelo.", "Bata o leite condensado, leite e ovos no liquidificador.", "Despeje na fôrma e cubra com papel alumínio.", "Asse em banho-maria por 1 hora a 180°C."], foto: "https://images.unsplash.com/photo-1528975604071-b4dc52a2d18c?w=400", tags: ["Sobremesas", "Doces"] },
+            { id: 17, nome: "Coxinha de Frango Tradicional", categoria: "Doces", tempo: "50 min", rendimento: "15 unidades", desc: "Salgado clássico crocante por fora e bem recheado.", ingredientes: ["2 xícaras de caldo de frango", "2 xícaras de farinha de trigo", "1 colher de manteiga", "300g frango desfiado temperado"], preparo: ["Ferva o caldo de frango com a manteiga.", "Adicione a farinha de uma vez e mexa até soltar da panela.", "Molde as coxinhas recheando com frango.", "Passe em ovo e farinha de rosca e frite em óleo quente."], foto: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400", tags: ["Café da tarde", "Rápidas"] },
+            { id: 18, nome: "Pão Caseiro Fofinho", categoria: "Pães", tempo: "1h 30 min", rendimento: "2 pães grandes", desc: "Pão doce de massa macia e cheirosa feito em casa.", ingredientes: ["1kg farinha de trigo", "1/2 xícara de açúcar", "1 pacote fermento biológico seco", "2 xícaras leite morno", "1/2 xícara óleo", "2 ovos"], preparo: ["Misture o fermento, açúcar e leite morno.", "Adicione os ovos, óleo e aos poucos a farinha, sovando bem.", "Deixe a massa descansar por 40 min.", "Modelos os pães e asse em forno médio por 35 minutos."], foto: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400", tags: ["Pães", "Econômicas"] },
+            { id: 19, nome: "Feijoada Completa", categoria: "Almoço", tempo: "2h 00 min", rendimento: "8 porções", desc: "Tradicional feijoada rica com carnes nobres e temperos.", ingredientes: ["500g feijão preto", "200g carne seca", "200g costelinha de porco", "150g linguiça calabresa", "Temperos a gosto"], preparo: ["Dessalgue as carnes na véspera.", "Cozinhe o feijão com as carnes duras na pressão.", "Adicione as linguiças fatiadas e o tempero frito em alho.", "Cozinhe em fogo baixo até o caldo engrossar."], foto: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=400", tags: ["Almoço"] },
+            { id: 20, nome: "Moqueca de Peixe", categoria: "Carnes", tempo: "40 min", rendimento: "4 porções", desc: "Peixe cozido com pimentões, leite de coco e azeite de dendê.", ingredientes: ["600g postas de peixe", "200ml leite de coco", "1 pimentão vermelho e 1 amarelo", "1 tomate picado", "1 colher azeite de dendê"], preparo: ["Tempere o peixe com limão e sal.", "Em uma panela, faça camadas de cebola, pimentões, tomate e peixe.", "Regue com o leite de coco e o dendê.", "Cozinhe em fogo baixo por 20 minutos."], foto: "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=400", tags: ["Carnes", "Almoço"] },
+            { id: 21, nome: "Biscoito de Polvilho Assado", categoria: "Pães", tempo: "25 min", rendimento: "30 biscoitos", desc: "Biscoito leve, crocante e muito fácil de preparar.", ingredientes: ["500g polvilho azedo", "1 xícara água", "1/2 xícara óleo", "1 ovo", "1 colher (chá) sal"], preparo: ["Ferva a água com o óleo e sal e escalde o polvilho.", "Junte o ovo e acrescente água fria se necessário até dar ponto de bico de confeitar.", "Pingue em assadeira e asse a 200°C por 20 minutos."], foto: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400", tags: ["Pães", "Café da tarde"] },
+            { id: 22, nome: "Bolo de Cenoura com Cobertura", categoria: "Sobremesas", tempo: "40 min", rendimento: "10 fatias", desc: "Bolo fofinho de cenoura com calda durinha de chocolate.", ingredientes: ["3 cenouras médias", "3 ovos", "1 xícara óleo", "2 xícaras açúcar", "2 xícaras farinha", "1 colher fermento"], preparo: ["Bata cenoura, ovos e óleo no liquidificador.", "Misture em uma tigela com açúcar, farinha e fermento.", "Asse a 180°C por 35 minutos.", "Cubra com calda de chocolate fervida com açúcar, manteiga e achocolatado."], foto: "https://images.unsplash.com/photo-1598373182133-52452f7691ef?w=400", tags: ["Sobremesas", "Café da tarde", "Doces"] },
+            { id: 23, nome: "Salpicão de Frango", categoria: "Saladas", tempo: "20 min", rendimento: "6 porções", desc: "Prato frio crocante e cremoso com frango e batata palha.", ingredientes: ["300g frango desfiado", "1 cenoura ralada", "1/2 lata milho", "100g maionese", "Batata palha a gosto"], preparo: ["Misture o frango, cenoura e milho.", "Incorpore a maionese até formar uma mistura cremosa.", "Sirva gelado coberto com bastante batata palha."], foto: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400", tags: ["Saladas", "Rápidas"] },
+            { id: 24, nome: "Caldo de Mandioca com Carne", categoria: "Sopas", tempo: "35 min", rendimento: "5 porções", desc: "Caldo grosso e saboroso perfeito para noites frias.", ingredientes: ["500g mandioca cozida", "200g carne moída ou acém", "1 cebola picada", "Cheiro-verde a gosto"], preparo: ["Bata a mandioca cozida com a água do cozimento no liquidificador.", "Refogue a carne com temperos e cebola.", "Junte o creme de mandioca e ferva por 10 minutos."], foto: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400", tags: ["Sopas", "Econômicas"] },
+            { id: 25, nome: "Torta de Limão", categoria: "Sobremesas", tempo: "30 min", rendimento: "8 fatias", desc: "Base crocante de biscoito com creme azedinho de limão.", ingredientes: ["200g biscoito maizena triturado", "100g manteiga", "1 lata leite condensado", "Suco de 2 limões", "1 caixa creme de leite"], preparo: ["Misture o biscoito com manteiga e forre uma fôrma.", "Bata leite condensado, creme de leite e suco de limão até engrossar.", "Despeje sobre a base e leve à geladeira por 2 horas."], foto: "https://images.unsplash.com/photo-1519869325930-281384150729?w=400", tags: ["Sobremesas", "Doces"] },
+            { id: 26, nome: "Mousse de Maracujá", categoria: "Sobremesas", tempo: "10 min", rendimento: "6 porções", desc: "Sobremesa rápida e refrescante de 3 ingredientes.", ingredientes: ["1 lata leite condensado", "1 caixa creme de leite", "1 xícara suco concentrado de maracujá"], preparo: ["Bata todos os ingredientes no liquidificador por 3 minutos.", "Despeje em taças e leve à geladeira por 1 hora."], foto: "https://images.unsplash.com/photo-1528975604071-b4dc52a2d18c?w=400", tags: ["Sobremesas", "Rápidas", "Doces"] },
+            { id: 27, nome: "Bife à Parmegiana", categoria: "Carnes", tempo: "35 min", rendimento: "3 porções", desc: "Bife empanado coberto com molho de tomate e mussarela derretida.", ingredientes: ["3 bifes de alcatra", "1 ovo para empanar", "Farinha de rosca", "200g mussarela", "1 xícara molho de tomate"], preparo: ["Tempere e empane os bifes em ovo e farinha de rosca.", "Frite e coloque em um refratário.", "Cubra com molho de tomate e queijo mussarela.", "Leve ao forno para derreter o queijo."], foto: "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=400", tags: ["Carnes", "Almoço"] },
+            { id: 28, nome: "Nhoque de Batata Caseiro", categoria: "Massas", tempo: "45 min", rendimento: "4 porções", desc: "Massa leve de batatas servida com seu molho preferido.", ingredientes: ["1kg batatas cozidas e espremidas", "1 xícara farinha de trigo", "1 ovo", "Sal a gosto"], preparo: ["Misture a batata, ovo, sal e farinha até formar massa macia.", "Faça rolinhos e corte os nhocas.", "Cozinhe em água fervente até subirem à superfície."], foto: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400", tags: ["Massas", "Econômicas"] },
+            { id: 29, nome: "Bolo Formigueiro", categoria: "Sobremesas", tempo: "40 min", rendimento: "10 fatias", desc: "Bolo de baunilha mesclado com granulos de chocolate.", ingredientes: ["3 ovos", "2 xícaras açúcar", "1/2 xícara manteiga", "3 xícaras farinha", "1/2 xícara granulado"], preparo: ["Bata os ingredientes da massa.", "Misture o granulado suavemente por último.", "Asse em forno médio por 35 minutos."], foto: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400", tags: ["Sobremesas", "Café da tarde"] },
+            { id: 30, nome: "Quiche de Alho-Poró", categoria: "Pães", tempo: "45 min", rendimento: "6 fatias", desc: "Torta aberta francesa com recheio leve de alho-poró.", ingredientes: ["200g farinha de trigo", "100g manteiga", "2 hastes de alho-poró fatiadas", "3 ovos", "1 caixa creme de leite"], preparo: ["Faça a massa com farinha e manteiga e forre a forma.", "Refogue o alho-poró e misture com ovos e creme de leite.", "Despeje sobre a massa e asse a 180°C por 35 min."], foto: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400", tags: ["Pães", "Rápidas"] },
+            { id: 31, nome: "Risoto de Tomate Seco", categoria: "Almoço", tempo: "30 min", rendimento: "3 porções", desc: "Arroz arbóreo cremoso com tomate seco e rúcula.", ingredientes: ["1.5 xícara arroz arbóreo", "100g tomate seco", "1/2 xícara vinho branco", "1L caldo de legumes", "Queijo parmesão"], preparo: ["Refogue o arroz, adicione vinho e vá acrescentando caldo aos poucos.", "Quando estiver cremoso, adicione tomate seco e parmesão."], foto: "https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?w=400", tags: ["Almoço", "Rápidas"] },
+            { id: 32, nome: "Salada de Maionese Tradicional", categoria: "Saladas", tempo: "25 min", rendimento: "6 porções", desc: "Acompanhamento clássico de domingo com batata e cenoura.", ingredientes: ["4 batatas cozidas em cubos", "2 cenouras cozidas em cubos", "1/2 xícara maionese", "Salsinha picada"], preparo: ["Misture os legumes cozidos e frios.", "Adicione a maionese e envolva delicadamente.", "Decore com salsinha e sirva gelado."], foto: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400", tags: ["Saladas", "Econômicas"] },
+            { id: 33, nome: "Farofa de Linguiça Crocante", categoria: "Almoço", tempo: "15 min", rendimento: "6 porções", desc: "Farofa douradinha saborosa para acompanhar carnes.", ingredientes: ["200g linguiça calabrsa picada", "2 xícaras farinha de mandioca", "2 colheres manteiga", "1 cebola picada"], preparo: ["Frite a linguiça até dourar.", "Adicione a cebola e manteiga.", "Junte a farinha e mexa até torrar levemente."], foto: "https://images.unsplash.com/photo-1516685018646-549198525c1b?w=400", tags: ["Almoço", "Rápidas", "Econômicas"] },
+            { id: 34, nome: "Biscoito Amanteigado", categoria: "Doces", tempo: "20 min", rendimento: "30 biscoitos", desc: "Derrete na boca, excelente para acompanhar um café.", ingredientes: ["200g manteiga", "1 xícara açúcar", "2.5 xícaras farinha de trigo"], preparo: ["Misture os ingredientes até formar massa lisa.", "Faça bolinhas, achate com garfo e asse a 180°C por 15 min."], foto: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400", tags: ["Doces", "Café da tarde"] },
+            { id: 35, nome: "Bolo de Banana Integral", categoria: "Sobremesas", tempo: "40 min", rendimento: "10 fatias", desc: "Opção saudável e cheirosa com aveia e canela.", ingredientes: ["4 bananas maduras", "3 ovos", "1/2 xícara óleo", "2 xícaras aveia em flocos", "1 colher canela"], preparo: ["Bata bananas, ovos e óleo no liquidificador.", "Misture a aveia e canela.", "Asse em forno pré-aquecido por 35 minutos."], foto: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400", tags: ["Sobremesas", "Café da tarde"] },
+            { id: 36, nome: "Pavê de Chocolate", categoria: "Sobremesas", tempo: "25 min", rendimento: "8 porções", desc: "Camadas de creme de chocolate e biscoito maizena.", ingredientes: ["1 pacote biscoito maizena", "1 lata leite condensado", "2 xícaras leite", "2 colheres amido de milho", "3 colheres cacau"], preparo: ["Cozinhe o leite condensado, leite, amido e cacau até engrossar.", "Intercale camadas de creme e biscoito umedecido.", "Leve à geladeira por 3 horas."], foto: "https://images.unsplash.com/photo-1528975604071-b4dc52a2d18c?w=400", tags: ["Sobremesas", "Doces"] },
+            { id: 37, nome: "Pastel de Feira Caseiro", categoria: "Pães", tempo: "30 min", rendimento: "10 pasteis", desc: "Massa crocante com bolhas recheada a seu gosto.", ingredientes: ["500g farinha de trigo", "1 xícara água morna", "1 colher óleo", "1 colher cachaça", "1 colher sal"], preparo: ["Sove a massa até ficar bem lisa.", "Abra com rolo bem fina e recheie.", "Frite em óleo bem quente."], foto: "https://images.unsplash.com/photo-1562967914-608f82629710?w=400", tags: ["Pães", "Rápidas"] },
+            { id: 38, nome: "Esfiha Fechada de Carne", categoria: "Pães", tempo: "1h 00 min", rendimento: "15 esfihas", desc: "Massa macia recheada com carne moída temperada com limão.", ingredientes: ["500g farinha", "1 pacote fermento seco", "1 xícara leite", "300g carne moída crua temperada"], preparo: ["Prepare a massa e deixe crescer.", "Abra discos, recheie com carne e feche em triângulos.", "Asse em forno alto por 20 min."], foto: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400", tags: ["Pães", "Café da tarde"] },
+            { id: 39, nome: "Caldo Verde Tradicional", categoria: "Sopas", tempo: "30 min", rendimento: "5 porções", desc: "Caldo português de batata com couve fininha e calabresa.", ingredientes: ["4 batatas grandes", "1 litro água", "100g couve fatiada bem fina", "1 linguiça calabresa fatiada"], preparo: ["Cozinhe as batatas e bata no liquidificador com a água.", "Frite a calabresa e junte ao caldo.", "Adicione a couve no final e ferva por 3 minutos."], foto: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400", tags: ["Sopas", "Rápidas"] },
+            { id: 40, nome: "Torta Húngara Doce", categoria: "Doces", tempo: "50 min", rendimento: "12 fatias", desc: "Rosquinhas recheadas com coco e leite condensado.", ingredientes: ["500g farinha", "1 fermento biológico", "200ml leite", "100g coco ralado", "1 lata leite condensado"], preparo: ["Abra a massa, espalhe manteiga e coco, enrole como rocambole.", "Corte fatias, coloque na assadeira e asse.", "Regue com leite condensado quente."], foto: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400", tags: ["Doces", "Café da tarde"] },
+            { id: 41, nome: "Arroz de Forno Cremoso", categoria: "Almoço", tempo: "25 min", rendimento: "5 porções", desc: "Ótima receita para reaproveitar sobrou de arroz.", ingredientes: ["3 xícaras arroz cozido", "1 caixa creme de leite", "100g presunto picado", "150g mussarela picada", "1/2 lata milho"], preparo: ["Misture todos os ingredientes refratário.", "Cubra com queijo e leve ao forno para derreter."], foto: "https://images.unsplash.com/photo-1516685018646-549198525c1b?w=400", tags: ["Almoço", "Rápidas", "Econômicas"] },
+            { id: 42, nome: "Frango à Passarinho", categoria: "Carnes", tempo: "30 min", rendimento: "4 porções", desc: "Pedaços pequenos de frango crocantes com alho frito.", ingredientes: ["800g frango a passarinho", "4 dentes alho picados", "Suco de 1 limão", "Sal e pimenta"], preparo: ["Tempere o frango com limão, sal e alho.", "Frite em óleo quente até dourar bem.", "Sirva polvilhado com alho frito."], foto: "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=400", tags: ["Carnes", "Rápidas"] },
+            { id: 43, nome: "Batata Recheada", categoria: "Almoço", tempo: "40 min", rendimento: "2 porções", desc: "Batata grande assada e recheada com bacon e catupiry.", ingredientes: ["2 batatas grandes", "100g bacon crocante", "100g requeijão cremoso", "Queijo ralado"], preparo: ["Asse as batatas inteiras no forno até amaciar.", "Corte ao meio, retire parte da polpa e misture com requeijão e bacon.", "Recheie e gratine."], foto: "https://images.unsplash.com/photo-1544025162-d76694265947?w=400", tags: ["Almoço", "Econômicas"] },
+            { id: 44, nome: "Cuscuz Paulista", categoria: "Almoço", tempo: "35 min", rendimento: "8 fatias", desc: "Prato colorido de farinha de milho com sardinha ou frango.", ingredientes: ["2 xícaras farinha de milho", "1 lata molho tomate", "1 lata milho/ervilha", "1 lata sardinha", "Ovos cozidos para decorar"], preparo: ["Faça um refogado rico com os ingredientes.", "Adicione a farinha de milho mexendo até cozinhar.", "Pressione em forma decorada e desenforme."], foto: "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=400", tags: ["Almoço", "Econômicas"] },
+            { id: 45, nome: "Pão de Alho Caseiro", categoria: "Pães", tempo: "15 min", rendimento: "5 pães", desc: "O melhor acompanhamento para churrasco ou lanche.", ingredientes: ["5 pães franceses", "200g requeijão", "3 dentes alho picados", "2 colheres manteiga", "Salsinha picada"], preparo: ["Misture requeijão, alho, manteiga e salsinha.", "Faça cortes no pão e passe o creme abundantemente.", "Asse até dourar."], foto: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400", tags: ["Pães", "Rápidas"] },
+            { id: 46, nome: "Brigadeiro Branco (Ninho)", categoria: "Doces", tempo: "15 min", rendimento: "15 unidades", desc: "Docinho cremoso feito com leite em pó.", ingredientes: ["1 lata leite condensado", "1 colher manteiga", "4 colheres leite Ninho"], preparo: ["Cozinhe os ingredientes em fogo baixo mexendo sempre.", "Deixe esfriar, enrole e passe no leite Ninho."], foto: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=400", tags: ["Doces", "Rápidas"] },
+            { id: 47, nome: "Beijinho de Coco", categoria: "Doces", tempo: "15 min", rendimento: "15 unidades", desc: "Docinho tradicional de coco ralado com cravo.", ingredientes: ["1 lata leite condensado", "1 colher manteiga", "100g coco ralado"], preparo: ["Cozinhe em fogo baixo até soltar do fundo.", "Faça bolinhas, passe no coco e decore com cravo."], foto: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=400", tags: ["Doces", "Sobremesas"] },
+            { id: 48, nome: "Cajuzinho Caseiro", categoria: "Doces", tempo: "15 min", rendimento: "15 unidades", desc: "Docinho de amendoim prático de festa.", ingredientes: ["1 lata leite condensado", "1 xícara amendoim torrado e moído", "1 colher cacau em pó"], preparo: ["Cozinhe até o ponto de enrolar.", "Modele em formato de caju, passe no açúcar e coloque meio amendoim no topo."], foto: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=400", tags: ["Doces", "Econômicas"] },
+            { id: 49, nome: "Curau de Milho Verde", categoria: "Sobremesas", tempo: "30 min", rendimento: "6 taças", desc: "Creme aveludado de milho polvilhado com canela.", ingredientes: ["4 espigas de milho", "2 xícaras leite", "1 xícara açúcar", "Canela em pó"], preparo: ["Bata o milho com leite no liquidificador e coe.", "Cozinhe o caldo com açúcar mexendo até engrossar.", "Sirva polvilhado com canela."], foto: "https://images.unsplash.com/photo-1528975604071-b4dc52a2d18c?w=400", tags: ["Sobremesas", "Econômicas"] },
+            { id: 50, nome: "Pamonha Cremosa", categoria: "Sobremesas", tempo: "50 min", rendimento: "6 porções", desc: "Sabor tradicional de milho verde cozido.", ingredientes: ["6 espigas de milho", "1 xícara açúcar", "1/2 xícara leite", "1 colher manteiga"], preparo: ["Bata o milho com leite, açúcar e manteiga.", "Coloque em refratário e asse em banho-maria por 45 minutos."], foto: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400", tags: ["Sobremesas"] },
+            { id: 51, nome: "Limonada Suíça", categoria: "Bebidas", tempo: "5 min", rendimento: "1 litro", desc: "Bebida cremosa batida com limão inteiro e leite condensado.", ingredientes: ["2 limões taiti inteiros higienizados", "1/2 lata leite condensado", "800ml água gelada", "Gelo"], preparo: ["Corte os limões em quatro partes e retire o miolo branco.", "Bata no liquidificador rapidamente com a água e coe.", "Volte ao liquidificador com o leite condensado e gelo e bata bem."], foto: "https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400", tags: ["Bebidas", "Rápidas"] },
+            { id: 52, nome: "Batida de Morango com Leite Condensado", categoria: "Bebidas", tempo: "5 min", rendimento: "4 copos", desc: "Bebida Doce e refrescante com morangos frescos.", ingredientes: ["1 caixa morangos limpos", "1 lata leite condensado", "500ml água gelada ou guaraná", "Gelo"], preparo: ["Bata todos os ingredientes no liquidificador até ficar homogêneo.", "Sirva bem gelado em copos altos."], foto: "https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400", tags: ["Bebidas", "Rápidas"] }
+        ];
+
+        let categoriaAtual = 'Todas';
+        let carrinho = [];
+        let minhasFavoritas = [];
+        let metPagamento = 'pix';
+        const CHAVE_PIX = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
+        const WHATSAPP_NUM = "5541999682836";
+
+        // Renderizar lista de receitas
+        function renderizarReceitas(lista) {
+            const grid = document.getElementById('recipesGrid');
+            grid.innerHTML = '';
+            
+            if(lista.length === 0) {
+                grid.innerHTML = '<p style="color: var(--text-muted); grid-column: 1/-1; text-align:center;">Nenhuma receita encontrada.</p>';
+                return;
+            }
+
+            lista.forEach(r => {
+                const isFav = minhasFavoritas.includes(r.id);
+                const card = document.createElement('div');
+                card.className = 'product-card recipe-card';
+                card.innerHTML = `
+                    <div onclick="abrirDetalhesReceita(${r.id})">
+                        <span class="tag tag-available">${r.categoria}</span>
+                        <img src="${r.foto}" alt="${r.nome}">
+                        <h3>${r.nome}</h3>
+                        <p>${r.desc}</p>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">⏱️ ${r.tempo} | 🍽️ ${r.rendimento}</div>
+                        <div style="font-size: 11px; color: var(--primary); font-weight:700;">🔍 Clique para ver a receita completa</div>
+                    </div>
+                    <button class="btn-favorite ${isFav ? 'added' : ''}" onclick="event.stopPropagation(); toggleFavorito(${r.id})">
+                        ${isFav ? '✓ Adicionada ao meu livro' : '♡ Adicionar ao meu livro'}
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Modal de Detalhes da Receita ao Clicar
+        function abrirDetalhesReceita(id) {
+            const r = receitasBD.find(item => item.id === id);
+            if(!r) return;
+
+            document.getElementById('modalRecipeTitle').innerText = r.nome;
+            document.getElementById('modalRecipeImg').src = r.foto;
+            document.getElementById('modalRecipeDesc').innerText = r.desc;
+            document.getElementById('modalRecipeMeta').innerText = `⏱️ Tempo: ${r.tempo} | 🍽️ Rendimento: ${r.rendimento} | 🏷️ Categoria: ${r.categoria}`;
+
+            const ulIng = document.getElementById('modalRecipeIngredientes');
+            ulIng.innerHTML = '';
+            r.ingredientes.forEach(ing => {
+                const li = document.createElement('li');
+                li.innerText = ing;
+                ulIng.appendChild(li);
+            });
+
+            const olPrep = document.getElementById('modalRecipePreparo');
+            olPrep.innerHTML = '';
+            r.preparo.forEach(step => {
+                const li = document.createElement('li');
+                li.innerText = step;
+                olPrep.appendChild(li);
+            });
+
+            const btnAdd = document.getElementById('btnModalAddBook');
+            const isFav = minhasFavoritas.includes(r.id);
+            btnAdd.innerText = isFav ? '✓ Removido do meu livro' : '❤️ Adicionar ao meu livro';
+            btnAdd.style.background = isFav ? 'var(--red)' : 'var(--primary)';
+            btnAdd.onclick = function() {
+                toggleFavorito(r.id);
+                fecharDetalhesReceita();
+            };
+
+            document.getElementById('modalDetalhesReceita').classList.add('active');
+        }
+
+        function fecharDetalhesReceita() {
+            document.getElementById('modalDetalhesReceita').classList.remove('active');
+        }
+
+        function filtrarReceitas() {
+            const termo = document.getElementById('recipeSearch').value.toLowerCase();
+            const filtradas = receitasBD.filter(r => {
+                const matchCat = (categoriaAtual === 'Todas' || r.categoria === categoriaAtual || r.tags.includes(categoriaAtual));
+                const matchNome = r.nome.toLowerCase().includes(termo);
+                return matchCat && matchNome;
+            });
+            renderizarReceitas(filtradas);
+        }
+
+        function selecionarCategoria(cat, btnElement) {
+            categoriaAtual = cat;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            filtrarReceitas();
+        }
+
+        function toggleFavorito(id) {
+            const idx = minhasFavoritas.indexOf(id);
+            if(idx > -1) {
+                minhasFavoritas.splice(idx, 1);
+                mostrarToast('🗑️ Receita removida do seu livro.');
+            } else {
+                minhasFavoritas.push(id);
+                mostrarToast('❤️ Receita adicionada ao seu livro!');
+            }
+            atualizarContadoresLivro();
+            filtrarReceitas();
+        }
+
+        function atualizarContadoresLivro() {
+            const qtd = minhasFavoritas.length;
+            document.getElementById('favCount').innerText = qtd;
+            document.getElementById('favCountBtn').innerText = qtd;
+            document.getElementById('favCountModal').innerText = qtd;
+        }
+
+        function mostrarToast(mensagem) {
+            const toast = document.getElementById('toast');
+            toast.innerText = mensagem;
+            toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        function adicionarAoCarrinho(nome, valor) {
+            carrinho.push({ nome, valor });
+            atualizarBarraCarrinho();
+            mostrarToast(`✨ "${nome}" adicionado!`);
+        }
+
+        function removerDoCarrinho(index) {
+            carrinho.splice(index, 1);
+            atualizarBarraCarrinho();
+            if(carrinho.length > 0) {
+                abrirCheckoutCarrinho();
+            } else {
+                fecharCheckout();
+            }
+            mostrarToast(`🗑️ Item removido do carrinho.`);
+        }
+
+        function atualizarBarraCarrinho() {
+            const qtd = carrinho.length;
+            const subtotal = carrinho.reduce((acc, item) => acc + item.valor, 0);
+            
+            document.getElementById('cartCount').innerText = qtd;
+            document.getElementById('cartSubtotal').innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+        }
+
+        function abrirMeuLivro() {
+            if(minhasFavoritas.length === 0) {
+                alert('Você ainda não adicionou nenhuma receita ao seu livro!');
+                return;
+            }
+            let html = '';
+            minhasFavoritas.forEach((id, idx) => {
+                const rec = receitasBD.find(r => r.id === id);
+                if(rec) {
+                    html += `
+                        <div class="summary-item">
+                            <span>${idx+1}. ${rec.nome} (${rec.categoria})</span>
+                            <button class="btn-remove-item" onclick="removerFavoritoModal(${id})">Remover</button>
+                        </div>`;
+                }
+            });
+            document.getElementById('favsListSummary').innerHTML = html;
+            document.getElementById('modalMeuLivro').classList.add('active');
+        }
+
+        function removerFavoritoModal(id) {
+            const idx = minhasFavoritas.indexOf(id);
+            if(idx > -1) minhasFavoritas.splice(idx, 1);
+            atualizarContadoresLivro();
+            filtrarReceitas();
+            if(minhasFavoritas.length > 0) {
+                abrirMeuLivro();
+            } else {
+                fecharModalLivro();
+            }
+            mostrarToast('🗑️ Receita removida.');
+        }
+
+        function fecharModalLivro() {
+            document.getElementById('modalMeuLivro').classList.remove('active');
+        }
+
+        function abrirOpcoesLivro() {
+            fecharModalLivro();
+            const qtdRec = minhasFavoritas.length;
+            const paginas = qtdRec + 3; 
+            const folhas = Math.ceil(paginas / 2);
+            const valorImpressao = (folhas * 0.60) + 7.00;
+
+            document.getElementById('infoImpressoTexto').innerText = `Contém ${qtdRec} receitas | Aprox. ${paginas} páginas (${folhas} folhas) | Inclui capa personalizada, índice e encadernação grampeada.`;
+            document.getElementById('infoImpressoPreco').innerText = `R$ ${valorImpressao.toFixed(2).replace('.', ',')}`;
+            document.getElementById('modalOpcoesLivro').classList.add('active');
+        }
+
+        function fecharOpcoesLivro() {
+            document.getElementById('modalOpcoesLivro').classList.remove('active');
+        }
+
+        function adicionarLivroDigitalCarrinho() {
+            const tituloCapa = document.getElementById('bookTitleOption').value;
+            const nomeItem = `Livro Digital Personalizado ("${tituloCapa}" - ${minhasFavoritas.length} receitas)`;
+            adicionarAoCarrinho(nomeItem, 4.90);
+            fecharOpcoesLivro();
+            abrirCheckoutCarrinho();
+        }
+
+        function solicitarLivroImpresso() {
+            const tituloCapa = document.getElementById('bookTitleOption').value;
+            const qtdRec = minhasFavoritas.length;
+            const paginas = qtdRec + 3;
+            const folhas = Math.ceil(paginas / 2);
+            const valorImpressao = (folhas * 0.60) + 7.00;
+
+            const nomeItem = `Livro Impresso Personalizado ("${tituloCapa}" - ${qtdRec} receitas)`;
+            adicionarAoCarrinho(nomeItem, valorImpressao);
+            fecharOpcoesLivro();
+            abrirCheckoutCarrinho();
+        }
+
+        function abrirCheckoutCarrinho() {
+            if(carrinho.length === 0) {
+                alert('Seu carrinho está vazio!');
+                return;
+            }
+            const subtotal = carrinho.reduce((acc, item) => acc + item.valor, 0);
+            document.getElementById('modalTitle').innerText = `Finalizar Pedido (Total: R$ ${subtotal.toFixed(2).replace('.', ',')})`;
+            
+            let resumoHTML = '<strong style="color: #fff; display:block; margin-bottom:6px;">Itens no carrinho:</strong>';
+            carrinho.forEach((item, idx) => {
+                resumoHTML += `
+                    <div class="summary-item">
+                        <span>${item.nome} - <strong>R$ ${item.valor.toFixed(2).replace('.', ',')}</strong></span>
+                        <button class="btn-remove-item" onclick="removerDoCarrinho(${idx})">Remover</button>
+                    </div>`;
+            });
+            document.getElementById('modalSummary').innerHTML = resumoHTML;
+            document.getElementById('pixCopiaCola').value = CHAVE_PIX;
+            document.getElementById('modalCheckout').classList.add('active');
+        }
+
+        function fecharCheckout() {
+            document.getElementById('modalCheckout').classList.remove('active');
+        }
+
+        function setPayMethod(tipo) {
+            metPagamento = tipo;
+            document.getElementById('optPix').classList.toggle('active', tipo === 'pix');
+            document.getElementById('optDinheiro').classList.toggle('active', tipo === 'dinheiro');
+            document.getElementById('pixContainer').style.display = tipo === 'pix' ? 'block' : 'none';
+        }
+
+        function copiarPix() {
+            const inputCopia = document.getElementById('pixCopiaCola');
+            inputCopia.select();
+            inputCopia.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(inputCopia.value).then(() => {
+                mostrarToast('📋 Chave Pix copiada com sucesso!');
+            });
+        }
+
+        function confirmarPedidoWhatsApp() {
+            const nome = document.getElementById('custName').value.trim();
+            const fone = document.getElementById('custPhone').value.trim();
+
+            if(!nome || !fone) {
+                alert('Por favor, informe seu Nome e WhatsApp.');
+                return;
+            }
+
+            const subtotal = carrinho.reduce((acc, item) => acc + item.valor, 0);
+            let pagTxt = metPagamento === 'pix' ? 'Pix' : 'Dinheiro na Retirada';
+
+            let msg = `Olá! Gostaria de fechar o pedido:\n`;
+            carrinho.forEach(item => {
+                msg += `- *${item.nome}* (R$ ${item.valor.toFixed(2).replace('.', ',')})\n`;
+            });
+            
+            if(minhasFavoritas.length > 0) {
+                msg += `\n📖 Receitas no Livro Personalizado:\n`;
+                minhasFavoritas.forEach(id => {
+                    const r = receitasBD.find(rec => rec.id === id);
+                    if(r) msg += `• ${r.nome}\n`;
+                });
+            }
+
+            msg += `\n👤 Nome: ${nome}\n📱 WhatsApp: ${fone}\n💰 *Total: R$ ${subtotal.toFixed(2).replace('.', ',')}*\n💳 Pagamento: ${pagTxt}`;
+            
+            window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
+            fecharCheckout();
+        }
+
+        // Renderizar lista inicial ao carregar a página
+        renderizarReceitas(receitasBD);
+    </script>
+</body>
+</html>
