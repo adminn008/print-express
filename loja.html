@@ -3,763 +3,895 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loja em Manutenção - Kits e Serviços</title>
-    <!-- FontAwesome para Ícones -->
-    <link rel="stylesheet" href="https://cloudflare.com">
-    <!-- Google Fonts -->
-    <link href="https://googleapis.com" rel="stylesheet">
+    <title>Loja de Ferramentas - Gráfica Digital</title>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- QRCode.js para geração local de QR Codes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <style>
+        :root {
+            --primary: #0066FF;
+            --primary-hover: #0052CC;
+            --primary-light: #E6F0FF;
+            --primary-dark: #003399;
+            --bg-light: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --shadow-sm: 0 2px 8px rgba(0, 102, 255, 0.05);
+            --shadow-md: 0 4px 16px rgba(0, 102, 255, 0.08);
+            --radius: 12px;
+        }
+
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            color: #f8fafc;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow-x: hidden;
-            padding: 20px;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding-bottom: 60px;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
+        /* Container Principal */
         .container {
-            max-width: 700px;
-            width: 100%;
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 40px 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header / Hero */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 40px 20px;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            animation: fadeIn 1.2s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .icon-box {
-            font-size: 60px;
-            color: #38bdf8;
-            margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-            color: #ffffff;
-            font-weight: 700;
-        }
-
-        p.subtitle {
-            font-size: 1rem;
-            color: #94a3b8;
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 102, 255, 0.15);
             margin-bottom: 30px;
         }
 
-        /* Carrossel de Avisos */
-        .carousel-container {
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 35px;
-            border-left: 4px solid #38bdf8;
-            min-height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .carousel-slide {
-            position: absolute;
-            width: 100%;
-            padding: 0 15px;
-            opacity: 0;
-            transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
-            transform: translateY(10px);
-        }
-
-        .carousel-slide.active {
-            opacity: 1;
-            transform: translateY(0);
-            position: relative;
-        }
-
-        .carousel-slide i {
-            color: #38bdf8;
-            margin-right: 8px;
-        }
-
-        /* Features / Kits & Serviços Destaque */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-            margin-bottom: 35px;
-        }
-
-        .feature-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 12px;
-            transition: transform 0.3s, background 0.3s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .feature-card i {
-            font-size: 24px;
-            color: #38bdf8;
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
             margin-bottom: 8px;
         }
 
-        .feature-card h3 {
-            font-size: 0.95rem;
-            margin-bottom: 4px;
-            color: #f1f5f9;
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
         }
 
-        .feature-card p {
-            font-size: 0.75rem;
-            color: #94a3b8;
+        .highlight-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
-        /* Contador Regressivo */
-        .countdown {
+        /* Controles de Busca e Filtro */
+        .search-filter-container {
+            margin-top: -30px;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            background: white;
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
             display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
+            align-items: center;
+            gap: 12px;
+            max-width: 600px;
+            margin: 0 auto 20px;
+            border: 1px solid var(--border);
         }
 
-        .time-box {
-            background: rgba(56, 189, 248, 0.1);
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            padding: 10px 15px;
-            border-radius: 10px;
-            min-width: 65px;
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 1rem;
+            color: var(--text-main);
         }
 
-        .time-box span {
-            display: block;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #38bdf8;
+        .categories {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            justify-content: flex-start;
         }
 
-        .time-box small {
-            font-size: 0.65rem;
-            color: #94a3b8;
-            text-transform: uppercase;
+        @media (min-width: 768px) {
+            .categories {
+                justify-content: center;
+            }
         }
 
-        .footer-note {
-            font-size: 0.8rem;
-            color: #64748b;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding-top: 20px;
+        .category-btn {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
         }
 
-        @media (max-width: 480px) {
-            .container { padding: 25px 15px; }
-            h1 { font-size: 1.8rem; }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <div class="icon-box">
-            <i class="fa-solid fa-screwdriver-wrench"></i>
-        </div>
-        
-        <h1>Estamos em Manutenção</h1>
-        <p class="subtitle">Melhorando nossa vitrine de kits e serviços para oferecer uma experiência incrível.</p>
-
-        <!-- Carrossel de Avisos -->
-        <div class="carousel-container" id="carousel">
-            <div class="carousel-slide active">
-                <p><i class="fa-solid fa-bullhorn"></i> <strong>Novidades chegando:</strong> Novos kits exclusivos serão lançados em breve!</p>
-            </div>
-            <div class="carousel-slide">
-                <p><i class="fa-solid fa-wand-magic-sparkles"></i> <strong>Melhoria de Performance:</strong> O sistema de agendamento de serviços ficará mais rápido.</p>
-            </div>
-            <div class="carousel-slide">
-                <p><i class="fa-solid fa-shield-halved"></i> <strong>Segurança:</strong> Atualização completa na infraestrutura da plataforma.</p>
-            </div>
-        </div>
-
-        <!-- O que continua visível (Kits e Serviços) -->
-        <div class="features">
-            <div class="feature-card">
-                <i class="fa-solid fa-box-open"></i>
-                <h3>Kits Prontos</h3>
-                <p>Soluções completas sob medida.</p>
-            </div>
-            <div class="feature-card">
-                <i class="fa-solid fa-gears"></i>
-                <h3>Serviços Pro</h3>
-                <p>Suporte e instalação especializada.</p>
-            </div>
-            <div class="feature-card">
-                <i class="fa-solid fa-bolt"></i>
-                <h3>Agilidade</h3>
-                <p>Atendimento otimizado.</p>
-            </div>
-        </div>
-
-        <!-- Contador Regressivo Exemplo -->
-        <div class="countdown">
-            <div class="time-box">
-                <span id="days">02</span>
-                <small>Dias</small>
-            </div>
-            <div class="time-box">
-                <span id="hours">14</span>
-                <small>Horas</small>
-            </div>
-            <div class="time-box">
-                <span id="minutes">45</span>
-                <small>Min</small>
-            </div>
-            <div class="time-box">
-                <span id="seconds">30</span>
-                <small>Seg</small>
-            </div>
-        </div>
-
-        <div class="footer-note">
-            Agradecemos a sua paciência. Retornaremos em breve!
-        </div>
-    </div>
-
-    <script>
-        // Lógica do Carrossel de Avisos
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.carousel-slide');
-        
-        function nextSlide() {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide + 1) % slides.length;
-            slides[currentSlide].classList.add('active');
-        }
-        
-        setInterval(nextSlide, 4000); // Troca a cada 4 segundos
-
-        // Simulação do Contador Regressivo (Ajuste o tempo se necessário)
-        let timeInSeconds = 2 * 86400 + 14 * 3600 + 45 * 60;
-        const dEl = document.getElementById('days');
-        const hEl = document.getElementById('hours');
-        const mEl = document.getElementById('minutes');
-        const sEl = document.getElementById('seconds');
-
-        setInterval(() => {
-            if (timeInSeconds > 0) timeInSeconds--;
-            const d = Math.floor(timeInSeconds / (3600 * 24));
-            const h = Math.floor((timeInSeconds % (3600 * 24)) / 3600);
-            const m = Math.floor((timeInSeconds % 3600) / 60);
-            const s = timeInSeconds % 60;
-
-            dEl.textContent = String(d).padStart(2, '0');
-            hEl.textContent = String(h).padStart(2, '0');
-            mEl.textContent = String(m).padStart(2, '0');
-            sEl.textContent = String(s).padStart(2, '0');
-        }, 1000);
-    </script>
-</body>
-</html>
-
-
-
-<!-- <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loja Digital, Emprego & Ministério Infantil</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --border: #334155;
-            --primary: #38bdf8;
-            --primary-hover: #0284c7;
-            --green: #10b981;
-            --red: #ef4444;
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
+        .category-btn:hover, .category-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 24px 16px; line-height: 1.5; padding-bottom: 100px; }
-
-        .container { max-width: 1100px; margin: 0 auto; }
-
-        header { text-align: center; margin-bottom: 36px; }
-        header h1 { font-size: 28px; font-weight: 800; color: var(--primary); }
-        header p { color: var(--text-muted); font-size: 15px; margin-top: 6px; }
-
+        /* Grid de Ferramentas */
         .section-title {
-            font-size: 18px;
+            font-size: 1.4rem;
             font-weight: 700;
-            color: var(--primary);
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 8px;
-            margin: 32px 0 16px 0;
+            margin: 30px 0 15px;
+            color: var(--text-main);
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        /* GRID DE PRODUTOS */
-        .products-grid {
+        .tools-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 18px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
         }
 
-        .product-card {
+        .tool-card {
             background: var(--card-bg);
+            border-radius: var(--radius);
             border: 1px solid var(--border);
-            border-radius: 16px;
             padding: 20px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
-            transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer;
         }
 
-        .product-card:hover {
+        .tool-card:hover {
             transform: translateY(-4px);
-            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
         }
 
-        .tag {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            font-size: 10px;
-            font-weight: 800;
-            padding: 4px 10px;
-            border-radius: 20px;
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .icon-wrapper {
+            background: var(--primary-light);
+            color: var(--primary);
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
             text-transform: uppercase;
         }
 
-        .tag-available { background: var(--green); color: #000; }
-        .tag-age { background: var(--primary); color: #0f172a; }
+        .badge-free { background: #E6F4EA; color: #137333; }
+        .badge-paid { background: #FEF7E0; color: #B06000; }
+        .badge-soon { background: #F1F3F4; color: #5F6368; }
 
-        .product-card h3 { font-size: 16px; color: #fff; margin-bottom: 8px; padding-right: 85px; }
-        .product-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; flex-grow: 1; }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
 
-        .price-box { font-size: 20px; font-weight: 800; color: var(--green); margin-bottom: 14px; }
-        .price-box span { font-size: 11px; color: var(--text-muted); font-weight: 400; }
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            flex-grow: 1;
+        }
 
-        .btn-buy {
-            background: var(--primary);
-            color: #0f172a;
+        .btn-use {
+            background: var(--primary-light);
+            color: var(--primary);
             border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 14px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
             width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
             transition: background 0.2s;
         }
 
-        .btn-buy:hover { background: var(--primary-hover); color: #fff; }
-
-        /* TOAST DE NOTIFICAÇÃO BONITO */
-        #toast {
-            visibility: hidden;
-            min-width: 250px;
-            background-color: var(--green);
-            color: #000;
-            text-align: center;
-            border-radius: 8px;
-            padding: 12px;
-            position: fixed;
-            z-index: 200;
-            right: 20px;
-            bottom: 90px;
-            font-size: 13px;
-            font-weight: 700;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: opacity 0.3s, transform 0.3s;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        #toast.show {
-            visibility: visible;
-            opacity: 1;
-            transform: translateY(0);
+        .tool-card:hover .btn-use {
+            background: var(--primary);
+            color: white;
         }
 
-        /* BARRA FLUTUANTE DO CARRINHO */
-        .cart-bar {
-            position: fixed; bottom: 0; left: 0; width: 100%; background: #1e293b;
-            border-top: 2px solid var(--primary); padding: 16px; display: flex;
-            justify-content: space-between; align-items: center; z-index: 90; box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
-        }
-        .cart-info { font-size: 14px; font-weight: 600; }
-        .cart-info span { color: var(--green); font-size: 16px; font-weight: 800; }
-        .btn-cart-checkout {
-            background: var(--green); color: #000; border: none; padding: 10px 20px;
-            border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 14px;
-            transition: opacity 0.2s;
-        }
-        .btn-cart-checkout:hover { opacity: 0.9; }
-
-        /* MODAL CHECKOUT MELHORADO */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px);
-            display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100;
-        }
-        .modal-overlay.active { display: flex; }
-
-        .modal-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px;
-            max-width: 480px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-card h2 { font-size: 20px; color: var(--primary); margin-bottom: 12px; }
-
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
-        .form-group input {
-            width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--border);
-            border-radius: 8px; color: #fff; font-size: 14px;
-        }
-
-        /* SEÇÃO DE PAGAMENTO MAIS BONITA */
-        .payment-container {
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 14px;
-            margin-top: 12px;
-        }
-        .pay-options { display: flex; gap: 10px; margin-bottom: 12px; }
-        .pay-btn {
-            flex: 1; padding: 12px 8px; background: #0f172a; border: 2px solid var(--border);
-            border-radius: 10px; color: var(--text-muted); font-size: 13px; font-weight: 700; cursor: pointer; text-align: center;
-            transition: all 0.2s;
-        }
-        .pay-btn.active { border-color: var(--primary); background: rgba(56, 189, 248, 0.15); color: var(--primary); }
-
-        .pix-box {
-            background: #0f172a; border: 1px dashed var(--primary); border-radius: 10px;
-            padding: 14px; text-align: center; margin-top: 12px;
-        }
-        
-        .pix-copy-area {
-            display: flex; gap: 6px; margin-top: 8px;
-        }
-        .pix-copy-area input {
-            flex: 1; padding: 8px; background: #1e293b; border: 1px solid var(--border);
-            border-radius: 6px; color: #fff; font-size: 11px;
-        }
-        .btn-copy {
-            background: var(--primary); color: #0f172a; border: none; padding: 8px 12px;
-            border-radius: 6px; font-weight: 700; font-size: 11px; cursor: pointer;
-        }
-        .btn-copy:hover { background: var(--primary-hover); color: #fff; }
-
-        .summary-list {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            background: #0f172a;
-            padding: 10px;
-            border-radius: 8px;
+        /* Histórico Recente */
+        .history-section {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 30px;
             border: 1px solid var(--border);
         }
-        .summary-item {
+
+        .history-tags {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
         }
-        .summary-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-        .btn-remove-item {
-            background: transparent; border: none; color: var(--red); font-size: 12px; cursor: pointer; font-weight: 700;
-        }
-        .btn-remove-item:hover { text-decoration: underline; }
 
-        .close-btn { background: transparent; border: none; color: var(--text-muted); font-size: 13px; cursor: pointer; width: 100%; margin-top: 10px; }
+        .history-tag {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .history-tag:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Interface Interna da Ferramenta */
+        .tool-workspace {
+            display: none;
+            background: white;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-md);
+            padding: 24px;
+            margin-top: 20px;
+        }
+
+        .tool-workspace.active {
+            display: block;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 992px) {
+            .workspace-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .workspace-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-secondary { background: var(--bg-light); color: var(--text-main); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--border); }
+
+        /* Estilização da Folha A4 para Impressão */
+        .preview-container {
+            background: #E2E8F0;
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-x: auto;
+            min-height: 400px;
+        }
+
+        .a4-page {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            color: #000;
+            font-size: 12pt;
+            position: relative;
+        }
+
+        /* Classes Específicas de Layout A4 */
+        .a4-header { border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .a4-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .a4-table th, .a4-table td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 10pt; }
+        .a4-table th { background: #f0f0f0; }
+
+        .grid-tickets { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .ticket-item { border: 1px dashed #666; padding: 10px; border-radius: 4px; font-size: 10pt; }
+
+        .grid-labels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .label-item { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 9pt; border-radius: 4px; }
+
+        /* Estilos Exclusivos para Impressão */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .a4-page, .a4-page * {
+                visibility: visible;
+            }
+            .a4-page {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 10mm;
+                box-shadow: none;
+            }
+            @page {
+                size: A4;
+                margin: 0;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1>📚 Central de Guias Profissionais & Ministério Infantil</h1>
-            <p>Guias de emprego oficiais e kits impressos exclusivos para escolas dominicais e crianças</p>
-        </header>
+    <!-- Header / Hero -->
+    <header class="header">
+        <div class="container">
+            <h1>Ferramentas para facilitar seu dia</h1>
+            <p>Crie, organize e prepare seus materiais para impressão diretamente pelo site.</p>
+            <span class="highlight-badge">⚡ Ferramentas rápidas, simples e prontas para usar.</span>
+        </div>
+    </header>
 
-        <h2 class="section-title">✨ Guias de Emprego Principais</h2>
-        <div class="products-grid">
-            <div class="product-card">
-                <span class="tag tag-available">Disponível</span>
-                <h3>Guia Completo do Primeiro Emprego</h3>
-                <p>Aprenda a estruturar seu currículo sem experiência, comportar-se na entrevista e destacar suas habilidades.</p>
-                <div class="price-box">R$ 4,90 <span>(PDF Digital)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Guia Completo do Primeiro Emprego', 4.90)">Adicionar ao Carrinho</button>
+    <main class="container">
+        
+        <!-- Busca e Filtros -->
+        <div class="search-filter-container">
+            <div class="search-box">
+                <i data-lucide="search" style="color: var(--text-muted)"></i>
+                <input type="text" id="searchInput" placeholder="🔎 O que você está procurando?" onkeyup="filterTools()">
             </div>
 
-            <div class="product-card">
-                <span class="tag tag-available">Disponível</span>
-                <h3>Guia de Currículo para Jovem Aprendiz</h3>
-                <p>Modelo e orientações práticas focadas para quem busca a primeira oportunidade de menor/jovem aprendiz.</p>
-                <div class="price-box">R$ 4,90 <span>(PDF Digital)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Guia de Currículo para Jovem Aprendiz', 4.90)">Adicionar ao Carrinho</button>
+            <div class="categories">
+                <button class="category-btn active" onclick="filterCategory('all', this)">Todas</button>
+                <button class="category-btn" onclick="filterCategory('negocios', this)">Negócios</button>
+                <button class="category-btn" onclick="filterCategory('impressao', this)">Impressão</button>
+                <button class="category-btn" onclick="filterCategory('organizacao', this)">Organização</button>
+                <button class="category-btn" onclick="filterCategory('eventos', this)">Eventos</button>
+                <button class="category-btn" onclick="filterCategory('digitais', this)">Ferramentas Digitais</button>
             </div>
         </div>
 
-        <h2 class="section-title">👧 Ministério Infantil & EBD (Kits Impressos por Faixa Etária)</h2>
-        <div class="products-grid">
-            <div class="product-card">
-                <span class="tag tag-age">3–4 Anos</span>
-                <h3>Pacote Infantil: 3–4 Anos (Folhas de Atividades & Colorir)</h3>
-                <p>Material impresso e grampeado com coordenação motora, desenhos bíblicos simples em P&B e associação de imagens.</p>
-                <div class="price-box">R$ 12,00 <span>(Impresso)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Pacote Infantil 3-4 Anos (Impresso)', 12.00)">Adicionar ao Carrinho</button>
+        <!-- Seção de Histórico -->
+        <div class="history-section" id="historySection" style="display: none;">
+            <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.9rem; color: var(--text-muted)">
+                <i data-lucide="history" style="width: 16px;"></i> Utilizados recentemente:
             </div>
-
-            <div class="product-card">
-                <span class="tag tag-age">5–6 Anos</span>
-                <h3>Pacote Infantil: 5–6 Anos (Atividades Escola Bíblica)</h3>
-                <p>Material impresso e grampeado com histórias bíblicas ilustradas, exercícios simples e perguntas sobre a lição.</p>
-                <div class="price-box">R$ 12,00 <span>(Impresso)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Pacote Infantil 5-6 Anos (Impresso)', 12.00)">Adicionar ao Carrinho</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-age">7–8 Anos</span>
-                <h3>Pacote Infantil: 7–8 Anos (Folhas Bíblicas & Questões)</h3>
-                <p>Material impresso e grampeado com alfabetização/português, associação de palavras e questionários interativos da lição.</p>
-                <div class="price-box">R$ 14,00 <span>(Impresso)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Pacote Infantil 7-8 Anos (Impresso)', 14.00)">Adicionar ao Carrinho</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-age">9–10 Anos</span>
-                <h3>Pacote Infantil: 9–10 Anos (Estudos Bíblicos & Raciocínio)</h3>
-                <p>Material impresso e grampeado com matemática, português, raciocínio lógico avançado e questionários detalhados da lição.</p>
-                <div class="price-box">R$ 14,00 <span>(Impresso)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Pacote Infantil 9-10 Anos (Impresso)', 14.00)">Adicionar ao Carrinho</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-available">Kit Impresso</span>
-                <h3>Cartela de Presença Infantil Personalizada (Bloco com 20 fls)</h3>
-                <p>Folhas impressas com espaço para nome da criança, datas das aulas e campos para marcação de presença e adesivos.</p>
-                <div class="price-box">R$ 8,00 <span>(Impresso)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Cartela de Presença Infantil (Bloco)', 8.00)">Adicionar ao Carrinho</button>
-            </div>
-
-            <div class="product-card">
-                <span class="tag tag-available">Kit Impresso</span>
-                <h3>Bloco de Questionários de Lição Bíblica (20 Unidades)</h3>
-                <p>Folhas impressas com perguntas sobre o conteúdo estudado na aula e espaço dedicado para as crianças escreverem as respostas.</p>
-                <div class="price-box">R$ 9,50 <span>(Impresso)</span></div>
-                <button class="btn-buy" onclick="adicionarAoCarrinho('Bloco de Questionários de Lição Bíblica', 9.50)">Adicionar ao Carrinho</button>
-            </div>
+            <div class="history-tags" id="historyContainer"></div>
         </div>
-    </div>
 
-    <div id="toast">✨ Item adicionado ao carrinho com sucesso!</div>
+        <!-- Catalogo Principais -->
+        <div id="catalogView">
+            <h2 class="section-title"><i data-lucide="wrench" style="color: var(--primary);"></i> Ferramentas Principais</h2>
+            <div class="tools-grid" id="mainToolsGrid"></div>
 
-    <div class="cart-bar" id="cartBar" style="display: none;">
-        <div class="cart-info">
-            Itens: <span id="cartCount">0</span> | Subtotal/Total: <span id="cartSubtotal">R$ 0,00</span>
+            <h2 class="section-title"><i data-lucide="plus-circle" style="color: var(--primary);"></i> Mais Úteis</h2>
+            <div class="tools-grid" id="extraToolsGrid"></div>
+
+            <h2 class="section-title" style="margin-top: 40px;"><i data-lucide="rocket" style="color: var(--text-muted);"></i> Mais ferramentas em breve</h2>
+            <div class="tools-grid" id="soonToolsGrid"></div>
         </div>
-        <button class="btn-cart-checkout" onclick="abrirCheckoutCarrinho()">Finalizar Pedido 🚀</button>
-    </div>
 
-    <div class="modal-overlay" id="modalCheckout">
-        <div class="modal-card">
-            <h2 id="modalTitle">Finalizar Pedido</h2>
-            
-            <div class="summary-list" id="modalSummary"></div>
+        <!-- Área de Trabalho (Workspace Único Aberto) -->
+        <div class="tool-workspace" id="toolWorkspace">
+            <button class="back-btn" onclick="closeWorkspace()"><i data-lucide="arrow-left"></i> Voltar para Loja</button>
+            <h2 id="wsTitle" style="margin-bottom: 4px;"></h2>
+            <p id="wsDesc" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;"></p>
 
-            <div class="form-group">
-                <label>Seu Nome Completo:</label>
-                <input type="text" id="custName" placeholder="Ex: Maria Souza">
-            </div>
+            <div class="workspace-grid">
+                <!-- Formulário de Entrada -->
+                <div id="wsFormContainer"></div>
 
-            <div class="form-group">
-                <label>WhatsApp para Contato/Recebimento:</label>
-                <input type="text" id="custPhone" placeholder="(41) 99999-9999">
-            </div>
-
-            <div class="payment-container">
-                <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 8px;">Forma de Pagamento:</label>
-                <div class="pay-options">
-                    <div class="pay-btn active" id="optPix" onclick="setPayMethod('pix')">📱 Pix Rápido</div>
-                    <div class="pay-btn" id="optDinheiro" onclick="setPayMethod('dinheiro')">💵 Dinheiro (Retirada)</div>
-                </div>
-
-                <div class="pix-box" id="pixContainer">
-                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Escaneie o QR Code ou copie a chave abaixo:</p>
-                    <img id="qrPix" src="qrcode-pix.jpg" alt="QR Code Pix" style="width: 120px; height: 120px; border-radius: 6px; background: #fff; padding: 4px;">
-                    
-                    <div class="pix-copy-area">
-                        <input type="text" id="pixCopiaCola" readonly>
-                        <button class="btn-copy" onclick="copiarPix()">Copiar Chave</button>
+                <!-- Pré-visualização / A4 -->
+                <div>
+                    <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 8px;">Pré-visualização em Tempo Real</label>
+                    <div class="preview-container">
+                        <div class="a4-page" id="a4Preview"></div>
                     </div>
-                    <p style="font-size: 11px; color: var(--primary); margin-top: 6px; word-break: break-all;">Chave: ws8530135@gmail.com</p>
+                    
+                    <div class="workspace-actions">
+                        <button class="btn-action btn-secondary" onclick="window.print()"><i data-lucide="printer"></i> Imprimir A4</button>
+                    </div>
                 </div>
             </div>
-
-            <button class="btn-buy" style="margin-top: 16px;" onclick="confirmarPedidoWhatsApp()">Confirmar e Enviar no WhatsApp</button>
-            <button class="close-btn" onclick="fecharCheckout()">Cancelar</button>
         </div>
-    </div>
+
+    </main>
 
     <script>
-        let carrinho = [];
-        let metPagamento = 'pix';
-        const CHAVE_PIX = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
-        const WHATSAPP_NUM = "5541999682836";
-
-        function mostrarToast(mensagem) {
-            const toast = document.getElementById('toast');
-            toast.innerText = mensagem;
-            toast.className = "show";
-            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
-        }
-
-        function adicionarAoCarrinho(nome, valor) {
-            carrinho.push({ nome, valor });
-            atualizarBarraCarrinho();
-            mostrarToast(`✨ "${nome}" adicionado!`);
-        }
-
-        function removerDoCarrinho(index) {
-            carrinho.splice(index, 1);
-            atualizarBarraCarrinho();
-            if(carrinho.length > 0) {
-                abrirCheckoutCarrinho();
-            } else {
-                fecharCheckout();
-            }
-            mostrarToast(`🗑️ Item removido do carrinho.`);
-        }
-
-        function atualizarBarraCarrinho() {
-            const qtd = carrinho.length;
-            const subtotal = carrinho.reduce((acc, item) => acc + item.valor, 0);
+        // --- BASE DE DADOS DAS FERRAMENTAS ---
+        const tools = [
+            // Principais
+            { id: 'qrcode', title: 'Gerador de QR Code', desc: 'Crie QR codes para links, Pix, WhatsApp e redes sociais.', category: 'digitais', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'qr-code', main: true },
+            { id: 'assinatura', title: 'Gerador de Assinatura de E-mail', desc: 'Assinaturas profissionais personalizadas com HTML.', category: 'digitais', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'mail', main: true },
+            { id: 'orcamento', title: 'Gerador de Orçamento', desc: 'Calcule totais e crie orçamentos prontos para impressão.', category: 'negocios', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'file-text', main: true },
+            { id: 'certificado', title: 'Gerador de Certificado', desc: 'Modelos rápidos para oficinas, palestras e cursos.', category: 'eventos', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'award', main: true },
+            { id: 'pedido', title: 'Gerador de Ficha de Pedido', desc: 'Organize vendas e detalhes de entregas em A4.', category: 'negocios', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'shopping-bag', main: true },
+            { id: 'comanda', title: 'Gerador de Comanda', desc: 'Gere comandas numeradas em sequência na folha A4.', category: 'impressao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'receipt', main: true },
+            { id: 'lista_pedidos', title: 'Gerador de Lista de Pedidos', desc: 'Tabelas completas para controle diário ou semanal.', category: 'organizacao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'list-checks', main: true },
+            { id: 'folha_anotacoes', title: 'Gerador de Folha de Anotações', desc: 'Crie folhas pautadas, quadriculadas ou pontilhadas.', category: 'organizacao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'edit-3', main: true },
             
-            document.getElementById('cartCount').innerText = qtd;
-            document.getElementById('cartSubtotal').innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
-            
-            const cartBar = document.getElementById('cartBar');
-            if(qtd > 0) {
-                cartBar.style.display = 'flex';
-            } else {
-                cartBar.style.display = 'none';
-            }
-        }
+            // Extras
+            { id: 'etiquetas', title: 'Gerador de Etiquetas A4', desc: 'Distribua etiquetas idênticas na folha A4.', category: 'impressao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'tag', main: false },
+            { id: 'senhas', title: 'Gerador de Senhas', desc: 'Tiras numeradas para atendimento sequencial.', category: 'impressao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'hash', main: false },
+            { id: 'ingressos', title: 'Gerador de Ingressos', desc: 'Ingressos numerados com canhoto para eventos.', category: 'eventos', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'ticket', main: false },
+            { id: 'calendario', title: 'Gerador de Calendário A4', desc: 'Calendários organizadores com área para anotações.', category: 'organizacao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'calendar', main: false },
+            { id: 'financeiro', title: 'Gerador de Controle Financeiro', desc: 'Controle entradas, saídas e saldo de caixa.', category: 'negocios', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'dollar-sign', main: false },
+            { id: 'estoque', title: 'Gerador de Controle de Estoque', desc: 'Acompanhamento e saldo atual de produtos.', category: 'organizacao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'box', main: false },
+            { id: 'presenca', title: 'Gerador de Lista de Presença', desc: 'Lista com assinaturas para cursos e reuniões.', category: 'eventos', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'users', main: false },
+            { id: 'fichas_seq', title: 'Gerador de Fichas Numeradas', desc: 'Fichas em sequência personalizadas para impressão.', category: 'impressao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'layers', main: false },
+            { id: 'ficha_custom', title: 'Gerador de Ficha Personalizada', desc: 'Monte formulários dinâmicos adicionando campos.', category: 'negocios', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'sliders', main: false }
+        ];
 
-        function abrirCheckoutCarrinho() {
-            const subtotal = carrinho.reduce((acc, item) => acc + item.valor, 0);
-            document.getElementById('modalTitle').innerText = `Finalizar Pedido (Total: R$ ${subtotal.toFixed(2).replace('.', ',')})`;
-            
-            let resumoHTML = '<strong style="color: #fff; display:block; margin-bottom:6px;">Itens no seu carrinho:</strong>';
-            carrinho.forEach((item, idx) => {
-                resumoHTML += `
-                    <div class="summary-item">
-                        <span>${item.nome} - <strong>R$ ${item.valor.toFixed(2).replace('.', ',')}</strong></span>
-                        <button class="btn-remove-item" onclick="removerDoCarrinho(${idx})">Remover</button>
-                    </div>`;
-            });
-            document.getElementById('modalSummary').innerHTML = resumoHTML;
-            
-            document.getElementById('pixCopiaCola').value = CHAVE_PIX;
-            document.getElementById('modalCheckout').classList.add('active');
-        }
+        const soonTools = [
+            { title: 'Gerador de Etiquetas com Código de Barras', icon: 'barcode' },
+            { title: 'Gerador de Cartões Digitais Interativos', icon: 'smartphone' },
+            { title: 'Gerador de Formulários Avançados', icon: 'file-input' },
+            { title: 'Gerador de Folhas para Jogos & Passatempos', icon: 'gamepad-2' },
+            { title: 'Mais ferramentas de impressão e acabamento', icon: 'printer' }
+        ];
 
-        function fecharCheckout() {
-            document.getElementById('modalCheckout').classList.remove('active');
-        }
+        let activeToolId = null;
 
-        function setPayMethod(tipo) {
-            metPagamento = tipo;
-            document.getElementById('optPix').classList.toggle('active', tipo === 'pix');
-            document.getElementById('optDinheiro').classList.toggle('active', tipo === 'dinheiro');
-            document.getElementById('pixContainer').style.display = tipo === 'pix' ? 'block' : 'none';
-        }
+        // --- INICIALIZAÇÃO ---
+        window.onload = () => {
+            renderCatalog();
+            renderSoon();
+            loadHistory();
+            lucide.createIcons();
+        };
 
-        function copiarPix() {
-            const inputCopia = document.getElementById('pixCopiaCola');
-            inputCopia.select();
-            inputCopia.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(inputCopia.value).then(() => {
-                mostrarToast('📋 Chave Pix copiada com sucesso!');
-            }).catch(() => {
-                alert('Erro ao tentar copiar. Selecione manualmente.');
+        // --- RENDERIZAÇÃO DE CATÁLOGOS ---
+        function renderCatalog() {
+            const mainGrid = document.getElementById('mainToolsGrid');
+            const extraGrid = document.getElementById('extraToolsGrid');
+            mainGrid.innerHTML = '';
+            extraGrid.innerHTML = '';
+
+            tools.forEach(tool => {
+                const cardHtml = `
+                    <div class="tool-card" data-category="${tool.category}" data-title="${tool.title.toLowerCase()}" onclick="openTool('${tool.id}')">
+                        <div class="card-header">
+                            <div class="icon-wrapper"><i data-lucide="${tool.icon}"></i></div>
+                            <span class="badge badge-free">${tool.badge}</span>
+                        </div>
+                        <div class="card-title">${tool.title}</div>
+                        <div class="card-desc">${tool.desc}</div>
+                        <button class="btn-use">Usar ferramenta <i data-lucide="arrow-right" style="width: 16px;"></i></button>
+                    </div>
+                `;
+                if (tool.main) mainGrid.innerHTML += cardHtml;
+                else extraGrid.innerHTML += cardHtml;
             });
         }
 
-        function confirmarPedidoWhatsApp() {
-            const nome = document.getElementById('custName').value.trim();
-            const fone = document.getElementById('custPhone').value.trim();
+        function renderSoon() {
+            const grid = document.getElementById('soonToolsGrid');
+            grid.innerHTML = '';
+            soonTools.forEach(tool => {
+                grid.innerHTML += `
+                    <div class="tool-card" style="opacity: 0.7; cursor: not-allowed;">
+                        <div class="card-header">
+                            <div class="icon-wrapper" style="background: #F1F3F4; color: #5F6368;"><i data-lucide="${tool.icon}"></i></div>
+                            <span class="badge badge-soon">EM BREVE</span>
+                        </div>
+                        <div class="card-title">${tool.title}</div>
+                        <div class="card-desc">Ferramenta em desenvolvimento.</div>
+                    </div>
+                `;
+            });
+        }
 
-            if(!nome || !fone) {
-                alert('Por favor, informe seu Nome e WhatsApp.');
+        // --- FILTROS E BUSCA ---
+        function filterTools() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.tool-card').forEach(card => {
+                const title = card.getAttribute('data-title');
+                if (title && title.includes(query)) card.style.display = 'flex';
+                else if (title) card.style.display = 'none';
+            });
+        }
+
+        function filterCategory(cat, btn) {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            document.querySelectorAll('.tool-card').forEach(card => {
+                const cardCat = card.getAttribute('data-category');
+                if (!cardCat) return;
+                if (cat === 'all' || cardCat === cat) card.style.display = 'flex';
+                else card.style.display = 'none';
+            });
+        }
+
+        // --- HISTÓRICO LOCAL ---
+        function saveHistory(id) {
+            let hist = JSON.parse(localStorage.getItem('toolHistory') || '[]');
+            if (!hist.includes(id)) {
+                hist.unshift(id);
+                if (hist.length > 4) hist.pop();
+                localStorage.setItem('toolHistory', JSON.stringify(hist));
+            }
+            loadHistory();
+        }
+
+        function loadHistory() {
+            let hist = JSON.parse(localStorage.getItem('toolHistory') || '[]');
+            const container = document.getElementById('historyContainer');
+            const section = document.getElementById('historySection');
+
+            if (hist.length === 0) {
+                section.style.display = 'none';
                 return;
             }
 
-            const subtotal = carrinho.reduce((acc, item) => acc + item.valor, 0);
-            let pagTxt = metPagamento === 'pix' ? 'Pix' : 'Dinheiro na Retirada';
-
-            let msg = `Olá! Gostaria de fechar o pedido:\n`;
-            carrinho.forEach(item => {
-                msg += `- *${item.nome}* (R$ ${item.valor.toFixed(2).replace('.', ',')})\n`;
+            section.style.display = 'block';
+            container.innerHTML = '';
+            hist.forEach(id => {
+                const t = tools.find(x => x.id === id);
+                if (t) {
+                    container.innerHTML += `
+                        <div class="history-tag" onclick="openTool('${t.id}')">
+                            <i data-lucide="${t.icon}" style="width: 14px;"></i> ${t.title}
+                        </div>
+                    `;
+                }
             });
-            msg += `\n👤 Nome: ${nome}\n📱 WhatsApp: ${fone}\n💰 *Subtotal/Total: R$ ${subtotal.toFixed(2).replace('.', ',')}*\n💳 Pagamento: ${pagTxt}`;
-            
-            window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
-            fecharCheckout();
+            lucide.createIcons();
+        }
+
+        // --- NAVEGAÇÃO E ABERTURA DAS FERRAMENTAS ---
+        function openTool(id) {
+            activeToolId = id;
+            saveHistory(id);
+            const tool = tools.find(t => t.id === id);
+
+            document.getElementById('catalogView').style.display = 'none';
+            document.getElementById('toolWorkspace').classList.add('active');
+            document.getElementById('wsTitle').innerText = tool.title;
+            document.getElementById('wsDesc').innerText = tool.desc;
+
+            buildForm(id);
+            updatePreview();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function closeWorkspace() {
+            document.getElementById('toolWorkspace').classList.remove('active');
+            document.getElementById('catalogView').style.display = 'block';
+            activeToolId = null;
+        }
+
+        // --- CONSTRUTOR DINÂMICO DE FORMULÁRIOS E PRÉ-VISUALIZAÇÃO ---
+        function buildForm(id) {
+            const container = document.getElementById('wsFormContainer');
+            let html = '';
+
+            switch(id) {
+                case 'qrcode':
+                    html = `
+                        <div class="form-group"><label>Conteúdo do QR Code</label><input type="text" id="qrText" value="https://suagrafica.com.br" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Texto Adicional embaixo (Versão A4)</label><input type="text" id="qrLabel" value="Escaneie o código acima" oninput="updatePreview()"></div>
+                    `;
+                    break;
+                case 'assinatura':
+                    html = `
+                        <div class="form-group"><label>Nome</label><input type="text" id="assNome" value="Carlos Silva" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Cargo</label><input type="text" id="assCargo" value="Gerente Comercial" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Empresa</label><input type="text" id="assEmpresa" value="Minha Empresa" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>WhatsApp / Telefone</label><input type="text" id="assTel" value="(11) 99999-9999" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>E-mail</label><input type="text" id="assEmail" value="carlos@empresa.com" oninput="updatePreview()"></div>
+                    `;
+                    break;
+                case 'orcamento':
+                    html = `
+                        <div class="form-group"><label>Sua Empresa</label><input type="text" id="orcEmpresa" value="Gráfica Rápida" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Nome do Cliente</label><input type="text" id="orcCliente" value="João Pedro" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Descrição do Serviço/Produto</label><input type="text" id="orcProd" value="1000 Cartões de Visita" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Valor Unitário (R$)</label><input type="number" id="orcVal" value="150.00" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Quantidade</label><input type="number" id="orcQtd" value="1" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Desconto (R$)</label><input type="number" id="orcDesc" value="10.00" oninput="updatePreview()"></div>
+                    `;
+                    break;
+                case 'certificado':
+                    html = `
+                        <div class="form-group"><label>Nome do Participante</label><input type="text" id="certNome" value="Maria Oliveira" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Nome do Evento / Curso</label><input type="text" id="certEvento" value="Workshop de Design Gráfico" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Carga Horária</label><input type="text" id="certCarga" value="8 horas" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Data</label><input type="text" id="certData" value="15 de Outubro de 2026" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Organização / Responsável</label><input type="text" id="certOrg" value="Centro de Formação Digital" oninput="updatePreview()"></div>
+                    `;
+                    break;
+                case 'comanda':
+                    html = `
+                        <div class="form-group"><label>Número Inicial</label><input type="number" id="comIni" value="1" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Quantidade por folha</label><input type="number" id="comQtd" value="6" max="10" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Título do Estabelecimento</label><input type="text" id="comTitulo" value="Lanchonete & Restaurante" oninput="updatePreview()"></div>
+                    `;
+                    break;
+                case 'folha_anotacoes':
+                    html = `
+                        <div class="form-group"><label>Título do Documento</label><input type="text" id="folhaTitulo" value="Anotações de Reunião" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Estilo das Linhas</label>
+                            <select id="folhaEstilo" onchange="updatePreview()">
+                                <option value="pautada">Pautada (Linhas)</option>
+                                <option value="quadriculada">Quadriculada</option>
+                                <option value="pontilhada">Pontilhada</option>
+                            </select>
+                        </div>
+                    `;
+                    break;
+                default:
+                    html = `
+                        <div class="form-group"><label>Título Principal</label><input type="text" id="genTitulo" value="Documento Oficial" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Descrição / Observações</label><textarea id="genTexto" rows="4" oninput="updatePreview()">Preencha as informações do formulário para gerar o documento pronto em folha A4.</textarea></div>
+                    `;
+            }
+            container.innerHTML = html;
+        }
+
+        // --- ATUALIZAÇÃO DA PRÉ-VISUALIZAÇÃO A4 ---
+        function updatePreview() {
+            if (!activeToolId) return;
+            const preview = document.getElementById('a4Preview');
+
+            switch(activeToolId) {
+                case 'qrcode': {
+                    const text = document.getElementById('qrText')?.value || '';
+                    const label = document.getElementById('qrLabel')?.value || '';
+                    preview.innerHTML = `
+                        <div style="text-align: center; margin-top: 50px;">
+                            <h2 style="color: var(--primary); margin-bottom: 20px;">QR CODE PRONTO PARA USO</h2>
+                            <div id="qrcodeCanvas" style="display: flex; justify-content: center; margin: 30px 0;"></div>
+                            <h3 style="margin-top: 20px; font-weight: 500;">${label}</h3>
+                            <p style="color: #666; font-size: 10pt; margin-top: 40px;">Gerado via Central de Ferramentas da Gráfica</p>
+                        </div>
+                    `;
+                    document.getElementById('qrcodeCanvas').innerHTML = '';
+                    new QRCode(document.getElementById('qrcodeCanvas'), { text: text, width: 200, height: 200 });
+                    break;
+                }
+                case 'assinatura': {
+                    const nome = document.getElementById('assNome')?.value || '';
+                    const cargo = document.getElementById('assCargo')?.value || '';
+                    const empresa = document.getElementById('assEmpresa')?.value || '';
+                    const tel = document.getElementById('assTel')?.value || '';
+                    const email = document.getElementById('assEmail')?.value || '';
+
+                    preview.innerHTML = `
+                        <div class="a4-header"><h2>Assinatura de E-mail (Pré-visualização)</h2></div>
+                        <div style="border: 1px solid #ccc; padding: 20px; border-radius: 8px; max-width: 450px; background: #fff; font-family: sans-serif;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="border-left: 4px solid #0066FF; padding-left: 15px;">
+                                        <h3 style="margin: 0; color: #0066FF; font-size: 16px;">${nome}</h3>
+                                        <p style="margin: 2px 0; font-size: 13px; color: #555;">${cargo} | <strong>${empresa}</strong></p>
+                                        <p style="margin: 8px 0 0 0; font-size: 12px; color: #777;">📞 ${tel} <br> ✉️ ${email}</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <p style="margin-top: 20px; font-size: 10pt; color: #666;">Dica: Copie o bloco visual acima e cole direto na configuração de assinatura do seu gerenciador de e-mail.</p>
+                    `;
+                    break;
+                }
+                case 'orcamento': {
+                    const emp = document.getElementById('orcEmpresa')?.value || '';
+                    const cli = document.getElementById('orcCliente')?.value || '';
+                    const prod = document.getElementById('orcProd')?.value || '';
+                    const val = parseFloat(document.getElementById('orcVal')?.value || 0);
+                    const qtd = parseInt(document.getElementById('orcQtd')?.value || 1);
+                    const desc = parseFloat(document.getElementById('orcDesc')?.value || 0);
+                    const total = (val * qtd) - desc;
+
+                    preview.innerHTML = `
+                        <div class="a4-header">
+                            <div>
+                                <h1 style="color: var(--primary); font-size: 20pt;">ORÇAMENTO</h1>
+                                <p><strong>Emissor:</strong> ${emp}</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <p><strong>Data:</strong> ${new Date().toLocaleDateString('pt-BR')}</p>
+                            </div>
+                        </div>
+                        <p style="margin-bottom: 20px;"><strong>Cliente:</strong> ${cli}</p>
+                        <table class="a4-table">
+                            <thead>
+                                <tr><th>Descrição</th><th>Qtd</th><th>Unitário</th><th>Subtotal</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>${prod}</td>
+                                    <td>${qtd}</td>
+                                    <td>R$ ${val.toFixed(2)}</td>
+                                    <td>R$ ${(val * qtd).toFixed(2)}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style="margin-top: 30px; text-align: right; line-height: 1.8;">
+                            <p>Desconto: R$ ${desc.toFixed(2)}</p>
+                            <h2 style="color: var(--primary);">TOTAL: R$ ${total.toFixed(2)}</h2>
+                        </div>
+                    `;
+                    break;
+                }
+                case 'certificado': {
+                    const nome = document.getElementById('certNome')?.value || '';
+                    const evento = document.getElementById('certEvento')?.value || '';
+                    const carga = document.getElementById('certCarga')?.value || '';
+                    const data = document.getElementById('certData')?.value || '';
+                    const org = document.getElementById('certOrg')?.value || '';
+
+                    preview.innerHTML = `
+                        <div style="border: 5px double #0066FF; padding: 30px; height: 100%; text-align: center; box-sizing: border-box;">
+                            <h1 style="font-size: 28pt; color: #0066FF; margin-top: 40px; letter-spacing: 2px;">CERTIFICADO DE PARTICIPAÇÃO</h1>
+                            <p style="margin-top: 40px; font-size: 14pt;">Certificamos que</p>
+                            <h2 style="font-size: 22pt; border-bottom: 1px solid #333; display: inline-block; padding: 0 20px; margin: 15px 0;">${nome}</h2>
+                            <p style="font-size: 13pt; line-height: 1.8; margin-top: 20px;">
+                                participou com êxito do evento <strong>${evento}</strong>,<br>
+                                realizado em ${data}, com carga horária total de <strong>${carga}</strong>.
+                            </p>
+                            <div style="margin-top: 80px; display: flex; justify-content: space-around;">
+                                <div>____________________________________<br><strong>${org}</strong></div>
+                            </div>
+                            <p style="font-size: 8pt; color: #888; margin-top: 60px;">Este documento é um modelo declaratório de participação sem validade de certificação profissional oficial regulamentada.</p>
+                        </div>
+                    `;
+                    break;
+                }
+                case 'comanda': {
+                    const ini = parseInt(document.getElementById('comIni')?.value || 1);
+                    const qtd = parseInt(document.getElementById('comQtd')?.value || 6);
+                    const tit = document.getElementById('comTitulo')?.value || 'Estabelicimento';
+
+                    let comandasHtml = '';
+                    for(let i = 0; i < qtd; i++) {
+                        const num = String(ini + i).padStart(3, '0');
+                        comandasHtml += `
+                            <div class="ticket-item">
+                                <strong style="font-size: 11pt;">${tit}</strong> - <span style="color: var(--primary);">Nº ${num}</span>
+                                <hr style="margin: 5px 0;">
+                                <p>Cliente: _____________________</p>
+                                <p style="font-size: 8pt; margin-top: 5px;">Item | Qtd | Valor</p>
+                                <p style="border-bottom: 1px dashed #ccc; height: 15px;"></p>
+                                <p style="border-bottom: 1px dashed #ccc; height: 15px;"></p>
+                                <p style="text-align: right; margin-top: 5px;"><strong>Total: R$ ________</strong></p>
+                            </div>
+                        `;
+                    }
+                    preview.innerHTML = `
+                        <div class="a4-header"><h2>Folha de Comandas Numeradas</h2></div>
+                        <div class="grid-tickets">${comandasHtml}</div>
+                    `;
+                    break;
+                }
+                case 'folha_anotacoes': {
+                    const tit = document.getElementById('folhaTitulo')?.value || 'Anotações';
+                    const estilo = document.getElementById('folhaEstilo')?.value || 'pautada';
+                    let backgroundCss = '';
+
+                    if (estilo === 'pautada') backgroundCss = 'linear-gradient(#e5e5e5 1px, transparent 1px)';
+                    else if (estilo === 'quadriculada') backgroundCss = 'linear-gradient(#e5e5e5 1px, transparent 1px), linear-gradient(90deg, #e5e5e5 1px, transparent 1px)';
+                    else if (estilo === 'pontilhada') backgroundCss = 'radial-gradient(#aaa 1px, transparent 1px)';
+
+                    preview.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #0066FF; padding-bottom: 8px;">
+                            <h2>${tit}</h2>
+                            <span>Data: ____/____/20___</span>
+                        </div>
+                        <div style="height: 240mm; margin-top: 15px; background-image: ${backgroundCss}; background-size: ${estilo === 'pontilhada' ? '20px 20px' : '100% 25px'};"></div>
+                    `;
+                    break;
+                }
+                default: {
+                    const tit = document.getElementById('genTitulo')?.value || 'Documento';
+                    const txt = document.getElementById('genTexto')?.value || '';
+                    preview.innerHTML = `
+                        <div class="a4-header"><h2>${tit}</h2></div>
+                        <p style="white-space: pre-wrap; line-height: 1.6;">${txt}</p>
+                    `;
+                }
+            }
         }
     </script>
 </body>
