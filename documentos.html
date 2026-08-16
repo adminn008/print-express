@@ -356,15 +356,14 @@
             <div style="font-size: 24px;">🔒</div>
             <div>
                 <strong>Segurança e Sigilo Absoluto</strong><br>
-                Utilizamos seus dados **exclusivamente** nos portais do governo/Detran para consultar e gerar o documento solicitado. Garantimos **100% de sigilo e proteção total de dados (LGPD)**.
+                Utilizamos seus dados **exclusivamente** nos portais do governo/Detran para consultar e gerar o documento solicitado. Garantimos **100% de sigilo e proteção total de dados**.
+                
+                <p><strong>Aviso de Envio Seguro via WhatsApp:</strong> No novo fluxo do site, as informações do seu pedido desta aba não passam por intermediários e são encaminhadas direta e exclusivamente para o nosso WhatsApp oficial, garantindo máxima segurança, agilidade no atendimento e sigilo total dos seus dados.</p>
             </div>
         </div>
 
-        <form id="formDoc" class="step-card" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data">
+        <form id="formDoc" class="step-card">
             
-            <input type="hidden" name="_captcha" value="false">
-            <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="Servico" value="Emissao de Documentos Oficiais">
             <input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">
 
             <div class="alerta-desconsiderar">
@@ -526,7 +525,7 @@
                 </div>
             </div>
 
-            <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido & Gerar Pagamento 🚀</button>
+            <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido via WhatsApp 🚀</button>
         </form>
 
         <div id="telaSucesso" class="sucesso-card hidden">
@@ -537,7 +536,7 @@
             <div id="boxDetalhesPagamento"></div>
 
             <a id="btnNotificarWhats" href="#" target="_blank" class="btn-whatsapp">
-                💬 Notificar Pedido no WhatsApp
+                💬 Finalizar Pedido no WhatsApp
             </a>
 
             <button class="btn-primary" onclick="permitirSaida = true; location.href='index.html';" style="margin-top: 16px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">
@@ -773,75 +772,85 @@
         const form = document.getElementById("formDoc");
         const btnSubmit = document.getElementById("btnSubmit");
 
-        form.addEventListener("submit", async (e) => {
+        form.addEventListener("submit", (e) => {
             e.preventDefault();
-            btnSubmit.disabled = true;
-            btnSubmit.innerText = "Processando Pedido...";
 
             const totalCalculado = calcularEAtualizarCampos();
-            document.getElementById("hidden_total").value = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
-
-            const formData = new FormData(form);
             const pagamentoSel = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
             const clienteNome = document.getElementById("nome").value;
+            const clienteWhats = document.getElementById("telefone").value;
+            const tipoDocText = selectTipo.options[selectTipo.selectedIndex].text;
+            const possuiDocText = selectPossuiDoc.options[selectPossuiDoc.selectedIndex].text;
+            const obs = document.getElementById("observacoes").value;
 
-            try {
-                const response = await fetch(form.action, {
-                    method: "POST",
-                    body: formData,
-                    headers: { 'Accept': 'application/json' }
-                });
-
-                if (response.ok) {
-                    permitirSaida = true;
-
-                    form.classList.add("hidden");
-                    document.getElementById("secaoPrecos").classList.add("hidden");
-                    document.getElementById("secaoBanner").classList.add("hidden");
-
-                    const telaSucesso = document.getElementById("telaSucesso");
-                    const boxPagamento = document.getElementById("boxDetalhesPagamento");
-
-                    if (pagamentoSel === "PIX") {
-                        boxPagamento.innerHTML = `
-                            <div class="pix-box">
-                                <p style="font-size:13px; color:var(--text-muted); font-weight:700;">VALOR TOTAL A PAGAR VIA PIX</p>
-                                <div style="font-size:28px; font-weight:800; color:var(--green);">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
-                                
-                                <div style="margin: 8px 0;">
-                                    <img src="qrcode-pix.jpg" alt="QR Code PIX" style="max-width: 170px; width: 100%; border-radius: 12px; border: 1px solid var(--border-color);" onerror="this.style.display='none'">
-                                </div>
-
-                                <input type="text" id="pixKey" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:11px; color:var(--primary); background: var(--bg-card);">
-                                <button class="btn-primary" type="button" onclick="copiarPix()">📋 Copiar Chave PIX</button>
-                            </div>
-                        `;
-                    } else {
-                        boxPagamento.innerHTML = `
-                            <div style="background:var(--bg-input); padding:20px; border-radius:16px; margin-top:16px;">
-                                <p style="font-size:13px; color:var(--text-muted);">VALOR A PAGAR NA RETIRADA</p>
-                                <div style="font-size:28px; font-weight:800; color:var(--green);">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
-                                <p style="font-size:13px; margin-top:8px;">Pagamento em <strong>Dinheiro</strong> no momento da retirada.</p>
-                            </div>
-                        `;
-                    }
-
-                    const msgWhats = encodeURIComponent(`Olá! Enviei um pedido de Documentos Oficiais.\n\n👤 Nome: ${clienteNome}\n💰 Total: R$ ${totalCalculado.toFixed(2).replace('.', ',')}\n💳 Pagamento: ${pagamentoSel}`);
-                    document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;
-
-                    telaSucesso.classList.remove("hidden");
-                    telaSucesso.scrollIntoView({ behavior: 'smooth' });
-
-                } else {
-                    alert("Erro ao processar o pedido. Tente novamente.");
-                    btnSubmit.disabled = false;
-                    btnSubmit.innerText = "Enviar Pedido & Gerar Pagamento 🚀";
-                }
-            } catch (error) {
-                alert("Erro de conexão ao enviar o formulário.");
-                btnSubmit.disabled = false;
-                btnSubmit.innerText = "Enviar Pedido & Gerar Pagamento 🚀";
+            // Montando mensagem estruturada para o WhatsApp
+            let detalhesBusca = "";
+            if (selectPossuiDoc.value === "nao") {
+                if (inputPlaca.value) detalhesBusca += `\n🚗 Placa: ${inputPlaca.value}`;
+                if (inputRenavam.value) detalhesBusca += `\n🔢 RENAVAM: ${inputRenavam.value}`;
+                if (inputCpfTitular.value) detalhesBusca += `\n🆔 CPF Titular: ${inputCpfTitular.value}`;
+                if (inputDataNasc.value) detalhesBusca += `\n📅 Data Nasc.: ${inputDataNasc.value}`;
+                if (inputNomeMae.value) detalhesBusca += `\n👩 Nome da Mãe: ${inputNomeMae.value}`;
+                if (inputCnpj.value) detalhesBusca += `\n🏢 CNPJ: ${inputCnpj.value}`;
+                if (inputDescricaoOutro.value) detalhesBusca += `\n📄 Descrição: ${inputDescricaoOutro.value}`;
             }
+
+            let extras = [];
+            if (optRedimensionar.checked) extras.push("Ajuste Tamanho Carteira");
+            if (optPdfWhats.checked && !optPdfWhats.disabled) extras.push("PDF no WhatsApp");
+            if (optCopiaExtra.checked) extras.push("2ª Cópia Extra");
+            if (optRecorte.checked) extras.push("Ajuste Margem/Recorte");
+
+            let mensagemWhatsApp = `*NOVO PEDIDO - PRINNTEXPRESS*\n\n` +
+                `👤 *Cliente:* ${clienteNome}\n` +
+                `📱 *WhatsApp:* ${clienteWhats}\n` +
+                `📄 *Serviço:* ${tipoDocText}\n` +
+                `📁 *Possui Arquivo:* ${possuiDocText}\n` +
+                (detalhesBusca ? `\n*DADOS PARA BUSCA:*${detalhesBusca}\n` : '') +
+                (extras.length > 0 ? `\n✨ *Extras:* ${extras.join(', ')}\n` : '') +
+                (obs ? `\n💬 *Obs:* ${obs}\n` : '') +
+                `\n💳 *Pagamento:* ${pagamentoSel}\n` +
+                `💰 *Total Estimado:* R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
+
+            const urlWhatsApp = `https://wa.me/5541999682836?text=${encodeURIComponent(mensagemWhatsApp)}`;
+
+            permitirSaida = true;
+
+            form.classList.add("hidden");
+            document.getElementById("secaoPrecos").classList.add("hidden");
+            document.getElementById("secaoBanner").classList.add("hidden");
+
+            const telaSucesso = document.getElementById("telaSucesso");
+            const boxPagamento = document.getElementById("boxDetalhesPagamento");
+
+            if (pagamentoSel === "PIX") {
+                boxPagamento.innerHTML = `
+                    <div class="pix-box">
+                        <p style="font-size:13px; color:var(--text-muted); font-weight:700;">VALOR TOTAL A PAGAR VIA PIX</p>
+                        <div style="font-size:28px; font-weight:800; color:var(--green);">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
+                        
+                        <div style="margin: 8px 0;">
+                            <img src="qrcode-pix.jpg" alt="QR Code PIX" style="max-width: 170px; width: 100%; border-radius: 12px; border: 1px solid var(--border-color);" onerror="this.style.display='none'">
+                        </div>
+
+                        <input type="text" id="pixKey" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:11px; color:var(--primary); background: var(--bg-card);">
+                        <button class="btn-primary" type="button" onclick="copiarPix()">📋 Copiar Chave PIX</button>
+                    </div>
+                `;
+            } else {
+                boxPagamento.innerHTML = `
+                    <div style="background:var(--bg-input); padding:20px; border-radius:16px; margin-top:16px;">
+                        <p style="font-size:13px; color:var(--text-muted);">VALOR A PAGAR NA RETIRADA</p>
+                        <div style="font-size:28px; font-weight:800; color:var(--green);">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
+                        <p style="font-size:13px; margin-top:8px;">Pagamento em <strong>Dinheiro</strong> no momento da retirada.</p>
+                    </div>
+                `;
+            }
+
+            document.getElementById("btnNotificarWhats").href = urlWhatsApp;
+
+            telaSucesso.classList.remove("hidden");
+            telaSucesso.scrollIntoView({ behavior: 'smooth' });
         });
 
         function copiarPix() {
