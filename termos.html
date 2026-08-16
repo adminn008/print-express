@@ -1,167 +1,381 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PrintExpress - Termos de Uso</title>
+    <title>Termos de Uso - PrintExpress</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-body: #f8fafc;
-            --bg-card: #ffffff;
-            --bg-input: #f1f5f9;
-            --border-color: #e2e8f0;
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --primary-light: #e0f2fe;
+            --accent: #38bdf8;
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --primary: #0284c7;
-            --amber: #f59e0b;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-            --font-scale: 1rem;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 20px -2px rgba(2, 132, 199, 0.08);
+            --font: 'Plus Jakarta Sans', sans-serif;
         }
 
-        [data-theme="dark"] {
-            --bg-body: #0f172a;
-            --bg-card: #1e293b;
-            --bg-input: #0f172a;
-            --border-color: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; font-family: var(--font); color: var(--text-main); background: var(--bg-body); }
+        body { line-height: 1.6; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s ease; }
-        html { font-size: var(--font-scale); scroll-behavior: smooth; }
-        body { background-color: var(--bg-body); color: var(--text-main); padding: 32px 16px 80px 16px; line-height: 1.6; }
+        .progress-bar { position: fixed; top: 0; left: 0; height: 4px; background: linear-gradient(90deg, var(--primary), var(--accent)); width: 0%; z-index: 1000; transition: width 0.1s; }
 
-        .container { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
-        header { text-align: center; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        header { background: var(--bg-card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 900; }
+        .header-container { max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .brand { font-size: 20px; font-weight: 800; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .nav-link { color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 600; transition: color 0.2s; }
+        .nav-link:hover { color: var(--primary); }
+
+        .hero-doc { background: linear-gradient(135deg, #0f172a 0%, #0369a1 100%); color: white; padding: 60px 24px; text-align: center; }
+        .hero-doc h1 { font-size: 36px; font-weight: 800; margin-bottom: 12px; }
+        .hero-doc p { color: var(--primary-light); font-size: 16px; max-width: 600px; margin: 0 auto 24px; }
         
-        .btn-header {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 8px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-            box-shadow: var(--shadow);
-        }
+        .search-box { max-width: 500px; margin: 0 auto; position: relative; }
+        .search-input { width: 100%; padding: 14px 20px 14px 44px; border-radius: 30px; border: none; font-size: 14px; background: white; color: var(--text-main); box-shadow: var(--shadow-md); outline: none; }
+        .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .search-stats { margin-top: 10px; font-size: 12px; color: var(--primary-light); }
 
-        h1 { color: var(--primary); font-size: 32px; font-weight: 800; }
-        
-        .content-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            box-shadow: var(--shadow);
-        }
+        .layout-container { max-width: 1200px; margin: 40px auto; padding: 0 24px; display: grid; grid-template-columns: 280px 1fr; gap: 40px; }
 
-        .accordion-item { border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
-        .accordion-header {
-            width: 100%; padding: 14px 18px; background: var(--bg-input); border: none;
-            text-align: left; font-weight: 700; font-size: 14px; color: var(--text-main);
-            cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-        }
-        .accordion-body { padding: 16px 18px; background: var(--bg-card); font-size: 13px; display: none; border-top: 1px solid var(--border-color); }
-        .accordion-item.open .accordion-body { display: block; }
+        .sidebar { position: sticky; top: 90px; height: fit-content; max-height: calc(100vh - 120px); overflow-y: auto; background: var(--bg-card); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border); }
+        .sidebar h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 12px; }
+        .toc-list { list-style: none; }
+        .toc-item a { display: block; padding: 8px 12px; font-size: 13px; color: var(--text-muted); text-decoration: none; border-radius: var(--radius-md); transition: all 0.2s; margin-bottom: 4px; }
+        .toc-item a:hover, .toc-item a.active { background: var(--primary-light); color: var(--primary-dark); font-weight: 700; }
 
-        .warning-box {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid var(--amber);
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 13px;
-        }
+        .doc-content { display: flex; flex-direction: column; gap: 32px; }
+        .doc-card { background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 32px; box-shadow: var(--shadow-sm); position: relative; }
+        .doc-card h2 { font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+        .copy-btn { font-size: 12px; font-weight: 600; color: var(--text-muted); background: var(--bg-body); border: 1px solid var(--border); padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+        .copy-btn:hover { background: var(--primary-light); color: var(--primary-dark); }
+        .doc-card p, .doc-card ul { font-size: 14px; color: var(--text-main); margin-bottom: 12px; line-height: 1.7; }
+        .doc-card ul { padding-left: 20px; }
+        .doc-card li { margin-bottom: 6px; }
 
-        .btn-whatsapp {
-            background: #25D366; color: white; text-decoration: none; padding: 14px;
-            border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;
+        .alert-box { background: #fffbeeb0; border-left: 4px solid #f59e0b; padding: 16px; border-radius: 0 var(--radius-md) var(--radius-md) 0; margin: 16px 0; font-size: 13px; color: #b45309; }
+
+        .highlight-text { background-color: #fef08a; padding: 2px 4px; border-radius: 4px; }
+
+        .top-btn { position: fixed; bottom: 24px; right: 24px; background: var(--primary); color: white; width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: none; align-items: center; justify-content: center; box-shadow: var(--shadow-md); transition: transform 0.2s; }
+        .top-btn:hover { transform: translateY(-3px); }
+
+        footer { background: #0f172a; color: white; padding: 40px 24px 20px; margin-top: 8px; }
+        .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .footer-brand h4 { font-size: 18px; color: var(--accent); margin-bottom: 12px; }
+        .footer-brand p { color: #94a3b8; font-size: 13px; }
+        .footer-links h5 { font-size: 14px; margin-bottom: 12px; color: white; }
+        .footer-links ul { list-style: none; }
+        .footer-links a { color: #94a3b8; text-decoration: none; font-size: 13px; display: block; margin-bottom: 8px; }
+        .footer-links a:hover { color: var(--accent); }
+        .footer-bottom { border-top: 1px solid #334155; text-align: center; padding-top: 20px; font-size: 12px; color: #64748b; }
+
+        @media (max-width: 900px) {
+            .layout-container { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            .footer-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <div class="header-top">
-                <a href="index.html" class="btn-header">⬅️ Voltar à Loja</a>
-                <button class="btn-header" onclick="alternarTema()">☀️ / 🌙</button>
-            </div>
-            <h1>PrintExpress</h1>
-            <p>Termos de Uso e Condições do Serviço</p>
-        </header>
+    <div class="progress-bar" id="progressBar"></div>
 
-        <div class="content-card">
-            <p>Ao utilizar o sistema de envio e impressão do <strong>PrintExpress</strong>, você concorda com os termos e regras estabelecidos abaixo.</p>
-
-            <div class="warning-box">
-                ⚠️ <strong>Atenção:</strong> O cliente é integralmente responsável pelo conteúdo dos arquivos enviados para impressão.
-            </div>
-
-            <div class="accordion-item open">
-                <button class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>1. Envio de Documentos e Qualidade</span>
-                    <span>▼</span>
-                </button>
-                <div class="accordion-body">
-                    <p>A qualidade da impressão depende diretamente do arquivo enviado pelo cliente. Arquivos de baixa resolução, desfocados ou desalinhados serão impressos conforme a imagem original recebida.</p>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <button class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>2. Pagamentos e Execução</span>
-                    <span>▼</span>
-                </button>
-                <div class="accordion-body">
-                    <p>A impressão do material tem início imediatamente após a confirmação do pagamento via PIX ou envio do comprovante correspondente através do WhatsApp oficial.</p>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <button class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>3. Retirada de Pedidos</span>
-                    <span>▼</span>
-                </button>
-                <div class="accordion-body">
-                    <p>Os materiais impressos devem ser retirados no ponto de atendimento indicado em até <strong>7 dias úteis</strong>. Materiais não retirados dentro do prazo poderão ser descartados com segurança.</p>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <button class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>4. Restrições de Conteúdo</span>
-                    <span>▼</span>
-                </button>
-                <div class="accordion-body">
-                    <p>Não realizamos a impressão de materiais falsificados, moedas, ou documentos ilegais que infrinjam a legislação vigente.</p>
-                </div>
-            </div>
-
-            <a href="https://wa.me/5541999682836?text=Dúvida%20sobre%20Termos%20de%20Uso" target="_blank" class="btn-whatsapp">
-                💬 Dúvidas sobre os Termos? Fale no WhatsApp
-            </a>
+    <header>
+        <div class="header-container">
+            <a href="sobre.html" class="brand">🖨️ PRINTEXPRESS</a>
+            <nav style="display: flex; gap: 16px;">
+                <a href="sobre.html" class="nav-link">Sobre</a>
+                <a href="termos.html" class="nav-link" style="color: var(--primary);">Termos</a>
+                <a href="privacidade.html" class="nav-link">Privacidade</a>
+            </nav>
         </div>
+    </header>
+
+    <section class="hero-doc">
+        <h1>Termos de Uso</h1>
+        <p>Regras, condições e diretrizes para utilização dos nossos serviços gráficos e digitais.</p>
+        <div class="search-box">
+            <span class="search-icon">🔎</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="Buscar nesta página (ex: pagamentos, cancelamento)...">
+            <div class="search-stats" id="searchStats"></div>
+        </div>
+    </section>
+
+    <div class="layout-container">
+        <aside class="sidebar">
+            <h3>Índice da Página</h3>
+            <ul class="toc-list" id="tocList"></ul>
+        </aside>
+
+        <main class="doc-content" id="docContent">
+
+            <article class="doc-card" id="apresentacao">
+                <h2>1. Apresentação <button class="copy-btn" onclick="copyLink('apresentacao')">Copiar link</button></h2>
+                <p>Estes Termos de Uso regem a utilização do site e das ferramentas do <strong>PrintExpress</strong>, disponibilizado por [NOME LEGAL DO RESPONSÁVEL / NOME DA EMPRESA], com identificação por meio de [CNPJ / REGISTRO, SE APLICÁVEL], sob o domínio [DOMÍNIO].</p>
+                <p>Última atualização destes termos: [DATA DE ATUALIZAÇÃO].</p>
+            </article>
+
+            <article class="doc-card" id="aceitacao">
+                <h2>2. Aceitação dos Termos <button class="copy-btn" onclick="copyLink('aceitacao')">Copiar link</button></h2>
+                <p>Ao navegar, acessar ou efetuar qualquer pedido de serviço gráfico no PrintExpress, o cliente concorda integralmente com as condições estipuladas neste documento. Caso não concorde com qualquer disposição, o usuário deve se abster de utilizar a plataforma.</p>
+            </article>
+
+            <article class="doc-card" id="servicos">
+                <h2>3. Sobre os Serviços do PrintExpress <button class="copy-btn" onclick="copyLink('servicos')">Copiar link</button></h2>
+                <p>O PrintExpress é uma solução focada na facilitação, preparação e solicitação de serviços de impressão e materiais gráficos. O site atua no intermédio e gestão do fluxo de recebimento de arquivos e processamento de solicitações gráficas.</p>
+            </article>
+
+            <article class="doc-card" id="cadastro">
+                <h2>4. Cadastro e Utilização <button class="copy-btn" onclick="copyLink('cadastro')">Copiar link</button></h2>
+                <p>O acesso a determinados recursos digitais ou a formalização de solicitações pode exigir o fornecimento de dados de identificação e contato atualizados. O usuário é o único responsável pela veracidade dos dados informados.</p>
+            </article>
+
+            <article class="doc-card" id="solicitacao">
+                <h2>5. Solicitação de Serviços <button class="copy-btn" onclick="copyLink('solicitacao')">Copiar link</button></h2>
+                <p>Ao submeter um pedido, o cliente define as especificações desejadas (como tipo de papel, tamanho, quantidade, cores e acabamento). A execução do serviço está condicionada à confirmação dos detalhes e disponibilidade.</p>
+            </article>
+
+            <article class="doc-card" id="informacoes-cliente">
+                <h2>6. Informações Fornecidas pelo Cliente <button class="copy-btn" onclick="copyLink('informacoes-cliente')">Copiar link</button></h2>
+                <p>O cliente garante que todas as informações textuais, cadastrais e operacionais fornecidas para a elaboração ou personalização dos materiais impressos estão corretas e revisadas.</p>
+            </article>
+
+            <article class="doc-card" id="arquivos-enviados">
+                <h2>7. Arquivos Enviados pelo Cliente <button class="copy-btn" onclick="copyLink('arquivos-enviados')">Copiar link</button></h2>
+                <p>O envio de arquivos digitais (PDF, imagens ou vetores) para impressão é de responsabilidade do cliente. O PrintExpress realiza a impressão com base nos arquivos anexados sem obrigatoriedade de revisão de conteúdo sintático ou ortográfico.</p>
+            </article>
+
+            <article class="doc-card" id="qualidade-arquivos">
+                <h2>8. Qualidade e Características dos Arquivos <button class="copy-btn" onclick="copyLink('qualidade-arquivos')">Copiar link</button></h2>
+                <div class="alert-box">
+                    <strong>Importante:</strong> A qualidade do resultado impresso depende diretamente da resolução e configuração de cores (CMYK) do arquivo fornecido.
+                </div>
+                <p>Fatores como resolução baixa, margens inadequadas ou conversão de cores podem afetar o produto final sem caracterizar defeito de produção da gráfica.</p>
+            </article>
+
+            <article class="doc-card" id="responsabilidade-conteudo">
+                <h2>9. Responsabilidade pelo Conteúdo <button class="copy-btn" onclick="copyLink('responsabilidade-conteudo')">Copiar link</button></h2>
+                <p>O cliente declara ser o titular ou deter as devidas autorizações legais sobre o conteúdo do material enviado, isentando o PrintExpress de qualquer violação a direitos de terceiros.</p>
+            </article>
+
+            <article class="doc-card" id="direitos-autorais">
+                <h2>10. Direitos Autorais e Propriedade Intelectual <button class="copy-btn" onclick="copyLink('direitos-autorais')">Copiar link</button></h2>
+                <p>É expressamente proibido enviar para impressão materiais que constituam crime, violação de marca registrada, direitos autorais ou documentos oficiais sem autorização legal.</p>
+            </article>
+
+            <article class="doc-card" id="materiais-personalizados">
+                <h2>11. Materiais Personalizados <button class="copy-btn" onclick="copyLink('materiais-personalizados')">Copiar link</button></h2>
+                <p>Produtos gráficos confeccionados de forma personalizada conforme especificação do cliente não possuem viabilidade de reutilização, aplicando-se regras específicas quanto ao direito de desistência após o início da produção.</p>
+            </article>
+
+            <article class="doc-card" id="orcamentos">
+                <h2>12. Orçamentos e Preços <button class="copy-btn" onclick="copyLink('orcamentos')">Copiar link</button></h2>
+                <p>Os valores apresentados na plataforma podem variar conforme a quantidade, formato, acabamento e opções técnicas selecionadas. Orçamentos prévios possuem validade informada no momento da cotação.</p>
+            </article>
+
+            <article class="doc-card" id="pagamentos">
+                <h2>13. Pagamentos <button class="copy-btn" onclick="copyLink('pagamentos')">Copiar link</button></h2>
+                <p>O processamento das solicitações ocorrerá mediante validação do pagamento por meio das modalidades ativas no sistema: [FORMAS DE PAGAMENTO DISPONÍVEIS].</p>
+            </article>
+
+            <article class="doc-card" id="cancelamentos">
+                <h2>14. Cancelamentos <button class="copy-btn" onclick="copyLink('cancelamentos')">Copiar link</button></h2>
+                <p>O cancelamento da solicitação pode ser requerido pelo cliente antes do envio do arquivo para a etapa de produção gráfica. Caso a impressão já tenha sido iniciada, custos operacionais e de insumos serão retidos.</p>
+            </article>
+
+            <article class="doc-card" id="alteracoes-pedidos">
+                <h2>15. Alterações em Pedidos <button class="copy-btn" onclick="copyLink('alteracoes-pedidos')">Copiar link</button></h2>
+                <p>Modificações nas artes, textos ou especificações do pedido só serão aceitas caso a fase de pré-impressão não tenha sido finalizada.</p>
+            </article>
+
+            <article class="doc-card" id="prazos">
+                <h2>16. Prazos <button class="copy-btn" onclick="copyLink('prazos')">Copiar link</button></h2>
+                <p>Os prazos estimados compreendem o tempo de produção gráfica somado ao prazo de deslocamento ou logística, contados a partir da aprovação final da arte e confirmação de pagamento.</p>
+            </article>
+
+            <article class="doc-card" id="entrega-retirada">
+                <h2>17. Entrega ou Retirada <button class="copy-btn" onclick="copyLink('entrega-retirada')">Copiar link</button></h2>
+                <p>A disponibilização dos materiais finalizados observará a opção definida no pedido: [CONFIGURAR MODALIDADE DE ENTREGA/RETIRADA].</p>
+            </article>
+
+            <article class="doc-card" id="conferencia">
+                <h2>18. Conferência dos Materiais <button class="copy-btn" onclick="copyLink('conferencia')">Copiar link</button></h2>
+                <p>O cliente deve inspecionar o produto no momento do recebimento ou retirada. Eventuais inconsistências na quantidade ou acabamento devem ser comunicadas em até 48 horas.</p>
+            </article>
+
+            <article class="doc-card" id="limitacao-responsabilidade">
+                <h2>19. Limitações de Responsabilidade <button class="copy-btn" onclick="copyLink('limitacao-responsabilidade')">Copiar link</button></h2>
+                <p>O PrintExpress não se responsabiliza por prejuízos indiretos decorrentes de atrasos provocados por dados incorretos informados pelo usuário ou problemas logísticos terceirizados.</p>
+            </article>
+
+            <article class="doc-card" id="uso-proibido">
+                <h2>20. Uso Proibido <button class="copy-btn" onclick="copyLink('uso-proibido')">Copiar link</button></h2>
+                <p>É vedada a utilização do portal para fins ilícitos, engenharia reversa, submissão de vírus ou tentativas de violação da infraestrutura tecnológica.</p>
+            </article>
+
+            <article class="doc-card" id="disponibilidade">
+                <h2>21. Disponibilidade do Site <button class="copy-btn" onclick="copyLink('disponibilidade')">Copiar link</button></h2>
+                <p>Buscamos manter o site operacional continuamente, porém interrupções temporárias para manutenção ou falhas de provedores podem ocorrer sem prévio aviso.</p>
+            </article>
+
+            <article class="doc-card" id="alteracoes-servicos">
+                <h2>22. Alterações nos Serviços <button class="copy-btn" onclick="copyLink('alteracoes-servicos')">Copiar link</button></h2>
+                <p>Reservamo-nos o direito de modificar, adicionar ou descontinuar ferramentas e tipos de serviços gráficos oferecidos no portal a qualquer tempo.</p>
+            </article>
+
+            <article class="doc-card" id="privacidade-link">
+                <h2>23. Privacidade <button class="copy-btn" onclick="copyLink('privacidade-link')">Copiar link</button></h2>
+                <p>O tratamento de dados pessoais coletados durante o uso dos nossos serviços segue rigorosamente a nossa diretriz institucional. Consulte também nossa <a href="privacidade.html" style="color: var(--primary); font-weight: 700;">Política de Privacidade</a>.</p>
+            </article>
+
+            <article class="doc-card" id="alteracoes-termos">
+                <h2>24. Alterações dos Termos <button class="copy-btn" onclick="copyLink('alteracoes-termos')">Copiar link</button></h2>
+                <p>Estes termos de uso podem ser revisados periodicamente. A versão atualizada entrará em vigor a partir da data de sua publicação no site.</p>
+            </article>
+
+            <article class="doc-card" id="contato">
+                <h2>25. Contato <button class="copy-btn" onclick="copyLink('contato')">Copiar link</button></h2>
+                <p>Para esclarecimentos sobre estes Termos de Uso, entre em contato via e-mail no endereço: <strong>[E-MAIL]</strong>.</p>
+            </article>
+
+        </main>
     </div>
 
+    <button class="top-btn" id="topBtn" onclick="scrollToTop()" aria-label="Voltar ao topo">↑</button>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h4>🖨️ PRINTEXPRESS</h4>
+                <p>Serviços gráficos e ferramentas digitais para facilitar suas impressões e materiais institucionais com agilidade e precisão.</p>
+            </div>
+            <div class="footer-links">
+                <h5>Navegação</h5>
+                <ul>
+                    <li><a href="sobre.html">Sobre o PrintExpress</a></li>
+                    <li><a href="termos.html">Termos de Uso</a></li>
+                    <li><a href="privacidade.html">Política de Privacidade</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h5>Atendimento</h5>
+                <ul>
+                    <li><a href="#">Contato: [E-MAIL]</a></li>
+                    <li><a href="#">WhatsApp: [WHATSAPP, SE APLICÁVEL]</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© [ANO] PrintExpress. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
     <script>
-        function alternarTema() {
-            const current = document.documentElement.getAttribute('data-theme');
-            document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+        // Barra de progresso de leitura
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+
+            // Botão voltar ao topo
+            const topBtn = document.getElementById('topBtn');
+            if (winScroll > 300) {
+                topBtn.style.display = 'flex';
+            } else {
+                topBtn.style.display = 'none';
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function toggleAccordion(btn) {
-            const item = btn.parentElement;
-            item.classList.toggle("open");
-            btn.querySelector("span:last-child").innerText = item.classList.contains("open") ? "▲" : "▼";
+        // Gerar Índice Automaticamente
+        const docContent = document.getElementById('docContent');
+        const tocList = document.getElementById('tocList');
+        const cards = docContent.querySelectorAll('.doc-card');
+
+        cards.forEach(card => {
+            const h2 = card.querySelector('h2');
+            if(h2) {
+                const titleText = h2.childNodes[0].textContent.trim();
+                const li = document.createElement('li');
+                li.className = 'toc-item';
+                const a = document.createElement('a');
+                a.href = '#' + card.id;
+                a.textContent = titleText;
+                li.appendChild(a);
+                tocList.appendChild(li);
+            }
+        });
+
+        // Highlight do índice ao rolar (IntersectionObserver)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    const id = entry.target.id;
+                    document.querySelectorAll('.toc-item a').forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+                    });
+                }
+            });
+        }, { threshold: 0.3 });
+
+        cards.forEach(card => observer.observe(card));
+
+        // Função para copiar link da seção
+        function copyLink(id) {
+            const url = window.location.origin + window.location.pathname + '#' + id;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Link copiado para a área de transferência!');
+            });
         }
+
+        // Sistema de busca na página
+        const searchInput = document.getElementById('searchInput');
+        const searchStats = document.getElementById('searchStats');
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            let matches = 0;
+
+            cards.forEach(card => {
+                const paragraphs = card.querySelectorAll('p, li');
+                let cardHasMatch = false;
+
+                paragraphs.forEach(el => {
+                    const text = el.textContent;
+                    if(query !== "" && text.toLowerCase().includes(query)) {
+                        cardHasMatch = true;
+                        matches++;
+                    }
+                });
+
+                if(query === "") {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = cardHasMatch ? 'block' : 'none';
+                }
+            });
+
+            if(query !== "") {
+                searchStats.textContent = `${matches} seção(ões) encontrada(s)`;
+            } else {
+                searchStats.textContent = '';
+            }
+        });
     </script>
 </body>
 </html>
