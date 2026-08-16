@@ -1119,6 +1119,523 @@
     <div class="px-footer-bottom">
         <p>© 2026 PrintExpress. Todos os direitos reservados.</p>
         <button type="button" class="px-footer-top-btn" onclick="pxScrollToTop()">Voltar ao topo ↑</button>
+
+        <!-- ============================================================ -->
+<!-- PRINNTEXPRESS - SISTEMA INTEGRADO DE CONSENTIMENTO DE COOKIES -->
+<!-- ============================================================ -->
+
+<style>
+  /* Escopo CSS Exclusivo do PrintExpress */
+  .printexpress-cookie-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 999998;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .printexpress-cookie-overlay.printexpress-cookie-active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .printexpress-cookie-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -46%) scale(0.97);
+    width: 90%;
+    max-width: 560px;
+    max-height: 85vh;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 51, 102, 0.2);
+    z-index: 999999;
+    opacity: 0;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #2c3e50;
+    border: 1px solid #e1e8ed;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+  }
+
+  .printexpress-cookie-modal.printexpress-cookie-active {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .printexpress-cookie-header {
+    padding: 20px 24px 12px 24px;
+    border-bottom: 1px solid #eef2f5;
+  }
+
+  .printexpress-cookie-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #004488;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .printexpress-cookie-body {
+    padding: 20px 24px;
+    overflow-y: auto;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #4a5568;
+  }
+
+  .printexpress-cookie-body p {
+    margin: 0 0 12px 0;
+  }
+
+  .printexpress-cookie-links {
+    margin-top: 8px;
+    font-size: 0.85rem;
+  }
+
+  .printexpress-cookie-links a {
+    color: #0066cc;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .printexpress-cookie-links a:hover,
+  .printexpress-cookie-links a:focus {
+    text-decoration: underline;
+    outline: none;
+  }
+
+  .printexpress-cookie-footer {
+    padding: 16px 24px;
+    background-color: #f8fafc;
+    border-top: 1px solid #eef2f5;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  /* Estilos das Categorias (Painel de Preferências) */
+  .printexpress-cookie-category {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+  }
+
+  .printexpress-cookie-cat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .printexpress-cookie-cat-title {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.95rem;
+  }
+
+  .printexpress-cookie-cat-desc {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0;
+  }
+
+  /* Switch / Toggle Component */
+  .printexpress-cookie-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+  }
+
+  .printexpress-cookie-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .printexpress-cookie-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1;
+    transition: .3s;
+    border-radius: 24px;
+  }
+
+  .printexpress-cookie-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+  }
+
+  .printexpress-cookie-switch input:checked + .printexpress-cookie-slider {
+    background-color: #0066cc;
+  }
+
+  .printexpress-cookie-switch input:focus + .printexpress-cookie-slider {
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.3);
+  }
+
+  .printexpress-cookie-switch input:checked + .printexpress-cookie-slider:before {
+    transform: translateX(20px);
+  }
+
+  .printexpress-cookie-switch input:disabled + .printexpress-cookie-slider {
+    background-color: #004488;
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Botões Exclusivos */
+  .printexpress-cookie-btn {
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .printexpress-cookie-btn:focus-visible {
+    outline: 2px solid #004488;
+    outline-offset: 2px;
+  }
+
+  .printexpress-cookie-btn-accept {
+    background-color: #0066cc;
+    color: #ffffff;
+  }
+  .printexpress-cookie-btn-accept:hover {
+    background-color: #004488;
+  }
+
+  .printexpress-cookie-btn-reject {
+    background-color: #ffffff;
+    color: #0066cc;
+    border-color: #0066cc;
+  }
+  .printexpress-cookie-btn-reject:hover {
+    background-color: #f0f7ff;
+  }
+
+  .printexpress-cookie-btn-settings {
+    background-color: #e2e8f0;
+    color: #334155;
+  }
+  .printexpress-cookie-btn-settings:hover {
+    background-color: #cbd5e1;
+  }
+
+  /* Toast Notification */
+  .printexpress-cookie-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #004488;
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000000;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  .printexpress-cookie-toast.printexpress-cookie-toast-show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 640px) {
+    .printexpress-cookie-modal {
+      width: 92%;
+      max-height: 90vh;
+    }
+    .printexpress-cookie-footer {
+      flex-direction: column;
+    }
+    .printexpress-cookie-btn {
+      width: 100%;
+    }
+  }
+</style>
+
+<!-- Estrutura HTML do Modal -->
+<div class="printexpress-cookie-overlay" id="printexpressCookieOverlay"></div>
+
+<div class="printexpress-cookie-modal" id="printexpressCookieModal" role="dialog" aria-modal="true" aria-labelledby="printexpressCookieTitle" aria-describedby="printexpressCookieDesc">
+  <div class="printexpress-cookie-header">
+    <h2 class="printexpress-cookie-title" id="printexpressCookieTitle">
+      <span>🍪</span> Sua privacidade importa
+    </h2>
+  </div>
+  
+  <div class="printexpress-cookie-body" id="printexpressCookieDesc">
+    <!-- Conteúdo Dinâmico (Principal ou Preferências) -->
+    <div id="printexpressCookieMainView">
+      <p>Usamos cookies e tecnologias semelhantes para melhorar sua experiência no PrintExpress, lembrar algumas preferências e manter determinadas funcionalidades funcionando corretamente.</p>
+      <p>Você pode aceitar todos os cookies ou escolher quais categorias deseja permitir.</p>
+      <div class="printexpress-cookie-links">
+        <a href="privacidade.html" target="_blank">Política de Privacidade</a> | 
+        <a href="termos.html" target="_blank">Termos de Uso</a>
+      </div>
+    </div>
+
+    <div id="printexpressCookieSettingsView" style="display: none;">
+      <!-- Categorias -->
+      <div class="printexpress-cookie-category">
+        <div class="printexpress-cookie-cat-header">
+          <span class="printexpress-cookie-cat-title">🍪 Cookies essenciais</span>
+          <label class="printexpress-cookie-switch">
+            <input type="checkbox" checked disabled id="printexpressCatEssential">
+            <span class="printexpress-cookie-slider"></span>
+          </label>
+        </div>
+        <p class="printexpress-cookie-cat-desc">Sempre ativos. Necessários para o funcionamento básico do site.</p>
+      </div>
+
+      <div class="printexpress-cookie-category">
+        <div class="printexpress-cookie-cat-header">
+          <span class="printexpress-cookie-cat-title">⚙️ Preferências</span>
+          <label class="printexpress-cookie-switch">
+            <input type="checkbox" id="printexpressCatPreferences">
+            <span class="printexpress-cookie-slider"></span>
+          </label>
+        </div>
+        <p class="printexpress-cookie-cat-desc">Usados para lembrar determinadas escolhas do visitante.</p>
+      </div>
+
+      <div class="printexpress-cookie-category">
+        <div class="printexpress-cookie-cat-header">
+          <span class="printexpress-cookie-cat-title">📊 Estatísticas</span>
+          <label class="printexpress-cookie-switch">
+            <input type="checkbox" id="printexpressCatAnalytics">
+            <span class="printexpress-cookie-slider"></span>
+          </label>
+        </div>
+        <p class="printexpress-cookie-cat-desc">Podem ser utilizados futuramente para entender como o site é utilizado.</p>
+      </div>
+
+      <div class="printexpress-cookie-category">
+        <div class="printexpress-cookie-cat-header">
+          <span class="printexpress-cookie-cat-title">📢 Marketing</span>
+          <label class="printexpress-cookie-switch">
+            <input type="checkbox" id="printexpressCatMarketing">
+            <span class="printexpress-cookie-slider"></span>
+          </label>
+        </div>
+        <p class="printexpress-cookie-cat-desc">Relacionados a publicidade e marketing.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="printexpress-cookie-footer" id="printexpressCookieFooterMain">
+    <button class="printexpress-cookie-btn printexpress-cookie-btn-settings" id="printexpressBtnCustomize">PERSONALIZAR</button>
+    <button class="printexpress-cookie-btn printexpress-cookie-btn-reject" id="printexpressBtnReject">RECUSAR NÃO ESSENCIAIS</button>
+    <button class="printexpress-cookie-btn printexpress-cookie-btn-accept" id="printexpressBtnAcceptAll">ACEITAR TODOS</button>
+  </div>
+
+  <div class="printexpress-cookie-footer" id="printexpressCookieFooterSettings" style="display: none;">
+    <button class="printexpress-cookie-btn printexpress-cookie-btn-settings" id="printexpressBtnBack">Voltar</button>
+    <button class="printexpress-cookie-btn printexpress-cookie-btn-accept" id="printexpressBtnSave">Salvar preferências</button>
+  </div>
+</div>
+
+<div class="printexpress-cookie-toast" id="printexpressCookieToast">Preferências salvas.</div>
+
+<!-- JavaScript Exclusivo do PrintExpress -->
+<script>
+  (function() {
+    var STORAGE_KEY = 'printexpress_cookie_consent';
+    var CURRENT_VERSION = '1.0';
+
+    var modal = document.getElementById('printexpressCookieModal');
+    var overlay = document.getElementById('printexpressCookieOverlay');
+    var toast = document.getElementById('printexpressCookieToast');
+
+    var mainView = document.getElementById('printexpressCookieMainView');
+    var settingsView = document.getElementById('printexpressCookieSettingsView');
+    var mainFooter = document.getElementById('printexpressCookieFooterMain');
+    var settingsFooter = document.getElementById('printexpressCookieFooterSettings');
+
+    var prefCheck = document.getElementById('printexpressCatPreferences');
+    var analyticsCheck = document.getElementById('printexpressCatAnalytics');
+    var marketingCheck = document.getElementById('printexpressCatMarketing');
+
+    function isStorageAvailable() {
+      try {
+        var testKey = '__pe_test__';
+        localStorage.setItem(testKey, '1');
+        localStorage.removeItem(testKey);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function showToast() {
+      toast.classList.add('printexpress-cookie-toast-show');
+      setTimeout(function() {
+        toast.classList.remove('printexpress-cookie-toast-show');
+      }, 3000);
+    }
+
+    function openModal() {
+      showMainView();
+      overlay.classList.add('printexpress-cookie-active');
+      modal.classList.add('printexpress-cookie-active');
+    }
+
+    function closeModal() {
+      overlay.classList.remove('printexpress-cookie-active');
+      modal.classList.remove('printexpress-cookie-active');
+    }
+
+    function showMainView() {
+      mainView.style.display = 'block';
+      settingsView.style.display = 'none';
+      mainFooter.style.display = 'flex';
+      settingsFooter.style.display = 'none';
+    }
+
+    function showSettingsView() {
+      mainView.style.display = 'none';
+      settingsView.style.display = 'block';
+      mainFooter.style.display = 'none';
+      settingsFooter.style.display = 'flex';
+    }
+
+    function saveConsent(type, categories) {
+      var data = {
+        choice: type,
+        categories: categories,
+        version: CURRENT_VERSION,
+        date: new Date().toISOString()
+      };
+
+      if (isStorageAvailable()) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {}
+      }
+      closeModal();
+      showToast();
+    }
+
+    function loadSavedConsent() {
+      if (!isStorageAvailable()) return null;
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        var parsed = JSON.parse(raw);
+        if (parsed && parsed.version === CURRENT_VERSION) {
+          return parsed;
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    // Eventos dos Botões
+    document.getElementById('printexpressBtnAcceptAll').addEventListener('click', function() {
+      saveConsent('all', { essential: true, preferences: true, analytics: true, marketing: true });
+    });
+
+    document.getElementById('printexpressBtnReject').addEventListener('click', function() {
+      saveConsent('essential_only', { essential: true, preferences: false, analytics: false, marketing: false });
+    });
+
+    document.getElementById('printexpressBtnCustomize').addEventListener('click', function() {
+      var saved = loadSavedConsent();
+      if (saved && saved.categories) {
+        prefCheck.checked = !!saved.categories.preferences;
+        analyticsCheck.checked = !!saved.categories.analytics;
+        marketingCheck.checked = !!saved.categories.marketing;
+      } else {
+        prefCheck.checked = false;
+        analyticsCheck.checked = false;
+        marketingCheck.checked = false;
+      }
+      showSettingsView();
+    });
+
+    document.getElementById('printexpressBtnBack').addEventListener('click', function() {
+      showMainView();
+    });
+
+    document.getElementById('printexpressBtnSave').addEventListener('click', function() {
+      saveConsent('custom', {
+        essential: true,
+        preferences: prefCheck.checked,
+        analytics: analyticsCheck.checked,
+        marketing: marketingCheck.checked
+      });
+    });
+
+    // Tecla ESC para fechar somente se o consentimento já tiver sido registrado anteriormente
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal.classList.contains('printexpress-cookie-active')) {
+        if (loadSavedConsent()) {
+          closeModal();
+        }
+      }
+    });
+
+    // Função Global de Acesso ao Painel
+    window.openPrintExpressCookieSettings = function() {
+      var saved = loadSavedConsent();
+      if (saved && saved.categories) {
+        prefCheck.checked = !!saved.categories.preferences;
+        analyticsCheck.checked = !!saved.categories.analytics;
+        marketingCheck.checked = !!saved.categories.marketing;
+      } else {
+        prefCheck.checked = false;
+        analyticsCheck.checked = false;
+        marketingCheck.checked = false;
+      }
+      showSettingsView();
+      overlay.classList.add('printexpress-cookie-active');
+      modal.classList.add('printexpress-cookie-active');
+    };
+
+    // Inicialização
+    var existingConsent = loadSavedConsent();
+    if (!existingConsent) {
+      setTimeout(openModal, 400);
+    }
+  })();
+</script>
+        <a href="#" onclick="openPrintExpressCookieSettings(); return false;" style="color: inherit; text-decoration: underline;">Preferências de Cookies</a>
     </div>
 </footer>
     <script>
