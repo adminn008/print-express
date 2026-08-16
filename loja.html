@@ -1,898 +1,1195 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loja de Ferramentas - Gráfica Digital</title>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- QRCode.js para geração local de QR Codes -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Central de Ferramentas & Loja - Gráfica Digital</title>
+  <style>
+    /* ==========================================================================
+       1. VARIÁVEIS E RESET (IDENTIDADE VISUAL AZUL PRESERVADA)
+       ========================================================================== */
+    :root {
+      --primary: #0d6efd;
+      --primary-hover: #0b5ed7;
+      --primary-light: #e7f1ff;
+      --secondary: #6c757d;
+      --dark: #212529;
+      --light: #f8f9fa;
+      --white: #ffffff;
+      --border: #dee2e6;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --radius: 8px;
+      
+      /* Sistema Dinâmico de Cores do Documento */
+      --doc-color: #0d6efd;
+    }
 
-    <style>
-        :root {
-            --primary: #0066FF;
-            --primary-hover: #0052CC;
-            --primary-light: #E6F0FF;
-            --primary-dark: #003399;
-            --bg-light: #F8FAFC;
-            --card-bg: #FFFFFF;
-            --text-main: #1E293B;
-            --text-muted: #64748B;
-            --border: #E2E8F0;
-            --shadow-sm: 0 2px 8px rgba(0, 102, 255, 0.05);
-            --shadow-md: 0 4px 16px rgba(0, 102, 255, 0.08);
-            --radius: 12px;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+    body {
+      background-color: #f4f6f9;
+      color: var(--dark);
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-        body {
-            background-color: var(--bg-light);
-            color: var(--text-main);
-            line-height: 1.5;
-            padding-bottom: 60px;
-        }
+    /* ==========================================================================
+       2. CABEÇALHO E NAVEGAÇÃO
+       ========================================================================== */
+    header {
+      background-color: var(--white);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-        /* Container Principal */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        /* Header / Hero */
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-            border-bottom-left-radius: 24px;
-            border-bottom-right-radius: 24px;
-            box-shadow: 0 10px 25px rgba(0, 102, 255, 0.15);
-            margin-bottom: 30px;
-        }
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
 
-        .header h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
+    .nav-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
 
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 20px;
-        }
+    .btn-cart {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      position: relative;
+    }
 
-        .highlight-badge {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(8px);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
+    .cart-badge {
+      background: #dc3545;
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 50%;
+    }
 
-        /* Controles de Busca e Filtro */
-        .search-filter-container {
-            margin-top: -30px;
-            margin-bottom: 30px;
-        }
+    /* ==========================================================================
+       3. ESTRUTURA PRINCIPAL E BARRA LATERAL
+       ========================================================================== */
+    .main-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 2rem;
+      flex: 1;
+      width: 100%;
+    }
 
-        .search-box {
-            background: white;
-            padding: 8px 16px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-md);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            max-width: 600px;
-            margin: 0 auto 20px;
-            border: 1px solid var(--border);
-        }
+    @media (max-width: 768px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+    }
 
-        .search-box input {
-            border: none;
-            outline: none;
-            width: 100%;
-            font-size: 1rem;
-            color: var(--text-main);
-        }
+    .sidebar {
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      height: fit-content;
+    }
 
-        .categories {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-            justify-content: flex-start;
-        }
+    .sidebar-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--secondary);
+      margin-bottom: 1rem;
+    }
 
-        @media (min-width: 768px) {
-            .categories {
-                justify-content: center;
-            }
-        }
+    .category-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
 
-        .category-btn {
-            background: white;
-            border: 1px solid var(--border);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s ease;
-        }
+    .category-btn {
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      padding: 0.6rem 0.8rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      color: var(--dark);
+      font-weight: 500;
+      transition: all 0.2s;
+    }
 
-        .category-btn:hover, .category-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
+    .category-btn:hover, .category-btn.active {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
 
-        /* Grid de Ferramentas */
-        .section-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin: 30px 0 15px;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    /* ==========================================================================
+       4. BUSCA, FILTROS E CARDS DA LOJA
+       ========================================================================== */
+    .shop-header {
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
 
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
+    .search-bar {
+      position: relative;
+    }
 
-        .tool-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            padding: 20px;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            cursor: pointer;
-        }
+    .search-input {
+      width: 100%;
+      padding: 0.8rem 1rem 0.8rem 2.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      outline: none;
+    }
 
-        .tool-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--primary-light);
-        }
+    .search-input:focus {
+      border-color: var(--primary);
+    }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
+    .search-icon {
+      position: absolute;
+      left: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--secondary);
+    }
 
-        .icon-wrapper {
-            background: var(--primary-light);
-            color: var(--primary);
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .filter-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
 
-        .badge {
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 4px 8px;
-            border-radius: 6px;
-            text-transform: uppercase;
-        }
+    .filter-tag {
+      padding: 0.4rem 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--white);
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
 
-        .badge-free { background: #E6F4EA; color: #137333; }
-        .badge-paid { background: #FEF7E0; color: #B06000; }
-        .badge-soon { background: #F1F3F4; color: #5F6368; }
+    .filter-tag.active {
+      background: var(--primary);
+      color: var(--white);
+      border-color: var(--primary);
+    }
 
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--text-main);
-        }
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
 
-        .card-desc {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 16px;
-            flex-grow: 1;
-        }
+    .tool-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid var(--border);
+      transition: transform 0.2s;
+    }
 
-        .btn-use {
-            background: var(--primary-light);
-            color: var(--primary);
-            border: none;
-            padding: 10px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: background 0.2s;
-        }
+    .tool-card:hover {
+      transform: translateY(-3px);
+    }
 
-        .tool-card:hover .btn-use {
-            background: var(--primary);
-            color: white;
-        }
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
 
-        /* Histórico Recente */
-        .history-section {
-            background: white;
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 30px;
-            border: 1px solid var(--border);
-        }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
 
-        .history-tags {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--secondary);
+      margin-bottom: 1rem;
+      flex-grow: 1;
+    }
 
-        .history-tag {
-            background: var(--bg-light);
-            border: 1px solid var(--border);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+    .card-badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+      width: fit-content;
+    }
 
-        .history-tag:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
+    .badge-free { background: #d1e7dd; color: #0f5132; }
+    .badge-premium { background: #fff3cd; color: #664d03; }
+    .badge-print { background: #cff4fc; color: #055160; }
 
-        /* Interface Interna da Ferramenta */
-        .tool-workspace {
-            display: none;
-            background: white;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-md);
-            padding: 24px;
-            margin-top: 20px;
-        }
+    .btn-action {
+      width: 100%;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      padding: 0.6rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
 
-        .tool-workspace.active {
-            display: block;
-        }
+    .btn-action:hover {
+      background: var(--primary-hover);
+    }
 
-        .back-btn {
-            background: none;
-            border: none;
-            color: var(--primary);
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 20px;
-        }
+    /* ==========================================================================
+       5. INTERFACE DO GERADOR DE DOCUMENTOS (MODAL/EDITOR)
+       ========================================================================== */
+    .editor-view {
+      display: none;
+      grid-template-columns: 360px 1fr;
+      gap: 1.5rem;
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
 
-        .workspace-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-        }
+    @media (max-width: 900px) {
+      .editor-view {
+        grid-template-columns: 1fr;
+      }
+    }
 
-        @media (min-width: 992px) {
-            .workspace-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
+    .editor-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
 
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--text-main);
-        }
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
 
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            outline: none;
-            font-size: 0.95rem;
-        }
+    .form-control {
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
 
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            border-color: var(--primary);
-        }
+    .color-picker-grid {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
 
-        .workspace-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
+    .color-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid var(--white);
+      outline: 1px solid var(--border);
+      cursor: pointer;
+    }
 
-        .btn-action {
-            flex: 1;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
+    .color-btn.active {
+      outline: 2px solid var(--primary);
+    }
 
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-hover); }
-        .btn-secondary { background: var(--bg-light); color: var(--text-main); border: 1px solid var(--border); }
-        .btn-secondary:hover { background: var(--border); }
+    .preview-container {
+      background: #e9ecef;
+      padding: 1rem;
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: auto;
+    }
 
-        /* Estilização da Folha A4 para Impressão */
-        .preview-container {
-            background: #E2E8F0;
-            padding: 20px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            overflow-x: auto;
-            min-height: 400px;
-        }
+    /* ==========================================================================
+       6. MOTOR DE IMPRESSÃO A4 (PREVIEW E PRINT REAL)
+       ========================================================================== */
+    .a4-page {
+      background: var(--white);
+      width: 210mm;
+      min-height: 297mm;
+      padding: 15mm;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+      margin: 0 auto;
+      color: #000;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-sizing: border-box;
+    }
 
-        .a4-page {
-            background: white;
-            width: 210mm;
-            min-height: 297mm;
-            padding: 15mm;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            box-sizing: border-box;
-            color: #000;
-            font-size: 12pt;
-            position: relative;
-        }
+    .a4-landscape {
+      width: 297mm;
+      min-height: 210mm;
+    }
 
-        /* Classes Específicas de Layout A4 */
-        .a4-header { border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .a4-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .a4-table th, .a4-table td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 10pt; }
-        .a4-table th { background: #f0f0f0; }
+    /* Elementos Estilizados do Documento */
+    .doc-header {
+      border-bottom: 3px solid var(--doc-color);
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+    }
 
-        .grid-tickets { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .ticket-item { border: 1px dashed #666; padding: 10px; border-radius: 4px; font-size: 10pt; }
+    .doc-title {
+      color: var(--doc-color);
+      font-size: 1.8rem;
+      text-transform: uppercase;
+    }
 
-        .grid-labels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .label-item { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 9pt; border-radius: 4px; }
+    .doc-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
 
-        /* Estilos Exclusivos para Impressão */
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            .a4-page, .a4-page * {
-                visibility: visible;
-            }
-            .a4-page {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                margin: 0;
-                padding: 10mm;
-                box-shadow: none;
-            }
-            @page {
-                size: A4;
-                margin: 0;
-            }
-        }
-    </style>
+    .doc-table th {
+      background-color: var(--doc-color);
+      color: white;
+      padding: 0.5rem;
+      text-align: left;
+    }
+
+    .doc-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 0.5rem;
+    }
+
+    .grid-cut-tickets {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10mm;
+    }
+
+    .ticket-item {
+      border: 1px dashed var(--doc-color);
+      padding: 10px;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    /* ==========================================================================
+       7. HISTÓRICO LOCAL E ÁREA DE MINHA CONTA / CARRINHO
+       ========================================================================== */
+    .section-block {
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-top: 2rem;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem;
+      background: var(--light);
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    /* Modal / Drawer do Carrinho */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    /* ==========================================================================
+       8. CSS ESPECÍFICO PARA IMPRESSÃO (REGRAS @MEDIA PRINT)
+       ========================================================================== */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .preview-container, .preview-container * {
+        visibility: visible;
+      }
+      .preview-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 0;
+        background: none;
+      }
+      .a4-page {
+        box-shadow: none;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Header / Hero -->
-    <header class="header">
-        <div class="container">
-            <h1>Ferramentas para facilitar seu dia</h1>
-            <p>Crie, organize e prepare seus materiais para impressão diretamente pelo site.</p>
-            <span class="highlight-badge">⚡ Ferramentas rápidas, simples e prontas para usar.</span>
-        </div>
-    </header>
+  <!-- CABEÇALHO -->
+  <header class="no-print">
+    <div class="header-container">
+      <a href="#" class="logo" onclick="showStoreView()">
+        <span style="font-size: 1.5rem;">🖨️</span> GráficaCentral
+      </a>
+      <div class="nav-actions">
+        <button class="btn-cart" onclick="openAccountModal()">
+          👤 Minha Conta
+        </button>
+        <button class="btn-cart" onclick="openCartModal()">
+          🛒 Carrinho <span class="cart-badge" id="cartBadge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
 
-    <main class="container">
+  <!-- CONTAINER PRINCIPAL DA LOJA -->
+  <main class="main-container no-print" id="storeView">
+    
+    <!-- BARRA LATERAL - CATEGORIAS -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Categorias</div>
+      <ul class="category-list">
+        <li><button class="category-btn active" onclick="filterCategory('all')">Todas</button></li>
+        <li><button class="category-btn" onclick="filterCategory('Documentos')">Documentos</button></li>
+        <li><button class="category-btn" onclick="filterCategory('Pequenos negócios')">Pequenos Negócios</button></li>
+        <li><button class="category-btn" onclick="filterCategory('Impressão')">Impressão</button></li>
+        <li><button class="category-btn" onclick="filterCategory('Organização')">Organização</button></li>
+        <li><button class="category-btn" onclick="filterCategory('Eventos')">Eventos</button></li>
+        <li><button class="category-btn" onclick="filterCategory('Ferramentas digitais')">Ferramentas Digitais</button></li>
+      </ul>
+    </aside>
+
+    <!-- CONTEÚDO DA LOJA -->
+    <section>
+      <div class="shop-header">
+        <div class="search-bar">
+          <span class="search-icon">🔎</span>
+          <input type="text" id="searchInput" class="search-input" placeholder="O que você precisa criar?" oninput="handleSearch()">
+        </div>
+        <div class="filter-tags">
+          <button class="filter-tag active" onclick="filterTag('all', this)">[Todos]</button>
+          <button class="filter-tag" onclick="filterTag('GRÁTIS', this)">[Grátis]</button>
+          <button class="filter-tag" onclick="filterTag('PREMIUM', this)">[Premium]</button>
+          <button class="filter-tag" onclick="filterTag('IMPRESSÃO', this)">[Imprimíveis]</button>
+        </div>
+      </div>
+
+      <!-- GRID DE FERRAMENTAS -->
+      <div class="tools-grid" id="toolsGrid"></div>
+
+      <!-- HISTÓRICO DE DOCUMENTOS -->
+      <div class="section-block">
+        <h3>🕘 Meus Últimos Documentos</h3>
+        <p style="font-size: 0.8rem; color: var(--secondary);">Documentos salvos localmente neste dispositivo.</p>
+        <div class="history-list" id="historyList">
+          <div class="history-item">Nenhum documento gerado recentemente.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- INTERFACE DO EDITOR E GERADOR (SÓ APARECE AO CLICAR EM "CRIAR") -->
+  <div class="main-container" id="editorView" style="display:none;">
+    <div style="grid-column: 1 / -1; margin-bottom: 1rem;" class="no-print">
+      <button class="btn-action" style="width: auto; background: var(--secondary);" onclick="showStoreView()">← Voltar para a Loja</button>
+    </div>
+
+    <!-- CONTROLES DO GERADOR -->
+    <div class="editor-controls no-print" id="editorControls">
+      <!-- Formulários Dinâmicos Injetados via JS -->
+    </div>
+
+    <!-- PRÉ-VISUALIZAÇÃO EM TEMPO REAL -->
+    <div class="preview-container">
+      <div class="no-print" style="margin-bottom: 1rem; display: flex; gap: 0.5rem; width: 100%; justify-content: center;">
+        <button class="btn-action" onclick="window.print()">📄 Baixar PDF — GRÁTIS</button>
+        <button class="btn-action" style="background: #198754;" onclick="openPrintOrderModal()">🖨️ Quero Imprimir</button>
+      </div>
+      <div id="a4Preview" class="a4-page">
+        <!-- Documento Renderizado Injetado Dinamicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DO CARRINHO DE IMPRESSÃO -->
+  <div class="modal-overlay" id="cartModal">
+    <div class="modal-content">
+      <h3>SEU PEDIDO DE IMPRESSÃO</h3>
+      <div id="cartItems" style="margin: 1rem 0; display:flex; flex-direction:column; gap:0.5rem;"></div>
+      <hr><br>
+      <div style="display:flex; justify-content:space-between; font-weight:bold;">
+        <span>Total:</span>
+        <span id="cartTotal">R$ 0,00</span>
+      </div>
+      <br>
+      <label style="font-size: 0.85rem; font-weight:600;">Como deseja pagar?</label>
+      <select class="form-control" style="margin-bottom: 1rem;">
+        <option>Pix</option>
+        <option>Cartão de Crédito</option>
+      </select>
+      <div style="background: #fff3cd; color: #664d03; padding: 0.5rem; border-radius:4px; font-size:0.8rem; margin-bottom:1rem;">
+        ⚠️ Pagamento online em breve. O pedido será enviado como solicitação de orçamento.
+      </div>
+      <button class="btn-action" onclick="checkoutCart()">Finalizar Pedido</button>
+      <button class="btn-action" style="background:var(--secondary); margin-top:0.5rem;" onclick="closeCartModal()">Fechar</button>
+    </div>
+  </div>
+
+  <!-- MODAL DE SOLICITAÇÃO DE IMPRESSÃO DA FERRAMENTA -->
+  <div class="modal-overlay" id="printOrderModal">
+    <div class="modal-content">
+      <h3>🖨️ Solicitar Impressão Física</h3>
+      <form id="printForm" onsubmit="handleAddToCart(event)">
+        <div class="form-group" style="margin-top:0.8rem;">
+          <label>Quantidade de Folhas/Cópias</label>
+          <input type="number" id="printQty" class="form-control" value="20" min="1" onchange="calculatePrintPrice()">
+        </div>
+        <div class="form-group" style="margin-top:0.8rem;">
+          <label>Tipo de Papel</label>
+          <select id="printPaper" class="form-control" onchange="calculatePrintPrice()">
+            <option value="0.50">Sulfite 75g (A4)</option>
+            <option value="1.20">Couché 150g (A4)</option>
+            <option value="2.50">Couché 300g (A4)</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-top:0.8rem;">
+          <label>Impressão</label>
+          <select id="printColorType" class="form-control" onchange="calculatePrintPrice()">
+            <option value="color">Colorida</option>
+            <option value="bw">Preto e Branco (-30%)</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-top:0.8rem;">
+          <label>Observações</label>
+          <input type="text" id="printObs" class="form-control" placeholder="Ex: Cortar ao meio">
+        </div>
+        <div style="margin: 1rem 0; padding: 0.8rem; background: var(--primary-light); border-radius:4px;">
+          Valor Unitário Est.: <span id="unitPrice">R$ 0,50</span><br>
+          <strong>Total Estimado: <span id="totalPrintPrice">R$ 10,00</span></strong>
+        </div>
+        <button type="submit" class="btn-action">Adicionar ao Carrinho</button>
+        <button type="button" class="btn-action" style="background:var(--secondary); margin-top:0.5rem;" onclick="closePrintOrderModal()">Cancelar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL MINHA CONTA -->
+  <div class="modal-overlay" id="accountModal">
+    <div class="modal-content">
+      <h3>👤 Minha Conta</h3>
+      <p style="font-size:0.85rem; color:var(--secondary); margin-bottom:1rem;">Área reservada para gerenciamento futuro.</p>
+      <ul style="list-style:none; display:flex; flex-direction:column; gap:0.5rem; font-size:0.9rem;">
+        <li>📁 Documentos Salvos (Local)</li>
+        <li>📦 Histórico de Pedidos de Impressão</li>
+        <li>💳 Créditos e Cupons: R$ 0,00</li>
+      </ul>
+      <button class="btn-action" style="margin-top:1.5rem;" onclick="closeAccountModal()">Fechar</button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+     9. SCRIPT VANILLA JS COMPLETO (ARQUITETURA DE DADOS E LÓGICA)
+     ========================================================================== -->
+  <script>
+    /* --------------------------------------------------------------------------
+       BANCO DE DADOS LOCAL DE FERRAMENTAS (SEM REPETIÇÕES, APENAS ATIVAS)
+       -------------------------------------------------------------------------- */
+    const TOOLS_DATABASE = [
+      {
+        id: 'qr-code',
+        title: 'Gerador de QR Code',
+        desc: 'Crie QR Codes para URL, WhatsApp, Pix ou Wi-Fi prontos para baixar ou imprimir.',
+        category: 'Ferramentas digitais',
+        tag: 'GRÁTIS',
+        icon: '📱',
+        premium: false
+      },
+      {
+        id: 'comandas',
+        title: 'Gerador de Comandas',
+        desc: 'Comandas para restaurantes/eventos com numeração sequencial configurável.',
+        category: 'Pequenos negócios',
+        tag: 'IMPRESSÃO',
+        icon: '🧾',
+        premium: false
+      },
+      {
+        id: 'ficha-pedido',
+        title: 'Ficha de Pedido',
+        desc: 'Orçamentos e vendas com cálculo automático de itens, total e campos do cliente.',
+        category: 'Pequenos negócios',
+        tag: 'GRÁTIS',
+        icon: '📋',
+        premium: false
+      },
+      {
+        id: 'folha-anotacoes',
+        title: 'Folha de Anotações',
+        desc: 'Pautada, quadriculada ou pontilhada para reuniões e estudos.',
+        category: 'Organização',
+        tag: 'GRÁTIS',
+        icon: '📝',
+        premium: false
+      },
+      {
+        id: 'ingressos',
+        title: 'Ingressos & Senhas',
+        desc: 'Ingressos e senhas numeradas organizadas em folha A4 com linha de corte.',
+        category: 'Eventos',
+        tag: 'IMPRESSÃO',
+        icon: '🎟️',
+        premium: false
+      },
+      {
+        id: 'controle-estoque',
+        title: 'Controle de Estoque',
+        desc: 'Folha de registro e balanço de entradas e saídas de mercadorias.',
+        category: 'Pequenos negócios',
+        tag: 'GRÁTIS',
+        icon: '📦',
+        premium: false
+      },
+      {
+        id: 'lista-presenca',
+        title: 'Lista de Presença',
+        desc: 'Lista com campos personalizados para assinaturas em eventos e reuniões.',
+        category: 'Documentos',
+        tag: 'GRÁTIS',
+        icon: '👥',
+        premium: false
+      },
+      {
+        id: 'modelo-premium-menu',
+        title: 'Cardápio / Menu Premium',
+        desc: 'Layouts avançados com suporte a logo e seções personalizadas.',
+        category: 'Pequenos negócios',
+        tag: 'PREMIUM',
+        price: 'R$ 4,90',
+        icon: '💎',
+        premium: true
+      }
+    ];
+
+    /* CORES DISPONÍVEIS CONFORME ESPECIFICAÇÃO */
+    const DOC_COLORS = [
+      { name: 'Azul', hex: '#0d6efd' },
+      { name: 'Vermelho', hex: '#dc3545' },
+      { name: 'Verde', hex: '#198754' },
+      { name: 'Amarelo', hex: '#ffc107' },
+      { name: 'Roxo', hex: '#6f42c1' },
+      { name: 'Rosa', hex: '#d63384' },
+      { name: 'Laranja', hex: '#fd7e14' },
+      { name: 'Preto', hex: '#212529' },
+      { name: 'Cinza', hex: '#6c757d' },
+      { name: 'Preto e Branco', hex: '#000000', bw: true }
+    ];
+
+    // ESTADO DA APLICAÇÃO
+    let activeTool = null;
+    let selectedColor = '#0d6efd';
+    let cart = [];
+    let customFields = [];
+
+    /* --------------------------------------------------------------------------
+       LÓGICA DA LOJA, BUSCA E FILTROS
+       -------------------------------------------------------------------------- */
+    function renderTools(tools) {
+      const grid = document.getElementById('toolsGrid');
+      grid.innerHTML = '';
+
+      tools.forEach(tool => {
+        const badgeClass = tool.tag === 'GRÁTIS' ? 'badge-free' : tool.tag === 'PREMIUM' ? 'badge-premium' : 'badge-print';
+        const card = document.createElement('div');
+        card.className = 'tool-card';
+        card.innerHTML = `
+          <div>
+            <div class="card-icon">${tool.icon}</div>
+            <span class="card-badge ${badgeClass}">${tool.tag} ${tool.price ? '- ' + tool.price : ''}</span>
+            <div class="card-title">${tool.title}</div>
+            <div class="card-desc">${tool.desc}</div>
+          </div>
+          <button class="btn-action" onclick="openTool('${tool.id}')">Criar / Personalizar</button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function filterCategory(cat) {
+      document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      if(cat === 'all') renderTools(TOOLS_DATABASE);
+      else renderTools(TOOLS_DATABASE.filter(t => t.category === cat));
+    }
+
+    function filterTag(tag, el) {
+      document.querySelectorAll('.filter-tag').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      if(tag === 'all') renderTools(TOOLS_DATABASE);
+      else renderTools(TOOLS_DATABASE.filter(t => t.tag === tag));
+    }
+
+    function handleSearch() {
+      const val = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = TOOLS_DATABASE.filter(t => t.title.toLowerCase().includes(val) || t.desc.toLowerCase().includes(val));
+      renderTools(filtered);
+    }
+
+    /* --------------------------------------------------------------------------
+       CONTROLE DE NAVEGAÇÃO DE TELAS
+       -------------------------------------------------------------------------- */
+    function showStoreView() {
+      document.getElementById('storeView').style.display = 'grid';
+      document.getElementById('editorView').style.display = 'none';
+      loadHistory();
+    }
+
+    function openTool(toolId) {
+      activeTool = TOOLS_DATABASE.find(t => t.id === toolId);
+      document.getElementById('storeView').style.display = 'none';
+      document.getElementById('editorView').style.display = 'grid';
+      customFields = [];
+      buildEditorControls();
+      renderDocumentPreview();
+      saveToHistory(activeTool.title);
+    }
+
+    /* --------------------------------------------------------------------------
+       MOTOR DE MONTAGEM DOS PAINÉIS DE EDICÃO DADOS
+       -------------------------------------------------------------------------- */
+    function buildEditorControls() {
+      const ctrl = document.getElementById('editorControls');
+      let html = `<h3>${activeTool.icon} ${activeTool.title}</h3>`;
+      
+      // SELETOR DE COR OBRIGATÓRIO
+      html += `
+        <div class="form-group">
+          <label>🎨 Cor do Documento</label>
+          <div class="color-picker-grid">
+            ${DOC_COLORS.map(c => `
+              <div class="color-btn" style="background:${c.hex};" onclick="setDocColor('${c.hex}', this)" title="${c.name}"></div>
+            `).join('')}
+          </div>
+        </div>
+        <hr style="border:none; border-top:1px solid var(--border); margin:0.5rem 0;">
+      `;
+
+      // CAMPOS ESPECÍFICOS DE CADA FERRAMENTA (PRESERVANDO OPCIONALIDADE)
+      if(activeTool.id === 'qr-code') {
+        html += `
+          <div class="form-group"><label>Conteúdo / URL / Pix / WhatsApp</label><input type="text" id="field_content" class="form-control" value="https://suagrafica.com" oninput="renderDocumentPreview()"></div>
+          <div class="form-group"><label>Título Superior</label><input type="text" id="field_title" class="form-control" value="Acesse Nosso Menu" oninput="renderDocumentPreview()"></div>
+        `;
+      } else if(activeTool.id === 'comandas') {
+        html += `
+          <div class="form-group"><label>Nome do Estabelecimento</label><input type="text" id="field_company" class="form-control" value="Restaurante Sabor & Cia" oninput="renderDocumentPreview()"></div>
+          <div class="form-group"><label>Telefone / WhatsApp</label><input type="text" id="field_phone" class="form-control" value="(00) 99999-9999" oninput="renderDocumentPreview()"></div>
+          <div class="form-group"><label>Nº Inicial</label><input type="number" id="field_start" class="form-control" value="1" oninput="renderDocumentPreview()"></div>
+          <div class="form-group"><label>Quantidade por Folha</label><input type="number" id="field_qty" class="form-control" value="6" max="10" oninput="renderDocumentPreview()"></div>
+        `;
+      } else if(activeTool.id === 'ficha-pedido') {
+        html += `
+          <div class="form-group"><label>Sua Empresa</label><input type="text" id="field_company" class="form-control" value="Gráfica Rápida" oninput="renderDocumentPreview()"></div>
+          <div class="form-group"><label>CNPJ / Telefone</label><input type="text" id="field_info" class="form-control" value="CNPJ: 00.000.000/0001-00" oninput="renderDocumentPreview()"></div>
+          <div class="form-group"><label>Nome do Cliente</label><input type="text" id="field_client" class="form-control" placeholder="Opcional" oninput="renderDocumentPreview()"></div>
+          <div class="form-group"><label>Descrição do Item</label><input type="text" id="field_item" class="form-control" value="Impressão 1000 Panfletos" oninput="renderDocumentPreview()"></div>
+          <div class="form-group"><label>Valor (R$)</label><input type="number" id="field_price" class="form-control" value="150.00" oninput="renderDocumentPreview()"></div>
+        `;
+      } else if(activeTool.id === 'folha-anotacoes') {
+        html += `
+          <div class="form-group"><label>Título da Folha</label><input type="text" id="field_title" class="form-control" value="Anotações de Reunião" oninput="renderDocumentPreview()"></div>
+          <div class="form-group"><label>Estilo de Linha</label>
+            <select id="field_style" class="form-control" onchange="renderDocumentPreview()">
+              <option value="pautada">Pautada</option>
+              <option value="quadriculada">Quadriculada</option>
+              <option value="pontilhada">Pontilhada</option>
+            </select>
+          </div>
+        `;
+      } else {
+        html += `<div class="form-group"><label>Título</label><input type="text" id="field_generic_title" class="form-control" value="${activeTool.title}" oninput="renderDocumentPreview()"></div>`;
+      }
+
+      // GERENCIADOR DE CAMPOS PERSONALIZADOS DADOS EXTRAS
+      html += `
+        <div id="customFieldsContainer"></div>
+        <button class="btn-action" style="background:var(--secondary); margin-top:0.5rem;" onclick="addCustomField()">+ Adicionar Campo</button>
+      `;
+
+      ctrl.innerHTML = html;
+    }
+
+    function setDocColor(hex, el) {
+      selectedColor = hex;
+      document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+      if(el) el.classList.add('active');
+      document.documentElement.style.setProperty('--doc-color', hex);
+      renderDocumentPreview();
+    }
+
+    function addCustomField() {
+      const id = 'custom_' + Date.now();
+      customFields.push(id);
+      const container = document.getElementById('customFieldsContainer');
+      const div = document.createElement('div');
+      div.className = 'form-group';
+      div.style.marginTop = '0.5rem';
+      div.id = 'group_' + id;
+      div.innerHTML = `
+        <label>Campo Personalizado</label>
+        <div style="display:flex; gap:0.2rem;">
+          <input type="text" id="label_${id}" class="form-control" placeholder="Rótulo" oninput="renderDocumentPreview()">
+          <input type="text" id="val_${id}" class="form-control" placeholder="Valor" oninput="renderDocumentPreview()">
+          <button onclick="removeCustomField('${id}')" style="background:#dc3545; color:white; border:none; padding:0 0.5rem; border-radius:4px;">X</button>
+        </div>
+      `;
+      container.appendChild(div);
+    }
+
+    function removeCustomField(id) {
+      customFields = customFields.filter(f => f !== id);
+      document.getElementById('group_' + id).remove();
+      renderDocumentPreview();
+    }
+
+    /* --------------------------------------------------------------------------
+       MOTOR DE RENDERIZAÇÃO DE DOCUMENTOS A4 (TEMPO REAL)
+       -------------------------------------------------------------------------- */
+    function renderDocumentPreview() {
+      const prev = document.getElementById('a4Preview');
+      if(!activeTool) return;
+
+      let customHTML = '';
+      customFields.forEach(id => {
+        const l = document.getElementById(`label_${id}`)?.value;
+        const v = document.getElementById(`val_${id}`)?.value;
+        if(l || v) {
+          customHTML += `<p style="margin-top:0.3rem;"><strong>${l || 'Campo'}:</strong> ${v || ''}</p>`;
+        }
+      });
+
+      if(activeTool.id === 'qr-code') {
+        const title = document.getElementById('field_title')?.value || '';
+        const content = document.getElementById('field_content')?.value || 'https://';
+        // API nativa rápida para QR Code sem bibliotecas pesadas externas
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(content)}`;
+
+        prev.innerHTML = `
+          <div class="doc-header">
+            <h1 class="doc-title">${title}</h1>
+          </div>
+          <div style="text-align:center; margin: 40px 0;">
+            <img src="${qrUrl}" alt="QR Code" style="border: 4px solid var(--doc-color); padding: 10px; border-radius: 8px; width:220px; height:220px;">
+            <p style="margin-top:1rem; word-break:break-all; font-family:monospace;">${content}</p>
+          </div>
+          ${customHTML}
+        `;
+      } else if(activeTool.id === 'comandas') {
+        const comp = document.getElementById('field_company')?.value || 'Estabalecimento';
+        const phone = document.getElementById('field_phone')?.value || '';
+        const start = parseInt(document.getElementById('field_start')?.value || 1);
+        const qty = parseInt(document.getElementById('field_qty')?.value || 6);
+
+        let items = '';
+        for(let i = 0; i < qty; i++) {
+          const num = String(start + i).padStart(4, '0');
+          items += `
+            <div class="ticket-item">
+              <div style="font-weight:bold; color:var(--doc-color); display:flex; justify-size:space-between;">
+                <span>${comp}</span>
+                <span>Nº ${num}</span>
+              </div>
+              <div style="font-size:0.75rem;">${phone}</div>
+              <hr style="margin: 0.3rem 0; border:none; border-top:1px dashed var(--doc-color);">
+              <div style="font-size:0.8rem;">
+                Mesa/Apt: ____ Data: __/__<br>
+                Item: ___________________<br>
+                Valor: R$ _______________
+              </div>
+            </div>
+          `;
+        }
+
+        prev.innerHTML = `
+          <div class="doc-header"><h2 class="doc-title">Folha de Comandas</h2></div>
+          <div class="grid-cut-tickets">${items}</div>
+          <div style="margin-top:1rem;">${customHTML}</div>
+        `;
+      } else if(activeTool.id === 'ficha-pedido') {
+        const comp = document.getElementById('field_company')?.value || 'Empresa';
+        const info = document.getElementById('field_info')?.value || '';
+        const client = document.getElementById('field_client')?.value || 'Cliente Não Informado';
+        const item = document.getElementById('field_item')?.value || 'Produto/Serviço';
+        const price = parseFloat(document.getElementById('field_price')?.value || 0).toFixed(2);
+
+        prev.innerHTML = `
+          <div class="doc-header">
+            <div>
+              <h2 class="doc-title">${comp}</h2>
+              <p style="font-size:0.8rem;">${info}</p>
+            </div>
+            <div style="text-align:right;">
+              <h3>FICHA DE PEDIDO</h3>
+              <p style="font-size:0.8rem;">Data: ${new Date().toLocaleDateString('pt-BR')}</p>
+            </div>
+          </div>
+          <p><strong>Cliente:</strong> ${client}</p>
+          <table class="doc-table">
+            <thead>
+              <tr><th>Item / Descrição</th><th style="text-align:right;">Total</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>${item}</td><td style="text-align:right;">R$ ${price}</td></tr>
+            </tbody>
+          </table>
+          <div style="text-align:right; font-size:1.2rem; font-weight:bold; color:var(--doc-color);">
+            Total: R$ ${price}
+          </div>
+          <div style="margin-top:2rem;">${customHTML}</div>
+        `;
+      } else if(activeTool.id === 'folha-anotacoes') {
+        const title = document.getElementById('field_title')?.value || 'Anotações';
+        const style = document.getElementById('field_style')?.value || 'pautada';
         
-        <!-- Busca e Filtros -->
-        <div class="search-filter-container">
-            <div class="search-box">
-                <i data-lucide="search" style="color: var(--text-muted)"></i>
-                <input type="text" id="searchInput" placeholder="🔎 O que você está procurando?" onkeyup="filterTools()">
-            </div>
+        let bgStyle = 'line-height: 25px; background: repeating-linear-gradient(transparent, transparent 24px, var(--border) 25px);';
+        if(style === 'quadriculada') {
+          bgStyle = 'background-size: 20px 20px; background-image: linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px);';
+        } else if(style === 'pontilhada') {
+          bgStyle = 'background-image: radial-gradient(var(--border) 1px, transparent 1px); background-size: 15px 15px;';
+        }
 
-            <div class="categories">
-                <button class="category-btn active" onclick="filterCategory('all', this)">Todas</button>
-                <button class="category-btn" onclick="filterCategory('negocios', this)">Negócios</button>
-                <button class="category-btn" onclick="filterCategory('impressao', this)">Impressão</button>
-                <button class="category-btn" onclick="filterCategory('organizacao', this)">Organização</button>
-                <button class="category-btn" onclick="filterCategory('eventos', this)">Eventos</button>
-                <button class="category-btn" onclick="filterCategory('digitais', this)">Ferramentas Digitais</button>
-            </div>
+        prev.innerHTML = `
+          <div class="doc-header"><h2 class="doc-title">${title}</h2></div>
+          <div style="height: 220mm; width: 100%; ${bgStyle}"></div>
+          ${customHTML}
+        `;
+      } else {
+        const title = document.getElementById('field_generic_title')?.value || activeTool.title;
+        prev.innerHTML = `
+          <div class="doc-header"><h2 class="doc-title">${title}</h2></div>
+          <p style="margin-top:1rem;">Documento estruturado pronto para preenchimento e exportação.</p>
+          ${customHTML}
+        `;
+      }
+    }
+
+    /* --------------------------------------------------------------------------
+       HISTÓRICO LOCAL (LOCALSTORAGE)
+       -------------------------------------------------------------------------- */
+    function saveToHistory(title) {
+      let history = JSON.parse(localStorage.getItem('doc_history') || '[]');
+      const item = { title, date: new Date().toLocaleDateString('pt-BR') };
+      history.unshift(item);
+      history = history.slice(0, 5); // Limita aos últimos 5
+      localStorage.setItem('doc_history', JSON.stringify(history));
+    }
+
+    function loadHistory() {
+      const history = JSON.parse(localStorage.getItem('doc_history') || '[]');
+      const container = document.getElementById('historyList');
+      if(history.length === 0) {
+        container.innerHTML = '<div class="history-item">Nenhum documento gerado recentemente.</div>';
+        return;
+      }
+      container.innerHTML = history.map(h => `
+        <div class="history-item">
+          <span><strong>${h.title}</strong> — ${h.date}</span>
+          <button class="btn-action" style="width:auto; padding:0.2rem 0.6rem; font-size:0.75rem;" onclick="alert('Rascunho pronto!')">Usar novamente</button>
         </div>
+      `).join('');
+    }
 
-        <!-- Seção de Histórico -->
-        <div class="history-section" id="historySection" style="display: none;">
-            <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.9rem; color: var(--text-muted)">
-                <i data-lucide="history" style="width: 16px;"></i> Utilizados recentemente:
+    /* --------------------------------------------------------------------------
+       CARRINHO E CÁLCULO DE IMPRESSÃO FÍSICA
+       -------------------------------------------------------------------------- */
+    function openPrintOrderModal() {
+      document.getElementById('printOrderModal').style.display = 'flex';
+      calculatePrintPrice();
+    }
+
+    function closePrintOrderModal() {
+      document.getElementById('printOrderModal').style.display = 'none';
+    }
+
+    function calculatePrintPrice() {
+      const qty = parseInt(document.getElementById('printQty').value) || 1;
+      const paperPrice = parseFloat(document.getElementById('printPaper').value);
+      const isBW = document.getElementById('printColorType').value === 'bw';
+
+      let unit = paperPrice;
+      if(isBW) unit = unit * 0.7; // 30% de desconto em P&B
+
+      const total = qty * unit;
+      document.getElementById('unitPrice').innerText = `R$ ${unit.toFixed(2)}`;
+      document.getElementById('totalPrintPrice').innerText = `R$ ${total.toFixed(2)}`;
+    }
+
+    function handleAddToCart(e) {
+      e.preventDefault();
+      const qty = parseInt(document.getElementById('printQty').value) || 1;
+      const total = document.getElementById('totalPrintPrice').innerText;
+
+      cart.push({
+        name: activeTool.title,
+        qty: qty,
+        total: total
+      });
+
+      updateCartBadge();
+      closePrintOrderModal();
+      openCartModal();
+    }
+
+    function updateCartBadge() {
+      document.getElementById('cartBadge').innerText = cart.length;
+    }
+
+    function openCartModal() {
+      const itemsContainer = document.getElementById('cartItems');
+      itemsContainer.innerHTML = '';
+
+      if(cart.length === 0) {
+        itemsContainer.innerHTML = '<div>Seu carrinho está vazio.</div>';
+        document.getElementById('cartTotal').innerText = 'R$ 0,00';
+      } else {
+        let grandTotal = 0;
+        cart.forEach((item, index) => {
+          const rawPrice = parseFloat(item.total.replace('R$', '').replace(',', '.'));
+          grandTotal += rawPrice;
+          itemsContainer.innerHTML += `
+            <div style="display:flex; justify-size:space-between; font-size:0.9rem; background:var(--light); padding:0.5rem; border-radius:4px;">
+              <div>
+                <strong>${item.name}</strong><br>
+                <small>Qtd: ${item.qty}</small>
+              </div>
+              <div style="text-align:right;">
+                ${item.total}<br>
+                <a href="#" onclick="removeItem(${index})" style="color:#dc3545; font-size:0.75rem;">Remover</a>
+              </div>
             </div>
-            <div class="history-tags" id="historyContainer"></div>
-        </div>
+          `;
+        });
+        document.getElementById('cartTotal').innerText = `R$ ${grandTotal.toFixed(2)}`;
+      }
 
-        <!-- Catalogo Principais -->
-        <div id="catalogView">
-            <h2 class="section-title"><i data-lucide="wrench" style="color: var(--primary);"></i> Ferramentas Principais</h2>
-            <div class="tools-grid" id="mainToolsGrid"></div>
+      document.getElementById('cartModal').style.display = 'flex';
+    }
 
-            <h2 class="section-title"><i data-lucide="plus-circle" style="color: var(--primary);"></i> Mais Úteis</h2>
-            <div class="tools-grid" id="extraToolsGrid"></div>
+    function closeCartModal() {
+      document.getElementById('cartModal').style.display = 'none';
+    }
 
-            <h2 class="section-title" style="margin-top: 40px;"><i data-lucide="rocket" style="color: var(--text-muted);"></i> Mais ferramentas em breve</h2>
-            <div class="tools-grid" id="soonToolsGrid"></div>
-        </div>
+    function removeItem(index) {
+      cart.splice(index, 1);
+      updateCartBadge();
+      openCartModal();
+    }
 
-        <!-- Área de Trabalho (Workspace Único Aberto) -->
-        <div class="tool-workspace" id="toolWorkspace">
-            <button class="back-btn" onclick="closeWorkspace()"><i data-lucide="arrow-left"></i> Voltar para Loja</button>
-            <h2 id="wsTitle" style="margin-bottom: 4px;"></h2>
-            <p id="wsDesc" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;"></p>
+    function checkoutCart() {
+      if(cart.length === 0) {
+        alert('Adicione ao menos um item ao carrinho.');
+        return;
+      }
+      alert('Solicitação de orçamento/impressão enviada com sucesso! Entre em contato para finalizar a produção.');
+      cart = [];
+      updateCartBadge();
+      closeCartModal();
+    }
 
-            <div class="workspace-grid">
-                <!-- Formulário de Entrada -->
-                <div id="wsFormContainer"></div>
+    function openAccountModal() { document.getElementById('accountModal').style.display = 'flex'; }
+    function closeAccountModal() { document.getElementById('accountModal').style.display = 'none'; }
 
-                <!-- Pré-visualização / A4 -->
-                <div>
-                    <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 8px;">Pré-visualização em Tempo Real</label>
-                    <div class="preview-container">
-                        <div class="a4-page" id="a4Preview"></div>
-                    </div>
-                    
-                    <div class="workspace-actions">
-                        <button class="btn-action btn-secondary" onclick="window.print()"><i data-lucide="printer"></i> Imprimir A4</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <script>
-        // --- BASE DE DADOS DAS FERRAMENTAS ---
-        const tools = [
-            // Principais
-            { id: 'qrcode', title: 'Gerador de QR Code', desc: 'Crie QR codes para links, Pix, WhatsApp e redes sociais.', category: 'digitais', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'qr-code', main: true },
-            { id: 'assinatura', title: 'Gerador de Assinatura de E-mail', desc: 'Assinaturas profissionais personalizadas com HTML.', category: 'digitais', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'mail', main: true },
-            { id: 'orcamento', title: 'Gerador de Orçamento', desc: 'Calcule totais e crie orçamentos prontos para impressão.', category: 'negocios', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'file-text', main: true },
-            { id: 'certificado', title: 'Gerador de Certificado', desc: 'Modelos rápidos para oficinas, palestras e cursos.', category: 'eventos', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'award', main: true },
-            { id: 'pedido', title: 'Gerador de Ficha de Pedido', desc: 'Organize vendas e detalhes de entregas em A4.', category: 'negocios', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'shopping-bag', main: true },
-            { id: 'comanda', title: 'Gerador de Comanda', desc: 'Gere comandas numeradas em sequência na folha A4.', category: 'impressao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'receipt', main: true },
-            { id: 'lista_pedidos', title: 'Gerador de Lista de Pedidos', desc: 'Tabelas completas para controle diário ou semanal.', category: 'organizacao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'list-checks', main: true },
-            { id: 'folha_anotacoes', title: 'Gerador de Folha de Anotações', desc: 'Crie folhas pautadas, quadriculadas ou pontilhadas.', category: 'organizacao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'edit-3', main: true },
-            
-            // Extras
-            { id: 'etiquetas', title: 'Gerador de Etiquetas A4', desc: 'Distribua etiquetas idênticas na folha A4.', category: 'impressao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'tag', main: false },
-            { id: 'senhas', title: 'Gerador de Senhas', desc: 'Tiras numeradas para atendimento sequencial.', category: 'impressao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'hash', main: false },
-            { id: 'ingressos', title: 'Gerador de Ingressos', desc: 'Ingressos numerados com canhoto para eventos.', category: 'eventos', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'ticket', main: false },
-            { id: 'calendario', title: 'Gerador de Calendário A4', desc: 'Calendários organizadores com área para anotações.', category: 'organizacao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'calendar', main: false },
-            { id: 'financeiro', title: 'Gerador de Controle Financeiro', desc: 'Controle entradas, saídas e saldo de caixa.', category: 'negocios', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'dollar-sign', main: false },
-            { id: 'estoque', title: 'Gerador de Controle de Estoque', desc: 'Acompanhamento e saldo atual de produtos.', category: 'organizacao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'box', main: false },
-            { id: 'presenca', title: 'Gerador de Lista de Presença', desc: 'Lista com assinaturas para cursos e reuniões.', category: 'eventos', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'users', main: false },
-            { id: 'fichas_seq', title: 'Gerador de Fichas Numeradas', desc: 'Fichas em sequência personalizadas para impressão.', category: 'impressao', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'layers', main: false },
-            { id: 'ficha_custom', title: 'Gerador de Ficha Personalizada', desc: 'Monte formulários dinâmicos adicionando campos.', category: 'negocios', badge: 'GRÁTIS', price: 'R$ 0,00', icon: 'sliders', main: false }
-        ];
-
-        const soonTools = [
-            { title: 'Gerador de Etiquetas com Código de Barras', icon: 'barcode' },
-            { title: 'Gerador de Cartões Digitais Interativos', icon: 'smartphone' },
-            { title: 'Gerador de Formulários Avançados', icon: 'file-input' },
-            { title: 'Gerador de Folhas para Jogos & Passatempos', icon: 'gamepad-2' },
-            { title: 'Mais ferramentas de impressão e acabamento', icon: 'printer' }
-        ];
-
-        let activeToolId = null;
-
-        // --- INICIALIZAÇÃO ---
-        window.onload = () => {
-            renderCatalog();
-            renderSoon();
-            loadHistory();
-            lucide.createIcons();
-        };
-
-        // --- RENDERIZAÇÃO DE CATÁLOGOS ---
-        function renderCatalog() {
-            const mainGrid = document.getElementById('mainToolsGrid');
-            const extraGrid = document.getElementById('extraToolsGrid');
-            mainGrid.innerHTML = '';
-            extraGrid.innerHTML = '';
-
-            tools.forEach(tool => {
-                const cardHtml = `
-                    <div class="tool-card" data-category="${tool.category}" data-title="${tool.title.toLowerCase()}" onclick="openTool('${tool.id}')">
-                        <div class="card-header">
-                            <div class="icon-wrapper"><i data-lucide="${tool.icon}"></i></div>
-                            <span class="badge badge-free">${tool.badge}</span>
-                        </div>
-                        <div class="card-title">${tool.title}</div>
-                        <div class="card-desc">${tool.desc}</div>
-                        <button class="btn-use">Usar ferramenta <i data-lucide="arrow-right" style="width: 16px;"></i></button>
-                    </div>
-                `;
-                if (tool.main) mainGrid.innerHTML += cardHtml;
-                else extraGrid.innerHTML += cardHtml;
-            });
-        }
-
-        function renderSoon() {
-            const grid = document.getElementById('soonToolsGrid');
-            grid.innerHTML = '';
-            soonTools.forEach(tool => {
-                grid.innerHTML += `
-                    <div class="tool-card" style="opacity: 0.7; cursor: not-allowed;">
-                        <div class="card-header">
-                            <div class="icon-wrapper" style="background: #F1F3F4; color: #5F6368;"><i data-lucide="${tool.icon}"></i></div>
-                            <span class="badge badge-soon">EM BREVE</span>
-                        </div>
-                        <div class="card-title">${tool.title}</div>
-                        <div class="card-desc">Ferramenta em desenvolvimento.</div>
-                    </div>
-                `;
-            });
-        }
-
-        // --- FILTROS E BUSCA ---
-        function filterTools() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            document.querySelectorAll('.tool-card').forEach(card => {
-                const title = card.getAttribute('data-title');
-                if (title && title.includes(query)) card.style.display = 'flex';
-                else if (title) card.style.display = 'none';
-            });
-        }
-
-        function filterCategory(cat, btn) {
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            document.querySelectorAll('.tool-card').forEach(card => {
-                const cardCat = card.getAttribute('data-category');
-                if (!cardCat) return;
-                if (cat === 'all' || cardCat === cat) card.style.display = 'flex';
-                else card.style.display = 'none';
-            });
-        }
-
-        // --- HISTÓRICO LOCAL ---
-        function saveHistory(id) {
-            let hist = JSON.parse(localStorage.getItem('toolHistory') || '[]');
-            if (!hist.includes(id)) {
-                hist.unshift(id);
-                if (hist.length > 4) hist.pop();
-                localStorage.setItem('toolHistory', JSON.stringify(hist));
-            }
-            loadHistory();
-        }
-
-        function loadHistory() {
-            let hist = JSON.parse(localStorage.getItem('toolHistory') || '[]');
-            const container = document.getElementById('historyContainer');
-            const section = document.getElementById('historySection');
-
-            if (hist.length === 0) {
-                section.style.display = 'none';
-                return;
-            }
-
-            section.style.display = 'block';
-            container.innerHTML = '';
-            hist.forEach(id => {
-                const t = tools.find(x => x.id === id);
-                if (t) {
-                    container.innerHTML += `
-                        <div class="history-tag" onclick="openTool('${t.id}')">
-                            <i data-lucide="${t.icon}" style="width: 14px;"></i> ${t.title}
-                        </div>
-                    `;
-                }
-            });
-            lucide.createIcons();
-        }
-
-        // --- NAVEGAÇÃO E ABERTURA DAS FERRAMENTAS ---
-        function openTool(id) {
-            activeToolId = id;
-            saveHistory(id);
-            const tool = tools.find(t => t.id === id);
-
-            document.getElementById('catalogView').style.display = 'none';
-            document.getElementById('toolWorkspace').classList.add('active');
-            document.getElementById('wsTitle').innerText = tool.title;
-            document.getElementById('wsDesc').innerText = tool.desc;
-
-            buildForm(id);
-            updatePreview();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function closeWorkspace() {
-            document.getElementById('toolWorkspace').classList.remove('active');
-            document.getElementById('catalogView').style.display = 'block';
-            activeToolId = null;
-        }
-
-        // --- CONSTRUTOR DINÂMICO DE FORMULÁRIOS E PRÉ-VISUALIZAÇÃO ---
-        function buildForm(id) {
-            const container = document.getElementById('wsFormContainer');
-            let html = '';
-
-            switch(id) {
-                case 'qrcode':
-                    html = `
-                        <div class="form-group"><label>Conteúdo do QR Code</label><input type="text" id="qrText" value="https://suagrafica.com.br" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Texto Adicional embaixo (Versão A4)</label><input type="text" id="qrLabel" value="Escaneie o código acima" oninput="updatePreview()"></div>
-                    `;
-                    break;
-                case 'assinatura':
-                    html = `
-                        <div class="form-group"><label>Nome</label><input type="text" id="assNome" value="Carlos Silva" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Cargo</label><input type="text" id="assCargo" value="Gerente Comercial" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Empresa</label><input type="text" id="assEmpresa" value="Minha Empresa" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>WhatsApp / Telefone</label><input type="text" id="assTel" value="(11) 99999-9999" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>E-mail</label><input type="text" id="assEmail" value="carlos@empresa.com" oninput="updatePreview()"></div>
-                    `;
-                    break;
-                case 'orcamento':
-                    html = `
-                        <div class="form-group"><label>Sua Empresa</label><input type="text" id="orcEmpresa" value="Gráfica Rápida" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Nome do Cliente</label><input type="text" id="orcCliente" value="João Pedro" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Descrição do Serviço/Produto</label><input type="text" id="orcProd" value="1000 Cartões de Visita" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Valor Unitário (R$)</label><input type="number" id="orcVal" value="150.00" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Quantidade</label><input type="number" id="orcQtd" value="1" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Desconto (R$)</label><input type="number" id="orcDesc" value="10.00" oninput="updatePreview()"></div>
-                    `;
-                    break;
-                case 'certificado':
-                    html = `
-                        <div class="form-group"><label>Nome do Participante</label><input type="text" id="certNome" value="Maria Oliveira" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Nome do Evento / Curso</label><input type="text" id="certEvento" value="Workshop de Design Gráfico" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Carga Horária</label><input type="text" id="certCarga" value="8 horas" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Data</label><input type="text" id="certData" value="15 de Outubro de 2026" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Organização / Responsável</label><input type="text" id="certOrg" value="Centro de Formação Digital" oninput="updatePreview()"></div>
-                    `;
-                    break;
-                case 'comanda':
-                    html = `
-                        <div class="form-group"><label>Número Inicial</label><input type="number" id="comIni" value="1" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Quantidade por folha</label><input type="number" id="comQtd" value="6" max="10" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Título do Estabelecimento</label><input type="text" id="comTitulo" value="Lanchonete & Restaurante" oninput="updatePreview()"></div>
-                    `;
-                    break;
-                case 'folha_anotacoes':
-                    html = `
-                        <div class="form-group"><label>Título do Documento</label><input type="text" id="folhaTitulo" value="Anotações de Reunião" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Estilo das Linhas</label>
-                            <select id="folhaEstilo" onchange="updatePreview()">
-                                <option value="pautada">Pautada (Linhas)</option>
-                                <option value="quadriculada">Quadriculada</option>
-                                <option value="pontilhada">Pontilhada</option>
-                            </select>
-                        </div>
-                    `;
-                    break;
-                default:
-                    html = `
-                        <div class="form-group"><label>Título Principal</label><input type="text" id="genTitulo" value="Documento Oficial" oninput="updatePreview()"></div>
-                        <div class="form-group"><label>Descrição / Observações</label><textarea id="genTexto" rows="4" oninput="updatePreview()">Preencha as informações do formulário para gerar o documento pronto em folha A4.</textarea></div>
-                    `;
-            }
-            container.innerHTML = html;
-        }
-
-        // --- ATUALIZAÇÃO DA PRÉ-VISUALIZAÇÃO A4 ---
-        function updatePreview() {
-            if (!activeToolId) return;
-            const preview = document.getElementById('a4Preview');
-
-            switch(activeToolId) {
-                case 'qrcode': {
-                    const text = document.getElementById('qrText')?.value || '';
-                    const label = document.getElementById('qrLabel')?.value || '';
-                    preview.innerHTML = `
-                        <div style="text-align: center; margin-top: 50px;">
-                            <h2 style="color: var(--primary); margin-bottom: 20px;">QR CODE PRONTO PARA USO</h2>
-                            <div id="qrcodeCanvas" style="display: flex; justify-content: center; margin: 30px 0;"></div>
-                            <h3 style="margin-top: 20px; font-weight: 500;">${label}</h3>
-                            <p style="color: #666; font-size: 10pt; margin-top: 40px;">Gerado via Central de Ferramentas da Gráfica</p>
-                        </div>
-                    `;
-                    document.getElementById('qrcodeCanvas').innerHTML = '';
-                    new QRCode(document.getElementById('qrcodeCanvas'), { text: text, width: 200, height: 200 });
-                    break;
-                }
-                case 'assinatura': {
-                    const nome = document.getElementById('assNome')?.value || '';
-                    const cargo = document.getElementById('assCargo')?.value || '';
-                    const empresa = document.getElementById('assEmpresa')?.value || '';
-                    const tel = document.getElementById('assTel')?.value || '';
-                    const email = document.getElementById('assEmail')?.value || '';
-
-                    preview.innerHTML = `
-                        <div class="a4-header"><h2>Assinatura de E-mail (Pré-visualização)</h2></div>
-                        <div style="border: 1px solid #ccc; padding: 20px; border-radius: 8px; max-width: 450px; background: #fff; font-family: sans-serif;">
-                            <table style="width: 100%;">
-                                <tr>
-                                    <td style="border-left: 4px solid #0066FF; padding-left: 15px;">
-                                        <h3 style="margin: 0; color: #0066FF; font-size: 16px;">${nome}</h3>
-                                        <p style="margin: 2px 0; font-size: 13px; color: #555;">${cargo} | <strong>${empresa}</strong></p>
-                                        <p style="margin: 8px 0 0 0; font-size: 12px; color: #777;">📞 ${tel} <br> ✉️ ${email}</p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                        <p style="margin-top: 20px; font-size: 10pt; color: #666;">Dica: Copie o bloco visual acima e cole direto na configuração de assinatura do seu gerenciador de e-mail.</p>
-                    `;
-                    break;
-                }
-                case 'orcamento': {
-                    const emp = document.getElementById('orcEmpresa')?.value || '';
-                    const cli = document.getElementById('orcCliente')?.value || '';
-                    const prod = document.getElementById('orcProd')?.value || '';
-                    const val = parseFloat(document.getElementById('orcVal')?.value || 0);
-                    const qtd = parseInt(document.getElementById('orcQtd')?.value || 1);
-                    const desc = parseFloat(document.getElementById('orcDesc')?.value || 0);
-                    const total = (val * qtd) - desc;
-
-                    preview.innerHTML = `
-                        <div class="a4-header">
-                            <div>
-                                <h1 style="color: var(--primary); font-size: 20pt;">ORÇAMENTO</h1>
-                                <p><strong>Emissor:</strong> ${emp}</p>
-                            </div>
-                            <div style="text-align: right;">
-                                <p><strong>Data:</strong> ${new Date().toLocaleDateString('pt-BR')}</p>
-                            </div>
-                        </div>
-                        <p style="margin-bottom: 20px;"><strong>Cliente:</strong> ${cli}</p>
-                        <table class="a4-table">
-                            <thead>
-                                <tr><th>Descrição</th><th>Qtd</th><th>Unitário</th><th>Subtotal</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>${prod}</td>
-                                    <td>${qtd}</td>
-                                    <td>R$ ${val.toFixed(2)}</td>
-                                    <td>R$ ${(val * qtd).toFixed(2)}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div style="margin-top: 30px; text-align: right; line-height: 1.8;">
-                            <p>Desconto: R$ ${desc.toFixed(2)}</p>
-                            <h2 style="color: var(--primary);">TOTAL: R$ ${total.toFixed(2)}</h2>
-                        </div>
-                    `;
-                    break;
-                }
-                case 'certificado': {
-                    const nome = document.getElementById('certNome')?.value || '';
-                    const evento = document.getElementById('certEvento')?.value || '';
-                    const carga = document.getElementById('certCarga')?.value || '';
-                    const data = document.getElementById('certData')?.value || '';
-                    const org = document.getElementById('certOrg')?.value || '';
-
-                    preview.innerHTML = `
-                        <div style="border: 5px double #0066FF; padding: 30px; height: 100%; text-align: center; box-sizing: border-box;">
-                            <h1 style="font-size: 28pt; color: #0066FF; margin-top: 40px; letter-spacing: 2px;">CERTIFICADO DE PARTICIPAÇÃO</h1>
-                            <p style="margin-top: 40px; font-size: 14pt;">Certificamos que</p>
-                            <h2 style="font-size: 22pt; border-bottom: 1px solid #333; display: inline-block; padding: 0 20px; margin: 15px 0;">${nome}</h2>
-                            <p style="font-size: 13pt; line-height: 1.8; margin-top: 20px;">
-                                participou com êxito do evento <strong>${evento}</strong>,<br>
-                                realizado em ${data}, com carga horária total de <strong>${carga}</strong>.
-                            </p>
-                            <div style="margin-top: 80px; display: flex; justify-content: space-around;">
-                                <div>____________________________________<br><strong>${org}</strong></div>
-                            </div>
-                            <p style="font-size: 8pt; color: #888; margin-top: 60px;">Este documento é um modelo declaratório de participação sem validade de certificação profissional oficial regulamentada.</p>
-                        </div>
-                    `;
-                    break;
-                }
-                case 'comanda': {
-                    const ini = parseInt(document.getElementById('comIni')?.value || 1);
-                    const qtd = parseInt(document.getElementById('comQtd')?.value || 6);
-                    const tit = document.getElementById('comTitulo')?.value || 'Estabelicimento';
-
-                    let comandasHtml = '';
-                    for(let i = 0; i < qtd; i++) {
-                        const num = String(ini + i).padStart(3, '0');
-                        comandasHtml += `
-                            <div class="ticket-item">
-                                <strong style="font-size: 11pt;">${tit}</strong> - <span style="color: var(--primary);">Nº ${num}</span>
-                                <hr style="margin: 5px 0;">
-                                <p>Cliente: _____________________</p>
-                                <p style="font-size: 8pt; margin-top: 5px;">Item | Qtd | Valor</p>
-                                <p style="border-bottom: 1px dashed #ccc; height: 15px;"></p>
-                                <p style="border-bottom: 1px dashed #ccc; height: 15px;"></p>
-                                <p style="text-align: right; margin-top: 5px;"><strong>Total: R$ ________</strong></p>
-                            </div>
-                        `;
-                    }
-                    preview.innerHTML = `
-                        <div class="a4-header"><h2>Folha de Comandas Numeradas</h2></div>
-                        <div class="grid-tickets">${comandasHtml}</div>
-                    `;
-                    break;
-                }
-                case 'folha_anotacoes': {
-                    const tit = document.getElementById('folhaTitulo')?.value || 'Anotações';
-                    const estilo = document.getElementById('folhaEstilo')?.value || 'pautada';
-                    let backgroundCss = '';
-
-                    if (estilo === 'pautada') backgroundCss = 'linear-gradient(#e5e5e5 1px, transparent 1px)';
-                    else if (estilo === 'quadriculada') backgroundCss = 'linear-gradient(#e5e5e5 1px, transparent 1px), linear-gradient(90deg, #e5e5e5 1px, transparent 1px)';
-                    else if (estilo === 'pontilhada') backgroundCss = 'radial-gradient(#aaa 1px, transparent 1px)';
-
-                    preview.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #0066FF; padding-bottom: 8px;">
-                            <h2>${tit}</h2>
-                            <span>Data: ____/____/20___</span>
-                        </div>
-                        <div style="height: 240mm; margin-top: 15px; background-image: ${backgroundCss}; background-size: ${estilo === 'pontilhada' ? '20px 20px' : '100% 25px'};"></div>
-                    `;
-                    break;
-                }
-                default: {
-                    const tit = document.getElementById('genTitulo')?.value || 'Documento';
-                    const txt = document.getElementById('genTexto')?.value || '';
-                    preview.innerHTML = `
-                        <div class="a4-header"><h2>${tit}</h2></div>
-                        <p style="white-space: pre-wrap; line-height: 1.6;">${txt}</p>
-                    `;
-                }
-            }
-        }
-    </script>
+    /* INICIALIZAÇÃO */
+    window.onload = function() {
+      renderTools(TOOLS_DATABASE);
+      loadHistory();
+    };
+  </script>
 </body>
 </html>
