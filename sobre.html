@@ -1,207 +1,311 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PrintExpress - Sobre Nós</title>
+    <title>Sobre o PrintExpress - Impressão Simples e Rápida</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-body: #f8fafc;
-            --bg-card: #ffffff;
-            --bg-input: #f1f5f9;
-            --border-color: #e2e8f0;
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --primary-light: #e0f2fe;
+            --accent: #38bdf8;
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --primary: #0284c7;
-            --purple: #8b5cf6;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-            --font-scale: 1rem;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 12px 30px -5px rgba(2, 132, 199, 0.12);
+            --font: 'Plus Jakarta Sans', sans-serif;
         }
 
-        [data-theme="dark"] {
-            --bg-body: #0f172a;
-            --bg-card: #1e293b;
-            --bg-input: #0f172a;
-            --border-color: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; font-family: var(--font); color: var(--text-main); background: var(--bg-body); }
+        body { line-height: 1.6; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s ease; }
-        html { font-size: var(--font-scale); scroll-behavior: smooth; }
-        body { background-color: var(--bg-body); color: var(--text-main); padding: 32px 16px 80px 16px; line-height: 1.6; }
+        header { background: var(--bg-card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 900; }
+        .header-container { max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .brand { font-size: 20px; font-weight: 800; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .nav-link { color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 600; transition: color 0.2s; }
+        .nav-link:hover { color: var(--primary); }
 
-        .container { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
-        header { text-align: center; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .hero { background: linear-gradient(135deg, #0f172a 0%, #0369a1 100%); color: white; padding: 80px 24px; overflow: hidden; position: relative; }
+        .hero-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+        .hero-title { font-size: 44px; font-weight: 800; line-height: 1.2; margin-bottom: 16px; }
+        .hero-subtitle { font-size: 18px; color: var(--primary-light); margin-bottom: 32px; font-weight: 400; }
+        .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
         
-        .btn-header {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 8px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-            box-shadow: var(--shadow);
-        }
+        .btn-primary { background: var(--accent); color: #0f172a; padding: 14px 28px; border-radius: 30px; font-weight: 700; text-decoration: none; transition: all 0.3s; box-shadow: var(--shadow-md); border: none; cursor: pointer; }
+        .btn-primary:hover { transform: translateY(-2px); background: #7dd3fc; }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: white; padding: 14px 28px; border-radius: 30px; font-weight: 600; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); transition: all 0.3s; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); }
 
-        h1 { color: var(--primary); font-size: 32px; font-weight: 800; }
-        
-        .content-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            box-shadow: var(--shadow);
-        }
+        /* Ilustração de Impressora com CSS PURA */
+        .printer-illustration { width: 100%; height: 280px; position: relative; display: flex; justify-content: center; align-items: center; }
+        .printer-body { width: 240px; height: 110px; background: #334155; border-radius: 16px; position: relative; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+        .printer-top { width: 180px; height: 12px; background: #64748b; position: absolute; top: -12px; left: 30px; border-radius: 6px 6px 0 0; }
+        .paper-in { width: 140px; height: 80px; background: #ffffff; position: absolute; top: -60px; left: 50px; border-radius: 8px 8px 0 0; box-shadow: inset 0 -5px 10px rgba(0,0,0,0.05); animation: floatPaper 4s ease-in-out infinite; }
+        .paper-out { width: 150px; height: 90px; background: #f8fafc; position: absolute; bottom: -40px; left: 45px; border-radius: 0 0 8px 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2); animation: printOut 4s ease-in-out infinite; }
+        .printer-light { width: 10px; height: 10px; background: #38bdf8; border-radius: 50%; position: absolute; top: 20px; right: 20px; box-shadow: 0 0 10px #38bdf8; }
 
-        .highlight-box {
-            background: rgba(2, 132, 199, 0.1);
-            border: 1px solid var(--primary);
-            border-radius: 14px;
-            padding: 16px;
-            font-size: 14px;
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-        }
+        @keyframes floatPaper { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+        @keyframes printOut { 0% { height: 20px; opacity: 0; } 50%, 100% { height: 90px; opacity: 1; } }
 
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
+        .section { padding: 80px 24px; max-width: 1200px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 48px; }
+        .section-tag { color: var(--primary); font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+        .section-title { font-size: 32px; font-weight: 800; color: var(--text-main); }
 
-        .stat-card {
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            padding: 16px;
-            border-radius: 14px;
-            text-align: center;
-        }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 
-        .stat-card .num { font-size: 24px; font-weight: 800; color: var(--primary); }
-        .stat-card .label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-sm); transition: all 0.3s ease; }
+        .card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--primary-light); }
+        .card-icon { width: 48px; height: 48px; background: var(--primary-light); color: var(--primary); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 20px; }
+        .card h3 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+        .card p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
 
-        .timeline {
-            position: relative;
-            margin-top: 10px;
-            padding-left: 20px;
-            border-left: 3px solid var(--primary);
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+        /* Timeline */
+        .timeline { display: flex; justify-content: space-between; position: relative; margin-top: 40px; }
+        .timeline::before { content: ''; position: absolute; top: 28px; left: 0; width: 100%; height: 3px; background: var(--border); z-index: 1; }
+        .timeline-step { position: relative; z-index: 2; background: var(--bg-body); padding: 0 10px; text-align: center; flex: 1; }
+        .timeline-num { width: 56px; height: 56px; background: var(--bg-card); border: 3px solid var(--primary); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; margin: 0 auto 16px; transition: all 0.3s; }
+        .timeline-step:hover .timeline-num { background: var(--primary); color: white; transform: scale(1.1); }
+        .timeline-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+        .timeline-desc { font-size: 12px; color: var(--text-muted); }
 
-        .timeline-item { position: relative; }
-        .timeline-item::before {
-            content: ''; position: absolute; left: -27px; top: 4px;
-            width: 11px; height: 11px; border-radius: 50%;
-            background: var(--primary); border: 3px solid var(--bg-card);
-        }
+        .cta-section { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border-radius: 24px; padding: 60px 40px; text-align: center; margin: 40px auto 80px; max-width: 1150px; }
+        .cta-section h2 { font-size: 32px; font-weight: 800; margin-bottom: 16px; }
+        .cta-section p { font-size: 16px; color: var(--primary-light); margin-bottom: 28px; }
 
-        .timeline-year {
-            font-size: 11px; font-weight: 800; color: white;
-            background: var(--primary); padding: 2px 8px; border-radius: 10px;
-            display: inline-block; margin-bottom: 4px;
-        }
+        footer { background: #0f172a; color: white; padding: 40px 24px 20px; }
+        .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+        .footer-brand h4 { font-size: 18px; color: var(--accent); margin-bottom: 12px; }
+        .footer-brand p { color: #94a3b8; font-size: 13px; }
+        .footer-links h5 { font-size: 14px; margin-bottom: 12px; color: white; }
+        .footer-links ul { list-style: none; }
+        .footer-links a { color: #94a3b8; text-decoration: none; font-size: 13px; display: block; margin-bottom: 8px; }
+        .footer-links a:hover { color: var(--accent); }
+        .footer-bottom { border-top: 1px solid #334155; text-align: center; padding-top: 20px; font-size: 12px; color: #64748b; }
 
-        .timeline-title { font-size: 15px; font-weight: 700; }
-        .timeline-desc { font-size: 13px; color: var(--text-muted); }
-
-        .btn-whatsapp {
-            background: #25D366; color: white; text-decoration: none; padding: 14px;
-            border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-
-        @media (max-width: 500px) {
-            .stat-grid { grid-template-columns: 1fr; }
+        @media (max-width: 900px) {
+            .hero-grid, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .timeline { flex-direction: column; gap: 24px; }
+            .timeline::before { display: none; }
+            .footer-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <div class="header-top">
-                <a href="index.html" class="btn-header">⬅️ Voltar à Loja</a>
-                <button class="btn-header" onclick="alternarTema()">☀️ / 🌙</button>
-            </div>
-            <h1>PrintExpress</h1>
-            <p>Nossa História & Ecossistema de Projetos</p>
-        </header>
-
-        <div class="content-card">
-            <div class="highlight-box">
-                <span>🚀</span>
-                <div>
-                    <strong>Quem somos?</strong><br>
-                    O PrintExpress nasceu para simplificar e agilizar os serviços de impressão e xerox rápida em São José dos Pinhais. Desenvolvido por <strong>Welington de L. e Silva</strong>, o projeto combina tecnologia moderna, pagamento fácil via PIX e atendimento ágil.
-                </div>
-            </div>
-
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="num">5+</div>
-                    <div class="label">Anos de Experiência</div>
-                </div>
-                <div class="stat-card">
-                    <div class="num">100%</div>
-                    <div class="label">Foco em Agilidade</div>
-                </div>
-                <div class="stat-card">
-                    <div class="num">&lt; 15 min</div>
-                    <div class="label">Tempo Médio Retirada</div>
-                </div>
-            </div>
-
-            <h2 style="font-size: 18px; color: var(--primary); margin-top: 10px;">📅 Trajetória e Projetos</h2>
-
-            <div class="timeline">
-                <div class="timeline-item">
-                    <span class="timeline-year">2021</span>
-                    <div class="timeline-title">🛠️ AutoSys Manager</div>
-                    <p class="timeline-desc">Sistema de gestão de estoque simples e impressão de etiquetas de código de barras.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <span class="timeline-year">2022</span>
-                    <div class="timeline-title">📄 CurriculoBuilder Express</div>
-                    <p class="timeline-desc">Ferramenta para geração automatizada de currículos profissionais em PDF.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <span class="timeline-year">2023</span>
-                    <div class="timeline-title">📲 ZapNotify</div>
-                    <p class="timeline-desc">Integração de notificações via WhatsApp para aviso de status de pedidos.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <span class="timeline-year">2026</span>
-                    <div class="timeline-title">🖨️ PrintExpress Platform</div>
-                    <p class="timeline-desc">Impressões, Xerox, Currículos e Serviços Rápidos</p>
-                </div>
-            </div>
-
-            <a href="https://wa.me/5541999682836?text=Olá,%20gostaria%20de%20saber%20mais%20sobre%20seus%20serviços!" target="_blank" class="btn-whatsapp">
-                💬 Entrar em Contato no WhatsApp
-            </a>
+    <header>
+        <div class="header-container">
+            <a href="sobre.html" class="brand">🖨️ PRINTEXPRESS</a>
+            <nav style="display: flex; gap: 16px;">
+                <a href="sobre.html" class="nav-link" style="color: var(--primary);">Sobre</a>
+                <a href="termos.html" class="nav-link">Termos</a>
+                <a href="privacidade.html" class="nav-link">Privacidade</a>
+            </nav>
         </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-grid">
+            <div>
+                <h1 class="hero-title">Impressão simples, rápida e do seu jeito.</h1>
+                <p class="hero-subtitle">O PrintExpress reúne serviços gráficos e ferramentas digitais para facilitar tarefas de impressão, preparação e solicitação de materiais.</p>
+                <div class="hero-btns">
+                    <a href="#servicos" class="btn-primary">Conhecer os serviços</a>
+                    <a href="sobre.html" class="btn-secondary">Voltar para o PrintExpress</a>
+                </div>
+            </div>
+            <div class="printer-illustration">
+                <div class="printer-body">
+                    <div class="printer-top"></div>
+                    <div class="paper-in"></div>
+                    <div class="paper-out"></div>
+                    <div class="printer-light"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-header">
+            <span class="section-tag">Proposta Institucional</span>
+            <h2 class="section-title">O que é o PrintExpress?</h2>
+        </div>
+        <div class="card" style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <p style="font-size: 16px; color: var(--text-main);">
+                O <strong>PrintExpress</strong> é uma proposta de serviço gráfico digital desenhada para simplificar o envio, a personalização e a solicitação de impressões. Nosso objetivo é transformar processos gráficos que costumam ser burocráticos em etapas fluidas, intuitivas e acessíveis a partir de qualquer dispositivo.
+            </p>
+        </div>
+    </section>
+
+    <section class="section" id="servicos" style="background: white; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+        <div class="section-header">
+            <span class="section-tag">Recursos e Materiais</span>
+            <h2 class="section-title">O que pode ser encontrado</h2>
+        </div>
+        <div class="grid-4">
+            <div class="card">
+                <div class="card-icon">📄</div>
+                <h3>Documentos</h3>
+                <p>Impressão e preparação de arquivos PDF, relatórios e textos acadêmicos ou profissionais.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🖨️</div>
+                <h3>Impressões</h3>
+                <p>Opções de impressão em preto e branco ou coloridas com alta fidelidade visual.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">📑</div>
+                <h3>Materiais Gráficos</h3>
+                <p>Soluções para panfletos, cartões e suportes de comunicação visual simples.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">📋</div>
+                <h3>Formulários</h3>
+                <p>Estruturação de fichas, folhas de registro e materiais padronizados.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">📊</div>
+                <h3>Organizacionais</h3>
+                <p>Tabelas, blocos de anotação e folhas instrutivas para o cotidiano.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🎨</div>
+                <h3>Personalizados</h3>
+                <p>Ajustes de especificações conforme a necessidade do seu projeto.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🔗</div>
+                <h3>Ferramentas Digitais</h3>
+                <p>Recursos online para apoiar o envio rápido e verificação de arquivos.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">📱</div>
+                <h3>Facilidade no Pedido</h3>
+                <p>Interface responsiva para efetuar solicitações em poucos cliques.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-header">
+            <span class="section-tag">Passo a Passo</span>
+            <h2 class="section-title">Como Funciona</h2>
+        </div>
+        <div class="timeline">
+            <div class="timeline-step">
+                <div class="timeline-num">01</div>
+                <div class="timeline-title">Escolha o que precisa</div>
+                <div class="timeline-desc">Navegue pelas opções de serviços ou ferramentas disponíveis.</div>
+            </div>
+            <div class="timeline-step">
+                <div class="timeline-num">02</div>
+                <div class="timeline-title">Personalize ou envie</div>
+                <div class="timeline-desc">Anexe seus arquivos ou informe as especificações do produto.</div>
+            </div>
+            <div class="timeline-step">
+                <div class="timeline-num">03</div>
+                <div class="timeline-title">Confira os detalhes</div>
+                <div class="timeline-desc">Revise o resumo das opções e verifique as informações.</div>
+            </div>
+            <div class="timeline-step">
+                <div class="timeline-num">04</div>
+                <div class="timeline-title">Solicite o serviço</div>
+                <div class="timeline-desc">Confirme a solicitação diretamente pela plataforma.</div>
+            </div>
+            <div class="timeline-step">
+                <div class="timeline-num">05</div>
+                <div class="timeline-title">Receba ou retire</div>
+                <div class="timeline-desc">[CONFIGURAR MODALIDADE DE ENTREGA/RETIRADA]</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="background: white; border-radius: var(--radius-lg); border: 1px solid var(--border);">
+        <div class="section-header">
+            <span class="section-tag">Diferenciais</span>
+            <h2 class="section-title">Por que o PrintExpress?</h2>
+        </div>
+        <div class="grid-3">
+            <div class="card">
+                <h3>Praticidade</h3>
+                <p>Processo descomplicado diretamente no seu navegador, sem necessidade de softwares pesados.</p>
+            </div>
+            <div class="card">
+                <h3>Clareza</h3>
+                <p>Informações visíveis sobre as escolhas de material, sem termos confusos.</p>
+            </div>
+            <div class="card">
+                <h3>Organização</h3>
+                <p>Centralização do fluxo de solicitação para evitar perda de prazos e especificações.</p>
+            </div>
+            <div class="card">
+                <h3>Facilidade</h3>
+                <p>Passos guiados que facilitam o envio correto do seu documento.</p>
+            </div>
+            <div class="card">
+                <h3>Visual Moderno</h3>
+                <p>Interface amigável, limpa e desenvolvida com padrões atuais de acessibilidade.</p>
+            </div>
+            <div class="card">
+                <h3>Centralizado</h3>
+                <p>Recursos digitais e solicitação de impressão em um único ponto de acesso.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-header">
+            <span class="section-tag">Propósito</span>
+            <h2 class="section-title">Feito para Facilitar</h2>
+        </div>
+        <div class="card" style="text-align: center;">
+            <p>O PrintExpress foi desenhado com o propósito de resolver pequenas complicações do dia a dia. Seja para preparar documentos, organizar materiais de trabalho, solicitar impressões de última hora ou criar itens personalizados, oferecemos a estrutura certa para economizar o seu tempo.</p>
+        </div>
+    </section>
+
+    <div class="cta-section">
+        <h2>Precisando imprimir ou criar algum material?</h2>
+        <p>Acesse nossos recursos e descubra como podemos tornar seu pedido mais ágil.</p>
+        <a href="sobre.html" class="btn-primary">Conhecer o PrintExpress</a>
     </div>
 
-    <script>
-        function alternarTema() {
-            const current = document.documentElement.getAttribute('data-theme');
-            document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
-        }
-    </script>
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h4>🖨️ PRINTEXPRESS</h4>
+                <p>Serviços gráficos e ferramentas digitais para facilitar suas impressões e materiais institucionais com agilidade e precisão.</p>
+            </div>
+            <div class="footer-links">
+                <h5>Navegação</h5>
+                <ul>
+                    <li><a href="sobre.html">Sobre o PrintExpress</a></li>
+                    <li><a href="termos.html">Termos de Uso</a></li>
+                    <li><a href="privacidade.html">Política de Privacidade</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h5>Atendimento</h5>
+                <ul>
+                    <li><a href="#">Contato: [E-MAIL]</a></li>
+                    <li><a href="#">WhatsApp: [WHATSAPP, SE APLICÁVEL]</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© [ANO] PrintExpress. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
 </body>
 </html>
