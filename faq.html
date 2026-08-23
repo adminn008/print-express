@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrintExpress – Central de Atendimento e Impressões</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .icon-badge {
+            width: 70px;
+            height: 70px;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            color: var(--primary);
+            font-size: 30px;
+            animation: pulseIcon 3s infinite ease-in-out;
+        }
+
+        @keyframes pulseIcon {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(99, 102, 241, 0); }
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .action-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);
+        }
+
+        /* Seção FAQ (Acordeão) */
+        .faq-section {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .faq-section h2 {
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .accordion-item {
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 10px;
+        }
+
+        .accordion-header {
+            width: 100%;
+            background: none;
+            border: none;
+            color: var(--text-main);
+            padding: 15px 10px;
+            text-align: left;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: color 0.2s;
+        }
+
+        .accordion-header:hover {
+            color: var(--primary);
+        }
+
+        .accordion-header::after {
+            content: '+';
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+
+        .accordion-item.active .accordion-header::after {
+            transform: rotate(45deg);
+        }
+
+        .accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease;
+            padding: 0 10px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .accordion-item.active .accordion-body {
+            max-height: 200px;
+            padding-bottom: 15px;
+        }
+
+        /* Área do Formulário Incorporado (Iframe) */
+        #form-container {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+            animation: fadeInScale 0.5s ease forwards;
+        }
+
+        #form-container iframe {
+            width: 100%;
+            border-radius: 10px;
+            background: transparent;
+        }
+
+        .close-btn-area {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        .btn-close {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        footer {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        @media (max-width: 480px) {
+            .container, .faq-section, #form-container {
+                padding: 20px;
+            }
+            h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="icon-badge">🖨️</div>
+        <h1>PrintExpress</h1>
+        <p>Soluções rápidas em impressões, arquivos digitais e documentos. Envie seus pedidos direto pelo celular de forma prática e segura.</p>
+
+        <div class="action-area">
+            <button onclick="mostrarFormulario()" class="btn btn-primary">
+                Fazer Pedido / Enviar Arquivo
+            </button>
+        </div>
+    </div>
+
+    <!-- Seção do Formulário Incorporado (Aparece ao clicar no botão) -->
+    <div id="form-container">
+        <div class="close-btn-area">
+            <button onclick="ocultarFormulario()" class="btn-close">✕ Fechar Formulário</button>
+        </div>
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdKUEtpLu0IoXCUh1qH5cc3p8o-j-fYIc_XztubExaIBq9KRA/viewform?embedded=true" width="640" height="1305" frameborder="0" marginheight="0" marginwidth="0">Carregando…</iframe>
+    </div>
+
+    <!-- Seção FAQ com as 33 Perguntas em Acordeão -->
+    <div class="faq-section">
+        <h2>Dúvidas Frequentes</h2>
+
+        <!-- Pergunta 1 -->
+        <div class="accordion-item">
+            <button class="accordion-header">1. Quais tipos de impressão o PrintExpress oferece?</button>
+            <div class="accordion-body">O PrintExpress oferece serviços de impressão de documentos, trabalhos, atividades, arquivos pessoais e outros materiais compatíveis com os serviços disponíveis no site.</div>
+        </div>
+
+        <!-- Pergunta 2 -->
+        <div class="accordion-item">
+            <button class="accordion-header">2. Posso enviar meu arquivo pelo celular?</button>
+            <div class="accordion-body">Sim! Você pode enviar seu arquivo diretamente pelo celular, sem precisar de computador.</div>
+        </div>
+
+        <!-- Pergunta 3 -->
+        <div class="accordion-item">
+            <button class="accordion-header">3. Quais formatos de arquivo posso enviar?</button>
+            <div class="accordion-body">O formato depende do serviço e do formulário utilizado. Sempre que possível, recomendamos enviar o arquivo em PDF para preservar a formatação.</div>
+        </div>
+
+        <!-- Pergunta 4 -->
+        <div class="accordion-item">
+            <button class="accordion-header">4. Posso escolher preto e branco ou colorido?</button>
+            <div class="accordion-body">Sim, quando essa opção estiver disponível para o serviço escolhido.</div>
+        </div>
+
+        <!-- Pergunta 5 -->
+        <div class="accordion-item">
+            <button class="accordion-header">5. Posso escolher a quantidade de cópias?</button>
+            <div class="accordion-body">Sim. Informe a quantidade desejada durante o pedido.</div>
+        </div>
+
+        <!-- Pergunta 6 -->
+        <div class="accordion-item">
+            <button class="accordion-header">6. Posso imprimir frente e verso?</button>
+            <div class="accordion-body">Quando essa opção estiver disponível, ela poderá ser selecionada durante o pedido.</div>
+        </div>
+
+        <!-- Pergunta 7 -->
+        <div class="accordion-item">
+            <button class="accordion-header">7. Como faço para enviar um arquivo?</button>
+            <div class="accordion-body">Escolha o serviço desejado, preencha as informações solicitadas e envie o arquivo pelo formulário correspondente.</div>
+        </div>
+
+        <!-- Pergunta 8 -->
+        <div class="accordion-item">
+            <button class="accordion-header">8. O que acontece depois que envio meu arquivo?</button>
+            <div class="accordion-body">O arquivo é recebido para que o pedido possa ser analisado e o serviço solicitado seja realizado.</div>
+        </div>
+
+        <!-- Pergunta 9 -->
+        <div class="accordion-item">
+            <button class="accordion-header">9. Posso enviar mais de um arquivo?</button>
+            <div class="accordion-body">Isso depende do serviço escolhido e das opções disponíveis no formulário. Quando permitido, você poderá enviar os arquivos necessários para o mesmo pedido.</div>
+        </div>
+
+        <!-- Pergunta 10 -->
+        <div class="accordion-item">
+            <button class="accordion-header">10. Meu arquivo está muito grande. O que faço?</button>
+            <div class="accordion-body">Se o arquivo ultrapassar o limite permitido pelo formulário, tente reduzi-lo ou entre em contato com o PrintExpress para verificar outra possibilidade de envio.</div>
+        </div>
+
+        <!-- Pergunta 11 -->
+        <div class="accordion-item">
+            <button class="accordion-header">11. Posso cancelar um pedido depois de enviar o arquivo?</button>
+            <div class="accordion-body">Entre em contato o mais rápido possível. A possibilidade de cancelamento dependerá de o serviço já ter sido iniciado ou concluído.</div>
+        </div>
+
+        <!-- Pergunta 12 -->
+        <div class="accordion-item">
+            <button class="accordion-header">12. Quais documentos oficiais estão disponíveis?</button>
+            <div class="accordion-body">O PrintExpress pode oferecer serviços relacionados a documentos como CRLV, comprovante de situação cadastral de CPF/CNPJ, certidão de antecedentes criminais, certidão de quitação eleitoral e impressão de documentos da CNH Digital, conforme os serviços disponíveis no momento.</div>
+        </div>
+
+        <!-- Pergunta 13 -->
+        <div class="accordion-item">
+            <button class="accordion-header">13. Qual a diferença entre “Emissão + Impressão” e “Somente Impressão”?</button>
+            <div class="accordion-body">Emissão + Impressão: o serviço envolve a obtenção/emissão do documento e sua impressão. Somente Impressão: você fornece o documento/arquivo e o PrintExpress realiza a impressão.</div>
+        </div>
+
+        <!-- Pergunta 14 -->
+        <div class="accordion-item">
+            <button class="accordion-header">14. O PrintExpress emite documentos oficiais?</button>
+            <div class="accordion-body">Para determinados serviços, o PrintExpress pode auxiliar na obtenção de documentos disponíveis nos respectivos serviços oficiais e realizar sua impressão. A disponibilidade depende do documento e das condições do serviço.</div>
+        </div>
+
+        <!-- Pergunta 15 -->
+        <div class="accordion-item">
+            <button class="accordion-header">15. Posso enviar um documento oficial para impressão?</button>
+            <div class="accordion-body">Sim, quando o serviço estiver disponível para esse tipo de arquivo. Envie somente os documentos necessários para a realização do pedido.</div>
+        </div>
+
+        <!-- Pergunta 16 -->
+        <div class="accordion-item">
+            <button class="accordion-header">16. Quais formas de pagamento são aceitas?</button>
+            <div class="accordion-body">As formas de pagamento disponíveis são informadas no momento da realização do pedido.</div>
+        </div>
+
+        <!-- Pergunta 17 -->
+        <div class="accordion-item">
+            <button class="accordion-header">17. Preciso pagar antes da impressão?</button>
+            <div class="accordion-body">Isso depende do serviço escolhido e das condições informadas no momento do pedido.</div>
+        </div>
+
+        <!-- Pergunta 18 -->
+        <div class="accordion-item">
+            <button class="accordion-header">18. Os preços ficam disponíveis no site?</button>
+            <div class="accordion-body">Sim. Sempre que possível, os preços são apresentados junto ao serviço correspondente.</div>
+        </div>
+
+        <!-- Pergunta 19 -->
+        <div class="accordion-item">
+            <button class="accordion-header">19. Existe valor mínimo para um pedido?</button>
+            <div class="accordion-body">Caso exista um valor mínimo, ele será informado antes da confirmação do pedido.</div>
+        </div>
+
+        <!-- Pergunta 20 -->
+        <div class="accordion-item">
+            <button class="accordion-header">20. Como faço um pedido?</button>
+            <div class="accordion-body">Escolha o serviço desejado, informe os dados solicitados, envie os arquivos quando necessário e siga as instruções apresentadas pelo PrintExpress.</div>
+        </div>
+
+        <!-- Pergunta 21 -->
+        <div class="accordion-item">
+            <button class="accordion-header">21. Como sei quando meu pedido está pronto?</button>
+            <div class="accordion-body">O PrintExpress informará o cliente conforme o método de atendimento utilizado para aquele pedido.</div>
+        </div>
+
+        <!-- Pergunta 22 -->
+        <div class="accordion-item">
+            <button class="accordion-header">22. Posso pedir para outra pessoa retirar meu pedido?</button>
+            <div class="accordion-body">Quando a retirada por terceiros estiver disponível, recomendamos informar previamente quem fará a retirada.</div>
+        </div>
+
+        <!-- Pergunta 23 -->
+        <div class="accordion-item">
+            <button class="accordion-header">23. Quanto tempo demora para ficar pronto?</button>
+            <div class="accordion-body">O prazo pode variar de acordo com o tipo e a quantidade de serviços solicitados. O prazo será informado conforme o pedido.</div>
+        </div>
+
+        <!-- Pergunta 24 -->
+        <div class="accordion-item">
+            <button class="accordion-header">24. O que acontece com meu arquivo depois que ele é impresso?</button>
+            <div class="accordion-body">O arquivo é utilizado para realizar o serviço solicitado. O PrintExpress busca não manter arquivos além do período necessário para a realização do serviço, respeitando eventuais obrigações legais.</div>
+        </div>
+
+        <!-- Pergunta 25 -->
+        <div class="accordion-item">
+            <button class="accordion-header">25. O PrintExpress guarda meus documentos?</button>
+            <div class="accordion-body">Os arquivos enviados são utilizados para a finalidade relacionada ao serviço solicitado. Não é necessário manter documentos pessoais sem uma finalidade específica.</div>
+        </div>
+
+        <!-- Pergunta 26 -->
+        <div class="accordion-item">
+            <button class="accordion-header">26. Meus dados pessoais são protegidos?</button>
+            <div class="accordion-body">O PrintExpress busca tratar os dados pessoais de acordo com a legislação aplicável e utiliza as informações fornecidas para as finalidades relacionadas aos serviços solicitados. Consulte nossa Política de Privacidade para saber mais.</div>
+        </div>
+
+        <!-- Pergunta 27 -->
+        <div class="accordion-item">
+            <button class="accordion-header">27. Posso enviar documentos que contenham CPF, RG ou outras informações pessoais?</button>
+            <div class="accordion-body">Sim, quando essas informações forem necessárias para o serviço solicitado. Envie somente os documentos e dados necessários para a realização do pedido.</div>
+        </div>
+
+        <!-- Pergunta 28 -->
+        <div class="accordion-item">
+            <button class="accordion-header">28. Preciso de computador para usar o PrintExpress?</button>
+            <div class="accordion-body">Não! O site foi desenvolvido para funcionar também em celulares e tablets.</div>
+        </div>
+
+        <!-- Pergunta 29 -->
+        <div class="accordion-item">
+            <button class="accordion-header">29. Preciso criar uma conta para fazer um pedido?</button>
+            <div class="accordion-body">Não necessariamente. Isso depende do serviço escolhido e das funcionalidades disponíveis no site.</div>
+        </div>
+
+        <!-- Pergunta 30 -->
+        <div class="accordion-item">
+            <button class="accordion-header">30. Como entro em contato com o PrintExpress?</button>
+            <div class="accordion-body">Utilize o canal de atendimento informado no próprio site para entrar em contato e tirar dúvidas sobre pedidos e serviços.</div>
+        </div>
+
+        <!-- Pergunta 31 -->
+        <div class="accordion-item">
+            <button class="accordion-header">31. O PrintExpress é uma gráfica?</button>
+            <div class="accordion-body">O PrintExpress oferece serviços de impressão e soluções digitais relacionadas a documentos e materiais gráficos, de acordo com os serviços disponíveis no site.</div>
+        </div>
+
+        <!-- Pergunta 32 -->
+        <div class="accordion-item">
+            <button class="accordion-header">32. Posso pedir algo que não aparece no site?</button>
+            <div class="accordion-body">Você pode entrar em contato para verificar se conseguimos atender à sua solicitação. Alguns serviços podem não estar disponíveis no momento.</div>
+        </div>
+
+        <!-- Pergunta 33 -->
+        <div class="accordion-item">
+            <button class="accordion-header">33. O que faço se tiver algum problema com meu pedido?</button>
+            <div class="accordion-body">Entre em contato pelo canal de atendimento do PrintExpress informando o número ou os dados do pedido. Vamos analisar a situação e orientar sobre os próximos passos.</div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 PrintExpress. Todos os direitos reservados.
+    </footer>
+
+    <script>
+        function mostrarFormulario() {
+            const formContainer = document.getElementById('form-container');
+            formContainer.style.display = 'block';
+            formContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function ocultarFormulario() {
+            const formContainer = document.getElementById('form-container');
+            formContainer.style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Script para abrir e fechar as caixas expansíveis (accordion)
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.parentElement;
+                
+                // Fecha os outros itens abertos (opcional, deixa apenas um aberto por vez)
+                document.querySelectorAll('.accordion-item').forEach(otherItem => {
+                    if (otherItem !== item) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+
+                // Alterna o estado atual
+                item.classList.toggle('active');
+            });
+        });
+    </script>
+
+</body>
+</html>
