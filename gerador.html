@@ -3,405 +3,785 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Utilitários Express – Suíte de Produtividade</title>
-    
+    <title>Utilitários Express Pro – Suíte Digital SaaS</title>
+
+    <!-- Design System: Google Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
-    <!-- Firebase SDKs (Compat) -->
+    <!-- Firebase SDK (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
+    <!-- Bibliotecas de Processamento Local -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
     <style>
         :root {
-            --bg: #090d16;
-            --panel: #111827;
-            --card: #1f2937;
+            --bg-body: #090d16;
+            --panel-bg: #111827;
+            --card-bg: #1f2937;
             --primary: #6366f1;
             --primary-hover: #4f46e5;
-            --accent: #10b981;
-            --text: #f9fafb;
-            --muted: #9ca3af;
-            --border: rgba(255,255,255,0.08);
-            --gold: #f59e0b;
+            --accent-gold: #f59e0b;
+            --accent-green: #10b981;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --border-line: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(99, 102, 241, 0.3);
         }
 
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding-bottom: 60px; }
 
-        .auth-container { width: 100%; max-width: 400px; background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 30px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        .auth-title { font-size: 1.5rem; font-weight: 800; text-align: center; margin-bottom: 20px; background: linear-gradient(135deg, #fff, var(--muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--muted); margin-bottom: 5px; }
-        .form-control { width: 100%; padding: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; color: #fff; font-size: 0.9rem; outline: none; transition: 0.2s; }
-        .form-control:focus { border-color: var(--primary); }
+        /* HEADER FIXO & BARRA NAVEGAÇÃO */
+        .top-nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-line); padding: 14px 24px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
 
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; }
-        .btn-primary { background: var(--primary); color: #fff; }
-        .btn-primary:hover { background: var(--primary-hover); }
-        .btn-google { background: #fff; color: #000; margin-top: 10px; }
-        .btn-google:hover { background: #e5e7eb; }
-        
-        .auth-toggle { text-align: center; margin-top: 15px; font-size: 0.85rem; color: var(--muted); cursor: pointer; }
-        .auth-toggle span { color: var(--primary); font-weight: 600; }
+        .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.2rem; color: #fff; }
+        .brand span { color: var(--primary); }
 
-        /* APP MAIN LAYOUT */
-        .app-container { width: 100%; max-width: 1000px; display: none; flex-direction: column; gap: 20px; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 15px 25px; }
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; }
-        
-        /* LIMIT BADGE */
-        .limit-badge { background: rgba(99, 102, 241, 0.1); border: 1px solid var(--primary); color: #a5b4fc; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-        .limit-badge.unlimited { background: rgba(245, 158, 11, 0.1); border-color: var(--gold); color: var(--gold); }
+        .nav-actions { display: flex; align-items: center; gap: 12px; }
 
-        .btn-logout { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 14px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; }
-        .btn-logout:hover { color: #fff; border-color: #fff; }
+        .credit-widget {
+            background: rgba(99, 102, 241, 0.12); border: 1px solid var(--border-glow);
+            padding: 6px 14px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; color: #818cf8;
+            display: flex; align-items: center; gap: 8px; cursor: pointer;
+        }
+        .credit-widget.unlimited {
+            background: rgba(245, 158, 11, 0.15); border-color: var(--accent-gold); color: var(--accent-gold);
+        }
 
-        /* TABS */
-        .nav-tabs { display: flex; gap: 10px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 8px; overflow-x: auto; }
-        .nav-tab { flex: 1; padding: 12px; border: none; background: transparent; color: var(--muted); font-weight: 600; border-radius: 10px; cursor: pointer; transition: 0.2s; white-space: nowrap; text-align: center; }
-        .nav-tab.active { background: var(--card); color: #fff; border: 1px solid var(--border); }
+        .btn {
+            background: var(--primary); color: #fff; border: none; padding: 9px 18px;
+            border-radius: 10px; font-weight: 600; font-size: 0.88rem; cursor: pointer;
+            transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-gold { background: var(--accent-gold); color: #000; font-weight: 700; }
+        .btn-gold:hover { background: #d97706; color: #fff; }
+        .btn-outline { background: transparent; border: 1px solid var(--border-line); color: var(--text-main); }
+        .btn-outline:hover { background: var(--card-bg); }
 
-        /* WORKSPACE */
-        .workspace { background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 30px; min-height: 400px; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        /* LAYOUT PRINCIPAL */
+        .main-layout { max-width: 1280px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 280px 1fr; gap: 30px; }
+        @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
 
-        /* FILE DROP ZONE */
-        .drop-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; background: rgba(255,255,255,0.01); cursor: pointer; transition: 0.2s; margin-bottom: 20px; }
-        .drop-zone:hover { border-color: var(--primary); background: rgba(99, 102, 241, 0.05); }
+        /* PAINEL LATERAL DE PERFIL E CRÉDITOS */
+        .sidebar-card {
+            background: var(--panel-bg); border: 1px solid var(--border-line); border-radius: 20px;
+            padding: 24px; position: sticky; top: 90px; height: fit-content; display: flex; flex-direction: column; gap: 20px;
+        }
 
-        /* BANNER UPGRADE */
-        .upgrade-banner { background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(99, 102, 241, 0.15)); border: 1px solid var(--gold); border-radius: 12px; padding: 15px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .btn-upgrade { background: var(--gold); color: #000; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
-        .btn-upgrade:hover { background: #d97706; color: #fff; }
+        .user-box { display: flex; align-items: center; gap: 14px; }
+        .avatar-large {
+            width: 52px; height: 52px; border-radius: 50%; background: var(--primary);
+            display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; border: 2px solid #fff;
+        }
+
+        .progress-bar-bg { width: 100%; background: var(--card-bg); height: 8px; border-radius: 10px; overflow: hidden; margin-top: 8px; }
+        .progress-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease; }
+
+        .history-list { list-style: none; font-size: 0.8rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .history-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-line); padding-bottom: 4px; }
+
+        /* GRADE DAS 20 FERRAMENTAS */
+        .tools-header { margin-bottom: 25px; }
+        .tools-header h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; }
+        .tools-header p { color: var(--text-muted); font-size: 0.95rem; }
+
+        .filter-tags { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
+        .tag { background: var(--panel-bg); border: 1px solid var(--border-line); color: var(--text-muted); padding: 5px 12px; border-radius: 20px; font-size: 0.78rem; cursor: pointer; }
+        .tag.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; }
+
+        .tool-card {
+            background: var(--panel-bg); border: 1px solid var(--border-line); border-radius: 16px; padding: 20px;
+            display: flex; flex-direction: column; gap: 14px; transition: all 0.25s ease; position: relative;
+        }
+        .tool-card:hover { border-color: var(--border-glow); transform: translateY(-3px); }
+
+        .tool-title { font-size: 1rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .tool-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; background: rgba(99, 102, 241, 0.15); color: #818cf8; font-weight: 600; }
+
+        .input-box { width: 100%; background: var(--card-bg); border: 1px solid var(--border-line); color: #fff; padding: 10px 12px; border-radius: 8px; font-size: 0.85rem; outline: none; }
+        .input-box:focus { border-color: var(--primary); }
+        textarea.input-box { resize: vertical; min-height: 65px; }
+
+        .tool-preview {
+            background: var(--bg-body); border: 1px dashed var(--border-line); border-radius: 8px;
+            padding: 10px; min-height: 60px; display: flex; align-items: center; justify-content: center; text-align: center;
+            font-size: 0.8rem; color: var(--text-muted); word-break: break-all;
+        }
+
+        /* MODAIS UNIFICADOS */
+        .modal-bg {
+            display: none; position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 1000;
+            justify-content: center; align-items: center; padding: 20px;
+        }
+
+        .modal-card {
+            background: var(--panel-bg); border: 1px solid var(--border-glow); border-radius: 20px;
+            width: 100%; max-width: 440px; padding: 30px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer; }
+
+        .tab-group { display: flex; border-bottom: 1px solid var(--border-line); margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 10px; background: none; border: none; color: var(--text-muted); font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab-btn.active { color: var(--primary); border-color: var(--primary); }
+
+        .pix-container { background: var(--bg-body); border: 1px dashed var(--accent-gold); border-radius: 12px; padding: 18px; text-align: center; margin: 15px 0; }
+        .pix-container img { width: 130px; height: 130px; border-radius: 8px; background: #fff; padding: 5px; margin: 10px 0; }
     </style>
 </head>
 <body>
 
-    <!-- AUTH CONTAINER -->
-    <div class="auth-container" id="authBox">
-        <div class="auth-title" id="authTitle">Entrar na Plataforma</div>
-        <form id="authForm" onsubmit="handleAuth(event)">
-            <div class="form-group">
-                <label>E-mail</label>
-                <input type="email" id="email" class="form-control" required placeholder="seu@email.com">
+    <!-- TOP NAVIGATION -->
+    <nav class="top-nav">
+        <div class="brand">⚡ Utilitários<span>Express</span></div>
+        <div class="nav-actions">
+            <div class="credit-widget" onclick="abrirModalRecarga()" id="navCreditBox" style="display: none;">
+                ⚡ <span id="navCreditVal">0</span>/3 Créditos
             </div>
-            <div class="form-group">
-                <label>Senha</label>
-                <input type="password" id="password" class="form-control" required placeholder="••••••••">
-            </div>
-            <button type="submit" class="btn btn-primary" id="authBtn">Entrar</button>
-        </form>
-        
-        <button class="btn btn-google" onclick="loginGoogle()">
-            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.26v3.15C3.25 21.3 7.31 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.61H1.26C.46 8.23 0 10.06 0 12s.46 3.77 1.26 5.39l4.02-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.26 6.61l4.02 3.15c.95-2.85 3.6-4.96 6.72-4.96z"/></svg>
-            Entrar com Google
-        </button>
+            <button id="btnAuthNav" class="btn" onclick="abrirModalAuth()">Entrar / Cadastrar</button>
+            <button id="btnLogoutNav" class="btn btn-outline" onclick="fazerLogout()" style="display: none;">Sair</button>
+        </div>
+    </nav>
 
-        <div class="auth-toggle" onclick="toggleAuthMode()">
-            <span id="toggleText">Não tem conta? Cadastre-se</span>
+    <!-- CONTAINER PRINCIPAL -->
+    <div class="main-layout">
+
+        <!-- PAINEL DE PERFIL -->
+        <aside class="sidebar-card">
+            <div class="user-box">
+                <div class="avatar-large" id="userAvatar">?</div>
+                <div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Conta Ativa</div>
+                    <div style="font-weight: 700; font-size: 0.95rem;" id="userName">Visitante</div>
+                </div>
+            </div>
+
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600;">
+                    <span>Créditos Diários</span>
+                    <span id="sideCreditText">0 / 3</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="sideCreditBar"></div>
+                </div>
+                <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">Renovação automática a cada 24 horas.</p>
+            </div>
+
+            <button class="btn btn-gold" style="width: 100%;" onclick="abrirModalRecarga()">⚡ Obter Créditos Ilimitados</button>
+
+            <div>
+                <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 8px;">Histórico Recente</div>
+                <ul class="history-list" id="historyList">
+                    <li class="history-item"><span>Nenhum uso registrado</span></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- AREA DE FERRAMENTAS -->
+        <main>
+            <div class="tools-header">
+                <h1>Suíte de Produtividade Digital</h1>
+                <p>20 ferramentas rápidas e totalmente funcionais direto no seu navegador.</p>
+                <div class="filter-tags">
+                    <span class="tag active">Todas (20)</span>
+                </div>
+            </div>
+
+            <div class="tools-grid">
+
+                <!-- 1. Imagens para PDF -->
+                <div class="tool-card">
+                    <div class="tool-title">1. Imagens para PDF <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="file" id="f1_input" multiple accept="image/*" class="input-box">
+                    <button class="btn" onclick="executar(tool1_ImgsParaPdf, 'PDF criado')">Converter em PDF</button>
+                </div>
+
+                <!-- 2. Gerador de QR Code -->
+                <div class="tool-card">
+                    <div class="tool-title">2. Gerador QR Code <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f2_input" placeholder="Cole o link ou texto" class="input-box">
+                    <div id="f2_preview" class="tool-preview">QR Code aparecerá aqui</div>
+                    <button class="btn" onclick="executar(tool2_GerarQr, 'QR Code gerado')">Gerar QR Code</button>
+                </div>
+
+                <!-- 3. Conversor PNG/JPG/WebP -->
+                <div class="tool-card">
+                    <div class="tool-title">3. Conversor de Imagem <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="file" id="f3_file" accept="image/*" class="input-box">
+                    <select id="f3_format" class="input-box">
+                        <option value="image/png">Converter para PNG</option>
+                        <option value="image/jpeg">Converter para JPG</option>
+                        <option value="image/webp">Converter para WebP</option>
+                    </select>
+                    <button class="btn" onclick="executar(tool3_ConverterImg, 'Imagem convertida')">Converter e Baixar</button>
+                </div>
+
+                <!-- 4. Redutor de Tamanho de Foto -->
+                <div class="tool-card">
+                    <div class="tool-title">4. Compactador de Imagem <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="file" id="f4_input" accept="image/*" class="input-box">
+                    <button class="btn" onclick="executar(tool4_CompactarImg, 'Imagem reduzida')">Reduzir Tamanho</button>
+                </div>
+
+                <!-- 5. Código de Barras -->
+                <div class="tool-card">
+                    <div class="tool-title">5. Código de Barras <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f5_input" placeholder="Numeração" class="input-box">
+                    <div class="tool-preview"><svg id="f5_svg"></svg></div>
+                    <button class="btn" onclick="executar(tool5_Barcode, 'Código de barras gerado')">Gerar Código</button>
+                </div>
+
+                <!-- 6. Extrator de Texto OCR -->
+                <div class="tool-card">
+                    <div class="tool-title">6. Extrator de Texto OCR <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="file" id="f6_input" accept="image/*" class="input-box">
+                    <textarea id="f6_output" class="input-box" readonly placeholder="Texto lido..."></textarea>
+                    <button class="btn" onclick="executar(tool6_OCR, 'OCR executado')">Ler Imagem</button>
+                </div>
+
+                <!-- 7. Gerador de Senhas Fortes -->
+                <div class="tool-card">
+                    <div class="tool-title">7. Gerador de Senhas <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f7_output" class="input-box" readonly placeholder="Senha gerada">
+                    <button class="btn" onclick="executar(tool7_GerarSenha, 'Senha gerada')">Criar Senha Segura</button>
+                </div>
+
+                <!-- 8. Contador de Palavras -->
+                <div class="tool-card">
+                    <div class="tool-title">8. Contador de Palavras <span class="tool-badge">-1 Crédito</span></div>
+                    <textarea id="f8_input" class="input-box" placeholder="Cole seu texto..."></textarea>
+                    <div id="f8_preview" class="tool-preview">0 Palavras | 0 Caracteres</div>
+                    <button class="btn" onclick="executar(tool8_ContarTexto, 'Texto analisado')">Contar Texto</button>
+                </div>
+
+                <!-- 9. Gerador de CPF -->
+                <div class="tool-card">
+                    <div class="tool-title">9. Gerador de CPF (DEV) <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f9_output" class="input-box" readonly placeholder="CPF para testes">
+                    <button class="btn" onclick="executar(tool9_GerarCPF, 'CPF gerado')">Gerar CPF Válido</button>
+                </div>
+
+                <!-- 10. Formatar Maiúsculas -->
+                <div class="tool-card">
+                    <div class="tool-title">10. Formatar Maiúsculas <span class="tool-badge">-1 Crédito</span></div>
+                    <textarea id="f10_input" class="input-box" placeholder="Texto misturado..."></textarea>
+                    <button class="btn" onclick="executar(tool10_CaixaAlta, 'Texto formatado')">Converter MAIÚSCULAS</button>
+                </div>
+
+                <!-- 11. WhatsApp Link -->
+                <div class="tool-card">
+                    <div class="tool-title">11. Link Direto WhatsApp <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f11_phone" placeholder="DDD + Número (Ex: 11999999999)" class="input-box">
+                    <input type="text" id="f11_msg" placeholder="Mensagem inicial (opcional)" class="input-box">
+                    <div id="f11_preview" class="tool-preview">Link aparecerá aqui</div>
+                    <button class="btn" onclick="executar(tool11_LinkWhats, 'Link WhatsApp criado')">Gerar Link</button>
+                </div>
+
+                <!-- 12. Inversor de Texto -->
+                <div class="tool-card">
+                    <div class="tool-title">12. Inversor de Texto <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f12_input" placeholder="Digite algo..." class="input-box">
+                    <div id="f12_preview" class="tool-preview">Resultado invertido</div>
+                    <button class="btn" onclick="executar(tool12_InverterTexto, 'Texto invertido')">Inverter</button>
+                </div>
+
+                <!-- 13. Gerador de Paleta -->
+                <div class="tool-card">
+                    <div class="tool-title">13. Gerador de Paleta de Cor <span class="tool-badge">-1 Crédito</span></div>
+                    <div id="f13_box" class="tool-preview" style="color: #fff; font-weight: bold;">#6366F1</div>
+                    <button class="btn" onclick="executar(tool13_GerarCor, 'Cor gerada')">Gerar Nova Cor</button>
+                </div>
+
+                <!-- 14. Limpar URL -->
+                <div class="tool-card">
+                    <div class="tool-title">14. Removedor de Tracking URL <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f14_input" placeholder="Cole link com UTM/Tracking" class="input-box">
+                    <input type="text" id="f14_output" readonly placeholder="Link limpo" class="input-box">
+                    <button class="btn" onclick="executar(tool14_LimparUrl, 'URL limpa')">Limpar Link</button>
+                </div>
+
+                <!-- 15. Base64 -->
+                <div class="tool-card">
+                    <div class="tool-title">15. Codificador Base64 <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f15_input" placeholder="Texto normal..." class="input-box">
+                    <textarea id="f15_output" readonly placeholder="Resultado Base64..." class="input-box"></textarea>
+                    <button class="btn" onclick="executar(tool15_Base64, 'Base64 gerado')">Codificar Base64</button>
+                </div>
+
+                <!-- 16. Lorem Ipsum -->
+                <div class="tool-card">
+                    <div class="tool-title">16. Gerador Lorem Ipsum <span class="tool-badge">-1 Crédito</span></div>
+                    <textarea id="f16_output" readonly class="input-box" placeholder="Texto fictício..."></textarea>
+                    <button class="btn" onclick="executar(tool16_Lorem, 'Lorem gerado')">Gerar Parágrafo</button>
+                </div>
+
+                <!-- 17. Leitor QR Code -->
+                <div class="tool-card">
+                    <div class="tool-title">17. Leitor QR Code (Foto) <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="file" id="f17_input" accept="image/*" class="input-box">
+                    <div id="f17_output" class="tool-preview">Resultado da leitura</div>
+                    <button class="btn" onclick="executar(tool17_LerQr, 'QR Code lido')">Escanear Imagem</button>
+                </div>
+
+                <!-- 18. Calculadora Porcentagem -->
+                <div class="tool-card">
+                    <div class="tool-title">18. Porcentagem Rápida <span class="tool-badge">-1 Crédito</span></div>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="number" id="f18_p" placeholder="%" class="input-box">
+                        <input type="number" id="f18_v" placeholder="De R$" class="input-box">
+                    </div>
+                    <div id="f18_output" class="tool-preview">Resultado: R$ 0,00</div>
+                    <button class="btn" onclick="executar(tool18_CalcPorcentagem, 'Cálculo realizado')">Calcular</button>
+                </div>
+
+                <!-- 19. Gerador de UUID -->
+                <div class="tool-card">
+                    <div class="tool-title">19. Gerador de UUID v4 <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f19_output" readonly placeholder="UUID..." class="input-box">
+                    <button class="btn" onclick="executar(tool19_UUID, 'UUID criado')">Gerar UUID</button>
+                </div>
+
+                <!-- 20. Extrator de Links -->
+                <div class="tool-card">
+                    <div class="tool-title">20. Extrator de Links de Texto <span class="tool-badge">-1 Crédito</span></div>
+                    <textarea id="f20_input" class="input-box" placeholder="Cole um texto longo com links..."></textarea>
+                    <textarea id="f20_output" class="input-box" readonly placeholder="Links encontrados..."></textarea>
+                    <button class="btn" onclick="executar(tool20_ExtrairLinks, 'Links extraídos')">Extrair Links</button>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL AUTENTICAÇÃO -->
+    <div id="modalAuth" class="modal-bg">
+        <div class="modal-card">
+            <button class="modal-close" onclick="fecharModalAuth()">✕</button>
+            <div class="tab-group">
+                <button class="tab-btn active" id="tabLogin" onclick="mudarAbaAuth('login')">Entrar</button>
+                <button class="tab-btn" id="tabRegister" onclick="mudarAbaAuth('register')">Cadastrar Conta</button>
+            </div>
+            <form id="authForm" onsubmit="processarAuthEmail(event)">
+                <input type="email" id="authEmail" class="input-box" placeholder="Seu E-mail" required style="margin-bottom: 10px;">
+                <input type="password" id="authPass" class="input-box" placeholder="Sua Senha (mín. 6 dígitos)" required style="margin-bottom: 15px;">
+                <button type="submit" id="btnSubmitAuth" class="btn" style="width: 100%; margin-bottom: 12px;">Acessar Minha Conta</button>
+            </form>
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin: 10px 0;">OU</div>
+            <button class="btn btn-outline" style="width: 100%;" onclick="loginGoogle()">
+                Continuar com o Google
+            </button>
         </div>
     </div>
 
-    <!-- MAIN APP -->
-    <div class="app-container" id="appBox">
-        <!-- TOP BAR -->
-        <div class="top-bar">
-            <div class="user-info">
-                <div class="user-avatar" id="uAvatar">U</div>
-                <div>
-                    <strong id="uEmail" style="font-size: 0.9rem; display: block;">user@email.com</strong>
-                    <span style="font-size: 0.75rem; color: var(--muted);">Conectado</span>
-                </div>
-            </div>
-            
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div class="limit-badge" id="limitBadge">
-                    ⚡ Créditos Diários: <span id="creditCount">3/3</span>
-                </div>
-                <button class="btn-logout" onclick="logout()">Sair</button>
-            </div>
-        </div>
+    <!-- MODAL RECARGA / PIX -->
+    <div id="modalRecarga" class="modal-bg">
+        <div class="modal-card">
+            <button class="modal-close" onclick="fecharModalRecarga()">✕</button>
+            <h3 style="color: var(--accent-gold); margin-bottom: 8px;">⚡ Desbloquear Créditos Ilimitados</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Seus 3 créditos diários acabaram! Libere o acesso ilimitado por apenas R$ 10,00:</p>
 
-        <!-- UPGRADE BANNER -->
-        <div class="upgrade-banner" id="upgradeBanner">
-            <div>
-                <strong style="color: var(--gold); font-size: 0.95rem;">🚀 Quer uso ilimitado?</strong>
-                <p style="font-size: 0.8rem; color: var(--muted); margin-top: 2px;">Faça o upgrade para o plano VIP e processe sem limites diários!</p>
-            </div>
-            <button class="btn-upgrade" onclick="solicitarUpgrade()">Assinar VIP</button>
-        </div>
+            <form action="https://formsubmit.co/ws8530135@gmail.com" method="POST">
+                <input type="hidden" name="_subject" value="Novo Pedido de Crédito Ilimitado">
+                <input type="hidden" name="_captcha" value="false">
 
-        <!-- TABS NAV -->
-        <div class="nav-tabs">
-            <button class="nav-tab active" onclick="showTab('pdf-img', this)">🖼️ PDF para Imagem</button>
-            <button class="nav-tab" onclick="showTab('img-pdf', this)">📄 Imagem para PDF</button>
-            <button class="nav-tab" onclick="showTab('merge-pdf', this)">🧩 Juntar PDFs</button>
-        </div>
-
-        <!-- WORKSPACE CONTENT -->
-        <div class="workspace">
-            <!-- TAB 1: PDF PARA IMAGEM -->
-            <div id="tab-pdf-img" class="tab-content active">
-                <div class="drop-zone" onclick="document.getElementById('pdfInput').click()">
-                    <p style="font-weight: 600;">Clique para selecionar seu PDF</p>
-                    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 4px;">Extrai todas as páginas como imagens de alta qualidade</p>
-                    <input type="file" id="pdfInput" accept="application/pdf" style="display:none" onchange="processPDFToImg(this.files)">
+                <div class="pix-container">
+                    <p style="font-size: 0.85rem; font-weight: bold; color: var(--accent-gold);">Valor: R$ 10,00 (Acesso Ilimitado)</p>
+                    <img src="qrcode-pix.jpg" alt="QR Code PIX">
+                    <div style="display: flex; gap: 5px;">
+                        <input type="text" id="pixKey" class="input-box" value="SUA_CHAVE_PIX_AQUI" readonly style="font-size: 0.75rem;">
+                        <button type="button" class="btn" style="width: auto; padding: 5px 10px;" onclick="copiarPix()">Copiar</button>
+                    </div>
                 </div>
-                <div id="pdfImgResult" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
-            </div>
 
-            <!-- TAB 2: IMAGEM PARA PDF -->
-            <div id="tab-img-pdf" class="tab-content">
-                <div class="drop-zone" onclick="document.getElementById('imgInput').click()">
-                    <p style="font-weight: 600;">Clique para selecionar Imagens (JPG, PNG)</p>
-                    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 4px;">Combina múltiplos arquivos em um único PDF</p>
-                    <input type="file" id="imgInput" accept="image/*" multiple style="display:none" onchange="processImgToPDF(this.files)">
-                </div>
-                <div id="imgPdfResult"></div>
-            </div>
-
-            <!-- TAB 3: JUNTAR PDFS -->
-            <div id="tab-merge-pdf" class="tab-content">
-                <div class="drop-zone" onclick="document.getElementById('mergeInput').click()">
-                    <p style="font-weight: 600;">Clique para selecionar vários PDFs</p>
-                    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 4px;">Mescla vários documentos PDF em um só</p>
-                    <input type="file" id="mergeInput" accept="application/pdf" multiple style="display:none" onchange="processMergePDF(this.files)">
-                </div>
-                <div id="mergeResult"></div>
-            </div>
+                <input type="text" name="Nome" id="recargaNome" class="input-box" placeholder="Seu Nome" required style="margin-bottom: 8px;">
+                <input type="text" name="WhatsApp" class="input-box" placeholder="Seu WhatsApp com DDD" required style="margin-bottom: 12px;">
+                <button type="submit" class="btn btn-gold" style="width: 100%;">Confirmar Pagamento e Enviar</button>
+            </form>
         </div>
     </div>
 
     <script>
-        // FIREBASE CONFIG - Substitua com as suas credenciais!
+        // CONFIGURAÇÃO OFICIAL FIREBASE
         const firebaseConfig = {
-    apiKey: "AIzaSyA-ZZ5wB9_2p9vAMRlpJ5JBUliJS3g9g7c",
-    authDomain: "utilitarios-express.firebaseapp.com",
-    databaseURL: "https://utilitarios-express-default-rtdb.firebaseio.com",
-    projectId: "utilitarios-express",
-    storageBucket: "utilitarios-express.firebasestorage.app",
-    messagingSenderId: "421983822616",
-    appId: "1:421983822616:web:bca6f2ebc1b6990871b46d"
-  };
+            apiKey: "AIzaSyA-ZZ5wB9_2p9vAMRlpJ5JBUliJS3g9g7c",
+            authDomain: "utilitarios-express.firebaseapp.com",
+            databaseURL: "https://utilitarios-express-default-rtdb.firebaseio.com",
+            projectId: "utilitarios-express",
+            storageBucket: "utilitarios-express.firebasestorage.app",
+            messagingSenderId: "421983822616",
+            appId: "1:421983822616:web:bca6f2ebc1b6990871b46d"
+        };
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        let currentUser = null;
+        let userState = null;
         let userData = null;
-        let isSignUp = false;
+        let currentAuthMode = 'login';
 
-        // AUTH SYSTEM
+        // GERENCIAMENTO DE SESSÃO
         auth.onAuthStateChanged(async (user) => {
             if (user) {
-                currentUser = user;
-                document.getElementById('authBox').style.display = 'none';
-                document.getElementById('appBox').style.display = 'flex';
-                document.getElementById('uEmail').innerText = user.email;
-                document.getElementById('uAvatar').innerText = user.email.charAt(0).toUpperCase();
+                userState = user;
+                document.getElementById('userName').innerText = user.displayName || user.email.split('@')[0];
+                document.getElementById('userAvatar').innerText = (user.email).charAt(0).toUpperCase();
+                
+                document.getElementById('btnAuthNav').style.display = 'none';
+                document.getElementById('btnLogoutNav').style.display = 'inline-flex';
+                document.getElementById('navCreditBox').style.display = 'inline-flex';
 
-                await syncUserData();
+                await sincronizarUsuario(user);
             } else {
-                currentUser = null;
-                document.getElementById('authBox').style.display = 'block';
-                document.getElementById('appBox').style.display = 'none';
+                userState = null;
+                userData = null;
+                document.getElementById('userName').innerText = 'Visitante';
+                document.getElementById('userAvatar').innerText = '?';
+                
+                document.getElementById('btnAuthNav').style.display = 'inline-flex';
+                document.getElementById('btnLogoutNav').style.display = 'none';
+                document.getElementById('navCreditBox').style.display = 'none';
+                atualizarInterface();
             }
         });
 
-        async function syncUserData() {
-            if(!currentUser) return;
-            const ref = db.collection('usuarios').doc(currentUser.uid);
+        async function sincronizarUsuario(user) {
+            const ref = db.collection('usuarios').doc(user.uid);
             const doc = await ref.get();
-
-            const hoje = new Date().toDateString();
+            const agora = new Date().getTime();
+            const limite24h = 24 * 60 * 60 * 1000;
 
             if (!doc.exists) {
-                // Novo usuário: ganha 3 créditos
                 userData = {
-                    email: currentUser.email,
+                    email: user.email,
                     creditos: 3,
-                    ultimoAcesso: hoje,
+                    ultimaRecarga: agora,
                     isIlimitado: false,
-                    vencimentoIlimitado: 0
+                    vencimentoIlimitado: 0,
+                    historico: []
                 };
                 await ref.set(userData);
             } else {
                 userData = doc.data();
 
                 // Verificar expiração do plano ilimitado
-                if (userData.isIlimitado && userData.vencimentoIlimitado < new Date().getTime()) {
+                if (userData.isIlimitado && userData.vencimentoIlimitado < agora) {
                     userData.isIlimitado = false;
                     await ref.update({ isIlimitado: false });
                 }
 
-                // Reset diário de créditos para contas gratuitas
-                if (!userData.isIlimitado && userData.ultimoAcesso !== hoje) {
+                // Renovação de créditos diários
+                if (!userData.isIlimitado && (agora - (userData.ultimaRecarga || 0) >= limite24h)) {
                     userData.creditos = 3;
-                    userData.ultimoAcesso = hoje;
-                    await ref.update({ creditos: 3, ultimoAcesso: hoje });
+                    userData.ultimaRecarga = agora;
+                    await ref.update({ creditos: 3, ultimaRecarga: agora });
                 }
             }
 
-            renderUI();
+            carregarHistorico(userData.historico || []);
+            atualizarInterface();
         }
 
-        function renderUI() {
-            const badge = document.getElementById('limitBadge');
-            const count = document.getElementById('creditCount');
-            const banner = document.getElementById('upgradeBanner');
-
-            if (userData.isIlimitado) {
-                badge.className = "limit-badge unlimited";
-                badge.innerHTML = "⚡ PLANO VIP (ILIMITADO)";
-                banner.style.display = "none";
-            } else {
-                badge.className = "limit-badge";
-                count.innerText = `${userData.creditos}/3`;
-                banner.style.display = "flex";
-            }
-        }
-
-        async function consumirCredito() {
-            if (userData.isIlimitado) return true;
-
-            if (userData.creditos > 0) {
-                userData.creditos--;
-                await db.collection('usuarios').doc(currentUser.uid).update({ creditos: userData.creditos });
-                renderUI();
-                return true;
-            } else {
-                alert("Seus 3 créditos diários acabaram! Faça o upgrade para o plano VIP para continuar usando.");
-                return false;
-            }
-        }
-
-        // TAB SWITCHER
-        function showTab(tabId, btn) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById('tab-' + tabId).classList.add('active');
-            btn.classList.add('active');
-        }
-
-        function toggleAuthMode() {
-            isSignUp = !isSignUp;
-            document.getElementById('authTitle').innerText = isSignUp ? "Criar Conta" : "Entrar na Plataforma";
-            document.getElementById('authBtn').innerText = isSignUp ? "Cadastrar" : "Entrar";
-            document.getElementById('toggleText').innerText = isSignUp ? "Já tem conta? Entre" : "Não tem conta? Cadastre-se";
-        }
-
-        async function handleAuth(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-
-            try {
-                if (isSignUp) {
-                    await auth.createUserWithEmailAndPassword(email, pass);
-                } else {
-                    await auth.signInWithEmailAndPassword(email, pass);
-                }
-            } catch (err) {
-                alert("Erro de autenticação: " + err.message);
-            }
-        }
-
-        async function loginGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                await auth.signInWithPopup(provider);
-            } catch(err) {
-                alert("Erro ao entrar com Google: " + err.message);
-            }
-        }
-
-        function logout() {
-            auth.signOut();
-        }
-
-        function solicitarUpgrade() {
-            alert("Redirecionando para o checkout do Plano VIP...");
-            // Insira aqui o seu link de pagamento (Mercado Pago, Hotmart, Stripe, etc)
-        }
-
-        // FERRAMENTA 1: PDF PARA IMAGEM
-        async function processPDFToImg(files) {
-            if(!files.length) return;
-            if(!await consumirCredito()) return;
-
-            const file = files[0];
-            const reader = new FileReader();
-            
-            reader.onload = async function() {
-                const typedarray = new Uint8Array(this.result);
-                const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                const resultDiv = document.getElementById('pdfImgResult');
-                resultDiv.innerHTML = '';
-
-                for(let i=1; i<=pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const viewport = page.getViewport({scale: 1.5});
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d');
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
-
-                    await page.render({canvasContext: context, viewport: viewport}).promise;
-
-                    const img = document.createElement('img');
-                    img.src = canvas.toDataURL('image/png');
-                    img.style.width = '150px';
-                    img.style.borderRadius = '8px';
-                    img.style.border = '1px solid var(--border)';
-                    
-                    resultDiv.appendChild(img);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        // FERRAMENTA 2: IMAGEM PARA PDF
-        async function processImgToPDF(files) {
-            if(!files.length) return;
-            if(!await consumirCredito()) return;
-
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            for(let i=0; i<files.length; i++) {
-                const file = files[i];
-                const dataUrl = await new Promise(r => {
-                    const reader = new FileReader();
-                    reader.onload = e => r(e.target.result);
-                    reader.readAsDataURL(file);
-                });
-
-                if(i > 0) doc.addPage();
-                doc.addImage(dataUrl, 'JPEG', 10, 10, 190, 0);
-            }
-
-            doc.save('imagens-convertidas.pdf');
-            document.getElementById('imgPdfResult').innerHTML = '<p style="color:var(--accent); margin-top:10px;">✅ PDF gerado com sucesso!</p>';
-        }
-
-        // FERRAMENTA 3: JUNTAR PDFS (MOCK/SIMULAÇÃO)
-        async function processMergePDF(files) {
-            if(files.length < 2) {
-                alert("Selecione pelo menos 2 arquivos PDF para mesclar.");
+        function atualizarInterface() {
+            const widget = document.getElementById('navCreditBox');
+            if (!userData) {
+                document.getElementById('navCreditVal').innerText = "0";
+                document.getElementById('sideCreditText').innerText = "0 / 3";
+                document.getElementById('sideCreditBar').style.width = "0%";
                 return;
             }
-            if(!await consumirCredito()) return;
 
-            document.getElementById('mergeResult').innerHTML = '<p style="color:var(--accent); margin-top:10px;">✅ PDFs processados com sucesso! (Download pronto)</p>';
+            if (userData.isIlimitado) {
+                widget.className = "credit-widget unlimited";
+                widget.innerHTML = "⚡ PLANO VIP (ILIMITADO)";
+                document.getElementById('sideCreditText').innerText = "ILIMITADO";
+                document.getElementById('sideCreditBar').style.width = "100%";
+            } else {
+                widget.className = "credit-widget";
+                widget.innerHTML = `⚡ <span id="navCreditVal">${userData.creditos}</span>/3 Créditos`;
+                document.getElementById('sideCreditText').innerText = userData.creditos + ' / 3';
+                const pct = (userData.creditos / 3) * 100;
+                document.getElementById('sideCreditBar').style.width = pct + '%';
+            }
+        }
+
+        function carregarHistorico(lista) {
+            const box = document.getElementById('historyList');
+            if(!lista || lista.length === 0) return;
+            box.innerHTML = lista.slice(-4).reverse().map(i => `<li class="history-item"><span>${i.nome}</span> <span>${i.hora}</span></li>`).join('');
+        }
+
+        // MOTOR DE EXECUÇÃO
+        async function executar(funcaoTool, nomeAcao) {
+            if (!userState) {
+                alert('Faça login para usar as ferramentas!');
+                return abrirModalAuth();
+            }
+
+            if (!userData.isIlimitado && userData.creditos <= 0) {
+                return abrirModalRecarga();
+            }
+
+            try {
+                await funcaoTool();
+
+                const horaAtual = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                const ref = db.collection('usuarios').doc(userState.uid);
+
+                if (!userData.isIlimitado) {
+                    userData.creditos--;
+                    await ref.update({
+                        creditos: userData.creditos,
+                        historico: firebase.firestore.FieldValue.arrayUnion({ nome: nomeAcao, hora: horaAtual })
+                    });
+                } else {
+                    await ref.update({
+                        historico: firebase.firestore.FieldValue.arrayUnion({ nome: nomeAcao, hora: horaAtual })
+                    });
+                }
+
+                if (!userData.historico) userData.historico = [];
+                userData.historico.push({ nome: nomeAcao, hora: horaAtual });
+                
+                carregarHistorico(userData.historico);
+                atualizarInterface();
+
+            } catch (err) {
+                alert('Atenção: ' + err.message);
+            }
+        }
+
+        // MODAIS E AUTENTICAÇÃO
+        function abrirModalAuth() { document.getElementById('modalAuth').style.display = 'flex'; }
+        function fecharModalAuth() { document.getElementById('modalAuth').style.display = 'none'; }
+        function abrirModalRecarga() { 
+            if(userState) document.getElementById('recargaNome').value = userState.displayName || userState.email;
+            document.getElementById('modalRecarga').style.display = 'flex'; 
+        }
+        function fecharModalRecarga() { document.getElementById('modalRecarga').style.display = 'none'; }
+
+        function mudarAbaAuth(modo) {
+            currentAuthMode = modo;
+            document.getElementById('tabLogin').classList.toggle('active', modo === 'login');
+            document.getElementById('tabRegister').classList.toggle('active', modo === 'register');
+            document.getElementById('btnSubmitAuth').innerText = modo === 'login' ? 'Acessar Minha Conta' : 'Criar Nova Conta';
+        }
+
+        async function processarAuthEmail(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const pass = document.getElementById('authPass').value;
+
+            try {
+                if (currentAuthMode === 'login') {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                } else {
+                    await auth.createUserWithEmailAndPassword(email, pass);
+                }
+                fecharModalAuth();
+            } catch (err) {
+                alert("Erro na Autenticação: " + err.message);
+            }
+        }
+
+        function loginGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).then(() => fecharModalAuth()).catch(err => alert("Erro Google: " + err.message));
+        }
+
+        function fazerLogout() { auth.signOut(); }
+        function copiarPix() {
+            const input = document.getElementById('pixKey');
+            input.select(); navigator.clipboard.writeText(input.value); alert('PIX Copiado!');
+        }
+
+        // IMPLEMENTAÇÃO DAS 20 FERRAMENTAS
+        async function tool1_ImgsParaPdf() {
+            const files = document.getElementById('f1_input').files;
+            if (!files.length) throw new Error('Selecione ao menos 1 imagem');
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            for(let i=0; i<files.length; i++){
+                const data = await new Promise(r => { const rd = new FileReader(); rd.onload = e => r(e.target.result); rd.readAsDataURL(files[i]); });
+                if(i>0) doc.addPage(); doc.addImage(data, 'JPEG', 15, 15, 180, 240);
+            }
+            doc.save('documento.pdf');
+        }
+
+        function tool2_GerarQr() {
+            const txt = document.getElementById('f2_input').value;
+            if(!txt) throw new Error('Digite um link');
+            const box = document.getElementById('f2_preview'); box.innerHTML = '';
+            new QRCode(box, { text: txt, width: 110, height: 110 });
+        }
+
+        function tool3_ConverterImg() {
+            const file = document.getElementById('f3_file').files[0];
+            const fmt = document.getElementById('f3_format').value;
+            if(!file) throw new Error('Selecione a imagem');
+            const rd = new FileReader();
+            rd.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height;
+                    canvas.getContext('2d').drawImage(img, 0, 0);
+                    const a = document.createElement('a'); a.download = 'convertida.' + fmt.split('/')[1];
+                    a.href = canvas.toDataURL(fmt); a.click();
+                }; img.src = e.target.result;
+            }; rd.readAsDataURL(file);
+        }
+
+        function tool4_CompactarImg() {
+            const file = document.getElementById('f4_input').files[0];
+            if(!file) throw new Error('Selecione a imagem');
+            const rd = new FileReader();
+            rd.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height;
+                    canvas.getContext('2d').drawImage(img, 0, 0);
+                    const a = document.createElement('a'); a.download = 'compactada.jpg';
+                    a.href = canvas.toDataURL('image/jpeg', 0.35); a.click();
+                }; img.src = e.target.result;
+            }; rd.readAsDataURL(file);
+        }
+
+        function tool5_Barcode() {
+            const val = document.getElementById('f5_input').value;
+            if(!val) throw new Error('Digite os números');
+            JsBarcode("#f5_svg", val, { format: "CODE128", width: 2, height: 40, displayValue: true });
+        }
+
+        function tool6_OCR() {
+            const file = document.getElementById('f6_input').files[0];
+            const out = document.getElementById('f6_output');
+            if(!file) throw new Error('Selecione uma imagem');
+            out.value = 'Lendo e extraindo texto...';
+            return Tesseract.recognize(file, 'por').then(({ data: { text } }) => out.value = text);
+        }
+
+        function tool7_GerarSenha() {
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%&*";
+            let p = ""; for(let i=0; i<16; i++) p += chars.charAt(Math.floor(Math.random() * chars.length));
+            document.getElementById('f7_output').value = p;
+        }
+
+        function tool8_ContarTexto() {
+            const val = document.getElementById('f8_input').value.trim();
+            const w = val ? val.split(/\s+/).length : 0;
+            document.getElementById('f8_preview').innerText = `${w} Palavras | ${val.length} Caracteres`;
+        }
+
+        function tool9_GerarCPF() {
+            const r = () => Math.floor(Math.random() * 9);
+            const n = [r(),r(),r(),r(),r(),r(),r(),r(),r()];
+            let d1 = n.reduce((a,v,i) => a + v * (10-i), 0) % 11; d1 = d1 < 2 ? 0 : 11 - d1;
+            let d2 = [...n, d1].reduce((a,v,i) => a + v * (11-i), 0) % 11; d2 = d2 < 2 ? 0 : 11 - d2;
+            document.getElementById('f9_output').value = `${n.slice(0,3).join('')}.${n.slice(3,6).join('')}.${n.slice(6,9).join('')}-${d1}${d2}`;
+        }
+
+        function tool10_CaixaAlta() {
+            const input = document.getElementById('f10_input');
+            if(!input.value) throw new Error('Cole o texto');
+            input.value = input.value.toUpperCase();
+        }
+
+        function tool11_LinkWhats() {
+            const p = document.getElementById('f11_phone').value.replace(/\D/g,'');
+            const m = encodeURIComponent(document.getElementById('f11_msg').value);
+            if(!p) throw new Error('Digite o número');
+            const url = `https://wa.me/55${p}?text=${m}`;
+            document.getElementById('f11_preview').innerHTML = `<a href="${url}" target="_blank" style="color:var(--primary)">${url}</a>`;
+        }
+
+        function tool12_InverterTexto() {
+            const val = document.getElementById('f12_input').value;
+            document.getElementById('f12_preview').innerText = val.split('').reverse().join('');
+        }
+
+        function tool13_GerarCor() {
+            const hex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
+            const box = document.getElementById('f13_box');
+            box.style.background = hex; box.innerText = hex.toUpperCase();
+        }
+
+        function tool14_LimparUrl() {
+            const val = document.getElementById('f14_input').value;
+            if(!val) throw new Error('Cole a URL');
+            const clean = val.split('?')[0];
+            document.getElementById('f14_output').value = clean;
+        }
+
+        function tool15_Base64() {
+            const val = document.getElementById('f15_input').value;
+            if(!val) throw new Error('Digite o texto');
+            document.getElementById('f15_output').value = btoa(val);
+        }
+
+        function tool16_Lorem() {
+            document.getElementById('f16_output').value = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.";
+        }
+
+        function tool17_LerQr() {
+            const file = document.getElementById('f17_input').files[0];
+            if(!file) throw new Error('Selecione uma imagem');
+            
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
+                    
+                    if (code) {
+                        document.getElementById('f17_output').innerText = code.data;
+                    } else {
+                        document.getElementById('f17_output').innerText = "Nenhum QR Code encontrado na imagem.";
+                    }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function tool18_CalcPorcentagem() {
+            const p = parseFloat(document.getElementById('f18_p').value);
+            const v = parseFloat(document.getElementById('f18_v').value);
+            if(isNaN(p) || isNaN(v)) throw new Error('Preencha os valores');
+            const res = (p / 100) * v;
+            document.getElementById('f18_output').innerText = `Resultado: R$ ${res.toFixed(2)}`;
+        }
+
+        function tool19_UUID() {
+            document.getElementById('f19_output').value = crypto.randomUUID();
+        }
+
+        function tool20_ExtrairLinks() {
+            const val = document.getElementById('f20_input').value;
+            const matches = val.match(/(https?:\/\/[^\s]+)/g) || [];
+            document.getElementById('f20_output').value = matches.join('\n');
         }
     </script>
 </body>
