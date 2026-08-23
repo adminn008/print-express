@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,11 +12,20 @@
       --bg: #f8fafc;
       --surface: #ffffff;
       --text: #0f172a;
+      --text-muted: #64748b;
       --border: #e2e8f0;
     }
 
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); line-height: 1.5; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.5; transition: background-color 0.3s, color 0.3s; }
 
     header {
       background: var(--surface);
@@ -28,10 +37,23 @@
       position: sticky;
       top: 0;
       z-index: 100;
+      gap: 1rem;
+      flex-wrap: wrap;
     }
 
     .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
-    .search-bar { padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 20px; width: 300px; }
+    .header-controls { display: flex; align-items: center; gap: 1rem; }
+    .search-bar { padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 20px; width: 280px; background: var(--bg); color: var(--text); }
+    
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+    }
 
     /* Publicidade Estilo Filme (Carrossel Full Width) */
     .ad-carousel-container {
@@ -80,7 +102,7 @@
 
     .grid-tools {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 1.5rem;
       margin-bottom: 3rem;
     }
@@ -99,7 +121,7 @@
     .card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
     .card-icon { font-size: 2rem; margin-bottom: 0.5rem; }
     .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .card-desc { font-size: 0.875rem; color: #64748b; margin-bottom: 1rem; }
+    .card-desc { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem; }
     
     .btn {
       background: var(--primary);
@@ -127,16 +149,58 @@
 
     .form-group { margin-bottom: 1rem; }
     .form-group label { display: block; margin-bottom: 0.3rem; font-weight: 600; font-size: 0.9rem; }
-    .form-control { width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; }
+    .form-control { width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); }
     
     .checkbox-group { display: flex; gap: 1rem; align-items: center; margin: 1rem 0; }
+
+    /* Modal / Area do Gerador Integrado */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .close-btn { position: absolute; top: 1rem; right: 1rem; cursor: pointer; font-size: 1.5rem; font-weight: bold; }
+    
+    /* Folha A4 para Impressão Automática */
+    #printableArea {
+      background: white;
+      color: black;
+      padding: 20px;
+      border: 1px solid #ccc;
+      margin-top: 1rem;
+      min-height: 400px;
+      font-family: Arial, sans-serif;
+    }
+
+    @media print {
+      body * { visibility: hidden; }
+      #printableArea, #printableArea * { visibility: visible; }
+      #printableArea { position: absolute; left: 0; top: 0; width: 100%; border: none; }
+    }
   </style>
 </head>
 <body>
 
   <header>
     <div class="logo">PrintExpress</div>
-    <input type="text" id="searchInput" class="search-bar" placeholder="Buscar gerador..." onkeyup="filterTools()">
+    <div class="header-controls">
+      <input type="text" id="searchInput" class="search-bar" placeholder="Buscar entre os 32 geradores..." onkeyup="filterTools()">
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙 Modo Escuro</button>
+    </div>
   </header>
 
   <!-- Carrossel de Publicidade (Estilo Filme / Full Width) -->
@@ -174,125 +238,168 @@
   </div>
 
   <main class="container">
-    <h2 class="section-title">Geradores e Ferramentas Gratuitas</h2>
+    <h2 class="section-title">Geradores e Ferramentas Gratuitas (32 Recursos)</h2>
     <div class="grid-tools" id="toolsGrid">
       
-      <!-- Cards dos Geradores -->
+      <!-- OS 32 CARDS DOS GERADORES -->
       <div class="card" data-title="envelope a4 dobravel">
-        <div>
-          <div class="card-icon">✉️</div>
-          <div class="card-title">Gerador de Envelope A4 Dobrável</div>
-          <div class="card-desc">Imprime linhas de corte e dobra para criar envelopes funcionais em folha comum.</div>
-        </div>
-        <button class="btn">Gerar Envelope</button>
+        <div><div class="card-icon">✉️</div><div class="card-title">1. Envelope A4 Dobrável</div><div class="card-desc">Gere linhas de corte e dobra para envelopes funcionais em folha A4.</div></div>
+        <button class="btn" onclick="openGenerator('Envelope A4', 'Digite o destinatário e remetente para montar as dobras.')">Gerar Agora</button>
       </div>
 
       <div class="card" data-title="capa de trabalho escolar abnt">
-        <div>
-          <div class="card-icon">🎓</div>
-          <div class="card-title">Capa Escolar / ABNT Simples</div>
-          <div class="card-desc">Ajusta automaticamente margens, escola, disciplina e autor na norma A4.</div>
-        </div>
-        <button class="btn">Gerar Capa</button>
+        <div><div class="card-icon">🎓</div><div class="card-title">2. Capa Escolar / ABNT</div><div class="card-desc">Ajusta automaticamente margens, instituição, título e autores na ABNT.</div></div>
+        <button class="btn" onclick="openGenerator('Capa ABNT', 'Preencha a Escola, Disciplina e Título do Trabalho.')">Gerar Agora</button>
       </div>
 
       <div class="card" data-title="tabela de precos a4">
-        <div>
-          <div class="card-icon">📋</div>
-          <div class="card-title">Tabela de Preços A4</div>
-          <div class="card-desc">Layout limpo para balcão ou parede em lanchonetes, salões e oficinas.</div>
-        </div>
-        <button class="btn">Criar Tabela</button>
+        <div><div class="card-icon">📋</div><div class="card-title">3. Tabela de Preços A4</div><div class="card-desc">Layout para lanchonetes, salões e oficinas fixarem na parede ou balcão.</div></div>
+        <button class="btn" onclick="openGenerator('Tabela de Preços', 'Monte os produtos e valores em colunas organizadas.')">Gerar Agora</button>
       </div>
 
       <div class="card" data-title="desenhos para colorir efeito croqui">
-        <div>
-          <div class="card-icon">🎨</div>
-          <div class="card-title">Desenhos para Colorir (Croqui)</div>
-          <div class="card-desc">Converte qualquer foto em traços prêtos para imprimir e pintar.</div>
-        </div>
-        <button class="btn">Converter Foto</button>
+        <div><div class="card-icon">🎨</div><div class="card-title">4. Desenho para Colorir</div><div class="card-desc">Converte imagens em contornos pretos para impressão e pintura.</div></div>
+        <button class="btn" onclick="openGenerator('Desenho Croqui', 'Selecione uma imagem do seu computador para conversão.')">Gerar Agora</button>
       </div>
 
       <div class="card" data-title="caca palavras e cruzadinhas">
-        <div>
-          <div class="card-icon">🧩</div>
-          <div class="card-title">Caça-Palavras & Cruzadinhas</div>
-          <div class="card-desc">Digite sua lista de palavras e gere o jogo montado pronto na folha A4.</div>
-        </div>
-        <button class="btn">Criar Jogo</button>
+        <div><div class="card-icon">🧩</div><div class="card-title">5. Caça-Palavras & Cruzadinhas</div><div class="card-desc">Digite palavras para criar uma grade de jogo A4 personalizada.</div></div>
+        <button class="btn" onclick="openGenerator('Caça-Palavras', 'Digite as palavras separadas por vírgula para gerar a grade.')">Gerar Agora</button>
       </div>
 
       <div class="card" data-title="lista de presenca assinaturas">
-        <div>
-          <div class="card-icon">📝</div>
-          <div class="card-title">Lista de Presença / Assinaturas</div>
-          <div class="card-desc">Cabeçalho de reunião com linhas numeradas para Nome, RG e Assinatura.</div>
-        </div>
-        <button class="btn">Gerar Lista</button>
+        <div><div class="card-icon">📝</div><div class="card-title">6. Lista de Presença</div><div class="card-desc">Cabeçalho do evento com tabela de Nome, RG e Assinatura.</div></div>
+        <button class="btn" onclick="openGenerator('Lista de Presença', 'Informe o Nome do Evento, Data e número de linhas.')">Gerar Agora</button>
       </div>
 
       <div class="card" data-title="folha de redacao enem concursos">
-        <div>
-          <div class="card-icon">📄</div>
-          <div class="card-title">Folha de Redação (ENEM)</div>
-          <div class="card-desc">Folha oficial de 30 linhas numeradas e cabeçalho para treino.</div>
-        </div>
-        <button class="btn">Gerar Folha</button>
+        <div><div class="card-icon">📄</div><div class="card-title">7. Folha de Redação ENEM</div><div class="card-desc">Folha A4 oficial com 30 linhas numeradas e campo de avaliação.</div></div>
+        <button class="btn" onclick="openGenerator('Folha ENEM', 'Gere o modelo padronizado de 30 linhas pronto para treino.')">Gerar Agora</button>
       </div>
 
       <div class="card" data-title="cardapios impressos qr code">
-        <div>
-          <div class="card-icon">🍔</div>
-          <div class="card-title">Cardápios Impressos A4</div>
-          <div class="card-desc">Layout para bares e restaurantes com itens, preços e QR Code de WhatsApp.</div>
-        </div>
-        <button class="btn">Montar Cardápio</button>
+        <div><div class="card-icon">🍔</div><div class="card-title">8. Cardápio A4 com QR Code</div><div class="card-desc">Layout completo para restaurantes com opções e QR do WhatsApp.</div></div>
+        <button class="btn" onclick="openGenerator('Cardápio A4', 'Informe os pratos, valores e link para QR Code.')">Gerar Agora</button>
       </div>
 
       <div class="card" data-title="qr code com logo pix wifi">
-        <div>
-          <div class="card-icon">📲</div>
-          <div class="card-title">QR Code com Logo</div>
-          <div class="card-desc">Crie códigos PIX, Wi-Fi ou links dimensionados para impressão.</div>
-        </div>
-        <button class="btn">Gerar QR Code</button>
+        <div><div class="card-icon">📲</div><div class="card-title">9. QR Code com Logo</div><div class="card-desc">Gere códigos PIX, Wi-Fi e redes sociais com dimensionamento gráfico.</div></div>
+        <button class="btn" onclick="openGenerator('QR Code', 'Digite o texto, chave PIX ou link para gerar o código.')">Gerar Agora</button>
       </div>
 
       <div class="card" data-title="pdf separador combinador">
-        <div>
-          <div class="card-icon">🛠️</div>
-          <div class="card-title">Separador / Combinador PDF</div>
-          <div class="card-desc">Extraia páginas específicas (ex: 3 a 5) ou junte múltiplos arquivos num só.</div>
-        </div>
-        <button class="btn">Organizar PDF</button>
+        <div><div class="card-icon">🛠️</div><div class="card-title">10. Separador / Combinador PDF</div><div class="card-desc">Selecione páginas específicas de PDF ou una arquivos para imprimir.</div></div>
+        <button class="btn" onclick="openGenerator('Ferramenta PDF', 'Escolha os arquivos PDF e as páginas para extração.')">Gerar Agora</button>
       </div>
 
-      <div class="card" data-title="convites cartoes aniversario namoro">
-        <div>
-          <div class="card-icon">🎉</div>
-          <div class="card-title">Gerador de Convites & Cartões</div>
-          <div class="card-desc">Modelos para Aniversário, Agradecimento, Dia das Mães e Namoro.</div>
-        </div>
-        <button class="btn">Criar Cartão</button>
+      <div class="card" data-title="convites de aniversario e festas">
+        <div><div class="card-icon">🎉</div><div class="card-title">11. Gerador de Convites</div><div class="card-desc">Preencha data, horário e local para convites prontos de festas.</div></div>
+        <button class="btn" onclick="openGenerator('Convites', 'Informe Anfitrião, Evento, Data, Hora e Endereço.')">Gerar Agora</button>
       </div>
 
-      <div class="card" data-title="planners organizador tarefas habitos">
-        <div>
-          <div class="card-icon">📅</div>
-          <div class="card-title">Planners & Controle de Hábitos</div>
-          <div class="card-desc">Planejamento semanal, mensal e listas organizadoras para A4.</div>
-        </div>
-        <button class="btn">Baixar Planner</button>
+      <div class="card" data-title="cartoes de aniversario e namoro">
+        <div><div class="card-icon">💌</div><div class="card-title">12. Cartões Comemorativos</div><div class="card-desc">Aniversário, Agradecimento, Dia das Mães e Namoro dobráveis.</div></div>
+        <button class="btn" onclick="openGenerator('Cartões', 'Escolha a ocasião e digite sua mensagem personalizada.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="cronometro e temporizador de estudos">
+        <div><div class="card-icon">⏱️</div><div class="card-title">13. Cronômetro & Pomodoro</div><div class="card-desc">Temporizador de ciclos de estudo para aumentar a produtividade.</div></div>
+        <button class="btn" onclick="openGenerator('Cronômetro Pomodoro', 'Ajuste os tempos de foco e descansos de estudo.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="calculadora de notas escolares">
+        <div><div class="card-icon">🧮</div><div class="card-title">14. Calculadora de Notas</div><div class="card-desc">Calcule médias ponderadas escolares e descubra quanto falta para passar.</div></div>
+        <button class="btn" onclick="openGenerator('Calculadora de Notas', 'Insira as notas dos bimestres e os pesos.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="gerador de referencias bibliograficas abnt">
+        <div><div class="card-icon">📚</div><div class="card-title">15. Gerador de Referências ABNT</div><div class="card-desc">Formatador automático de citação de livros, sites e artigos.</div></div>
+        <button class="btn" onclick="openGenerator('Referências ABNT', 'Preencha Autor, Título, Ano e Editora para formatar.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="planejamento e plano de estudos">
+        <div><div class="card-icon">📖</div><div class="card-title">16. Planejamento de Estudos</div><div class="card-desc">Matriz semanal para distribuição de matérias e horários.</div></div>
+        <button class="btn" onclick="openGenerator('Plano de Estudos', 'Defina as matérias por dias da semana e turnos.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="planner semanal a4">
+        <div><div class="card-icon">📅</div><div class="card-title">17. Planner Semanal A4</div><div class="card-desc">Organizador visual de segunda a domingo com quadro de prioridades.</div></div>
+        <button class="btn" onclick="openGenerator('Planner Semanal', 'Monte sua rotina semanal para impressão em A4.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="planner mensal a4">
+        <div><div class="card-icon">🗓️</div><div class="card-title">18. Planner Mensal A4</div><div class="card-desc">Calendário contínuo sem data para planejamento de longo prazo.</div></div>
+        <button class="btn" onclick="openGenerator('Planner Mensal', 'Selecione o mês e ano para gerar a grade mensal.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="lista de tarefas e checklist">
+        <div><div class="card-icon">☑️</div><div class="card-title">19. Lista de Tarefas / Checklist</div><div class="card-desc">Checklist estruturado com caixas de marcação e níveis de urgência.</div></div>
+        <button class="btn" onclick="openGenerator('Checklist', 'Insira as tarefas para gerar a lista com quadrinhos.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="controle de habitos habit tracker">
+        <div><div class="card-icon">📊</div><div class="card-title">20. Controle de Hábitos</div><div class="card-desc">Grade de acompanhamento diário para 30 dias de hábitos saudáveis.</div></div>
+        <button class="btn" onclick="openGenerator('Tracker de Hábitos', 'Digite os hábitos que deseja monitorar este mês.')">Gerar Agora</button>
       </div>
 
       <div class="card" data-title="gerador de senhas seguras">
-        <div>
-          <div class="card-icon">🔒</div>
-          <div class="card-title">Gerador de Senhas</div>
-          <div class="card-desc">Crie senhas fortes e aleatórias para segurança digital.</div>
-        </div>
-        <button class="btn">Gerar Senha</button>
+        <div><div class="card-icon">🔒</div><div class="card-title">21. Gerador de Senhas</div><div class="card-desc">Crie senhas criptográficas fortes personalizando caracteres.</div></div>
+        <button class="btn" onclick="openGenerator('Gerador de Senhas', 'Escolha o tamanho e símbolos para gerar a senha.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="gerador de notas fiscais bloco recibo">
+        <div><div class="card-icon">🧾</div><div class="card-title">22. Bloco de Notas Fiscais/Recibos</div><div class="card-desc">Modelo comercial com dados da empresa, cliente e tabela de itens.</div></div>
+        <button class="btn" onclick="openGenerator('Bloco de Nota Fiscal', 'Preencha os itens para gerar a Nota/Recibo pronto.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="jogos e dinamicas rapidas">
+        <div><div class="card-icon">🎲</div><div class="card-title">23. Jogos & Dinâmicas Rápidas</div><div class="card-desc">Gerador de Stop/Adedanha, Bingo e Cartelas de brincadeiras.</div></div>
+        <button class="btn" onclick="openGenerator('Jogo Stop/Bingo', 'Escolha as categorias para imprimir a folha do jogo.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="recibo simples de pagamento">
+        <div><div class="card-icon">💵</div><div class="card-title">24. Recibo de Pagamento</div><div class="card-desc">Comprovante individual de pagamento impresso em 2 vias na folha.</div></div>
+        <button class="btn" onclick="openGenerator('Recibo Simples', 'Insira Pagador, Recebedor, Valor e Referência.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="etiquetas para cadernos e pastas">
+        <div><div class="card-icon">🏷️</div><div class="card-title">25. Criador de Etiquetas A4</div><div class="card-desc">Cartela de etiquetas escolares e organizadoras de objetos.</div></div>
+        <button class="btn" onclick="openGenerator('Etiquetas', 'Digite o nome e matéria para replicar na cartela.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="contrato simples de servicos">
+        <div><div class="card-icon">📜</div><div class="card-title">26. Contrato de Serviços Simples</div><div class="card-desc">Minuta rápida de prestação de serviços com cláusulas básicas.</div></div>
+        <button class="btn" onclick="openGenerator('Contrato Simples', 'Informe Contratante, Contratado e Valor do Serviço.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="rifa e talao de sorteio">
+        <div><div class="card-icon">🎟️</div><div class="card-title">27. Gerador de Rifas / Talão</div><div class="card-desc">Rifas numeradas com canhoto destacados para eventos e prêmios.</div></div>
+        <button class="btn" onclick="openGenerator('Gerador de Rifas', 'Defina o prêmio, valor do bilhete e quantidade.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="placa de aviso e sinalizacao">
+        <div><div class="card-icon">🚫</div><div class="card-title">28. Placas de Aviso A4</div><div class="card-desc">Placas para 'Sorria você está sendo filmado', 'Proibido Estacionar', etc.</div></div>
+        <button class="btn" onclick="openGenerator('Placas de Aviso', 'Escolha o símbolo e a frase principal do aviso.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="controle financeiro orcamento">
+        <div><div class="card-icon">💰</div><div class="card-title">29. Planilha de Orçamento A4</div><div class="card-desc">Tabela de controle de entradas, saídas e economias do mês.</div></div>
+        <button class="btn" onclick="openGenerator('Controle Financeiro', 'Crie o formulário de fluxo de caixa para balcão.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="certificados e diplomas">
+        <div><div class="card-icon">🏆</div><div class="card-title">30. Gerador de Certificados</div><div class="card-desc">Certificados de cursos, palestras e participação em eventos.</div></div>
+        <button class="btn" onclick="openGenerator('Certificado', 'Preencha o nome do participante, curso e carga horária.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="pauta e ata de reuniao">
+        <div><div class="card-icon">📌</div><div class="card-title">31. Pauta & Ata de Reunião</div><div class="card-desc">Documento formal para registro de pautas e deliberações de equipe.</div></div>
+        <button class="btn" onclick="openGenerator('Ata de Reunião', 'Informe a pauta, participantes e decisões tomadas.')">Gerar Agora</button>
+      </div>
+
+      <div class="card" data-title="vale presente e cupom de desconto">
+        <div><div class="card-icon">🎁</div><div class="card-title">32. Vale-Presente / Vouchers</div><div class="card-desc">Cartões de cupom de presente para estabelecimentos comerciais.</div></div>
+        <button class="btn" onclick="openGenerator('Vale-Presente', 'Digite a empresa, valor e código de validação.')">Gerar Agora</button>
       </div>
 
     </div>
@@ -300,9 +407,9 @@
     <!-- Seção do Gerador de Nota Fiscal & Pedido de Impressão -->
     <h2 class="section-title">Emissão de Nota Fiscal / Pedido de Impressão</h2>
     <div class="invoice-builder">
-      <p style="margin-bottom: 1rem; color: #64748b;">Todos os geradores são 100% grátis para download. Caso prefira receber o bloco impresso ou precise de ajustes profissionais, preencha abaixo para enviar direto para nosso WhatsApp.</p>
+      <p style="margin-bottom: 1rem; color: var(--text-muted);">Todos os geradores são 100% grátis para uso e impressão local. Se preferir receber o bloco impresso em papel gráfico ou precisar de edições personalizadas, solicite abaixo via WhatsApp.</p>
       
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
         <div class="form-group">
           <label>Nome / Razão Social</label>
           <input type="text" id="cliName" class="form-control" placeholder="Seu nome ou empresa">
@@ -315,7 +422,7 @@
 
       <div class="form-group">
         <label>Descrição do Documento / Bloco</label>
-        <input type="text" id="docDesc" class="form-control" placeholder="Ex: Bloco de Notas Fiscais (50 folhas A4) ou Tabela de Preços">
+        <input type="text" id="docDesc" class="form-control" placeholder="Ex: Bloco de Notas Fiscais (50 folhas A4) ou Planners">
       </div>
 
       <div class="checkbox-group">
@@ -338,7 +445,47 @@
     </div>
   </main>
 
+  <!-- Modal Interativo de Geração do Documento -->
+  <div class="modal" id="generatorModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeGenerator()">&times;</span>
+      <h3 id="modalTitle" style="margin-bottom: 0.5rem;">Gerador</h3>
+      <p id="modalDesc" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;"></p>
+      
+      <div class="form-group">
+        <label>Conteúdo / Título Principal</label>
+        <input type="text" id="genInput1" class="form-control" placeholder="Digite a informação principal..." oninput="updatePreview()">
+      </div>
+
+      <div class="form-group">
+        <label>Detalhes Adicionais / Subtítulo</label>
+        <textarea id="genInput2" class="form-control" rows="3" placeholder="Digite os dados adicionais..." oninput="updatePreview()"></textarea>
+      </div>
+
+      <h4 style="margin-top: 1rem;">Visualização para Impressão (A4)</h4>
+      <div id="printableArea">
+        <h2 id="prevTitle" style="text-align: center; margin-bottom: 1rem;">TÍTULO DO DOCUMENTO</h2>
+        <div id="prevContent">Preencha os campos acima para ver a geração automática do documento aqui...</div>
+      </div>
+
+      <button class="btn" style="margin-top: 1rem; width: 100%;" onclick="window.print()">🖨️ Imprimir / Salvar como PDF</button>
+    </div>
+  </div>
+
   <script>
+    // Sistema de Dark / Light Mode
+    function toggleTheme() {
+      const html = document.documentElement;
+      const themeBtn = document.getElementById('themeBtn');
+      if (html.getAttribute('data-theme') === 'light') {
+        html.setAttribute('data-theme', 'dark');
+        themeBtn.innerText = '☀️ Modo Claro';
+      } else {
+        html.setAttribute('data-theme', 'light');
+        themeBtn.innerText = '🌙 Modo Escuro';
+      }
+    }
+
     // Carrossel de Publicidade Automático
     let currentSlide = 0;
     const track = document.getElementById('carouselTrack');
@@ -373,7 +520,7 @@
       document.getElementById('totalValue').innerText = total.toFixed(2).replace('.', ',');
     }
 
-    // Integração com WhatsApp
+    // Envio para WhatsApp
     function sendToWhatsApp() {
       const name = document.getElementById('cliName').value || 'Não informado';
       const doc = document.getElementById('cliDoc').value || 'Não informado';
@@ -382,7 +529,7 @@
       const edit = document.getElementById('checkEdit').checked ? 'SIM' : 'NÃO';
       const total = document.getElementById('totalValue').innerText;
 
-      const phoneNumber = "5500000000000"; // Substituir pelo seu número de WhatsApp com DDD
+      const phoneNumber = "5500000000000"; // Insira seu número com DDD
 
       const message = `*NOVO PEDIDO DE IMPRESSÃO / GERADOR*%0A%0A` +
         `*Cliente:* ${name}%0A` +
@@ -394,6 +541,36 @@
         `_Aguardando confirmação de layout/impressão._`;
 
       window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+    }
+
+    // Motor Unificado do Gerador Dinâmico em Tela
+    function openGenerator(title, desc) {
+      document.getElementById('modalTitle').innerText = 'Gerador de ' + title;
+      document.getElementById('modalDesc').innerText = desc;
+      document.getElementById('genInput1').value = '';
+      document.getElementById('genInput2').value = '';
+      document.getElementById('prevTitle').innerText = title.toUpperCase();
+      document.getElementById('prevContent').innerText = 'Aguardando digitação para compor a folha...';
+      document.getElementById('generatorModal').style.display = 'flex';
+    }
+
+    function closeGenerator() {
+      document.getElementById('generatorModal').style.display = 'none';
+    }
+
+    function updatePreview() {
+      const input1 = document.getElementById('genInput1').value;
+      const input2 = document.getElementById('genInput2').value;
+
+      if (input1) {
+        document.getElementById('prevTitle').innerText = input1.toUpperCase();
+      }
+      
+      if (input2) {
+        document.getElementById('prevContent').innerHTML = input2.replace(/\n/g, '<br>');
+      } else {
+        document.getElementById('prevContent').innerText = 'Preencha os campos acima para estruturar este documento A4.';
+      }
     }
   </script>
 </body>
