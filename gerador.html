@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Utilitários Express – Com Créditos Diários</title>
+    <title>Utilitários Express – Suíte Digital de Produtividade</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- SDKs do Firebase (Versão Modular via CDN) -->
+    <!-- Firebase SDK (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-    <!-- Bibliotecas das Ferramentas -->
+    <!-- Bibliotecas de Processamento das Ferramentas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
@@ -18,206 +23,321 @@
 
     <style>
         :root {
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --accent-pro: #f59e0b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: rgba(255, 255, 255, 0.1);
+            --bg-dark: #090d16;
+            --panel-bg: #111827;
+            --card-bg: #1f2937;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --accent-gold: #f59e0b;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(99, 102, 241, 0.3);
+            --radius: 12px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-        body { background: var(--bg); color: var(--text-main); padding: 20px 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        
-        .container { width: 100%; max-width: 900px; }
-        
-        /* Barra de Usuário e Créditos */
-        .user-bar {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 15px 20px;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg-dark); color: var(--text-primary); min-height: 100vh; padding: 30px 15px; display: flex; flex-direction: column; align-items: center; }
+
+        .app-container { width: 100%; max-width: 1050px; }
+
+        /* Top Control Bar */
+        .header-bar {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
         }
 
-        .credits-badge {
-            background: rgba(99, 102, 241, 0.2);
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--card-bg); border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        
+        .credit-pill {
+            background: rgba(79, 70, 229, 0.15);
+            border: 1px solid var(--border-highlight);
             color: #818cf8;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            border: 1px solid var(--primary);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        header { text-align: center; margin-bottom: 30px; }
-        header h1 { font-size: 2rem; margin-bottom: 8px; color: #fff; }
-        header p { color: var(--text-muted); font-size: 0.95rem; }
+        .btn-auth {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-auth:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-danger { background: #ef4444; }
+        .btn-danger:hover { background: #dc2626; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        /* Main Header */
+        .hero-section { text-align: center; margin-bottom: 40px; }
+        .hero-section h1 { font-size: 2.3rem; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.5px; }
+        .hero-section p { color: var(--text-secondary); font-size: 1rem; max-width: 600px; margin: 0 auto; }
+
+        /* Tool Grid */
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 24px; }
+
+        .tool-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: border-color 0.3s ease, transform 0.2s ease;
+        }
+        .tool-card:hover { border-color: var(--border-highlight); transform: translateY(-3px); }
+
+        .card-top { display: flex; justify-content: space-between; align-items: center; }
+        .card-top h3 { font-size: 1.1rem; font-weight: 600; }
         
-        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; }
-        .card-title { font-size: 1.1rem; font-weight: 600; }
-        
-        .badge-free { background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 0.75rem; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
+        .badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+        .badge-cost { background: rgba(245, 158, 11, 0.15); color: var(--accent-gold); border: 1px solid rgba(245, 158, 11, 0.3); }
 
-        .form-control { width: 100%; background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.9rem; }
-        textarea.form-control { resize: vertical; min-height: 80px; }
+        .input-field {
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .input-field:focus { border-color: var(--primary); }
+        textarea.input-field { resize: vertical; min-height: 80px; }
 
-        .btn { background: var(--primary); color: #fff; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: background 0.2s; text-align: center; }
-        .btn:hover { background: var(--primary-hover); }
-        .btn-pro { background: var(--accent-pro); color: #000; }
-        .btn-pro:hover { background: #d97706; color: #fff; }
+        .btn-action {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-action:hover { background: var(--primary-hover); }
 
-        .preview-box { background: #0f172a; border: 1px dashed var(--border); padding: 10px; border-radius: 8px; text-align: center; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .preview-area {
+            background: var(--card-bg);
+            border: 1px dashed var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            overflow: hidden;
+        }
 
-        /* Modais */
-        .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; justify-content: center; align-items: center; padding: 15px; }
-        .modal { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 450px; padding: 25px; position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
-        
-        .pix-container { background: #0f172a; border: 1px dashed var(--accent-pro); border-radius: 10px; padding: 15px; text-align: center; margin: 15px 0; }
-        .pix-container img { width: 130px; height: 130px; border-radius: 8px; background: #fff; padding: 5px; margin: 8px 0; }
-        
-        footer { margin-top: 40px; color: var(--text-muted); font-size: 0.85rem; text-align: center; }
+        /* Modal Structure */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-highlight);
+            border-radius: 20px;
+            max-width: 460px;
+            width: 100%;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: none; border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem; cursor: pointer;
+        }
+
+        .pix-box {
+            background: var(--bg-dark);
+            border: 1px dashed var(--accent-gold);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .pix-box img { width: 140px; height: 140px; border-radius: 8px; margin: 10px 0; background: #fff; padding: 6px; }
+
+        footer { margin-top: 50px; color: var(--text-secondary); font-size: 0.85rem; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="app-container">
         
-        <!-- Barra de Login e Créditos -->
-        <div class="user-bar">
-            <div id="userInfo">
-                <span style="color: var(--text-muted)">Status:</span> 
-                <strong id="userName">Não conectado</strong>
+        <!-- Header / Perfil / Créditos -->
+        <div class="header-bar">
+            <div class="user-profile">
+                <div class="avatar" id="userAvatar">?</div>
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Status da Conta</div>
+                    <div style="font-weight: 600;" id="userNameDisplay">Visitante (Não conectado)</div>
+                </div>
             </div>
-            <div id="userCredits" class="credits-badge" style="display: none;">
-                ⚡ <span id="creditCount">0</span>/3 Créditos Diários
+
+            <div id="creditBadgeArea" class="credit-pill" style="display: none;">
+                ⚡ <span id="creditAmount">0</span>/3 Créditos Diários
             </div>
+
             <div>
-                <button id="btnLogin" class="btn" onclick="fazerLoginGoogle()" style="width: auto; padding: 8px 15px;">Entrar com Google</button>
-                <button id="btnLogout" class="btn" onclick="fazerLogout()" style="width: auto; padding: 8px 15px; display: none; background: #dc2626;">Sair</button>
+                <button id="btnLogin" class="btn-auth" onclick="iniciarLoginGoogle()">Conectar Google</button>
+                <button id="btnLogout" class="btn-auth btn-danger" onclick="encerrarSessao()" style="display: none;">Sair</button>
             </div>
         </div>
 
-        <header>
-            <h1>⚡ Utilitários Express</h1>
-            <p>Conversores e geradores. Ganhe 3 uso grátis a cada 24 horas!</p>
-        </header>
+        <div class="hero-section">
+            <h1>Suíte de Utilitários Digitais</h1>
+            <p>Processe seus arquivos direto no navegador com segurança. Ganhe 3 créditos gratuitos renovados a cada 24 horas.</p>
+        </div>
 
-        <div class="grid">
+        <!-- Grade de Ferramentas -->
+        <div class="tools-grid">
 
             <!-- 1. Imagens para PDF -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">1. Imagens para PDF</span>
-                    <span class="badge-free">Consome 1 Crédito</span>
+            <div class="tool-card">
+                <div class="card-top">
+                    <h3>1. Imagens para PDF</h3>
+                    <span class="badge badge-cost">-1 Crédito</span>
                 </div>
-                <input type="file" id="imgPdfInput" multiple accept="image/*" class="form-control">
-                <button class="btn" onclick="executarComCredito(converterImagensPDF)">Gerar PDF</button>
+                <input type="file" id="pdfFilesInput" multiple accept="image/*" class="input-field">
+                <button class="btn-action" onclick="executarFerramenta(gerarPdfDasImagens)">Converter para PDF</button>
             </div>
 
             <!-- 2. Gerador de QR Code -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">2. Gerador de QR Code</span>
-                    <span class="badge-free">Consome 1 Crédito</span>
+            <div class="tool-card">
+                <div class="card-top">
+                    <h3>2. Gerador de QR Code</h3>
+                    <span class="badge badge-cost">-1 Crédito</span>
                 </div>
-                <input type="text" id="qrText" class="form-control" placeholder="Cole o link ou texto">
-                <div id="qrPreview" class="preview-box">O QR Code aparecerá aqui</div>
-                <button class="btn" onclick="executarComCredito(gerarQRCode)">Gerar QR Code</button>
+                <input type="text" id="qrCodeContent" class="input-field" placeholder="Cole uma URL ou texto aqui">
+                <div id="qrCodePreview" class="preview-area">QR Code aparecerá aqui</div>
+                <button class="btn-action" onclick="executarFerramenta(processarQrCode)">Gerar QR Code</button>
             </div>
 
-            <!-- 3. Conversor de Imagens -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">3. Conversor de Imagens</span>
-                    <span class="badge-free">Consome 1 Crédito</span>
+            <!-- 3. Conversor de Formato de Imagem -->
+            <div class="tool-card">
+                <div class="card-top">
+                    <h3>3. Conversor de Formato</h3>
+                    <span class="badge badge-cost">-1 Crédito</span>
                 </div>
-                <input type="file" id="convertImgInput" accept="image/*" class="form-control">
-                <select id="convertFormat" class="form-control">
+                <input type="file" id="convertFileInput" accept="image/*" class="input-field">
+                <select id="targetFormat" class="input-field">
                     <option value="image/png">Converter para PNG</option>
                     <option value="image/jpeg">Converter para JPG</option>
                     <option value="image/webp">Converter para WebP</option>
                 </select>
-                <button class="btn" onclick="executarComCredito(converterImagem)">Converter e Baixar</button>
+                <button class="btn-action" onclick="executarFerramenta(converterFormatoImagem)">Converter Imagem</button>
             </div>
 
             <!-- 4. Compactador de Imagens -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">4. Redutor de Imagem</span>
-                    <span class="badge-free">Consome 1 Crédito</span>
+            <div class="tool-card">
+                <div class="card-top">
+                    <h3>4. Redutor de Tamanho</h3>
+                    <span class="badge badge-cost">-1 Crédito</span>
                 </div>
-                <input type="file" id="compressImgInput" accept="image/*" class="form-control">
-                <button class="btn" onclick="executarComCredito(compactarImagem)">Compactar Imagem</button>
+                <input type="file" id="compressFileInput" accept="image/*" class="input-field">
+                <button class="btn-action" onclick="executarFerramenta(compactarArquivoImagem)">Reduzir e Baixar</button>
             </div>
 
             <!-- 5. Código de Barras -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">5. Código de Barras</span>
-                    <span class="badge-free">Consome 1 Crédito</span>
+            <div class="tool-card">
+                <div class="card-top">
+                    <h3>5. Código de Barras</h3>
+                    <span class="badge badge-cost">-1 Crédito</span>
                 </div>
-                <input type="text" id="barcodeValue" class="form-control" placeholder="Número do código">
-                <div class="preview-box"><svg id="barcodeSvg"></svg></div>
-                <button class="btn" onclick="executarComCredito(gerarBarcode)">Gerar Código</button>
+                <input type="text" id="barcodeInputText" class="input-field" placeholder="Digite a numeração">
+                <div class="preview-area"><svg id="barcodeSvg"></svg></div>
+                <button class="btn-action" onclick="executarFerramenta(gerarCodigoDeBarras)">Gerar Código</button>
             </div>
 
             <!-- 6. Extrator de Texto (OCR) -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">6. Extrator de Texto (OCR)</span>
-                    <span class="badge-free">Consome 1 Crédito</span>
+            <div class="tool-card">
+                <div class="card-top">
+                    <h3>6. Extrator de Texto (OCR)</h3>
+                    <span class="badge badge-cost">-1 Crédito</span>
                 </div>
-                <input type="file" id="ocrInput" accept="image/*" class="form-control">
-                <textarea id="ocrOutput" class="form-control" placeholder="Resultado..." readonly></textarea>
-                <button class="btn" onclick="executarComCredito(extrairTexto)">Extrair Texto</button>
+                <input type="file" id="ocrFileInput" accept="image/*" class="input-field">
+                <textarea id="ocrOutputText" class="input-field" placeholder="O texto reconhecido aparecerá aqui..." readonly></textarea>
+                <button class="btn-action" id="ocrBtn" onclick="executarFerramenta(extrairTextoImagem)">Extrair Texto da Foto</button>
             </div>
 
         </div>
     </div>
 
-    <!-- MODAL SEM CRÉDITOS / COMPRAR PRO -->
-    <div id="modalPro" class="modal-bg">
-        <div class="modal">
-            <button class="modal-close" onclick="fecharModalPro()">✕</button>
-            <h3 style="color: var(--accent-pro); margin-bottom: 10px;">⚡ Seus Créditos Zeraram!</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Seus 3 créditos diários acabaram. Eles serão <strong>restaurados automaticamente em 24 horas</strong>. Quer usar agora sem limites?</p>
+    <!-- Modal Pro / Recarga -->
+    <div id="proModal" class="modal-overlay">
+        <div class="modal-card">
+            <button class="close-modal" onclick="fecharModalPro()">✕</button>
+            <h3 style="color: var(--accent-gold); margin-bottom: 8px;">Créditos Insuficientes</h3>
+            <p style="color: var(--text-secondary); font-size: 0.85rem;">Seus 3 créditos diários acabaram! Eles serão <strong>renovados automaticamente em 24 horas</strong>. Caso prefira acesso ilimitado imediato, faça a liberação abaixo:</p>
 
             <form action="https://formsubmit.co/ws8530135@gmail.com" method="POST">
-                <input type="hidden" name="_subject" value="Solicitação de Acesso Ilimitado / Créditos Extra">
+                <input type="hidden" name="_subject" value="Solicitação de Acesso Ilimitado - Utilitários">
                 <input type="hidden" name="_captcha" value="false">
 
-                <div class="pix-container">
-                    <p style="font-size: 0.85rem; font-weight: bold; color: var(--accent-pro)">Liberar Acesso Ilimitado: R$ 10,00</p>
-                    <img src="qrcode-pix.jpg" alt="QR Code PIX">
-                    <div style="display: flex; gap: 5px; margin-top: 5px;">
-                        <input type="text" id="chavePix" class="form-control" value="SUA_CHAVE_PIX_AQUI" readonly style="font-size: 0.75rem;">
-                        <button type="button" class="btn" style="width: auto; padding: 5px 10px;" onclick="copiarPix()">Copiar</button>
+                <div class="pix-box">
+                    <div style="font-weight: 700; color: var(--accent-gold);">Plano Ilimitado PRO: R$ 10,00</div>
+                    <img src="qrcode-pix.jpg" alt="PIX QR Code">
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="pixKeyText" class="input-field" value="SUA_CHAVE_PIX_AQUI" readonly style="font-size:0.75rem;">
+                        <button type="button" class="btn-auth" style="padding: 5px 10px;" onclick="copiarPixChave()">Copiar</button>
                     </div>
                 </div>
 
-                <input type="text" name="Nome" id="formNome" class="form-control" placeholder="Seu Nome" required style="margin-bottom: 8px;">
-                <input type="text" name="WhatsApp" class="form-control" placeholder="Seu WhatsApp com DDD" required style="margin-bottom: 12px;">
-                <button type="submit" class="btn btn-pro">Já paguei - Liberar Uso pelo WhatsApp</button>
+                <input type="text" name="Nome" id="modalUserName" class="input-field" placeholder="Seu Nome Completo" required style="margin-bottom: 8px;">
+                <input type="text" name="WhatsApp" class="input-field" placeholder="WhatsApp com DDD" required style="margin-bottom: 15px;">
+                <button type="submit" class="btn-action" style="background: var(--accent-gold); color: #000;">Confirmar e Enviar Pedido</button>
             </form>
         </div>
     </div>
 
-    <footer>&copy; 2026 Utilitários Express. Todos os direitos reservados.</footer>
+    <footer>&copy; 2026 Utilitários Express. Plataforma de Processamento Digital.</footer>
 
     <script>
-        // === 1. CONFIGURAÇÃO DO SEU FIREBASE (COLE SEUS DADOS AQUI) ===
+        // === 1. CONFIGURAÇÃO OFICIAL DO SEU FIREBASE ===
         const firebaseConfig = {
     apiKey: "AIzaSyA-ZZ5wB9_2p9vAMRlpJ5JBUliJS3g9g7c",
     authDomain: "utilitarios-express.firebaseapp.com",
@@ -228,140 +348,138 @@
     appId: "1:421983822616:web:bca6f2ebc1b6990871b46d"
   };
 
-        // Inicializa o Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
         let usuarioAtual = null;
-        let creditosDisponiveis = 0;
+        let saldoCreditos = 0;
 
-        // === 2. GERENCIAMENTO DE USUÁRIO E RENOVAÇÃO DE 24h ===
+        // === 2. GERENCIAMENTO DE AUTENTICAÇÃO E RENOVAÇÃO EM 24H ===
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 usuarioAtual = user;
-                document.getElementById('userName').innerText = user.displayName || user.email;
+                document.getElementById('userNameDisplay').innerText = user.displayName || user.email;
+                document.getElementById('userAvatar').innerText = (user.displayName || user.email).charAt(0).toUpperCase();
                 document.getElementById('btnLogin').style.display = 'none';
-                document.getElementById('btnLogout').style.display = 'block';
-                document.getElementById('userCredits').style.display = 'block';
+                document.getElementById('btnLogout').style.display = 'inline-block';
+                document.getElementById('creditBadgeArea').style.display = 'flex';
 
-                await verificarERecarregarCreditos(user.uid);
+                await verificarECarregarSaldo(user.uid);
             } else {
                 usuarioAtual = null;
-                document.getElementById('userName').innerText = 'Não conectado';
-                document.getElementById('btnLogin').style.display = 'block';
+                document.getElementById('userNameDisplay').innerText = 'Visitante (Não conectado)';
+                document.getElementById('userAvatar').innerText = '?';
+                document.getElementById('btnLogin').style.display = 'inline-block';
                 document.getElementById('btnLogout').style.display = 'none';
-                document.getElementById('userCredits').style.display = 'none';
+                document.getElementById('creditBadgeArea').style.display = 'none';
             }
         });
 
-        async function verificarERecarregarCreditos(uid) {
-            const userRef = db.collection('usuarios').doc(uid);
-            const doc = await userRef.get();
-            const agora = new Date().getTime();
-            const vinteEQuatroHoras = 24 * 60 * 60 * 1000;
+        async function verificarECarregarSaldo(uid) {
+            try {
+                const userDocRef = db.collection('usuarios').doc(uid);
+                const snapshot = await userDocRef.get();
+                const agora = new Date().getTime();
+                const ciclo24Horas = 24 * 60 * 60 * 1000;
 
-            if (!doc.exists) {
-                // Primeiro acesso: Cria usuário com 3 créditos
-                await userRef.set({
-                    creditos: 3,
-                    ultimaRecarga: agora
-                });
-                creditosDisponiveis = 3;
-            } else {
-                const dados = doc.data();
-                // Verifica se já se passaram 24h desde a última recarga
-                if (agora - dados.ultimaRecarga >= vinteEQuatroHoras) {
-                    await userRef.update({
-                        creditos: 3,
-                        ultimaRecarga: agora
-                    });
-                    creditosDisponiveis = 3;
+                if (!snapshot.exists) {
+                    await userDocRef.set({ creditos: 3, ultimaRecarga: agora });
+                    saldoCreditos = 3;
                 } else {
-                    creditosDisponiveis = dados.creditos;
+                    const dados = snapshot.data();
+                    if (agora - dados.ultimaRecarga >= ciclo24Horas) {
+                        await userDocRef.update({ creditos: 3, ultimaRecarga: agora });
+                        saldoCreditos = 3;
+                    } else {
+                        saldoCreditos = dados.creditos;
+                    }
                 }
+                atualizarExibicaoCreditos();
+            } catch (err) {
+                console.error("Erro no Firestore:", err);
             }
-            atualizarInterfaceCreditos();
         }
 
-        function atualizarInterfaceCreditos() {
-            document.getElementById('creditCount').innerText = creditosDisponiveis;
+        function atualizarExibicaoCreditos() {
+            document.getElementById('creditAmount').innerText = saldoCreditos;
         }
 
-        function fazerLoginGoogle() {
+        function iniciarLoginGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(err => alert("Erro ao fazer login: " + err.message));
-        }
-
-        function fazerLogout() {
-            auth.signOut();
-        }
-
-        // === 3. CONTROLE DE USO DAS FERRAMENTAS ===
-        async function executarComCredito(funcaoFerramenta) {
-            if (!usuarioAtual) {
-                alert("Por favor, faça login com sua conta do Google para usar as ferramentas gratuitas!");
-                return fazerLoginGoogle();
-            }
-
-            if (creditosDisponiveis <= 0) {
-                document.getElementById('formNome').value = usuarioAtual.displayName || '';
-                document.getElementById('modalPro').style.display = 'flex';
-                return;
-            }
-
-            // Executa a ferramenta
-            await funcaoFerramenta();
-
-            // Desconta 1 crédito
-            creditosDisponiveis--;
-            atualizarInterfaceCreditos();
-            await db.collection('usuarios').doc(usuarioAtual.uid).update({
-                creditos: creditosDisponiveis
+            auth.signInWithPopup(provider).catch((error) => {
+                alert("Erro no Login: Verifique se o seu domínio está autorizado no console do Firebase.\nDetalhe: " + error.message);
             });
         }
 
-        function fecharModalPro() {
-            document.getElementById('modalPro').style.display = 'none';
+        function encerrarSessao() {
+            auth.signOut();
         }
 
-        function copiarPix() {
-            const pix = document.getElementById('chavePix');
-            pix.select();
-            navigator.clipboard.writeText(pix.value);
+        // === 3. CONTROLE DE EXECUÇÃO DE FERRAMENTAS ===
+        async function executarFerramenta(funcaoExecucao) {
+            if (!usuarioAtual) {
+                alert("Por favor, conecte-se com sua conta do Google para utilizar o sistema!");
+                return iniciarLoginGoogle();
+            }
+
+            if (saldoCreditos <= 0) {
+                document.getElementById('modalUserName').value = usuarioAtual.displayName || '';
+                document.getElementById('proModal').style.display = 'flex';
+                return;
+            }
+
+            try {
+                await funcaoExecucao();
+                saldoCreditos--;
+                atualizarExibicaoCreditos();
+                await db.collection('usuarios').doc(usuarioAtual.uid).update({ creditos: saldoCreditos });
+            } catch (e) {
+                alert("Ocorreu um erro ao processar a tarefa. Tente novamente.");
+            }
+        }
+
+        function fecharModalPro() {
+            document.getElementById('proModal').style.display = 'none';
+        }
+
+        function copiarPixChave() {
+            const input = document.getElementById('pixKeyText');
+            input.select();
+            navigator.clipboard.writeText(input.value);
             alert('Chave PIX copiada!');
         }
 
-        // === 4. FUNÇÕES DAS FERRAMENTAS ===
-        async function converterImagensPDF() {
-            const files = document.getElementById('imgPdfInput').files;
-            if (files.length === 0) return alert('Selecione imagens.');
+        // === 4. LÓGICA DAS FERRAMENTAS ===
+        async function gerarPdfDasImagens() {
+            const input = document.getElementById('pdfFilesInput');
+            if (!input.files.length) throw new Error("Sem arquivos");
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            for (let i = 0; i < files.length; i++) {
-                const imgData = await new Promise(r => {
+            for (let i = 0; i < input.files.length; i++) {
+                const data = await new Promise(r => {
                     const rd = new FileReader();
                     rd.onload = e => r(e.target.result);
-                    rd.readAsDataURL(files[i]);
+                    rd.readAsDataURL(input.files[i]);
                 });
                 if (i > 0) doc.addPage();
-                doc.addImage(imgData, 'JPEG', 15, 15, 180, 240);
+                doc.addImage(data, 'JPEG', 15, 15, 180, 240);
             }
-            doc.save('documento.pdf');
+            doc.save('documento_convertido.pdf');
         }
 
-        function gerarQRCode() {
-            const text = document.getElementById('qrText').value;
-            if(!text) return alert('Digite um texto ou link!');
-            const box = document.getElementById('qrPreview');
+        function processarQrCode() {
+            const val = document.getElementById('qrCodeContent').value;
+            if(!val) throw new Error("Texto vazio");
+            const box = document.getElementById('qrCodePreview');
             box.innerHTML = '';
-            new QRCode(box, { text: text, width: 120, height: 120 });
+            new QRCode(box, { text: val, width: 120, height: 120 });
         }
 
-        function converterImagem() {
-            const file = document.getElementById('convertImgInput').files[0];
-            const format = document.getElementById('convertFormat').value;
-            if (!file) return alert('Selecione uma imagem.');
+        function converterFormatoImagem() {
+            const file = document.getElementById('convertFileInput').files[0];
+            const fmt = document.getElementById('targetFormat').value;
+            if (!file) throw new Error("Sem arquivo");
             const rd = new FileReader();
             rd.onload = function(e) {
                 const img = new Image();
@@ -369,19 +487,19 @@
                     const canvas = document.createElement('canvas');
                     canvas.width = img.width; canvas.height = img.height;
                     canvas.getContext('2d').drawImage(img, 0, 0);
-                    const link = document.createElement('a');
-                    link.download = 'imagem-convertida.' + format.split('/')[1];
-                    link.href = canvas.toDataURL(format);
-                    link.click();
+                    const a = document.createElement('a');
+                    a.download = 'imagem_convertida.' + fmt.split('/')[1];
+                    a.href = canvas.toDataURL(fmt);
+                    a.click();
                 };
                 img.src = e.target.result;
             };
             rd.readAsDataURL(file);
         }
 
-        function compactarImagem() {
-            const file = document.getElementById('compressImgInput').files[0];
-            if (!file) return alert('Selecione uma imagem.');
+        function compactarArquivoImagem() {
+            const file = document.getElementById('compressFileInput').files[0];
+            if (!file) throw new Error("Sem arquivo");
             const rd = new FileReader();
             rd.onload = function(e) {
                 const img = new Image();
@@ -389,29 +507,29 @@
                     const canvas = document.createElement('canvas');
                     canvas.width = img.width; canvas.height = img.height;
                     canvas.getContext('2d').drawImage(img, 0, 0);
-                    const link = document.createElement('a');
-                    link.download = 'imagem-compactada.jpg';
-                    link.href = canvas.toDataURL('image/jpeg', 0.4);
-                    link.click();
+                    const a = document.createElement('a');
+                    a.download = 'imagem_comprimida.jpg';
+                    a.href = canvas.toDataURL('image/jpeg', 0.4);
+                    a.click();
                 };
                 img.src = e.target.result;
             };
             rd.readAsDataURL(file);
         }
 
-        function gerarBarcode() {
-            const val = document.getElementById('barcodeValue').value;
-            if(!val) return alert('Digite um número.');
-            JsBarcode("#barcodeSvg", val, { format: "CODE128", width: 2, height: 50, displayValue: true });
+        function gerarCodigoDeBarras() {
+            const val = document.getElementById('barcodeInputText').value;
+            if(!val) throw new Error("Sem valor");
+            JsBarcode("#barcodeSvg", val, { format: "CODE128", width: 2, height: 45, displayValue: true });
         }
 
-        function extrairTexto() {
-            const file = document.getElementById('ocrInput').files[0];
-            const output = document.getElementById('ocrOutput');
-            if (!file) return alert('Selecione uma imagem.');
-            output.value = 'Lendo e extraindo texto...';
-            Tesseract.recognize(file, 'por').then(({ data: { text } }) => {
-                output.value = text;
+        function extrairTextoImagem() {
+            const file = document.getElementById('ocrFileInput').files[0];
+            const txt = document.getElementById('ocrOutputText');
+            if (!file) throw new Error("Sem arquivo");
+            txt.value = 'Processando OCR na imagem... Aguarde.';
+            return Tesseract.recognize(file, 'por').then(({ data: { text } }) => {
+                txt.value = text;
             });
         }
     </script>
