@@ -73,7 +73,7 @@
         <!-- ÁREA NEGADA -->
         <div id="accessDenied" class="access-denied">
             <h2 style="color: var(--danger); margin-bottom: 10px;">Acesso Negado 🚫</h2>
-            <p style="color: var(--text-muted); margin-bottom: 20px;">Sua conta não possui privilégios de administrador.</p>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Apenas o administrador autorizado pode acessar este painel.</p>
             <a href="index.html" class="btn">Voltar para o Início</a>
         </div>
 
@@ -121,11 +121,11 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // ⚠️ ALTE AQUI PARA O SEU E-MAIL REGISTRADO NO FIREBASE
+        // EMAIL DO ADMINISTRADOR
         const EMAIL_ADMIN = "ws8530135@gmail.com";
 
         auth.onAuthStateChanged(user => {
-            if (user && user.email.toLowerCase() === EMAIL_ADMIN.toLowerCase()) {
+            if (user && user.email && user.email.toLowerCase() === EMAIL_ADMIN.toLowerCase()) {
                 document.getElementById('adminContent').style.display = 'block';
                 document.getElementById('accessDenied').style.display = 'none';
                 carregarUsuarios();
@@ -144,18 +144,23 @@
                 const data = doc.data();
                 const id = doc.id;
                 const isVip = data.isIlimitado;
+                const creditosAtuais = data.creditos !== undefined ? data.creditos : 3;
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${data.email || 'Sem e-mail'}</strong></td>
                     <td><span class="badge ${isVip ? 'badge-vip' : 'badge-free'}">${isVip ? 'VIP / Ilimitado' : 'Grátis'}</span></td>
-                    <td>${isVip ? '∞' : (data.creditos !== undefined ? data.creditos : 3)}</td>
+                    <td>${isVip ? '∞' : creditosAtuais}</td>
                     <td>
                         ${isVip 
                             ? `<button class="btn btn-danger" onclick="alterarStatus('${id}', false)">Remover VIP</button>`
                             : `<button class="btn btn-gold" onclick="alterarStatus('${id}', true)">Tornar VIP (30 dias)</button>`
                         }
-                        <button class="btn" style="margin-left: 5px;" onclick="resetarCreditos('${id}')">Resetar 3 Créditos</button>
+                        <button class="btn" style="margin-left: 5px;" onclick="resetarCreditos('${id}')">Resetar (3)</button>
+                        <button class="btn btn-danger" style="margin-left: 5px;" onclick="zerarCreditos('${id}')">Zerar (0)</button>
+                        <button class="btn" style="margin-left: 5px;" onclick="modificarCreditos('${id}', ${creditosAtuais}, 5)">+5</button>
+                        <button class="btn" style="margin-left: 5px;" onclick="modificarCreditos('${id}', ${creditosAtuais}, -5)">-5</button>
+                        <button class="btn btn-danger" style="margin-left: 10px;" onclick="excluirUsuario('${id}')">Excluir</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -177,6 +182,28 @@
                 ultimaRecarga: new Date().getTime()
             });
             carregarUsuarios();
+        }
+
+        async function zerarCreditos(uid) {
+            await db.collection('usuarios').doc(uid).update({
+                creditos: 0
+            });
+            carregarUsuarios();
+        }
+
+        async function modificarCreditos(uid, creditosAtuais, quantidade) {
+            const novosCreditos = Math.max(0, creditosAtuais + quantidade);
+            await db.collection('usuarios').doc(uid).update({
+                creditos: novosCreditos
+            });
+            carregarUsuarios();
+        }
+
+        async function excluirUsuario(uid) {
+            if (confirm("Tem certeza que deseja apagar o registro deste usuário da base do Firestore?")) {
+                await db.collection('usuarios').doc(uid).delete();
+                carregarUsuarios();
+            }
         }
     </script>
 </body>
