@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Administrador – Utilitários Express</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root { --bg: #090d16; --panel: #111827; --card: #1f2937; --primary: #6366f1; --gold: #f59e0b; --text: #f9fafb; --muted: #9ca3af; --border: rgba(255,255,255,0.08); }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 30px 20px; }
+        .admin-container { max-width: 900px; margin: 0 auto; background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 30px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 20px; }
+        .user-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .btn { border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
+        .btn-gold { background: var(--gold); color: #000; }
+        .btn-gold:hover { background: #d97706; color: #fff; }
+        .btn-danger { background: #ef4444; color: #fff; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-back { background: transparent; border: 1px solid var(--border); color: var(--text); text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+        #gatekeeper { display: flex; justify-content: center; align-items: center; height: 80vh; font-size: 1.2rem; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <div id="gatekeeper">Verificando credenciais de administrador...</div>
+
+    <div class="admin-container" id="adminContent" style="display: none;">
+        <div class="header">
+            <div>
+                <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--gold);">🔑 Painel de Controle Admin</h1>
+                <p style="color: var(--muted); font-size: 0.85rem;">Gerenciamento manual de planos e acessos dos usuários</p>
+            </div>
+            <a href="index.html" class="btn-back">⬅ Voltar ao App</a>
+        </div>
+
+        <div id="userList">Carregando lista de usuários...</div>
+    </div>
+
+    <script>
+        // DIGITE O SEU E-MAIL EXATO CADASTRADO NO FIREBASE AQUI
+        const ADMIN_EMAIL = "tc4498779@gmail.com"; 
+
+        const firebaseConfig = {
+    apiKey: "AIzaSyA-ZZ5wB9_2p9vAMRlpJ5JBUliJS3g9g7c",
+    authDomain: "utilitarios-express.firebaseapp.com",
+    databaseURL: "https://utilitarios-express-default-rtdb.firebaseio.com",
+    projectId: "utilitarios-express",
+    storageBucket: "utilitarios-express.firebasestorage.app",
+    messagingSenderId: "421983822616",
+    appId: "1:421983822616:web:bca6f2ebc1b6990871b46d"
+  };firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // VALIDAÇÃO RIGOROSA DE SEGURANÇA
+        auth.onAuthStateChanged(user => {
+            if (user && user.email === ADMIN_EMAIL) {
+                document.getElementById('gatekeeper').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+                carregarUsuarios();
+            } else {
+                alert('Acesso Negado! Esta área é exclusiva para o Administrador.');
+                window.location.href = 'index.html';
+            }
+        });
+
+        async function carregarUsuarios() {
+            const container = document.getElementById('userList');
+            container.innerHTML = 'Buscando usuários...';
+            try {
+                const snapshot = await db.collection('usuarios').get();
+                if (snapshot.empty) {
+                    container.innerHTML = '<p style="color:var(--muted);">Nenhum usuário encontrado no banco de dados.</p>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const u = doc.data();
+                    const id = doc.id;
+                    const status = u.isIlimitado ? '⚡ ILIMITADO (VIP)' : `Gratuito (${u.creditos || 0}/3 créditos restantes)`;
+                    
+                    html += `
+                        <div class="user-card">
+                            <div>
+                                <strong style="font-size:0.95rem;">${u.email || 'Usuário ' + id.substring(0,6)}</strong>
+                                <div style="color:var(--muted); font-size:0.8rem; margin-top:4px;">
+                                    Plano: <span style="color:${u.isIlimitado ? 'var(--gold)' : '#818cf8'}; font-weight:700;">${status}</span>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn btn-gold" onclick="definirIlimitado('${id}', 30)">+30 Dias VIP</button>
+                                <button class="btn btn-danger" onclick="bloquearGratuito('${id}')">Voltar p/ Grátis</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } catch (err) {
+                container.innerHTML = 'Erro ao carregar dados: ' + err.message;
+            }
+        }
+
+        async function definirIlimitado(uid, dias) {
+            const vencimento = new Date().getTime() + (dias * 24 * 60 * 60 * 1000);
+            await db.collection('usuarios').doc(uid).update({
+                isIlimitado: true,
+                vencimentoIlimitado: vencimento
+            });
+            alert('Plano atualizado para ILIMITADO com sucesso por ' + dias + ' dias!');
+            carregarUsuarios();
+        }
+
+        async function bloquearGratuito(uid) {
+            await db.collection('usuarios').doc(uid).update({
+                isIlimitado: false,
+                vencimentoIlimitado: 0,
+                creditos: 3
+            });
+            alert('Usuário retornado ao plano GRATUITO (3 créditos/24h).');
+            carregarUsuarios();
+        }
+    </script>
+</body>
+</html>
