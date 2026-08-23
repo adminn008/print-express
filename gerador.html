@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,6 +24,7 @@
 
     <style>
         :root {
+            /* TEMA ESCURO (Padrão) */
             --bg-body: #090d16;
             --panel-bg: #111827;
             --card-bg: #1f2937;
@@ -35,27 +36,51 @@
             --text-muted: #9ca3af;
             --border-line: rgba(255, 255, 255, 0.08);
             --border-glow: rgba(99, 102, 241, 0.3);
+            --input-bg: #1f2937;
+            --input-border: rgba(255, 255, 255, 0.12);
+            --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            --ad-bg: linear-gradient(135deg, #1e1b4b 0%, #311b92 100%);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        [data-theme="light"] {
+            /* TEMA CLARO */
+            --bg-body: #f3f4f6;
+            --panel-bg: #ffffff;
+            --card-bg: #f9fafb;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --accent-gold: #d97706;
+            --accent-green: #059669;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border-line: rgba(0, 0, 0, 0.08);
+            --border-glow: rgba(79, 70, 229, 0.25);
+            --input-bg: #ffffff;
+            --input-border: #d1d5db;
+            --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            --ad-bg: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.25s ease, border-color 0.25s ease; }
         body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding-bottom: 60px; }
 
         /* HEADER FIXO & BARRA NAVEGAÇÃO */
         .top-nav {
             position: sticky; top: 0; z-index: 100;
-            background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(12px);
+            background: var(--panel-bg); backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-line); padding: 14px 24px;
             display: flex; justify-content: space-between; align-items: center;
+            box-shadow: var(--shadow-card);
         }
 
-        .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.2rem; color: #fff; }
+        .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.25rem; color: var(--text-main); }
         .brand span { color: var(--primary); }
 
         .nav-actions { display: flex; align-items: center; gap: 12px; }
 
         .credit-widget {
             background: rgba(99, 102, 241, 0.12); border: 1px solid var(--border-glow);
-            padding: 6px 14px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; color: #818cf8;
+            padding: 7px 16px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; color: var(--primary);
             display: flex; align-items: center; gap: 8px; cursor: pointer;
         }
         .credit-widget.unlimited {
@@ -63,37 +88,66 @@
         }
 
         .btn {
-            background: var(--primary); color: #fff; border: none; padding: 9px 18px;
-            border-radius: 10px; font-weight: 600; font-size: 0.88rem; cursor: pointer;
+            background: var(--primary); color: #fff; border: none; padding: 10px 20px;
+            border-radius: 12px; font-weight: 600; font-size: 0.88rem; cursor: pointer;
             transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
         }
-        .btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
-        .btn-gold { background: var(--accent-gold); color: #000; font-weight: 700; }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .btn-gold { background: var(--accent-gold); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
         .btn-gold:hover { background: #d97706; color: #fff; }
-        .btn-outline { background: transparent; border: 1px solid var(--border-line); color: var(--text-main); }
+        .btn-outline { background: transparent; border: 1px solid var(--border-line); color: var(--text-main); box-shadow: none; }
         .btn-outline:hover { background: var(--card-bg); }
+
+        .theme-toggle {
+            background: var(--card-bg); border: 1px solid var(--border-line);
+            border-radius: 50%; width: 40px; height: 40px; display: flex;
+            align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem;
+            color: var(--text-main);
+        }
 
         /* LAYOUT PRINCIPAL */
         .main-layout { max-width: 1280px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 280px 1fr; gap: 30px; }
         @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
 
+        /* CARROSSEL DE PUBLICIDADE PRINT-EXPRESS */
+        .carousel-ad {
+            background: var(--ad-bg);
+            border: 1px solid var(--border-glow);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+        }
+        .carousel-slides { display: flex; transition: transform 0.5s ease-in-out; }
+        .carousel-slide { min-width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+        .slide-content h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main); }
+        .slide-content p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px; }
+        .carousel-dots { display: flex; justify-content: center; gap: 8px; margin-top: 15px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border-line); cursor: pointer; }
+        .dot.active { background: var(--primary); width: 24px; border-radius: 10px; }
+
         /* PAINEL LATERAL DE PERFIL E CRÉDITOS */
         .sidebar-card {
             background: var(--panel-bg); border: 1px solid var(--border-line); border-radius: 20px;
             padding: 24px; position: sticky; top: 90px; height: fit-content; display: flex; flex-direction: column; gap: 20px;
+            box-shadow: var(--shadow-card);
         }
 
         .user-box { display: flex; align-items: center; gap: 14px; }
         .avatar-large {
             width: 52px; height: 52px; border-radius: 50%; background: var(--primary);
-            display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; border: 2px solid #fff;
+            display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; color: #fff;
+            border: 2px solid var(--panel-bg); box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
 
-        .progress-bar-bg { width: 100%; background: var(--card-bg); height: 8px; border-radius: 10px; overflow: hidden; margin-top: 8px; }
-        .progress-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease; }
+        .progress-bar-bg { width: 100%; background: var(--card-bg); height: 10px; border-radius: 10px; overflow: hidden; margin-top: 8px; border: 1px solid var(--border-line); }
+        .progress-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease; border-radius: 10px; }
 
-        .history-list { list-style: none; font-size: 0.8rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .history-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-line); padding-bottom: 4px; }
+        .history-list { list-style: none; font-size: 0.82rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .history-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-line); padding-bottom: 6px; }
 
         /* GRADE DAS 20 FERRAMENTAS */
         .tools-header { margin-bottom: 25px; }
@@ -101,40 +155,47 @@
         .tools-header p { color: var(--text-muted); font-size: 0.95rem; }
 
         .filter-tags { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
-        .tag { background: var(--panel-bg); border: 1px solid var(--border-line); color: var(--text-muted); padding: 5px 12px; border-radius: 20px; font-size: 0.78rem; cursor: pointer; }
+        .tag { background: var(--panel-bg); border: 1px solid var(--border-line); color: var(--text-muted); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
         .tag.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
         .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; }
 
         .tool-card {
-            background: var(--panel-bg); border: 1px solid var(--border-line); border-radius: 16px; padding: 20px;
+            background: var(--panel-bg); border: 1px solid var(--border-line); border-radius: 20px; padding: 22px;
             display: flex; flex-direction: column; gap: 14px; transition: all 0.25s ease; position: relative;
+            box-shadow: var(--shadow-card);
         }
-        .tool-card:hover { border-color: var(--border-glow); transform: translateY(-3px); }
+        .tool-card:hover { border-color: var(--border-glow); transform: translateY(-4px); }
 
-        .tool-title { font-size: 1rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
-        .tool-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; background: rgba(99, 102, 241, 0.15); color: #818cf8; font-weight: 600; }
+        .tool-title { font-size: 0.98rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; color: var(--text-main); }
+        .tool-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; background: rgba(99, 102, 241, 0.12); color: var(--primary); font-weight: 700; }
 
-        .input-box { width: 100%; background: var(--card-bg); border: 1px solid var(--border-line); color: #fff; padding: 10px 12px; border-radius: 8px; font-size: 0.85rem; outline: none; }
-        .input-box:focus { border-color: var(--primary); }
-        textarea.input-box { resize: vertical; min-height: 65px; }
+        /* CAMPOS DE INPUT ACONCHEGANTES */
+        .input-box {
+            width: 100%; background: var(--input-bg); border: 1px solid var(--input-border);
+            color: var(--text-main); padding: 12px 14px; border-radius: 12px; font-size: 0.88rem; outline: none;
+            transition: all 0.2s ease;
+        }
+        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+        textarea.input-box { resize: vertical; min-height: 70px; }
 
         .tool-preview {
-            background: var(--bg-body); border: 1px dashed var(--border-line); border-radius: 8px;
-            padding: 10px; min-height: 60px; display: flex; align-items: center; justify-content: center; text-align: center;
-            font-size: 0.8rem; color: var(--text-muted); word-break: break-all;
+            background: var(--card-bg); border: 1px dashed var(--border-line); border-radius: 12px;
+            padding: 12px; min-height: 65px; display: flex; align-items: center; justify-content: center; text-align: center;
+            font-size: 0.82rem; color: var(--text-muted); word-break: break-all;
         }
 
         /* MODAIS UNIFICADOS */
         .modal-bg {
             display: none; position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 1000;
+            background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); z-index: 1000;
             justify-content: center; align-items: center; padding: 20px;
         }
 
         .modal-card {
-            background: var(--panel-bg); border: 1px solid var(--border-glow); border-radius: 20px;
-            width: 100%; max-width: 440px; padding: 30px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            background: var(--panel-bg); border: 1px solid var(--border-glow); border-radius: 24px;
+            width: 100%; max-width: 440px; padding: 32px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            color: var(--text-main);
         }
 
         .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer; }
@@ -143,8 +204,8 @@
         .tab-btn { flex: 1; padding: 10px; background: none; border: none; color: var(--text-muted); font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; }
         .tab-btn.active { color: var(--primary); border-color: var(--primary); }
 
-        .pix-container { background: var(--bg-body); border: 1px dashed var(--accent-gold); border-radius: 12px; padding: 18px; text-align: center; margin: 15px 0; }
-        .pix-container img { width: 130px; height: 130px; border-radius: 8px; background: #fff; padding: 5px; margin: 10px 0; }
+        .pix-container { background: var(--card-bg); border: 1px dashed var(--accent-gold); border-radius: 16px; padding: 18px; text-align: center; margin: 15px 0; }
+        .pix-container img { width: 130px; height: 130px; border-radius: 10px; background: #fff; padding: 5px; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -153,6 +214,7 @@
     <nav class="top-nav">
         <div class="brand">⚡ Utilitários<span>Express</span></div>
         <div class="nav-actions">
+            <button class="theme-toggle" onclick="toggleTheme()" id="btnTheme" title="Alternar Modo Claro/Escuro">🌙</button>
             <div class="credit-widget" onclick="abrirModalRecarga()" id="navCreditBox" style="display: none;">
                 ⚡ <span id="navCreditVal">0</span>/3 Créditos
             </div>
@@ -197,6 +259,38 @@
 
         <!-- AREA DE FERRAMENTAS -->
         <main>
+            <!-- CARROSSEL DE PUBLICIDADE PRINT-EXPRESS -->
+            <div class="carousel-ad">
+                <div class="carousel-slides" id="carouselSlides">
+                    <div class="carousel-slide">
+                        <div class="slide-content">
+                            <h3>🖨️ Print-Express Gráfica</h3>
+                            <p>Impressões expressas de alta qualidade, panfletos, cartões de visita e banners.</p>
+                            <a href="https://wa.me/558598530135?text=Ol%C3%A1,%20gostaria%20de%20um%20or%C3%A7amento%20de%20impress%C3%A3o" target="_blank" class="btn btn-gold">Pedir Impressão Agora</a>
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <div class="slide-content">
+                            <h3>📄 Encadernação & Plastificação</h3>
+                            <p>Deixe seus documentos, apostilas e trabalhos com acabamento profissional imediato.</p>
+                            <a href="https://wa.me/558598530135?text=Ol%C3%A1,%20gostaria%20de%20saber%20sobre%20encaderna%C3%A7%C3%A3o" target="_blank" class="btn btn-gold">Consultar Preços</a>
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <div class="slide-content">
+                            <h3>🎁 Brindes Personalizados</h3>
+                            <p>Canecas, adesivos, fardamentos e brindes corporativos para sua empresa.</p>
+                            <a href="https://wa.me/558598530135?text=Ol%C3%A1,%20quero%20um%20or%C3%A7amento%20de%20brindes" target="_blank" class="btn btn-gold">Solicitar Catálogo</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-dots">
+                    <div class="dot active" onclick="setSlide(0)"></div>
+                    <div class="dot" onclick="setSlide(1)"></div>
+                    <div class="dot" onclick="setSlide(2)"></div>
+                </div>
+            </div>
+
             <div class="tools-header">
                 <h1>Suíte de Produtividade Digital</h1>
                 <p>20 ferramentas rápidas e totalmente funcionais direto no seu navegador.</p>
@@ -344,7 +438,7 @@
                 <!-- 18. Calculadora Porcentagem -->
                 <div class="tool-card">
                     <div class="tool-title">18. Porcentagem Rápida <span class="tool-badge">-1 Crédito</span></div>
-                    <div style="display: flex; gap: 5px;">
+                    <div style="display: flex; gap: 8px;">
                         <input type="number" id="f18_p" placeholder="%" class="input-box">
                         <input type="number" id="f18_v" placeholder="De R$" class="input-box">
                     </div>
@@ -380,8 +474,8 @@
                 <button class="tab-btn" id="tabRegister" onclick="mudarAbaAuth('register')">Cadastrar Conta</button>
             </div>
             <form id="authForm" onsubmit="processarAuthEmail(event)">
-                <input type="email" id="authEmail" class="input-box" placeholder="Seu E-mail" required style="margin-bottom: 10px;">
-                <input type="password" id="authPass" class="input-box" placeholder="Sua Senha (mín. 6 dígitos)" required style="margin-bottom: 15px;">
+                <input type="email" id="authEmail" class="input-box" placeholder="Seu E-mail" required style="margin-bottom: 12px;">
+                <input type="password" id="authPass" class="input-box" placeholder="Sua Senha (mín. 6 dígitos)" required style="margin-bottom: 18px;">
                 <button type="submit" id="btnSubmitAuth" class="btn" style="width: 100%; margin-bottom: 12px;">Acessar Minha Conta</button>
             </form>
             <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin: 10px 0;">OU</div>
@@ -407,18 +501,46 @@
                     <img src="qrcode-pix.jpg" alt="QR Code PIX">
                     <div style="display: flex; gap: 5px;">
                         <input type="text" id="pixKey" class="input-box" value="SUA_CHAVE_PIX_AQUI" readonly style="font-size: 0.75rem;">
-                        <button type="button" class="btn" style="width: auto; padding: 5px 10px;" onclick="copiarPix()">Copiar</button>
+                        <button type="button" class="btn" style="width: auto; padding: 5px 12px;" onclick="copiarPix()">Copiar</button>
                     </div>
                 </div>
 
-                <input type="text" name="Nome" id="recargaNome" class="input-box" placeholder="Seu Nome" required style="margin-bottom: 8px;">
-                <input type="text" name="WhatsApp" class="input-box" placeholder="Seu WhatsApp com DDD" required style="margin-bottom: 12px;">
+                <input type="text" name="Nome" id="recargaNome" class="input-box" placeholder="Seu Nome" required style="margin-bottom: 10px;">
+                <input type="text" name="WhatsApp" class="input-box" placeholder="Seu WhatsApp com DDD" required style="margin-bottom: 14px;">
                 <button type="submit" class="btn btn-gold" style="width: 100%;">Confirmar Pagamento e Enviar</button>
             </form>
         </div>
     </div>
 
     <script>
+        // GERENCIAMENTO DE MODO CLARO / ESCURO
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            document.getElementById('btnTheme').innerText = newTheme === 'light' ? '☀️' : '🌙';
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Recupera tema salvo
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('btnTheme').innerText = savedTheme === 'light' ? '☀️' : '🌙';
+
+        // LÓGICA DO CARROSSEL DE ANÚNCIOS
+        let currentSlide = 0;
+        function setSlide(index) {
+            currentSlide = index;
+            document.getElementById('carouselSlides').style.transform = `translateX(-${index * 100}%)`;
+            document.querySelectorAll('.dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % 3;
+            setSlide(currentSlide);
+        }, 5000);
+
         // CONFIGURAÇÃO OFICIAL FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyA-ZZ5wB9_2p9vAMRlpJ5JBUliJS3g9g7c",
@@ -613,14 +735,25 @@
             input.select(); navigator.clipboard.writeText(input.value); alert('PIX Copiado!');
         }
 
-        // IMPLEMENTAÇÃO DAS 20 FERRAMENTAS
+        // IMPLEMENTAÇÃO DAS 20 FERRAMENTAS COM PDF LIMPO/CLARO
         async function tool1_ImgsParaPdf() {
             const files = document.getElementById('f1_input').files;
             if (!files.length) throw new Error('Selecione ao menos 1 imagem');
-            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            const { jsPDF } = window.jspdf; 
+            const doc = new jsPDF();
+            
             for(let i=0; i<files.length; i++){
-                const data = await new Promise(r => { const rd = new FileReader(); rd.onload = e => r(e.target.result); rd.readAsDataURL(files[i]); });
-                if(i>0) doc.addPage(); doc.addImage(data, 'JPEG', 15, 15, 180, 240);
+                const data = await new Promise(r => { 
+                    const rd = new FileReader(); 
+                    rd.onload = e => r(e.target.result); 
+                    rd.readAsDataURL(files[i]); 
+                });
+                if(i>0) doc.addPage();
+                
+                // Força fundo branco para um PDF claro e profissional
+                doc.setFillColor(255, 255, 255);
+                doc.rect(0, 0, 210, 297, 'F');
+                doc.addImage(data, 'JPEG', 15, 15, 180, 240);
             }
             doc.save('documento.pdf');
         }
@@ -629,7 +762,7 @@
             const txt = document.getElementById('f2_input').value;
             if(!txt) throw new Error('Digite um link');
             const box = document.getElementById('f2_preview'); box.innerHTML = '';
-            new QRCode(box, { text: txt, width: 110, height: 110 });
+            new QRCode(box, { text: txt, width: 110, height: 110, colorDark: "#000000", colorLight: "#ffffff" });
         }
 
         function tool3_ConverterImg() {
@@ -641,7 +774,10 @@
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height;
-                    canvas.getContext('2d').drawImage(img, 0, 0);
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
                     const a = document.createElement('a'); a.download = 'convertida.' + fmt.split('/')[1];
                     a.href = canvas.toDataURL(fmt); a.click();
                 }; img.src = e.target.result;
@@ -656,7 +792,10 @@
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height;
-                    canvas.getContext('2d').drawImage(img, 0, 0);
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
                     const a = document.createElement('a'); a.download = 'compactada.jpg';
                     a.href = canvas.toDataURL('image/jpeg', 0.35); a.click();
                 }; img.src = e.target.result;
@@ -666,7 +805,7 @@
         function tool5_Barcode() {
             const val = document.getElementById('f5_input').value;
             if(!val) throw new Error('Digite os números');
-            JsBarcode("#f5_svg", val, { format: "CODE128", width: 2, height: 40, displayValue: true });
+            JsBarcode("#f5_svg", val, { format: "CODE128", width: 2, height: 40, displayValue: true, background: "#ffffff", lineColor: "#000000" });
         }
 
         function tool6_OCR() {
@@ -708,7 +847,7 @@
             const m = encodeURIComponent(document.getElementById('f11_msg').value);
             if(!p) throw new Error('Digite o número');
             const url = `https://wa.me/55${p}?text=${m}`;
-            document.getElementById('f11_preview').innerHTML = `<a href="${url}" target="_blank" style="color:var(--primary)">${url}</a>`;
+            document.getElementById('f11_preview').innerHTML = `<a href="${url}" target="_blank" style="color:var(--primary); font-weight:bold;">${url}</a>`;
         }
 
         function tool12_InverterTexto() {
