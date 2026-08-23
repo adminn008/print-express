@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>PrintExpress — Geradores</title>
+<title>PrintExpress — Geradores Automáticos A4</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f8fafc;--card:#fff;--input:#f1f5f9;--border:#e2e8f0;--text:#0f172a;--muted:#64748b;--primary:#0284c7;--hover:#0369a1;--accent:#38bdf8;--green:#10b981;--danger:#ef4444;--gold:#f59e0b;--shadow:0 10px 25px -5px rgba(0,0,0,.06)}
@@ -63,14 +63,19 @@ footer{margin-top:45px;padding:35px 10px 5px;border-top:3px solid var(--primary)
   </div>
   <section class="hero">
     <h1>⚡ Geradores PrintExpress</h1>
-    <p>Crie modelos prontos para imprimir, personalize no celular e baixe seu arquivo. Alguns recursos são gratuitos e outros são exclusivos.</p>
-    <div class="stats"><span class="stat">🆓 Gratuitos</span><span class="stat">⭐ Premium</span><span class="stat">📄 Formato A4</span><span class="stat">📱 Feito para celular</span></div>
+    <p>Crie modelos automáticos prontos para imprimir em folha A4. Edite no celular e baixe grátis ou envie os pedidos premium direto para nosso WhatsApp.</p>
+    <div class="stats">
+      <span class="stat">🆓 12 Gratuitos</span>
+      <span class="stat">⭐ 25 Premium</span>
+      <span class="stat">📄 Padrão A4 Automático</span>
+      <span class="stat">📱 Baixe no Celular</span>
+    </div>
   </section>
 </header>
 
 <div class="filters">
   <input id="search" class="search" placeholder="🔎 Procurar um gerador..." oninput="renderCards()">
-  <button class="filter" onclick="setFilter('all')">Todos</button>
+  <button class="filter" onclick="setFilter('all')">Todos (37)</button>
   <button class="filter" onclick="setFilter('free')">🆓 Grátis</button>
   <button class="filter" onclick="setFilter('paid')">⭐ Premium</button>
 </div>
@@ -79,38 +84,49 @@ footer{margin-top:45px;padding:35px 10px 5px;border-top:3px solid var(--primary)
 <div id="empty" class="empty">Nenhum gerador encontrado.</div>
 
 <footer>
-  <strong>PrintExpress — Geradores</strong><br>
-  Ferramentas digitais para criar materiais prontos para impressão.
+  <strong>PrintExpress — Geradores Imprimíveis A4</strong><br>
+  Crie, baixe ou solicite personalizações prontas para imprimir direto do seu celular.
 </footer>
 </div>
 
 <div id="modal" class="modal">
  <div class="panel">
-  <div class="panel-head"><div><h2 id="modalTitle"></h2><div id="modalDesc" class="hint"></div></div><button class="close" onclick="closeModal()">✕</button></div>
+  <div class="panel-head">
+    <div><h2 id="modalTitle"></h2><div id="modalDesc" class="hint"></div></div>
+    <button class="close" onclick="closeModal()">✕</button>
+  </div>
   <div id="generator"></div>
-  <div id="preview" class="preview"><strong>Prévia:</strong><iframe id="frame"></iframe></div>
+  <div id="preview" class="preview"><strong>Prévia do Material A4:</strong><iframe id="frame"></iframe></div>
  </div>
 </div>
 
 <div id="paidModal" class="modal">
  <div class="panel">
-  <div class="panel-head"><div><h2>⭐ Solicitar gerador Premium</h2><div class="hint">Pagamento e envio são conferidos manualmente.</div></div><button class="close" onclick="closePaid()">✕</button></div>
-  <div class="notice">Você pode montar sua solicitação no gerador. Depois, envie seus dados, comprovante e o arquivo gerado. Após a confirmação do pagamento, o arquivo será preparado e enviado pelo WhatsApp.</div>
-  <div class="payment"><strong>💳 Pagamento via PIX</strong>Entre em contato pelo WhatsApp do PrintExpress para receber a chave PIX atualizada.</div>
+  <div class="panel-head">
+    <div><h2>⭐ Solicitar Gerador Premium</h2><div class="hint">Envio direto do pedido para validação via WhatsApp.</div></div>
+    <button class="close" onclick="closePaid()">✕</button>
+  </div>
+  <div class="notice">Você montou sua estrutura! Agora envie o comprovante de pagamento via chave PIX para liberarmos e enviarmos o PDF de alta resolução no seu WhatsApp.</div>
+  <div class="payment">
+    <strong>💳 Pagamento via PIX</strong>
+    Realize o pagamento e anexe o comprovante abaixo. Em caso de dúvidas, o atendimento será finalizado no WhatsApp.
+  </div>
   <form id="paidForm" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data">
-    <input type="hidden" name="_subject" value="Novo pedido — Gerador Premium PrintExpress">
+    <input type="hidden" name="_subject" value="Novo Pedido Premium — PrintExpress">
     <input type="hidden" name="_captcha" value="true">
     <input type="hidden" name="_template" value="table">
     <input type="hidden" name="gerador" id="paidGenerator">
     <input type="hidden" name="solicitacao" id="paidRequest">
     <div class="form-grid">
-      <div class="field"><label>SEU NOME</label><input required name="nome" placeholder="Nome completo"></div>
-      <div class="field"><label>WHATSAPP</label><input required name="whatsapp" placeholder="(41) 99999-9999"></div>
-      <div class="field full"><label>OBSERVAÇÕES</label><textarea name="observacoes" placeholder="Detalhes importantes do pedido..."></textarea></div>
-      <div class="field full"><label>COMPROVANTE DO PAGAMENTO</label><input required type="file" name="comprovante" accept="image/*,.pdf"></div>
-      <div class="field full"><label>ARQUIVO GERADO / BRIEFING (OPCIONAL)</label><input type="file" name="arquivo_gerado" id="paidFile" accept=".html,.txt,.png,.jpg,.jpeg,.svg,.pdf"></div>
+      <div class="field"><label>SEU NOME COMPLETO</label><input required name="nome" placeholder="Digite seu nome"></div>
+      <div class="field"><label>WHATSAPP COM DDD</label><input required name="whatsapp" placeholder="(00) 99999-9999"></div>
+      <div class="field full"><label>OBSERVAÇÕES OU AJUSTES ESPECIAIS</label><textarea name="observacoes" placeholder="Caso deseje cores específicas, logotipos ou detalhes adicionais..."></textarea></div>
+      <div class="field full"><label>ANEXAR COMPROVANTE DO PIX</label><input required type="file" name="comprovante" accept="image/*,.pdf"></div>
     </div>
-    <div class="actions"><button class="btn gold" type="submit">📤 Enviar pedido</button><button class="btn secondary" type="button" onclick="closePaid()">Cancelar</button></div>
+    <div class="actions">
+      <button class="btn gold" type="submit">📤 Confirmar e Enviar Pedido</button>
+      <button class="btn secondary" type="button" onclick="closePaid()">Voltar</button>
+    </div>
   </form>
  </div>
 </div>
@@ -119,43 +135,43 @@ footer{margin-top:45px;padding:35px 10px 5px;border-top:3px solid var(--primary)
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script>
 const generators=[
-["envelope","✉️","Gerador de Envelope A4 Dobrável","Imprime linhas de corte e dobra para montar um envelope.",1],
-["capa","📘","Capa de Trabalho Escolar (ABNT Simples)","Nome da escola, disciplina, título, aluno e cidade em A4.",1],
-["precos","🏷️","Tabela de Preços A4","Monte categorias, produtos e valores para balcão ou parede.",1],
-["croqui","🎨","Desenhos para Colorir — Efeito Croqui","Converta uma foto em linhas para imprimir e colorir.",1],
-["cacapalavras","🔎","Caça-Palavras","Digite palavras e gere um jogo A4 automaticamente.",1],
-["cruzadinha","🧩","Cruzadinhas","Monte uma atividade com palavras e pistas.",1],
-["presenca","✍️","Lista de Presença / Assinaturas","Evento, reunião e linhas numeradas com RG e assinatura.",1],
-["redacao","📝","Folha de Redação — Treino","A4 com 30 linhas numeradas para redações e concursos.",1],
-["dinamicas","🎲","Jogos e Dinâmicas Rápidas","Gere cartas de desafios e perguntas para grupos.",1],
-["cardapio","🍔","Cardápio Impresso","Categorias, itens, preços e contato em A4.",1],
-["qrcode","▦","QR Code com Logo","QR para PIX, Wi-Fi, WhatsApp, cardápio ou link.",1],
-["pdf","📑","Separar / Combinar PDF","Selecione páginas ou una arquivos PDF no navegador.",1],
-["etiquetaescolar","🏫","Etiquetas Escolares","Nome, turma e matéria em etiquetas prontas para recortar.",1],
-["etiquetaend","📬","Etiquetas de Endereço","Gere várias etiquetas de remetente/destinatário.",1],
-["calendario","📅","Calendário Mensal","Calendário A4 com mês, ano e espaço para anotações.",1],
-["planner","📋","Planner Semanal","Semana organizada com prioridades e tarefas.",1],
-["checklist","☑️","Checklist A4","Lista de tarefas com caixas para marcar.",1],
-["compras","🛒","Lista de Compras","Itens separados por categorias e caixas de seleção.",1],
-["orcamento","💰","Orçamento / Cotação","Serviço, quantidade, preço e total organizado.",0],
-["recibo","🧾","Recibo Simples","Recibo imprimível com valor, serviço e assinatura.",0],
-["ordem","🔧","Ordem de Serviço","Cliente, equipamento, defeito, serviço e assinatura.",0],
-["cadastro","🗂️","Ficha de Cadastro","Ficha A4 para preenchimento manual.",0],
-["cliente","👤","Ficha de Cliente","Cadastro organizado para pequenos negócios.",0],
-["certificado","🏆","Certificado","Nome, evento, carga horária e assinatura.",0],
-["convite","💌","Convite A4","Convite personalizável para eventos.",0],
-["cartao","💳","Cartão de Visita A4","Várias unidades por folha para recortar.",0],
-["flyer","📣","Flyer A4","Material promocional com título, texto e contato.",0],
-["cartaz","📢","Cartaz A4","Título grande, mensagem e chamada visual.",0],
-["aviso","⚠️","Aviso / Comunicado","Modelo limpo para comunicados rápidos.",0],
-["vale","🎁","Vale-Presente","Cartões com código, destinatário e validade.",0],
-["marcador","🔖","Marcadores de Página","Vários marcadores A4 prontos para recortar.",0],
-["sorteio","🎟️","Números para Sorteio","Gere números sequenciais em cartões.",0],
-["bingo","🎯","Cartelas de Bingo","Gere cartelas com números aleatórios.",0],
-["domino","🁣","Dominó Recortável","Peças de dominó geradas automaticamente.",0],
-["memoria","🧠","Jogo da Memória","Cartas com palavras/símbolos para recortar.",0],
-["flashcards","🗃️","Flashcards","Pergunta e resposta em cartões A4.",0],
-["horarios","⏰","Tabela de Horários","Monte uma grade de horários para escola ou rotina.",0]
+["envelope","✉️","Gerador de Envelope A4 Dobrável","Imprime linhas de corte e dobra na folha para criar um envelope funcional sem comprar pronto.",1],
+["capa","📘","Capa de Trabalho Escolar (ABNT)","Ajusta automaticamente margens e espaçamentos padrão ABNT na folha A4.",1],
+["precos","🏷️","Tabela de Preços A4","Modelo limpo com categorias e valores destacados para balcão ou parede.",1],
+["croqui","🎨","Desenhos para Colorir (Efeito Croqui)","Converte qualquer imagem ou foto em linhas pretas para imprimir e pintar.",1],
+["cacapalavras","🔎","Gerador de Caça-Palavras","Digite uma lista de palavras e gere o jogo montado na folha A4.",1],
+["cruzadinha","🧩","Gerador de Cruzadinhas","Insira as palavras e pistas para montar uma cruzadinha pronta para impressão.",1],
+["presenca","✍️","Lista de Presença / Assinaturas","Cabeçalho com nome do evento e linhas numeradas com Nome, RG e Assinatura.",1],
+["redacao","📝","Folha de Redação (Padrão ENEM)","Gera uma folha A4 com 30 linhas numeradas e cabeçalho oficial para treino.",1],
+["dinamicas","🎲","Jogos e Dinâmicas Rápidas","Gere cartas imprimíveis com perguntas, desafios ou tarefas para grupos.",1],
+["cardapio","🍔","Gerador de Cardápios Impressos","Layouts em A4 para lanchonetes e bares com categorias, preços e QR Code.",1],
+["qrcode","▦","Gerador de QR Code com Logo","Crie QR Codes de PIX, Wi-Fi ou Links ajustados para impressão A4.",1],
+["pdf","📑","Separador / Combinador de PDF","Selecione páginas específicas ou junte múltiplos arquivos direto no navegador.",1],
+["etiquetaescolar","🏫","Etiquetas Escolares","Gere etiquetas com Nome, Turma e Matéria prontas para recortar e colar.",0],
+["etiquetaend","📬","Etiquetas de Endereço / Envio","Gere etiquetas padronizadas para remetente e destinatário em pacotes.",0],
+["calendario","📅","Calendário Mensal Personalizado","Calendário A4 com mês, ano e campo de anotações importantes.",0],
+["planner","📋","Planner Semanal A4","Organize tarefas, prioridades da semana e hábitos em folha única.",0],
+["checklist","☑️","Checklist / Lista de Tarefas","Lista vertical limpa com caixas de marcação (checkboxes) para rotina.",0],
+["compras","🛒","Lista de Compras Categorizada","Gere listas de mercado organizadas por setores (Hortifrúti, Limpeza, etc).",0],
+["orcamento","💰","Gerador de Orçamento / Cotação","Tabela limpa de produtos, quantidade, valor unitário e total para clientes.",0],
+["recibo","🧾","Recibo Simples de Pagamento","Gere recibos com valor, pagador, referente e espaço para assinatura.",0],
+["ordem","🔧","Ordem de Serviço (O.S.)","Ficha A4 com dados do cliente, equipamento, defeito e laudo técnico.",0],
+["cadastro","🗂️","Ficha de Cadastro Universal","Ficha A4 personalizável para preenchimento de dados pessoais e contatos.",0],
+["cliente","👤","Ficha de Cliente para Negócios","Organize históricos de atendimento, compras e preferências do cliente.",0],
+["certificado","🏆","Gerador de Certificado","Crie certificados de participação, cursos ou eventos com borda clássica.",0],
+["convite","💌","Convites Imprimíveis A4","Crie convites para festas e reuniões dispostos para recorte rápido.",0],
+["cartao","💳","Cartão de Visita em A4","Gere uma grade com múltiplos cartões de visita prontos para recortar.",0],
+["flyer","📣","Panfleto / Flyer Promocional A4","Layout comercial com título destacado, texto e área de contato.",0],
+["cartaz","📢","Cartaz Informativo A4","Avisos com títulos em letras grandes para fixação em paredes e murais.",0],
+["aviso","⚠️","Comunicado / Aviso Oficial","Modelo formal para condomínios, empresas e comunicados de avisos.",0],
+["vale","🎁","Vale-Presente / Voucher","Gere cartões de presente com valor, código e espaço para regras.",0],
+["marcador","🔖","Marcadores de Página","Marcadores verticais com frases ou temas para recortar e plastificar.",0],
+["sorteio","🎟️","Rifa / Números para Sorteio","Cartelas com números sequenciais destacáveis para sorteios.",0],
+["bingo","🎯","Cartelas de Bingo A4","Gere cartelas com números aleatórios sem repetição para eventos.",0],
+["domino","🁣","Jogo de Dominó Recortável","Conjunto completo de peças de dominó prontas para imprimir em papel gramatura.",0],
+["memoria","🧠","Jogo da Memória","Gere pares de palavras, ícones ou números para recorte educativo.",0],
+["flashcards","🗃️","Flashcards para Estudo","Cartões A4 divididos ao meio com pergunta na frente e resposta no verso.",0],
+["horarios","⏰","Grade de Horários Escolar / Aulas","Tabela de horários semanais por períodos para estudantes e professores.",0]
 ];
 
 let filter="all",current=null;
@@ -164,16 +180,16 @@ function setFilter(f){filter=f;renderCards()}
 function renderCards(){
  const q=document.getElementById("search").value.toLowerCase();
  const list=generators.filter(g=>(filter==="all"||(filter==="free"?g[4]:!g[4]))&&(g[2]+g[3]).toLowerCase().includes(q));
- document.getElementById("grid").innerHTML=list.map(g=>`<article class="card"><span class="badge ${g[4]?'free':'paid'}">${g[4]?'GRÁTIS':'PREMIUM'}</span><div class="icon">${g[1]}</div><h3>${g[2]}</h3><p>${g[3]}</p><button class="btn open" onclick="openGenerator('${g[0]}')">${g[4]?'⚡ Criar agora':'⭐ Ver Premium'}</button></article>`).join("");
+ document.getElementById("grid").innerHTML=list.map(g=>`<article class="card"><span class="badge ${g[4]?'free':'paid'}">${g[4]?'GRÁTIS':'PREMIUM'}</span><div class="icon">${g[1]}</div><h3>${g[2]}</h3><p>${g[3]}</p><button class="btn open" onclick="openGenerator('${g[0]}')">${g[4]?'⚡ Criar Agora':'⭐ Solicitar Premium'}</button></article>`).join("");
  document.getElementById("empty").style.display=list.length?"none":"block";
 }
 function toggleTheme(){const d=document.documentElement;d.setAttribute("data-theme",d.getAttribute("data-theme")==="dark"?"light":"dark");localStorage.setItem("pxgen_theme",d.getAttribute("data-theme"))}
 if(localStorage.getItem("pxgen_theme"))document.documentElement.setAttribute("data-theme",localStorage.getItem("pxgen_theme"));
 
-const common={name:"",title:"",city:"",text:""};
 function fields(arr){return `<div class="form-grid">${arr.map(x=>`<div class="field ${x[2]?'full':''}"><label>${x[0]}</label><input id="f_${x[1]}" ${x[3]?'type="'+x[3]+'"':''} placeholder="${x[4]||''}"></div>`).join("")}</div>`}
 function ta(id,label,placeholder=""){return `<div class="field full"><label>${label}</label><textarea id="f_${id}" placeholder="${placeholder}"></textarea></div>`}
 function val(id){return document.getElementById("f_"+id)?.value||""}
+
 function openGenerator(id){
  current=generators.find(g=>g[0]===id);
  document.getElementById("modalTitle").textContent=current[1]+" "+current[2];
@@ -183,121 +199,134 @@ function openGenerator(id){
  document.getElementById("modal").classList.add("show");
 }
 function closeModal(){document.getElementById("modal").classList.remove("show")}
+
 function buildGenerator(id){
  switch(id){
- case"envelope":return fields([["Destinatário","dest",0,0,"Nome ou endereço"],["Remetente","rem",0,0,"Nome"],["Título","titulo",0,0,"Ex.: Documentos"]])+actions();
- case"capa":return fields([["Nome da escola","escola"],["Disciplina","disciplina"],["Título do trabalho","titulo"],["Nome do aluno","aluno"],["Cidade","cidade"],["Ano","ano"]])+actions();
- case"precos":return fields([["Nome do estabelecimento","estabelecimento"],["Categoria 1","cat1"],["Itens (um por linha: nome — preço)","itens1",1],["Categoria 2","cat2"],["Itens","itens2",1]])+actions();
- case"croqui":return `<div class="field full"><label>IMAGEM</label><input id="imgFile" type="file" accept="image/*"></div><div class="form-grid"><div class="field"><label>CONTRASTE</label><input id="contrast" type="range" min="0" max="100" value="45"></div><div class="field"><label>LIMIAR</label><input id="threshold" type="range" min="40" max="240" value="160"></div></div>`+actions("processImage()");
- case"cacapalavras":return ta("words","PALAVRAS (uma por linha ou separadas por vírgula)","AMOR\nESCOLA\nLIVRO\nAMIZADE")+fields([["Tamanho da grade","size"],["Título","titulo"]])+actions();
- case"cruzadinha":return ta("words","PALAVRAS E PISTAS","ESCOLA | Lugar de estudar\nLIVRO | Tem páginas\nAMOR | Sentimento")+actions();
- case"presenca":return fields([["Evento / reunião","evento"],["Data","data",0, "date"],["Quantidade de pessoas","qtd"]])+actions();
- case"redacao":return fields([["Tema para treino","tema"]])+actions();
- case"dinamicas":return ta("items","PERGUNTAS / DESAFIOS (um por linha)","Conte uma coisa que você aprendeu hoje\nFaça uma pergunta ao grupo")+fields([["Quantidade de cartas","qtd"]])+actions();
- case"cardapio":return fields([["Estabelecimento","estabelecimento"],["WhatsApp / contato","contato"],["Categoria","cat"],["Itens (nome — preço, um por linha)","itens",1]])+actions();
- case"qrcode":return fields([["Conteúdo do QR Code","conteudo",1,0,"Link, WhatsApp, PIX copia e cola etc."],["Título","titulo"]])+`<div class="hint">O QR é gerado no navegador. Para logo personalizada, use a opção premium de arte.</div>`+actions("makeQR()");
- case"pdf":return `<div class="field full"><label>ARQUIVOS PDF</label><input id="pdfFiles" type="file" accept="application/pdf" multiple></div><div class="field full"><label>PÁGINAS (opcional, ex.: 3-5,12)</label><input id="pdfPages" placeholder="Deixe vazio para todas"></div><div class="hint">A operação usa processamento local no navegador. Os arquivos não são enviados ao PrintExpress por este gerador.</div>`+actions("processPDF()");
- case"etiquetaescolar":return fields([["Nome","nome"],["Turma","turma"],["Matéria","materia"],["Quantidade","qtd"]])+actions();
- case"etiquetaend":return fields([["Nome","nome"],["Endereço","end"],["Cidade/UF","cidade"],["Quantidade","qtd"]])+actions();
- case"calendario":return fields([["Mês (1-12)","mes"],["Ano","ano"],["Título","titulo"]])+actions();
- case"planner":return fields([["Semana de","data",0,"date"],["Nome","nome"]])+actions();
- case"checklist":return ta("items","TAREFAS (uma por linha)","Tarefa 1\nTarefa 2\nTarefa 3")+fields([["Título","titulo"]])+actions();
- case"compras":return ta("items","ITENS (um por linha)","Arroz\nFeijão\nLeite\nPão")+actions();
- case"orcamento":return fields([["Empresa / profissional","empresa"],["Cliente","cliente"],["Data","data",0,"date"]])+ta("items","ITENS — um por linha: descrição | quantidade | preço","Impressão | 10 | 0,50\nArte | 1 | 15,00")+actions();
- case"recibo":return fields([["Recebi de","cliente"],["Valor","valor"],["Referente a","referente"],["Cidade","cidade"],["Data","data",0,"date"]])+actions();
- case"ordem":return fields([["Cliente","cliente"],["Contato","contato"],["Equipamento","equip"],["Data","data",0,"date"]])+ta("defeito","DEFEITO / SOLICITAÇÃO")+ta("servico","SERVIÇO REALIZADO")+actions();
- case"cadastro":return fields([["Título","titulo"],["Nome","nome"],["CPF / documento","doc"],["Telefone","tel"],["Data de nascimento","nasc",0,"date"],["Endereço","end"]])+actions();
- case"cliente":return fields([["Nome","nome"],["WhatsApp","tel"],["E-mail","email"],["Endereço","end"],["Observações","obs",1]])+actions();
- case"certificado":return fields([["Título","titulo"],["Nome do participante","nome"],["Evento / curso","evento"],["Carga horária","carga"],["Cidade","cidade"],["Data","data",0,"date"],["Responsável","resp"]])+actions();
- case"convite":return fields([["Título","titulo"],["Convidado","nome"],["Evento","evento"],["Data","data",0,"date"],["Horário","hora"],["Local","local"],["Contato","contato"]])+actions();
- case"cartao":return fields([["Nome","nome"],["Profissão / empresa","profissao"],["WhatsApp","whatsapp"],["Instagram","instagram"],["E-mail","email"]])+actions();
- case"flyer":return fields([["Título","titulo"],["Subtítulo","subtitulo"],["Contato","contato"]])+ta("text","TEXTO DO FLYER")+actions();
- case"cartaz":return fields([["Título","titulo"],["Chamada","chamada"],["Contato","contato"]])+actions();
- case"aviso":return fields([["Título","titulo"]])+ta("text","MENSAGEM")+fields([["Responsável","resp"],["Data","data",0,"date"]])+actions();
- case"vale":return fields([["Estabelecimento","empresa"],["Valor / benefício","valor"],["Destinatário","nome"],["Código","codigo"],["Validade","validade"]])+actions();
- case"marcador":return fields([["Texto principal","texto"],["Autor / frase","autor"],["Quantidade","qtd"]])+actions();
- case"sorteio":return fields([["Número inicial","inicio"],["Número final","fim"],["Título","titulo"]])+actions();
- case"bingo":return fields([["Quantidade de cartelas","qtd"],["Título","titulo"]])+actions();
- case"domino":return fields([["Maior número","max"]])+actions();
- case"memoria":return ta("items","PARES (um por linha)","Sol\nLua\nCéu\nMar")+actions();
- case"flashcards":return ta("items","CARTÕES — PERGUNTA | RESPOSTA","Capital do Brasil | Brasília\n2+2 | 4")+actions();
- case"horarios":return fields([["Título","titulo"],["Dias","dias"],["Horários","horarios"]])+actions();
+ case"envelope":return fields([["Destinatário","dest",1,0,"Nome completo e endereço"],["Remetente","rem",1,0,"Seu nome e contato"],["Identificação","titulo",0,0,"Ex.: Documentos Importantes"]])+actions();
+ case"capa":return fields([["Nome da Instituição/Escola","escola",1],["Nome do Curso/Disciplina","disciplina"],["Título do Trabalho","titulo",1],["Subtítulo (opcional)","subtitulo",1],["Nome do Aluno","aluno"],["Cidade","cidade"],["Ano","ano"]])+actions();
+ case"precos":return fields([["Nome do Estabelecimento","estabelecimento",1],["Categoria 1","cat1"],["Itens Categoria 1 (Item — R$ 00,00)","itens1",1],["Categoria 2","cat2"],["Itens Categoria 2 (Item — R$ 00,00)","itens2",1]])+actions();
+ case"croqui":return `<div class="field full"><label>SELECIONE UMA IMAGEM DO CELULAR/PC</label><input id="imgFile" type="file" accept="image/*"></div><div class="form-grid"><div class="field"><label>CONTRASTE</label><input id="contrast" type="range" min="0" max="100" value="45"></div><div class="field"><label>NÍVEL DE LINHA (LIMIAR)</label><input id="threshold" type="range" min="40" max="240" value="160"></div></div>`+actions("processImage()");
+ case"cacapalavras":return ta("words","LISTA DE PALAVRAS (uma por linha ou separadas por vírgula)","AMOR\nRESPEITO\nESTUDO\nAPRENDIZADO")+fields([["Tamanho da Grade (Ex: 14)","size"],["Título do Jogo","titulo"]])+actions();
+ case"cruzadinha":return ta("words","PALAVRAS E PISTAS (Formato: PALAVRA | Pista)","ESCOLA | Local de aprendizado\nLIVRO | Fonte de conhecimento\nPROFESSOR | Guia dos estudos")+actions();
+ case"presenca":return fields([["Nome do Evento/Reunião","evento",1],["Data","data",0,"date"],["Quantidade de Linhas","qtd",0,"number","20"]])+actions();
+ case"redacao":return fields([["Tema da Redação (Para Treino)","tema",1]])+actions();
+ case"dinamicas":return ta("items","PERGUNTAS / DESAFIOS (um por linha)","Fale uma qualidade sua.\nFaça uma pergunta para a pessoa do lado.\nQual seu maior objetivo este ano?")+fields([["Quantidade de Cartas","qtd",0,"number","12"]])+actions();
+ case"cardapio":return fields([["Nome do Local","estabelecimento"],["WhatsApp/Contato","contato"],["Nome da Categoria","cat"],["Itens e Preços (Nome — R$ 00,00)","itens",1]])+actions();
+ case"qrcode":return fields([["Link, Chave PIX ou Texto","conteudo",1,0,"https://exemplo.com ou Chave PIX"],["Título do Quadro","titulo",1]])+`<div class="hint">Gerado instantaneamente. Baixe como imagem ou envie para impressão.</div>`+actions("makeQR()");
+ case"pdf":return `<div class="field full"><label>SELECIONE OS ARQUIVOS PDF</label><input id="pdfFiles" type="file" accept="application/pdf" multiple></div><div class="field full"><label>PÁGINAS ESPECÍFICAS (Exemplo: 1-3, 5)</label><input id="pdfPages" placeholder="Deixe em branco para incluir todas as páginas"></div>`+actions("processPDF()");
+ case"etiquetaescolar":return fields([["Nome do Aluno","nome",1],["Turma / Ano","turma"],["Matéria / Disciplina","materia"],["Quantidade por Folha","qtd",0,"number","12"]])+actions();
+ case"etiquetaend":return fields([["Nome do Destinatário/Remetente","nome",1],["Endereço Completo","end",1],["Cidade / Estado / CEP","cidade",1],["Quantidade de Etiquetas","qtd",0,"number","10"]])+actions();
+ case"calendario":return fields([["Mês (1 a 12)","mes",0,"number","1"],["Ano","ano",0,"number","2026"],["Título Principal","titulo",1]])+actions();
+ case"planner":return fields([["Período/Semana","data",0,"text","Ex: 10 a 16 de Maio"],["Nome / Usuário","nome"]])+actions();
+ case"checklist":return ta("items","TAREFAS (uma por linha)","Conferir documentos\nEnviar e-mail de confirmação\nOrganizar materiais")+fields([["Título da Lista","titulo",1]])+actions();
+ case"compras":return ta("items","ITENS DE COMPRA (um por linha)","Leite\nPão Integral\nFrutas\nSabão em Pó")+actions();
+ case"orcamento":return fields([["Sua Empresa / Nome","empresa"],["Nome do Cliente","cliente"],["Data","data",0,"date"]])+ta("items","ITENS — Formato: Descrição | Quantidade | Valor Unitário","Impressão A4 | 100 | 0.50\nCapa Dura | 2 | 15.00")+actions();
+ case"recibo":return fields([["Nome do Pagador","cliente",1],["Valor (R$)","valor"],["Referente a","referente",1],["Cidade","cidade"],["Data","data",0,"date"]])+actions();
+ case"ordem":return fields([["Nome do Cliente","cliente"],["Telefone / Contato","contato"],["Equipamento / Objeto","equip"],["Data de Entrada","data",0,"date"]])+ta("defeito","DESCRICAO DO PROBLEMA / DEFEITO")+ta("servico","SERVICO REALIZADO OU ORCAMENTO")+actions();
+ case"cadastro":return fields([["Título da Ficha","titulo",1],["Nome Completo","nome",1],["CPF / Documento","doc"],["Telefone","tel"],["Data de Nascimento","nasc",0,"date"],["Endereço","end",1]])+actions();
+ case"cliente":return fields([["Nome do Cliente","nome",1],["WhatsApp","tel"],["E-mail","email"],["Endereço","end"],["Anotações Internas","obs",1]])+actions();
+ case"certificado":return fields([["Título","titulo",0,0,"CERTIFICADO DE CONCLUSÃO"],["Nome do Participante","nome",1],["Nome do Curso / Evento","evento",1],["Carga Horária","carga"],["Cidade","cidade"],["Data","data",0,"date"],["Nome do Emissor / Assinatura","resp",1]])+actions();
+ case"convite":return fields([["Título da Festa / Evento","titulo",1],["Nome do Convidado","nome"],["Nome do Anfitrião","evento"],["Data","data",0,"date"],["Horário","hora"],["Local","local",1],["Telefone RSVP","contato"]])+actions();
+ case"cartao":return fields([["Seu Nome","nome",1],["Sua Profissão / Cargo","profissao",1],["WhatsApp","whatsapp"],["Instagram / Site","instagram"],["E-mail","email"]])+actions();
+ case"flyer":return fields([["Título em Destaque","titulo",1],["Subtítulo Promocional","subtitulo",1],["Contato / Redes Sociais","contato",1]])+ta("text","DESCRICAO DAS OFERTAS OU SERVICOS")+actions();
+ case"cartaz":return fields([["Título do Cartaz","titulo",1],["Mensagem Chamativa","chamada",1],["Informações de Contato / Local","contato",1]])+actions();
+ case"aviso":return fields([["Título do Comunicado","titulo",1]])+ta("text","MENSAGEM OU REGRAS DO AVISO")+fields([["Responsável / Emissor","resp"],["Data","data",0,"date"]])+actions();
+ case"vale":return fields([["Nome da Loja","empresa"],["Valor ou Benefício","valor"],["Para (Nome do Cliente)","nome"],["Código do Voucher","codigo"],["Validade","validade"]])+actions();
+ case"marcador":return fields([["Texto / Citação","texto",1],["Autor ou Subtítulo","autor"],["Quantidade de Marcadores","qtd",0,"number","6"]])+actions();
+ case"sorteio":return fields([["Número Inicial","inicio",0,"number","1"],["Número Final","fim",0,"number","50"],["Título da Rifa / Sorteio","titulo",1]])+actions();
+ case"bingo":return fields([["Quantidade de Cartelas","qtd",0,"number","4"],["Título do Bingo","titulo",1]])+actions();
+ case"domino":return fields([["Maior Número do Dominó (Padrão = 6)","max",0,"number","6"]])+actions();
+ case"memoria":return ta("items","PARES DE PALAVRAS OU ÍCONES (um por linha)","Sol\nLua\nEstrela\nNuvem")+actions();
+ case"flashcards":return ta("items","PERGUNTA | RESPOSTA (um por linha)","Qual a capital do Brasil? | Brasília\nQuanto é 7 x 8? | 56")+actions();
+ case"horarios":return fields([["Título da Grade","titulo",1],["Dias da Semana","dias",0,0,"Segunda a Sexta"],["Observação Rodapé","horarios",1]])+actions();
  }
 }
+
 function actions(fn="generate"){
- return `<div class="actions"><button class="btn green" onclick="${fn}">⬇️ ${current&&current[4]?'Gerar e baixar':'Gerar prévia'}</button><button class="btn secondary" onclick="printPreview()">🖨️ Imprimir / PDF</button></div><div class="hint">${current&&!current[4]?'⭐ Este recurso é Premium. Após o pagamento, envie a solicitação pelo formulário para receber pelo WhatsApp.':'Você pode gerar e salvar no celular.'}</div>`;
+ return `<div class="actions"><button class="btn green" onclick="${fn}">⬇️ ${current&&current[4]?'Gerar e Baixar Grátis':'Gerar Prévia A4'}</button><button class="btn secondary" onclick="printPreview()">🖨️ Imprimir / PDF</button></div><div class="hint">${current&&!current[4]?'⭐ Recurso Premium. Gere a prévia e envie para receber a versão em alta definição via WhatsApp.':'Arquivo pronto para salvar direto no celular.'}</div>`;
 }
+
 function esc(s){return String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]))}
-function page(title,body,extra=""){return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${esc(title)}</title><style>@page{size:A4;margin:14mm}body{font-family:Arial,sans-serif;color:#111;margin:0}h1,h2{text-align:center}table{width:100%;border-collapse:collapse}td,th{border:1px solid #222;padding:7px} .center{text-align:center}.line{border-bottom:1px solid #222;height:28px}.small{font-size:11px;color:#444}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.box{border:1px solid #222;padding:10px;border-radius:5px}</style></head><body>${body}${extra}</body></html>`}
+function page(title,body,extra=""){return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${esc(title)}</title><style>@page{size:A4;margin:14mm}body{font-family:Arial,sans-serif;color:#111;margin:0}h1,h2{text-align:center}table{width:100%;border-collapse:collapse}td,th{border:1px solid #222;padding:7px}.center{text-align:center}.line{border-bottom:1px solid #222;height:28px}.small{font-size:11px;color:#444}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.box{border:1px solid #222;padding:10px;border-radius:5px}</style></head><body>${body}${extra}</body></html>`}
 function downloadText(name,data,type="text/html"){const b=new Blob([data],{type});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function showPreview(doc){document.getElementById("frame").srcdoc=doc;document.getElementById("preview").classList.add("show");return doc}
+
 function generate(){
  if(!current)return;
  const id=current[0];
  let doc="";
- if(id==="envelope")doc=page("Envelope A4",`<h1>ENVELOPE A4 — MODELO DE CORTE E DOBRA</h1><p class="center">${esc(val("titulo"))}</p><div style="margin:45px auto;width:480px;height:300px;border:2px dashed #111;position:relative"><div style="position:absolute;left:0;right:0;top:0;border-bottom:2px dotted #111;height:80px"></div><div style="position:absolute;left:0;right:0;bottom:0;border-top:2px dotted #111;height:80px"></div><div style="position:absolute;left:0;top:0;width:80px;height:100%;border-right:2px dotted #111"></div><div style="position:absolute;right:0;top:0;width:80px;height:100%;border-left:2px dotted #111"></div><div class="center" style="padding-top:130px">✂ LINHAS EXTERNAS = CORTE<br>⋯ LINHAS INTERNAS = DOBRA</div></div><p>Destinatário: ${esc(val("dest"))}</p><p>Remetente: ${esc(val("rem"))}</p>`);
- else if(id==="capa")doc=page("Capa",`<div style="height:250px"></div><h2>${esc(val("escola")).toUpperCase()}</h2><div style="height:90px"></div><h1>${esc(val("titulo")).toUpperCase()}</h1><div style="height:130px"></div><p class="center">${esc(val("aluno"))}</p><div style="height:120px"></div><p class="center">${esc(val("cidade"))} — ${esc(val("ano"))}</p>`);
- else if(id==="precos")doc=page("Tabela de Preços",`<h1>${esc(val("estabelecimento"))}</h1><h2>${esc(val("cat1"))}</h2><table>${rowsPrice(val("itens1"))}</table><h2>${esc(val("cat2"))}</h2><table>${rowsPrice(val("itens2"))}</table>`);
+ if(id==="envelope")doc=page("Envelope A4",`<h1>ENVELOPE A4 — MODELO DE CORTE E DOBRA</h1><p class="center">${esc(val("titulo"))}</p><div style="margin:45px auto;width:480px;height:300px;border:2px dashed #111;position:relative"><div style="position:absolute;left:0;right:0;top:0;border-bottom:2px dotted #111;height:80px"></div><div style="position:absolute;left:0;right:0;bottom:0;border-top:2px dotted #111;height:80px"></div><div style="position:absolute;left:0;top:0;width:80px;height:100%;border-right:2px dotted #111"></div><div style="position:absolute;right:0;top:0;width:80px;height:100%;border-left:2px dotted #111"></div><div class="center" style="padding-top:130px">✂ LINHAS EXTERNAS = CORTE<br>⋯ LINHAS INTERNAS = DOBRA</div></div><p><b>Destinatário:</b> ${esc(val("dest"))}</p><p><b>Remetente:</b> ${esc(val("rem"))}</p>`);
+ else if(id==="capa")doc=page("Capa ABNT",`<div style="height:150px"></div><h2>${esc(val("escola")).toUpperCase()}</h2><p class="center">${esc(val("disciplina")).toUpperCase()}</p><div style="height:120px"></div><h1>${esc(val("titulo")).toUpperCase()}</h1><p class="center">${esc(val("subtitulo"))}</p><div style="height:150px"></div><p class="center"><b>ALUNO:</b> ${esc(val("aluno"))}</p><div style="height:120px"></div><p class="center">${esc(val("cidade"))} — ${esc(val("ano"))}</p>`);
+ else if(id==="precos")doc=page("Tabela de Preços",`<h1>${esc(val("estabelecimento"))}</h1><br><h2>${esc(val("cat1"))}</h2><table>${rowsPrice(val("itens1"))}</table><br><h2>${esc(val("cat2"))}</h2><table>${rowsPrice(val("itens2"))}</table>`);
  else if(id==="cacapalavras")doc=page("Caça-Palavras",wordSearch(val("words"),parseInt(val("size"))||14,val("titulo")));
  else if(id==="cruzadinha")doc=page("Cruzadinha",crossword(val("words")));
- else if(id==="presenca")doc=page("Lista de Presença",`<h1>${esc(val("evento"))}</h1><p class="center">Data: ${esc(val("data"))}</p><table><tr><th>Nº</th><th>Nome</th><th>RG / Documento</th><th>Assinatura</th></tr>${Array.from({length:parseInt(val("qtd"))||20},(_,i)=>`<tr><td>${i+1}</td><td style="height:30px"></td><td></td><td></td></tr>`).join("")}</table>`);
- else if(id==="redacao")doc=page("Redação",`<h1>FOLHA DE REDAÇÃO — TREINO</h1><p><strong>Tema:</strong> ${esc(val("tema"))}</p><p class="small">Folha de treino com 30 linhas numeradas. Modelo não representa formulário oficial.</p>${Array.from({length:30},(_,i)=>`<div class="line">${i+1}. </div>`).join("")}`);
+ else if(id==="presenca")doc=page("Lista de Presença",`<h1>${esc(val("evento"))}</h1><p class="center"><b>Data:</b> ${esc(val("data"))}</p><br><table><tr><th>Nº</th><th>Nome</th><th>RG / Documento</th><th>Assinatura</th></tr>${Array.from({length:parseInt(val("qtd"))||20},(_,i)=>`<tr><td>${i+1}</td><td style="height:30px"></td><td></td><td></td></tr>`).join("")}</table>`);
+ else if(id==="redacao")doc=page("Folha de Redação",`<h1>FOLHA DE REDAÇÃO — TREINO</h1><p><b>Tema:</b> ${esc(val("tema"))}</p><p class="small">Folha de treino com 30 linhas numeradas no padrão para concursos e vestibulares.</p>${Array.from({length:30},(_,i)=>`<div class="line"><b>${i+1}.</b> </div>`).join("")}`);
  else if(id==="dinamicas")doc=page("Dinâmicas",cards(val("items"),parseInt(val("qtd"))||12));
- else if(id==="cardapio")doc=page("Cardápio",`<h1>${esc(val("estabelecimento"))}</h1><p class="center">${esc(val("contato"))}</p><h2>${esc(val("cat"))}</h2><table>${rowsPrice(val("itens"))}</table>`);
+ else if(id==="cardapio")doc=page("Cardápio",`<h1>${esc(val("estabelecimento"))}</h1><p class="center">Contato / Pedidos: ${esc(val("contato"))}</p><br><h2>${esc(val("cat"))}</h2><table>${rowsPrice(val("itens"))}</table>`);
  else if(id==="etiquetaescolar")doc=labels(`NOME: ${val("nome")}<br>TURMA: ${val("turma")}<br>MATÉRIA: ${val("materia")}`,parseInt(val("qtd"))||12);
- else if(id==="etiquetaend")doc=labels(`${val("nome")}<br>${val("end")}<br>${val("cidade")}`,parseInt(val("qtd"))||10);
+ else if(id==="etiquetaend")doc=labels(`<b>DESTINATÁRIO:</b><br>${val("nome")}<br>${val("end")}<br>${val("cidade")}`,parseInt(val("qtd"))||10);
  else if(id==="calendario")doc=calendar(parseInt(val("mes"))||new Date().getMonth()+1,parseInt(val("ano"))||new Date().getFullYear(),val("titulo"));
- else if(id==="planner")doc=page("Planner",`<h1>PLANNER SEMANAL</h1><p class="center">${esc(val("nome"))}</p><table><tr><th>Dia</th><th>Prioridades / tarefas</th></tr>${["Segunda","Terça","Quarta","Quinta","Sexta","Sábado","Domingo"].map(x=>`<tr><td>${x}</td><td style="height:65px"></td></tr>`).join("")}</table>`);
- else if(id==="checklist"||id==="compras")doc=page("Lista",`<h1>${esc(val("titulo")||"LISTA")}</h1>${(val("items").split(/\\n|,/).filter(Boolean)).map(x=>`<div class="box" style="margin:7px 0">☐ ${esc(x.trim())}</div>`).join("")}`);
+ else if(id==="planner")doc=page("Planner Semanal",`<h1>PLANNER SEMANAL</h1><p class="center"><b>Semana:</b> ${esc(val("data"))} | <b>Nome:</b> ${esc(val("nome"))}</p><br><table><tr><th>Dia da Semana</th><th>Prioridades e Tarefas</th></tr>${["Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado","Domingo"].map(x=>`<tr><td><b>${x}</b></td><td style="height:60px"></td></tr>`).join("")}</table>`);
+ else if(id==="checklist"||id==="compras")doc=page("Lista",`<h1>${esc(val("titulo")||"LISTA DE VERIFICAÇÃO")}</h1><br>${(val("items").split(/\n|,/).filter(Boolean)).map(x=>`<div class="box" style="margin:7px 0">☐ ${esc(x.trim())}</div>`).join("")}`);
  else if(id==="orcamento")doc=quote();
- else if(id==="recibo")doc=page("Recibo",`<h1>RECIBO</h1><p>Recebi de <strong>${esc(val("cliente"))}</strong> a importância de <strong>R$ ${esc(val("valor"))}</strong>, referente a ${esc(val("referente"))}.</p><div style="height:220px"></div><p class="center">${esc(val("cidade"))}, ${esc(val("data"))}</p><br><p class="center">____________________________________<br>Assinatura</p>`);
- else if(id==="ordem")doc=page("Ordem de Serviço",`<h1>ORDEM DE SERVIÇO</h1><p><b>Cliente:</b> ${esc(val("cliente"))} &nbsp; <b>Contato:</b> ${esc(val("contato"))}</p><p><b>Equipamento:</b> ${esc(val("equip"))} &nbsp; <b>Data:</b> ${esc(val("data"))}</p><div class="box"><b>Defeito / solicitação</b><br>${esc(val("defeito")).replace(/\\n/g,"<br>")}</div><br><div class="box"><b>Serviço realizado</b><br>${esc(val("servico")).replace(/\\n/g,"<br>")}</div><div style="height:150px"></div><p class="center">____________________________________<br>Assinatura do cliente</p>`);
+ else if(id==="recibo")doc=page("Recibo",`<h1>RECIBO DE PAGAMENTO</h1><br><p>Recebi(emos) de <strong>${esc(val("cliente"))}</strong> a quantia de <strong>R$ ${esc(val("valor"))}</strong> referente a ${esc(val("referente"))}.</p><p>Para clareza firmo(amos) o presente recibo.</p><div style="height:150px"></div><p class="center">${esc(val("cidade"))}, ${esc(val("data"))}</p><br><br><p class="center">____________________________________<br>Assinatura do Emissor</p>`);
+ else if(id==="ordem")doc=page("Ordem de Serviço",`<h1>ORDEM DE SERVIÇO (O.S.)</h1><p><b>Cliente:</b> ${esc(val("cliente"))} &nbsp; <b>Contato:</b> ${esc(val("contato"))}</p><p><b>Equipamento:</b> ${esc(val("equip"))} &nbsp; <b>Data de Entrada:</b> ${esc(val("data"))}</p><br><div class="box"><b>Descrição do Defeito / Solicitação:</b><br>${esc(val("defeito")).replace(/\n/g,"<br>")}</div><br><div class="box"><b>Serviço Realizado / Laudo Técnico:</b><br>${esc(val("servico")).replace(/\n/g,"<br>")}</div><div style="height:120px"></div><p class="center">____________________________________<br>Assinatura do Cliente</p>`);
  else if(id==="cadastro"||id==="cliente")doc=genericForm();
- else if(id==="certificado")doc=page("Certificado",`<div style="height:130px"></div><h1>${esc(val("titulo")||"CERTIFICADO")}</h1><div style="height:60px"></div><p class="center">Certificamos que</p><h2>${esc(val("nome"))}</h2><p class="center">participou de <strong>${esc(val("evento"))}</strong>, com carga horária de ${esc(val("carga"))}.</p><div style="height:130px"></div><p class="center">${esc(val("cidade"))}, ${esc(val("data"))}<br><br>____________________________________<br>${esc(val("resp"))}</p>`);
- else if(id==="convite")doc=page("Convite",`<div style="height:80px"></div><h1>${esc(val("titulo"))}</h1><h2>${esc(val("evento"))}</h2><p class="center">Você está convidado(a), ${esc(val("nome"))}!</p><div style="height:100px"></div><div class="center"><b>${esc(val("data"))}</b> • ${esc(val("hora"))}<br>${esc(val("local"))}<br>${esc(val("contato"))}</div>`);
- else if(id==="cartao")doc=cardsSimple(`**${val("nome")}**<br>${val("profissao")}<br>WhatsApp: ${val("whatsapp")}<br>${val("instagram")}<br>${val("email")}`,10);
- else if(id==="flyer"||id==="cartaz"||id==="aviso")doc=page("Material",`<div style="height:120px"></div><h1>${esc(val("titulo"))}</h1><h2>${esc(val("subtitulo")||val("chamada")||"")}</h2><div style="margin:55px 0;font-size:22px;text-align:center">${esc(val("text")||"")}</div><p class="center">${esc(val("contato")||val("resp")||"")}</p>`);
- else if(id==="vale")doc=cardsSimple(`<h1>VALE-PRESENTE</h1><h2>${val("empresa")}</h2><p>Para: ${val("nome")}</p><p>Benefício: ${val("valor")}</p><p>Código: ${val("codigo")}</p><p>Validade: ${val("validade")}</p>`,4);
+ else if(id==="certificado")doc=page("Certificado",`<div style="height:80px"></div><h1>${esc(val("titulo")||"CERTIFICADO")}</h1><div style="height:40px"></div><p class="center" style="font-size:18px">Certificamos que</p><h2 style="font-size:28px">${esc(val("nome"))}</h2><p class="center" style="font-size:18px">participou do evento/curso <strong>${esc(val("evento"))}</strong>, concluído com carga horária de ${esc(val("carga"))}.</p><div style="height:100px"></div><p class="center">${esc(val("cidade"))}, ${esc(val("data"))}<br><br><br>____________________________________<br>${esc(val("resp"))}</p>`);
+ else if(id==="convite")doc=page("Convite",`<div style="height:60px"></div><h1>${esc(val("titulo"))}</h1><h2>${esc(val("evento"))}</h2><p class="center">Você está convidado(a), ${esc(val("nome"))}!</p><div style="height:80px"></div><div class="center" style="font-size:18px"><b>Data: ${esc(val("data"))}</b> às ${esc(val("hora"))}<br>Local: ${esc(val("local"))}<br>RSVP: ${esc(val("contato"))}</div>`);
+ else if(id==="cartao")doc=cardsSimple(`<b>${val("nome")}</b><br>${val("profissao")}<br>WhatsApp: ${val("whatsapp")}<br>${val("instagram")}<br>${val("email")}`,10);
+ else if(id==="flyer"||id==="cartaz"||id==="aviso")doc=page("Material Promocional",`<div style="height:80px"></div><h1 style="font-size:32px">${esc(val("titulo"))}</h1><h2>${esc(val("subtitulo")||val("chamada")||"")}</h2><div style="margin:40px 0;font-size:20px;text-align:center">${esc(val("text")||"").replace(/\n/g,"<br>")}</div><p class="center" style="font-size:18px"><b>${esc(val("contato")||val("resp")||"")}</b></p>`);
+ else if(id==="vale")doc=cardsSimple(`<h1>VALE-PRESENTE</h1><h2>${val("empresa")}</h2><p><b>Para:</b> ${val("nome")}</p><p><b>Benefício:</b> ${val("valor")}</p><p><b>Cód:</b> ${val("codigo")} | <b>Validade:</b> ${val("validade")}</p>`,4);
  else if(id==="marcador")doc=markers(val("texto"),val("autor"),parseInt(val("qtd"))||6);
  else if(id==="sorteio")doc=numbers(parseInt(val("inicio"))||1,parseInt(val("fim"))||50,val("titulo"));
  else if(id==="bingo")doc=bingo(parseInt(val("qtd"))||4,val("titulo"));
  else if(id==="domino")doc=domino(parseInt(val("max"))||6);
  else if(id==="memoria")doc=memory(val("items"));
  else if(id==="flashcards")doc=flashcards(val("items"));
- else if(id==="horarios")doc=page("Horários",`<h1>${esc(val("titulo"))}</h1><p class="center">${esc(val("dias"))}</p><p class="center">${esc(val("horarios"))}</p><table>${["06:00","07:00","08:00","09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00","18:00"].map(h=>`<tr><th>${h}</th><td style="height:35px"></td><td></td></tr>`).join("")}</table>`);
+ else if(id==="horarios")doc=page("Grade de Horários",`<h1>${esc(val("titulo"))}</h1><p class="center">${esc(val("dias"))}</p><table>${["07:00","08:00","09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"].map(h=>`<tr><th>${h}</th><td style="height:35px"></td><td></td></tr>`).join("")}</table><p class="center small">${esc(val("horarios"))}</p>`);
  else return;
+ 
  showPreview(doc);
  if(current[4]) downloadText("printexpress-"+id+".html",doc);
  else requestPaid(doc);
 }
-function rowsPrice(s){return s.split(/\n/).filter(Boolean).map(x=>{let a=x.split("—");return `<tr><td>${esc(a[0])}</td><td class="center">${esc(a[1]||"")}</td></tr>`}).join("")||"<tr><td>Item</td><td>R$ 0,00</td></tr>"}
-function actionsFallback(){return ""}
-function wordSearch(words,size,title){let ws=words.split(/\\n|,/).map(x=>x.trim().toUpperCase().replace(/[^A-ZÁÉÍÓÚÃÕÇ]/g,"")).filter(Boolean).slice(0,15);let g=Array.from({length:size},()=>Array(size).fill(""));let dirs=[[1,0],[0,1],[1,1],[-1,1]];ws.forEach(w=>{for(let t=0;t<200;t++){let d=dirs[Math.floor(Math.random()*dirs.length)],r=Math.floor(Math.random()*size),c=Math.floor(Math.random()*size),er=r+d[0]*(w.length-1),ec=c+d[1]*(w.length-1);if(er<0||er>=size||ec<0||ec>=size)continue;let ok=true;for(let i=0;i<w.length;i++)if(g[r+d[0]*i][c+d[1]*i]&&g[r+d[0]*i][c+d[1]*i]!==w[i])ok=false;if(ok){for(let i=0;i<w.length;i++)g[r+d[0]*i][c+d[1]*i]=w[i];break}}});let letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";g=g.map(r=>r.map(c=>c||letters[Math.floor(Math.random()*26)]));return `<h1>${esc(title||"CAÇA-PALAVRAS")}</h1><table style="width:80%;margin:auto;table-layout:fixed;font-size:16px">${g.map(r=>`<tr>${r.map(c=>`<td class="center" style="padding:5px">${c}</td>`).join("")}</tr>`).join("")}</table><p><b>Palavras:</b> ${ws.join(", ")}</p>`}
-function crossword(s){let ws=s.split(/\\n/).map(x=>x.split("|")[0].trim().toUpperCase()).filter(Boolean).slice(0,10);return `<h1>CRUZADINHA</h1><p>Preencha a grade com as palavras.</p><div class="grid">${ws.map((w,i)=>`<div class="box"><b>${i+1}.</b> ${esc(w.replace(/[^A-Z]/g,""))}<br><span class="small">Pista: ${esc((s.split(/\\n/)[i]||"").split("|")[1]||"")}</span><br>${"□ ".repeat(Math.min(18,w.length))}</div>`).join("")}</div>`}
-function cards(s,n){let a=s.split(/\\n/).filter(Boolean);return `<h1>JOGOS E DINÂMICAS</h1><div class="grid">${Array.from({length:n},(_,i)=>`<div class="box" style="min-height:130px"><b>Carta ${i+1}</b><br><br>${esc(a[i%Math.max(a.length,1)]||"Desafio rápido")}</div>`).join("")}</div>`}
-function labels(content,n){return page("Etiquetas",`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">${Array.from({length:n},()=>`<div class="box" style="height:105px">${content}</div>`).join("")}</div>`)}
+
+function rowsPrice(s){return s.split(/\n/).filter(Boolean).map(x=>{let a=x.split("—");return `<tr><td>${esc(a[0])}</td><td class="center">${esc(a[1]||"")}</td></tr>`}).join("")||"<tr><td>Item Exemplo</td><td>R$ 0,00</td></tr>"}
+function wordSearch(words,size,title){let ws=words.split(/\n|,/).map(x=>x.trim().toUpperCase().replace(/[^A-ZÁÉÍÓÚÃÕÇ]/g,"")).filter(Boolean).slice(0,15);let g=Array.from({length:size},()=>Array(size).fill(""));let dirs=[[1,0],[0,1],[1,1],[-1,1]];ws.forEach(w=>{for(let t=0;t<200;t++){let d=dirs[Math.floor(Math.random()*dirs.length)],r=Math.floor(Math.random()*size),c=Math.floor(Math.random()*size),er=r+d[0]*(w.length-1),ec=c+d[1]*(w.length-1);if(er<0||er>=size||ec<0||ec>=size)continue;let ok=true;for(let i=0;i<w.length;i++)if(g[r+d[0]*i][c+d[1]*i]&&g[r+d[0]*i][c+d[1]*i]!==w[i])ok=false;if(ok){for(let i=0;i<w.length;i++)g[r+d[0]*i][c+d[1]*i]=w[i];break}}});let letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";g=g.map(r=>r.map(c=>c||letters[Math.floor(Math.random()*26)]));return `<h1>${esc(title||"CAÇA-PALAVRAS")}</h1><table style="width:80%;margin:auto;table-layout:fixed;font-size:16px">${g.map(r=>`<tr>${r.map(c=>`<td class="center" style="padding:5px">${c}</td>`).join("")}</tr>`).join("")}</table><br><p><b>Palavras a encontrar:</b> ${ws.join(", ")}</p>`}
+function crossword(s){let ws=s.split(/\n/).map(x=>x.split("|")[0].trim().toUpperCase()).filter(Boolean).slice(0,10);return `<h1>CRUZADINHA</h1><p class="center">Preencha as palavras de acordo com as pistas descritas.</p><br><div class="grid">${ws.map((w,i)=>`<div class="box"><b>${i+1}.</b> Pista: ${esc((s.split(/\n/)[i]||"").split("|")[1]||"Sem pista")}<br><br>${"□ ".repeat(Math.min(18,w.length))}</div>`).join("")}</div>`}
+function cards(s,n){let a=s.split(/\n/).filter(Boolean);return `<h1>JOGOS E DINÂMICAS</h1><div class="grid">${Array.from({length:n},(_,i)=>`<div class="box" style="min-height:120px"><b>Desafio ${i+1}</b><br><br>${esc(a[i%Math.max(a.length,1)]||"Sua vez de participar!")}</div>`).join("")}</div>`}
+function labels(content,n){return page("Etiquetas Imprimíveis",`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">${Array.from({length:n},()=>`<div class="box" style="height:105px">${content}</div>`).join("")}</div>`)}
 function calendar(m,y,t){let d=new Date(y,m-1,1),last=new Date(y,m,0).getDate(),start=d.getDay(),cells=[];for(let i=0;i<start;i++)cells.push("");for(let i=1;i<=last;i++)cells.push(i);while(cells.length%7)cells.push("");return page("Calendário",`<h1>${esc(t||"CALENDÁRIO")}</h1><h2>${String(m).padStart(2,"0")}/${y}</h2><table><tr>${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"].map(x=>`<th>${x}</th>`).join("")}</tr>${Array.from({length:Math.ceil(cells.length/7)},(_,r)=>`<tr>${cells.slice(r*7,r*7+7).map(x=>`<td style="height:65px;vertical-align:top">${x||""}</td>`).join("")}</tr>`).join("")}</table>`)}
-function quote(){let rows=val("items").split(/\\n/).filter(Boolean).map(x=>{let a=x.split("|");let q=parseFloat((a[1]||1).replace(",","."))||1,p=parseFloat((a[2]||0).replace(",","."))||0;return {d:a[0],q,p,t:q*p}});return page("Orçamento",`<h1>ORÇAMENTO</h1><p><b>Empresa:</b> ${esc(val("empresa"))} &nbsp; <b>Cliente:</b> ${esc(val("cliente"))}</p><table><tr><th>Descrição</th><th>Qtd.</th><th>Preço</th><th>Total</th></tr>${rows.map(x=>`<tr><td>${esc(x.d)}</td><td>${x.q}</td><td>R$ ${x.p.toFixed(2).replace(".",",")}</td><td>R$ ${x.t.toFixed(2).replace(".",",")}</td></tr>`).join("")}</table><h2 style="text-align:right">Total: R$ ${rows.reduce((a,x)=>a+x.t,0).toFixed(2).replace(".",",")}</h2>`)}
-function genericForm(){return page("Ficha",`<h1>${esc(val("titulo")||"FICHA")}</h1><table>${Object.keys(document.querySelectorAll).length?["Nome","Documento","Telefone","Data de nascimento","Endereço","Observações"].map(x=>`<tr><th>${x}</th><td style="height:38px"></td></tr>`).join(""):""}</table>`)}
+function quote(){let rows=val("items").split(/\n/).filter(Boolean).map(x=>{let a=x.split("|");let q=parseFloat((a[1]||1).replace(",","."))||1,p=parseFloat((a[2]||0).replace(",","."))||0;return {d:a[0],q,p,t:q*p}});return page("Orçamento",`<h1>ORÇAMENTO DE SERVIÇOS</h1><p><b>Empresa:</b> ${esc(val("empresa"))} &nbsp; <b>Cliente:</b> ${esc(val("cliente"))}</p><br><table><tr><th>Descrição</th><th>Qtd.</th><th>Preço Unit.</th><th>Total</th></tr>${rows.map(x=>`<tr><td>${esc(x.d)}</td><td class="center">${x.q}</td><td>R$ ${x.p.toFixed(2).replace(".",",")}</td><td>R$ ${x.t.toFixed(2).replace(".",",")}</td></tr>`).join("")}</table><br><h2 style="text-align:right">Total Geral: R$ ${rows.reduce((a,x)=>a+x.t,0).toFixed(2).replace(".",",")}</h2>`)}
+function genericForm(){return page("Ficha de Cadastro",`<h1>${esc(val("titulo")||"FICHA DE CADASTRO")}</h1><br><table>${["Nome Completo","CPF / RG","Telefone / WhatsApp","Data de Nascimento","Endereço Completo","Observações"].map(x=>`<tr><th style="width:30%">${x}</th><td style="height:35px"></td></tr>`).join("")}</table>`)}
 function cardsSimple(content,n){return page("Cartões",`<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">${Array.from({length:n},()=>`<div class="box" style="height:120px">${content}</div>`).join("")}</div>`)}
-function markers(t,a,n){return page("Marcadores",`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">${Array.from({length:n},()=>`<div class="box" style="height:240px;text-align:center;padding-top:80px"><h2>${esc(t)}</h2><p>${esc(a)}</p></div>`).join("")}</div>`)}
-function numbers(a,b,t){let arr=[];for(let i=a;i<=b;i++)arr.push(i);return page("Sorteio",`<h1>${esc(t||"NÚMEROS PARA SORTEIO")}</h1><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px">${arr.map(x=>`<div class="box center" style="font-size:22px;height:55px">${x}</div>`).join("")}</div>`)}
-function bingo(n,t){let out=`<h1>${esc(t||"BINGO")}</h1><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px">`;for(let k=0;k<n;k++){let nums=[];while(nums.length<24){let x=Math.floor(Math.random()*75)+1;if(!nums.includes(x))nums.push(x)}out+=`<table><tr>${["B","I","N","G","O"].map(x=>`<th>${x}</th>`).join("")}</tr>${Array.from({length:5},(_,r)=>`<tr>${Array.from({length:5},(_,c)=>`<td class="center" style="height:38px">${r===2&&c===2?"★":nums[r*5+c-(r>2?1:0)]}</td>`).join("")}</tr>`).join("")}</table>`}return out+"</div>"}
-function domino(max){let p=[];for(let a=0;a<=max;a++)for(let b=a;b<=max;b++)p.push([a,b]);return page("Dominó",`<h1>DOMINÓ</h1><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px">${p.map(x=>`<div style="height:55px;border:2px solid #111;display:grid;grid-template-columns:1fr 1fr"><span class="center" style="padding-top:15px">${x[0]}</span><span class="center" style="border-left:2px solid #111;padding-top:15px">${x[1]}</span></div>`).join("")}</div>`)}
-function memory(s){let a=s.split(/\\n|,/).filter(Boolean);return cardsSimple(a.map(x=>esc(x.trim())).join(""),Math.max(2,a.length*2))}
-function flashcards(s){return page("Flashcards",`<div class="grid">${s.split(/\\n/).filter(Boolean).map((x,i)=>{let a=x.split("|");return `<div class="box" style="min-height:160px"><b>${i+1}. Pergunta</b><br>${esc(a[0])}<hr><b>Resposta</b><br>${esc(a[1]||"")}</div>`}).join("")}</div>`)}
+function markers(t,a,n){return page("Marcadores de Página",`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">${Array.from({length:n},()=>`<div class="box" style="height:230px;text-align:center;padding-top:70px"><h2>${esc(t)}</h2><p><i>${esc(a)}</i></p></div>`).join("")}</div>`)}
+function numbers(a,b,t){let arr=[];for(let i=a;i<=b;i++)arr.push(i);return page("Sorteio",`<h1>${esc(t||"CARTELA DE SORTEIO")}</h1><br><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px">${arr.map(x=>`<div class="box center" style="font-size:20px;height:50px">Nº <b>${x}</b></div>`).join("")}</div>`)}
+function bingo(n,t){let out=`<h1>${esc(t||"CARTELAS DE BINGO")}</h1><br><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px">`;for(let k=0;k<n;k++){let nums=[];while(nums.length<24){let x=Math.floor(Math.random()*75)+1;if(!nums.includes(x))nums.push(x)}out+=`<table><tr>${["B","I","N","G","O"].map(x=>`<th>${x}</th>`).join("")}</tr>${Array.from({length:5},(_,r)=>`<tr>${Array.from({length:5},(_,c)=>`<td class="center" style="height:35px">${r===2&&c===2?"★":nums[r*5+c-(r>2?1:0)]}</td>`).join("")}</tr>`).join("")}</table>`}return out+"</div>"}
+function domino(max){let p=[];for(let a=0;a<=max;a++)for(let b=a;b<=max;b++)p.push([a,b]);return page("Jogo de Dominó",`<h1>DOMINÓ PARA RECORTAR</h1><br><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px">${p.map(x=>`<div style="height:55px;border:2px solid #111;display:grid;grid-template-columns:1fr 1fr"><span class="center" style="padding-top:15px;font-size:18px"><b>${x[0]}</b></span><span class="center" style="border-left:2px solid #111;padding-top:15px;font-size:18px"><b>${x[1]}</b></span></div>`).join("")}</div>`)}
+function memory(s){let a=s.split(/\n|,/).filter(Boolean);return cardsSimple(a.map(x=>`<b>${esc(x.trim())}</b>`).join(""),Math.max(2,a.length*2))}
+function flashcards(s){return page("Flashcards",`<div class="grid">${s.split(/\n/).filter(Boolean).map((x,i)=>{let a=x.split("|");return `<div class="box" style="min-height:150px"><b>Frente (Cartão ${i+1}):</b><br>${esc(a[0])}<hr><b>Verso:</b><br>${esc(a[1]||"")}</div>`}).join("")}</div>`)}
+
 function makeQR(){let c=val("conteudo");if(!c)return alert("Digite o conteúdo do QR Code.");let box=document.createElement("div");new QRCode(box,{text:c,width:280,height:280});setTimeout(()=>{let img=box.querySelector("img");if(img){let a=document.createElement("a");a.href=img.src;a.download="qrcode-printexpress.png";a.click()}},400)}
-function processImage(){let f=document.getElementById("imgFile").files[0];if(!f)return alert("Escolha uma imagem.");let im=new Image();im.onload=()=>{let c=document.createElement("canvas"),x=c.getContext("2d");let max=1600,s=Math.min(1,max/Math.max(im.width,im.height));c.width=im.width*s;c.height=im.height*s;x.drawImage(im,0,0,c.width,c.height);let d=x.getImageData(0,0,c.width,c.height),th=+document.getElementById("threshold").value,co=+document.getElementById("contrast").value/100;for(let i=0;i<d.data.length;i+=4){let g=(d.data[i]*.299+d.data[i+1]*.587+d.data[i+2]*.114);g=(g-128)*(1+co)+128;let v=g<th?0:255;d.data[i]=d.data[i+1]=d.data[i+2]=v}x.putImageData(d,0,0);c.toBlob(b=>{let a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="desenho-colorir.png";a.click()},"image/png")};im.src=URL.createObjectURL(f)}
-async function processPDF(){const fs=[...document.getElementById("pdfFiles").files];if(!fs.length)return alert("Selecione ao menos um PDF.");try{const {PDFDocument}=PDFLib;let out=await PDFDocument.create();for(const f of fs){let src=await PDFDocument.load(await f.arrayBuffer());let pages=[...Array(src.getPageCount()).keys()];let sel=document.getElementById("pdfPages").value.trim();if(sel&&fs.length===1)pages=parsePages(sel,src.getPageCount());let copied=await out.copyPages(src,pages);copied.forEach(p=>out.addPage(p))}let bytes=await out.save();downloadText("printexpress-pdf.pdf",bytes,"application/pdf")}catch(e){alert("Não foi possível processar o PDF neste navegador.")}}
+function processImage(){let f=document.getElementById("imgFile").files[0];if(!f)return alert("Escolha uma imagem do seu celular ou computador.");let im=new Image();im.onload=()=>{let c=document.createElement("canvas"),x=c.getContext("2d");let max=1600,s=Math.min(1,max/Math.max(im.width,im.height));c.width=im.width*s;c.height=im.height*s;x.drawImage(im,0,0,c.width,c.height);let d=x.getImageData(0,0,c.width,c.height),th=+document.getElementById("threshold").value,co=+document.getElementById("contrast").value/100;for(let i=0;i<d.data.length;i+=4){let g=(d.data[i]*.299+d.data[i+1]*.587+d.data[i+2]*.114);g=(g-128)*(1+co)+128;let v=g<th?0:255;d.data[i]=d.data[i+1]=d.data[i+2]=v}x.putImageData(d,0,0);c.toBlob(b=>{let a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="desenho-colorir.png";a.click()},"image/png")};im.src=URL.createObjectURL(f)}
+async function processPDF(){const fs=[...document.getElementById("pdfFiles").files];if(!fs.length)return alert("Selecione ao menos um arquivo PDF.");try{const {PDFDocument}=PDFLib;let out=await PDFDocument.create();for(const f of fs){let src=await PDFDocument.load(await f.arrayBuffer());let pages=[...Array(src.getPageCount()).keys()];let sel=document.getElementById("pdfPages").value.trim();if(sel&&fs.length===1)pages=parsePages(sel,src.getPageCount());let copied=await out.copyPages(src,pages);copied.forEach(p=>out.addPage(p))}let bytes=await out.save();downloadText("printexpress-pdf.pdf",bytes,"application/pdf")}catch(e){alert("Não foi possível processar o PDF neste navegador.")}}
 function parsePages(s,n){let a=[];s.split(",").forEach(part=>{let p=part.split("-").map(x=>parseInt(x.trim())-1);if(p.length===1&&p[0]>=0&&p[0]<n)a.push(p[0]);else if(p.length===2)for(let i=Math.max(0,p[0]);i<=Math.min(n-1,p[1]);i++)a.push(i)});return [...new Set(a)]}
+
 function printPreview(){let f=document.getElementById("frame");if(!f.srcdoc){generate();return}let w=window.open("","_blank");w.document.write(f.srcdoc);w.document.close();setTimeout(()=>w.print(),500)}
-function requestPaid(doc){document.getElementById("paidGenerator").value=current[2];document.getElementById("paidRequest").value=doc.replace(/<[^>]*>/g," ").replace(/\\s+/g," ").slice(0,10000);document.getElementById("paidModal").classList.add("show")}
+
+function requestPaid(doc){
+ document.getElementById("paidGenerator").value=current[2];
+ document.getElementById("paidRequest").value=doc.replace(/<[^>]*>/g," ").replace(/\s+/g," ").slice(0,10000);
+ document.getElementById("paidModal").classList.add("show");
+}
 function closePaid(){document.getElementById("paidModal").classList.remove("show")}
-document.getElementById("paidForm").addEventListener("submit",function(){alert("Pedido enviado! Agora aguarde a confirmação e o envio pelo WhatsApp.")});
+
+document.getElementById("paidForm").addEventListener("submit",function(){
+ alert("Pedido enviado com sucesso! Confirmaremos o pagamento e enviaremos seu arquivo pronto diretamente pelo WhatsApp.");
+});
+
 renderCards();
 </script>
 </body>
-</html>'''
-
-out.write_text(html,encoding="utf-8")
-print(out)
+</html>
