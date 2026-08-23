@@ -1,1589 +1,1302 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PrintExpress — Crie. Imprima. Pronto.</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrintExpress — Geradores Profissionais para Impressão</title>
+  
+  <!-- Estilos e Fontes Externas -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Bibliotecas CDN (PDF, QR Code, ZIP) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <style>
+    /* VARIABLES & BLUEPRINT STYLES */
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --secondary: #0f172a;
+      --accent: #f59e0b;
+      --bg-light: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text-main: #334155;
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--bg-light); color: var(--text-main); line-height: 1.5; overflow-x: hidden; }
+
+    /* LAYOUT & SCALING */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
     
-    <!-- CDNs para Bibliotecas Externas -->
-    <!-- Font Awesome (Ícones) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- jsPDF & html2canvas -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- pdf-lib (Para Separar/Combinar PDFs) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-    <!-- QRCode.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-    <style>
-        /* ==========================================================================
-           RESET & ESTILOS BASE
-           ========================================================================== */
-        :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --secondary: #0f172a;
-            --accent: #06b6d4;
-            --accent-green: #10b981;
-            --background: #0b0f19;
-            --surface: #1e293b;
-            --surface-card: #0f172a;
-            --surface-hover: #334155;
-            --border: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --radius-lg: 16px;
-            --radius-md: 10px;
-            --radius-sm: 6px;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
-            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--background);
-            color: var(--text-main);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        a {
-            color: var(--accent);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        a:hover {
-            color: var(--primary);
-        }
-
-        /* Container Padrão */
-        .container {
-            max-width: 1240px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Botões Estilizados */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 24px;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            border: none;
-            transition: var(--transition);
-            text-align: center;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-        }
-
-        .btn-primary:hover {
-            opacity: 0.95;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
-        }
-
-        .btn-secondary {
-            background-color: var(--surface);
-            color: var(--text-main);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--surface-hover);
-            color: #ffffff;
-        }
-
-        .btn-whatsapp {
-            background-color: var(--accent-green);
-            color: #ffffff;
-        }
-
-        .btn-whatsapp:hover {
-            background-color: #059669;
-            transform: translateY(-2px);
-        }
-
-        .btn-sm {
-            padding: 8px 14px;
-            font-size: 0.85rem;
-        }
-
-        /* Campos de Formulário */
-        .form-group {
-            margin-bottom: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-group label {
-            font-size: 0.88rem;
-            font-weight: 500;
-            color: var(--text-muted);
-        }
-
-        .form-control {
-            background-color: var(--background);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 10px 14px;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            width: 100%;
-            transition: var(--transition);
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-
-        /* ==========================================================================
-           CABEÇALHO / HEADER
-           ========================================================================== */
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background-color: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .header-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 70px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: #fff;
-            letter-spacing: -0.5px;
-        }
-
-        .logo i {
-            color: var(--accent);
-        }
-
-        .nav-menu {
-            display: flex;
-            gap: 24px;
-            list-style: none;
-        }
-
-        .nav-link {
-            color: var(--text-muted);
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        .nav-link:hover {
-            color: #fff;
-        }
-
-        /* ==========================================================================
-           HERO SECTION
-           ========================================================================== */
-        .hero {
-            padding: 70px 0 40px;
-            text-align: center;
-            background: radial-gradient(circle at top center, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: 16px;
-            line-height: 1.15;
-            background: linear-gradient(to right, #ffffff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero p {
-            font-size: 1.15rem;
-            color: var(--text-muted);
-            max-width: 680px;
-            margin: 0 auto 30px;
-        }
-
-        .hero-btns {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-        }
-
-        /* ==========================================================================
-           CARROSSEL DE PUBLICIDADE
-           ========================================================================== */
-        .promo-carousel-container {
-            margin: 30px auto;
-            position: relative;
-            overflow: hidden;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            background: var(--surface-card);
-        }
-
-        .promo-track {
-            display: flex;
-            transition: transform 0.6s ease-in-out;
-        }
-
-        .promo-slide {
-            min-width: 100%;
-            padding: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 30px;
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-        }
-
-        .promo-content {
-            max-width: 60%;
-        }
-
-        .promo-content h3 {
-            font-size: 1.8rem;
-            color: var(--accent);
-            margin-bottom: 10px;
-        }
-
-        .promo-content p {
-            font-size: 1.05rem;
-            color: var(--text-main);
-        }
-
-        .promo-icon-area {
-            font-size: 5rem;
-            color: var(--primary);
-            opacity: 0.8;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 140px;
-            height: 140px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .promo-dots {
-            position: absolute;
-            bottom: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-        }
-
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.3);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .dot.active {
-            background-color: var(--accent);
-            width: 24px;
-            border-radius: 10px;
-        }
-
-        /* ==========================================================================
-           SEÇÃO COMO FUNCIONA
-           ========================================================================== */
-        .how-it-works {
-            padding: 50px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-
-        .section-subtitle {
-            text-align: center;
-            color: var(--text-muted);
-            margin-bottom: 40px;
-        }
-
-        .steps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-        }
-
-        .step-card {
-            background-color: var(--surface);
-            padding: 30px;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-            text-align: center;
-            position: relative;
-        }
-
-        .step-num {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .step-card h4 {
-            font-size: 1.2rem;
-            margin-bottom: 8px;
-            color: #fff;
-        }
-
-        .step-card p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        /* ==========================================================================
-           ÁREA DE GERADORES & BUSCA
-           ========================================================================== */
-        .generators-section {
-            padding: 60px 0;
-        }
-
-        .search-box {
-            max-width: 500px;
-            margin: 0 auto 30px;
-            position: relative;
-        }
-
-        .search-box input {
-            padding-left: 44px;
-            height: 48px;
-            border-radius: 30px;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-
-        .categories-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 30px;
-        }
-
-        .tab-btn {
-            background-color: var(--surface);
-            color: var(--text-muted);
-            padding: 8px 18px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .tab-btn.active, .tab-btn:hover {
-            background-color: var(--primary);
-            color: #fff;
-            border-color: var(--primary);
-        }
-
-        .generators-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .gen-card {
-            background-color: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: var(--transition);
-        }
-
-        .gen-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent);
-            box-shadow: var(--shadow);
-        }
-
-        .gen-card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .gen-card-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: var(--radius-md);
-            background: rgba(37, 99, 235, 0.15);
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-
-        .gen-card-header h3 {
-            font-size: 1.1rem;
-            color: #fff;
-        }
-
-        .gen-card p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        /* ==========================================================================
-           MODAL / WORKSPACE DO GERADOR (Abertura de Geradores)
-           ========================================================================== */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(11, 15, 25, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 2000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-container {
-            background-color: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            width: 100%;
-            max-width: 900px;
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-
-        .modal-header {
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: var(--surface-card);
-        }
-
-        .modal-header h3 {
-            font-size: 1.2rem;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.4rem;
-            cursor: pointer;
-        }
-
-        .modal-close:hover {
-            color: #fff;
-        }
-
-        .modal-body {
-            padding: 24px;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .modal-footer {
-            padding: 16px 24px;
-            border-top: 1px solid var(--border);
-            background-color: var(--surface-card);
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            flex-wrap: wrap;
-        }
-
-        /* ==========================================================================
-           IMPRESSÃO & CANVAS / PREVIEW A4
-           ========================================================================== */
-        .print-preview-container {
-            background-color: #525659;
-            padding: 20px;
-            border-radius: var(--radius-md);
-            display: flex;
-            justify-content: center;
-            overflow-x: auto;
-            margin-top: 20px;
-        }
-
-        .a4-page {
-            background-color: #ffffff;
-            color: #000000;
-            width: 210mm;
-            min-height: 297mm;
-            padding: 20mm;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-            box-sizing: border-box;
-            position: relative;
-            font-family: Arial, sans-serif;
-            margin: 0 auto;
-        }
-
-        /* Ocultar elementos desnecessários durante a Impressão Real */
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            .print-preview-container, .print-preview-container * {
-                visibility: visible;
-            }
-            .print-preview-container {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                padding: 0;
-                background: none;
-            }
-            .a4-page {
-                box-shadow: none;
-                margin: 0;
-                width: 100%;
-            }
-            .no-print {
-                display: none !important;
-            }
-        }
-
-        /* ==========================================================================
-           SEÇÃO DE GUIAS / ARTIGOS
-           ========================================================================== */
-        .guides-section {
-            padding: 60px 0;
-            background-color: var(--surface-card);
-            border-top: 1px solid var(--border);
-        }
-
-        .guides-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .guide-card {
-            background-color: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .guide-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-2px);
-        }
-
-        .guide-card h4 {
-            color: #fff;
-            margin-bottom: 8px;
-            font-size: 1.05rem;
-        }
-
-        .guide-card p {
-            color: var(--text-muted);
-            font-size: 0.88rem;
-        }
-
-        /* ==========================================================================
-           SEÇÃO DE SERVIÇOS DO PRINTEXPRESS
-           ========================================================================== */
-        .services-section {
-            padding: 60px 0;
-        }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 20px;
-        }
-
-        .service-card {
-            background-color: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            text-align: center;
-        }
-
-        .service-card i {
-            font-size: 2.2rem;
-            color: var(--accent);
-            margin-bottom: 14px;
-        }
-
-        .service-card h4 {
-            color: #fff;
-            margin-bottom: 8px;
-        }
-
-        .service-card p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 16px;
-        }
-
-        .service-price {
-            font-weight: 700;
-            color: var(--accent-green);
-            margin-bottom: 16px;
-            font-size: 1.1rem;
-        }
-
-        /* ==========================================================================
-           FOOTER
-           ========================================================================== */
-        footer {
-            background-color: var(--surface-card);
-            border-top: 1px solid var(--border);
-            padding: 40px 0 20px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.1rem; }
-            .hero p { font-size: 1rem; }
-            .header-container { flex-direction: row; justify-content: space-between; }
-            .nav-menu { display: none; } /* Ocultar menu em telas muito pequenas */
-            .promo-slide { flex-direction: column; text-align: center; padding: 24px; }
-            .promo-content { max-width: 100%; }
-            .promo-icon-area { width: 80px; height: 80px; font-size: 2.5rem; margin: 0 auto; }
-            .a4-page { width: 100%; padding: 10mm; min-height: auto; }
-        }
-    </style>
+    /* HEADER */
+    header { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .header-content { display: flex; justify-content: space-between; align-items: center; height: 70px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.4rem; color: var(--secondary); text-decoration: none; }
+    .logo i { color: var(--primary); font-size: 1.6rem; }
+    .nav-links { display: flex; gap: 20px; }
+    .nav-links a { text-decoration: none; color: var(--text-main); font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--primary); }
+
+    /* HERO */
+    .hero { padding: 40px 0 20px 0; text-align: center; }
+    .hero h1 { font-size: 2.5rem; color: var(--text-dark); margin-bottom: 10px; font-weight: 700; }
+    .hero h2 { font-size: 1.25rem; color: var(--primary); font-weight: 500; margin-bottom: 15px; }
+    .hero p { max-width: 650px; margin: 0 auto 25px auto; color: var(--text-muted); font-size: 1rem; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; text-decoration: none; transition: background 0.2s, transform 0.1s; font-size: 0.95rem; }
+    .btn:hover { background: var(--primary-hover); }
+    .btn:active { transform: scale(0.98); }
+    .btn-secondary { background: #e2e8f0; color: var(--text-dark); }
+    .btn-secondary:hover { background: #cbd5e1; }
+    .btn-whatsapp { background: #25d366; color: white; }
+    .btn-whatsapp:hover { background: #20ba5a; }
+
+    /* ADS CAROUSEL */
+    .carousel-section { margin: 25px 0; }
+    .carousel-container { position: relative; overflow: hidden; border-radius: var(--radius-md); background: var(--secondary); color: white; box-shadow: var(--shadow-lg); }
+    .carousel-track { display: flex; transition: transform 0.4s ease-in-out; }
+    .carousel-slide { min-width: 100%; padding: 40px 30px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .slide-text h3 { font-size: 1.8rem; margin-bottom: 8px; color: #ffffff; }
+    .slide-text p { font-size: 1.1rem; color: #94a3b8; }
+    .slide-icon { font-size: 4rem; color: var(--primary); opacity: 0.8; }
+    .carousel-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; }
+    .dot.active { background: var(--primary); }
+
+    /* SECTION TITLES */
+    .section-title { margin: 40px 0 10px 0; font-size: 1.8rem; color: var(--text-dark); }
+    .section-subtitle { color: var(--text-muted); margin-bottom: 25px; }
+
+    /* GENERATORS GRID */
+    .generators-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-bottom: 50px; }
+    .card { background: var(--surface); border-radius: var(--radius-md); border: 1px solid var(--border); padding: 24px; box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; justify-content: space-between; }
+    .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 12px; }
+    .card-icon { width: 48px; height: 48px; border-radius: var(--radius-sm); background: #eff6ff; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+    .card-title { font-size: 1.2rem; color: var(--text-dark); font-weight: 600; }
+    .card-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; flex-grow: 1; }
+
+    /* GENERATOR MODALS / WORKSPACES */
+    .workspace { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 30px; margin-bottom: 40px; box-shadow: var(--shadow-lg); }
+    .workspace.active { display: block; }
+    .workspace-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 25px; }
+    .workspace-header h3 { font-size: 1.5rem; color: var(--text-dark); }
+    .close-workspace { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
+    
+    .workspace-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+    @media(max-width: 850px) { .workspace-grid { grid-template-columns: 1fr; } }
+
+    /* FORM STYLING */
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-weight: 500; font-size: 0.88rem; margin-bottom: 6px; color: var(--text-dark); }
+    .form-control, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+    .form-control:focus, select:focus, textarea:focus { border-color: var(--primary); }
+    .form-row { display: flex; gap: 12px; }
+    .form-row .form-group { flex: 1; }
+
+    /* PREVIEW CONTAINER */
+    .preview-box { background: var(--bg-light); border: 2px dashed var(--border); border-radius: var(--radius-md); padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; text-align: center; position: relative; }
+    .preview-content { max-width: 100%; overflow: auto; }
+
+    /* WHATSAPP ORDER BOX */
+    .order-box { margin-top: 25px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-md); padding: 20px; }
+    .order-box h4 { color: #166534; margin-bottom: 10px; font-size: 1.1rem; }
+    .order-summary { font-size: 0.9rem; color: #15803d; margin-bottom: 15px; }
+    .order-summary p { margin-bottom: 4px; }
+
+    /* GUIDES & SERVICES SECTIONS */
+    .guides-grid, .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
+    .accordion-item { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); margin-bottom: 10px; overflow: hidden; }
+    .accordion-header { padding: 15px 20px; background: var(--surface); cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .accordion-content { padding: 0 20px 20px 20px; display: none; color: var(--text-main); font-size: 0.95rem; border-top: 1px solid var(--border); padding-top: 15px; }
+    .accordion-item.active .accordion-content { display: block; }
+
+    .service-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; text-align: center; }
+    .service-card h4 { font-size: 1.1rem; margin-bottom: 8px; color: var(--text-dark); }
+    .service-price { font-weight: 700; color: var(--primary); font-size: 1.2rem; margin: 10px 0; }
+
+    /* FOOTER */
+    footer { background: var(--secondary); color: #94a3b8; padding: 40px 0 20px 0; margin-top: 60px; font-size: 0.9rem; }
+    .footer-content { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px; margin-bottom: 30px; }
+    .footer-col h5 { color: white; font-size: 1rem; margin-bottom: 12px; }
+    .footer-bottom { border-top: 1px solid #1e293b; padding-top: 20px; text-align: center; }
+
+    /* UTILITY CLASSES */
+    .hidden { display: none !important; }
+    .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    .badge-alert { background: #fee2e2; color: #dc2626; }
+    .badge-info { background: #e0f2fe; color: #0369a1; }
+    .img-preview-thumbs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .thumb-item { width: 70px; height: 70px; border-radius: var(--radius-sm); border: 1px solid var(--border); object-fit: cover; position: relative; }
+    .thumb-container { position: relative; display: inline-block; }
+    .thumb-remove { position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer; }
+  </style>
 </head>
 <body>
 
-    <!-- ==========================================================================
-       CONFIGURAÇÕES CENTRALIZADAS (JAVASCRIPT)
-       ========================================================================== -->
-    <script>
-        const PRINTEXPRESS_CONFIG = {
-            whatsapp: "5541999999999", // Número configurável
-            precos: {
-                impressaoPB: 0.50,
-                impressaoColorida: 1.50,
-                papelResistente: 1.00, // Adicional por folha
-                edicaoTexto: 5.00,
-                arte: 10.00,
-                digitalizacao: 2.00,
-                formatacao: 8.00,
-                ajusteImpressao: 3.00
-            },
-            empresa: {
-                nome: "PrintExpress",
-                slogan: "Crie. Imprima. Pronto.",
-                cidade: "Curitiba - PR"
-            }
-        };
-    </script>
+  <!-- CABEÇALHO -->
+  <header>
+    <div class="container header-content">
+      <a href="#" class="logo">
+        <i class="fa-solid fa-print"></i>
+        <span>PrintExpress</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#geradores">Geradores</a>
+        <a href="#guias">Guias</a>
+        <a href="#servicos">Serviços</a>
+      </nav>
+    </div>
+  </header>
 
-    <!-- ==========================================================================
-       TOPO / CABEÇALHO
-       ========================================================================== -->
-    <header>
-        <div class="container header-container">
-            <div class="logo">
-                <i class="fa-solid fa-print"></i> PrintExpress
-            </div>
-            <ul class="nav-menu">
-                <li><a href="#geradores" class="nav-link">Geradores</a></li>
-                <li><a href="#guias" class="nav-link">Guias</a></li>
-                <li><a href="#servicos" class="nav-link">Serviços</a></li>
-                <li><a href="#como-funciona" class="nav-link">Como Funciona</a></li>
-            </ul>
-            <button class="btn btn-whatsapp btn-sm" onclick="abrirPedidoWhatsappDirect()">
-                <i class="fa-solid fa-print"></i> Quero Imprimir
-            </button>
-        </div>
-    </header>
-
-    <!-- ==========================================================================
-       HERO
-       ========================================================================== -->
+  <div class="container">
+    
+    <!-- HERO -->
     <section class="hero">
-        <div class="container">
-            <h1>Crie seus materiais em poucos cliques.</h1>
-            <p>Use nossos geradores gratuitamente, baixe seus arquivos ou peça para o PrintExpress imprimir para você.</p>
-            <div class="hero-btns">
-                <a href="#geradores" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Explorar Geradores</a>
-                <button class="btn btn-secondary" onclick="abrirPedidoWhatsappDirect()"><i class="fa-solid fa-print"></i> Quero Imprimir</button>
-            </div>
-        </div>
+      <h1>Geradores profissionais para impressão.</h1>
+      <h2>Crie arquivos prontos para imprimir em poucos cliques.</h2>
+      <p>Ferramentas simples para transformar imagens, documentos e informações em materiais prontos para impressão.</p>
+      <a href="#geradores" class="btn"><i class="fa-solid fa-wand-magic-sparkles"></i> Ver geradores</a>
     </section>
 
-    <!-- ==========================================================================
-       PUBLICIDADE (CARROSSEL)
-       ========================================================================== -->
+    <!-- CARROSSEL DE PUBLICIDADE -->
+    <section class="carousel-section">
+      <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+          
+          <div class="carousel-slide">
+            <div class="slide-text">
+              <h3>Seu arquivo. Do seu jeito.</h3>
+              <p>Crie, personalize e baixe em poucos segundos.</p>
+            </div>
+            <i class="fa-solid fa-sliders slide-icon"></i>
+          </div>
+
+          <div class="carousel-slide">
+            <div class="slide-text">
+              <h3>Pronto para imprimir.</h3>
+              <p>Ferramentas pensadas para quem realmente precisa colocar algo no papel.</p>
+            </div>
+            <i class="fa-solid fa-file-pdf slide-icon"></i>
+          </div>
+
+          <div class="carousel-slide">
+            <div class="slide-text">
+              <h3>Seu negócio mais profissional.</h3>
+              <p>Cardápios, documentos, QR Codes e materiais personalizados.</p>
+            </div>
+            <i class="fa-solid fa-briefcase slide-icon"></i>
+          </div>
+
+          <div class="carousel-slide">
+            <div class="slide-text">
+              <h3>PrintExpress</h3>
+              <p>Você cria. A gente imprime. Também fazemos impressão e serviços gráficos.</p>
+            </div>
+            <i class="fa-solid fa-dumpster-fire slide-icon"></i>
+          </div>
+
+        </div>
+        <div class="carousel-dots" id="carouselDots">
+          <div class="dot active" onclick="setSlide(0)"></div>
+          <div class="dot" onclick="setSlide(1)"></div>
+          <div class="dot" onclick="setSlide(2)"></div>
+          <div class="dot" onclick="setSlide(3)"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CARDS DE FERRAMENTAS PRINCIPAIS -->
+    <section id="geradores">
+      <h2 class="section-title">Geradores</h2>
+      <p class="section-subtitle">Ferramentas profissionais para criar e preparar arquivos para impressão.</p>
+
+      <div class="generators-grid">
+        
+        <!-- CARD 1 -->
+        <div class="card">
+          <div>
+            <div class="card-header">
+              <div class="card-icon"><i class="fa-solid fa-qrcode"></i></div>
+              <div class="card-title">Gerador de QR Code</div>
+            </div>
+            <p class="card-desc">Crie QR Codes prontos para impressão para links, WhatsApp, Wi-Fi, PIX e outros conteúdos.</p>
+          </div>
+          <button class="btn" onclick="openWorkspace('ws-qrcode')">Abrir Gerador</button>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="card">
+          <div>
+            <div class="card-header">
+              <div class="card-icon"><i class="fa-solid fa-file-image"></i></div>
+              <div class="card-title">Imagem → PDF</div>
+            </div>
+            <p class="card-desc">Converta JPG, PNG, WEBP em PDF único ou múltiplo configurando margens e tamanhos.</p>
+          </div>
+          <button class="btn" onclick="openWorkspace('ws-img2pdf')">Abrir Gerador</button>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="card">
+          <div>
+            <div class="card-header">
+              <div class="card-icon"><i class="fa-solid fa-file-pdf"></i></div>
+              <div class="card-title">PDF → Imagem</div>
+            </div>
+            <p class="card-desc">Extraia páginas de arquivos PDF e converta diretamente para formatos JPG ou PNG.</p>
+          </div>
+          <button class="btn" onclick="openWorkspace('ws-pdf2img')">Abrir Gerador</button>
+        </div>
+
+        <!-- CARD 4 -->
+        <div class="card">
+          <div>
+            <div class="card-header">
+              <div class="card-icon"><i class="fa-solid fa-utensils"></i></div>
+              <div class="card-title">Gerador de Cardápios</div>
+            </div>
+            <p class="card-desc">Monte cardápios completos por categoria, produtos e foto com modelos profissionais.</p>
+          </div>
+          <button class="btn" onclick="openWorkspace('ws-cardapio')">Abrir Gerador</button>
+        </div>
+
+        <!-- CARD 5 -->
+        <div class="card">
+          <div>
+            <div class="card-header">
+              <div class="card-icon"><i class="fa-solid fa-file-invoice"></i></div>
+              <div class="card-title">Documentos Fiscais / Adm</div>
+            </div>
+            <p class="card-desc">Gere recibos, orçamentos e OS em bloco com numeração sequencial automática.</p>
+          </div>
+          <button class="btn" onclick="openWorkspace('ws-fiscais')">Abrir Gerador</button>
+        </div>
+
+        <!-- CARD 6 -->
+        <div class="card">
+          <div>
+            <div class="card-header">
+              <div class="card-icon"><i class="fa-solid fa-key"></i></div>
+              <div class="card-title">Gerador de Senhas</div>
+            </div>
+            <p class="card-desc">Crie senhas seguras personalizadas instantaneamente direto no navegador.</p>
+          </div>
+          <button class="btn" onclick="openWorkspace('ws-senhas')">Abrir Gerador</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ÁREAS DE TRABALHO / WORKSPACES DOS GERADORES -->
+    
+    <!-- 1. GERADOR DE QR CODE -->
+    <div id="ws-qrcode" class="workspace">
+      <div class="workspace-header">
+        <h3>Gerador de QR Code Profissional</h3>
+        <button class="close-workspace" onclick="closeWorkspaces()">&times;</button>
+      </div>
+      <div class="workspace-grid">
+        <div>
+          <div class="form-group">
+            <label>Tipo de QR Code</label>
+            <select id="qr-type" class="form-control" onchange="updateQrFields()">
+              <option value="url">URL / Link</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="wifi">Wi-Fi</option>
+              <option value="pix">PIX Copia e Cola</option>
+              <option value="texto">Texto Livre</option>
+            </select>
+          </div>
+
+          <!-- Inputs Dinâmicos -->
+          <div id="qr-inputs">
+            <div class="form-group" id="fg-qr-content">
+              <label id="lbl-qr-content">Link URL</label>
+              <input type="text" id="qr-content" class="form-control" placeholder="https://seusite.com.br" oninput="generateQRCode()">
+            </div>
+          </div>
+
+          <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border);">
+
+          <h4>Personalização</h4>
+          <div class="form-row" style="margin-top: 10px;">
+            <div class="form-group">
+              <label>Cor do QR Code</label>
+              <input type="color" id="qr-color-dark" value="#000000" class="form-control" onchange="generateQRCode()">
+            </div>
+            <div class="form-group">
+              <label>Cor do Fundo</label>
+              <input type="color" id="qr-color-light" value="#ffffff" class="form-control" onchange="generateQRCode()">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Texto abaixo do QR Code</label>
+            <input type="text" id="qr-label-text" class="form-control" placeholder="Ex: Escaneie para acessar" oninput="generateQRCode()">
+          </div>
+        </div>
+
+        <div>
+          <div class="preview-box">
+            <div id="qrcode-target"></div>
+            <div id="qrcode-label-target" style="margin-top: 10px; font-weight: 600; color: var(--text-dark);"></div>
+          </div>
+          <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn" onclick="downloadQR('png')"><i class="fa-solid fa-download"></i> Baixar PNG</button>
+            <button class="btn btn-secondary" onclick="downloadQR('pdf')"><i class="fa-solid fa-file-pdf"></i> Baixar PDF</button>
+            <button class="btn btn-secondary" onclick="printQR()"><i class="fa-solid fa-print"></i> Imprimir</button>
+          </div>
+          
+          <!-- Bloco de Pedido PrintExpress -->
+          <div class="order-box">
+            <h4><i class="fa-solid fa-print"></i> Deseja este QR Code impresso em adesivo/placa?</h4>
+            <div class="order-summary">
+              <p>Imprimimos em PVC, Vinil Adesivo ou Papel Fotográfico.</p>
+            </div>
+            <button class="btn btn-whatsapp" onclick="sendOrder('QR Code Personalizado')"><i class="fa-brands fa-whatsapp"></i> Pedir Orçamento pelo WhatsApp</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. IMAGEM PARA PDF -->
+    <div id="ws-img2pdf" class="workspace">
+      <div class="workspace-header">
+        <h3>Conversor de Imagem para PDF</h3>
+        <button class="close-workspace" onclick="closeWorkspaces()">&times;</button>
+      </div>
+      <div class="workspace-grid">
+        <div>
+          <div class="form-group">
+            <label>Selecione as Imagens (JPG, PNG, WEBP)</label>
+            <input type="file" id="img2pdf-files" class="form-control" accept="image/*" multiple onchange="handleImgSelection(event)">
+          </div>
+
+          <div id="img-thumbs-container" class="img-preview-thumbs"></div>
+
+          <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border);">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tamanho da Página</label>
+              <select id="img2pdf-size" class="form-control">
+                <option value="a4">A4</option>
+                <option value="a5">A5</option>
+                <option value="letter">Carta</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Orientação</label>
+              <select id="img2pdf-orient" class="form-control">
+                <option value="portrait">Retrato</option>
+                <option value="landscape">Paisagem</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Margens</label>
+            <select id="img2pdf-margin" class="form-control">
+              <option value="0">Sem Margem</option>
+              <option value="10">Pequena (10mm)</option>
+              <option value="20">Média (20mm)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <div class="preview-box">
+            <i class="fa-solid fa-images" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 10px;"></i>
+            <p id="img2pdf-status">Nenhuma imagem selecionada</p>
+          </div>
+          <div style="margin-top: 20px;">
+            <button class="btn" style="width: 100%;" onclick="generateImgToPDF()"><i class="fa-solid fa-file-pdf"></i> Baixar PDF Real</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. PDF PARA IMAGEM -->
+    <div id="ws-pdf2img" class="workspace">
+      <div class="workspace-header">
+        <h3>Conversor de PDF para Imagem</h3>
+        <button class="close-workspace" onclick="closeWorkspaces()">&times;</button>
+      </div>
+      <div class="workspace-grid">
+        <div>
+          <div class="form-group">
+            <label>Selecione o Arquivo PDF</label>
+            <input type="file" id="pdf2img-file" class="form-control" accept="application/pdf" onchange="loadPDFForConversion(event)">
+          </div>
+
+          <div class="form-group">
+            <label>Páginas para Converter</label>
+            <input type="text" id="pdf2img-pages" class="form-control" placeholder="Ex: todas ou 1-3, 5" value="todas">
+          </div>
+
+          <div class="form-group">
+            <label>Formato de Saída</label>
+            <select id="pdf2img-format" class="form-control">
+              <option value="image/png">PNG (Melhor Qualidade)</option>
+              <option value="image/jpeg">JPG (Mais Leve)</option>
+            </select>
+          </div>
+
+          <button class="btn" onclick="convertPDFToImages()"><i class="fa-solid fa-gear"></i> Converter PDF</button>
+        </div>
+
+        <div>
+          <div class="preview-box" id="pdf2img-preview-container">
+            <p id="pdf2img-status">Carregue um arquivo PDF para começar.</p>
+          </div>
+          <div style="margin-top: 20px;" id="pdf2img-download-actions" class="hidden">
+            <button class="btn" onclick="downloadPDFImagesZIP()"><i class="fa-solid fa-file-zipper"></i> Baixar Tudo em ZIP</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. GERADOR DE CARDÁPIOS -->
+    <div id="ws-cardapio" class="workspace">
+      <div class="workspace-header">
+        <h3>Gerador de Cardápios Profissional</h3>
+        <button class="close-workspace" onclick="closeWorkspaces()">&times;</button>
+      </div>
+      <div class="workspace-grid">
+        <div>
+          <h4>1. Dados do Estabelecimento</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nome do Local</label>
+              <input type="text" id="menu-name" class="form-control" value="Sabor & Cia" oninput="renderMenuPreview()">
+            </div>
+            <div class="form-group">
+              <label>Slogan / Subtítulo</label>
+              <input type="text" id="menu-slogan" class="form-control" value="Gastronomia Artesanal" oninput="renderMenuPreview()">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>WhatsApp</label>
+              <input type="text" id="menu-phone" class="form-control" value="(11) 99999-8888" oninput="renderMenuPreview()">
+            </div>
+            <div class="form-group">
+              <label>Modelo Visual</label>
+              <select id="menu-theme" class="form-control" onchange="renderMenuPreview()">
+                <option value="moderno">Moderno (Escuro/Elegante)</option>
+                <option value="minimalista">Minimalista (Limpo)</option>
+                <option value="lanchonete">Lanchonete (Vibrante)</option>
+              </select>
+            </div>
+          </div>
+
+          <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border);">
+
+          <h4>2. Produtos</h4>
+          <div id="menu-items-list"></div>
+          <button class="btn btn-secondary" style="margin-top: 10px;" onclick="addMenuItem()"><i class="fa-solid fa-plus"></i> Adicionar Item</button>
+        </div>
+
+        <div>
+          <label>Pré-visualização do Cardápio</label>
+          <div class="preview-box" style="padding: 0; justify-content: flex-start; overflow: hidden; min-height: 400px;">
+            <div id="menu-target" style="width: 100%; height: 100%; background: white; padding: 25px; text-align: left;"></div>
+          </div>
+          <div style="margin-top: 20px; display: flex; gap: 10px;">
+            <button class="btn" onclick="printMenu()"><i class="fa-solid fa-print"></i> Imprimir / PDF</button>
+          </div>
+          
+          <div class="order-box">
+            <h4><i class="fa-solid fa-scroll"></i> Imprimir Cardápios Plastificados?</h4>
+            <p style="font-size: 0.9rem; color: #15803d; margin-bottom: 10px;">Produzimos em Papel Couché 300g com Plastificação Rígida Polaseal.</p>
+            <button class="btn btn-whatsapp" onclick="sendOrder('Cardápios Impressos Plastificados')"><i class="fa-brands fa-whatsapp"></i> Solicitar pelo WhatsApp</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. GERADOR DE DOCUMENTOS FISCAIS / ADM COM BLOCOS -->
+    <div id="ws-fiscais" class="workspace">
+      <div class="workspace-header">
+        <h3>Documentos Comerciais & Emissão de Blocos</h3>
+        <button class="close-workspace" onclick="closeWorkspaces()">&times;</button>
+      </div>
+
+      <div style="background: #fffbeeb; border-left: 4px solid #f59e0b; padding: 12px 15px; margin-bottom: 20px; border-radius: 4px; font-size: 0.88rem; color: #78350f;">
+        <i class="fa-solid fa-circle-info"></i> <strong>Aviso Legal & Fiscal:</strong> A emissão fiscal oficial (NF-e/NFS-e) depende de integração com o sistema autorizador do governo. Este módulo gera recibos, orçamentos, ordens de serviço e blocos de controle administrativo interno.
+      </div>
+
+      <div class="workspace-grid">
+        <div>
+          <h4>Configurações do Documento</h4>
+          <div class="form-group">
+            <label>Tipo de Documento</label>
+            <select id="doc-type" class="form-control" onchange="renderDocPreview()">
+              <option value="Recibo de Pagamento">Recibo de Pagamento</option>
+              <option value="Orçamento Comercial">Orçamento Comercial</option>
+              <option value="Ordem de Serviço">Ordem de Serviço</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nome do Emitente / Empresa</label>
+              <input type="text" id="doc-empresa" class="form-control" value="Gráfica Express Ltda" oninput="renderDocPreview()">
+            </div>
+            <div class="form-group">
+              <label>CNPJ / CPF Emitente</label>
+              <input type="text" id="doc-cnpj" class="form-control" value="00.000.000/0001-00" oninput="renderDocPreview()">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Cliente / Destinatário</label>
+              <input type="text" id="doc-cliente" class="form-control" value="João da Silva" oninput="renderDocPreview()">
+            </div>
+            <div class="form-group">
+              <label>Valor Total (R$)</label>
+              <input type="number" id="doc-valor" class="form-control" value="150.00" oninput="renderDocPreview()">
+            </div>
+          </div>
+
+          <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border);">
+
+          <h4>Emissão em Bloco Sequencial</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nº Inicial</label>
+              <input type="number" id="block-start" class="form-control" value="1" oninput="calculateBlockPricing()">
+            </div>
+            <div class="form-group">
+              <label>Qtd. de Vias/Folhas</label>
+              <select id="block-qty" class="form-control" onchange="calculateBlockPricing()">
+                <option value="1">Apenas 1 via (Avulso)</option>
+                <option value="50">Bloco com 50 vias</option>
+                <option value="100">Bloco com 100 vias</option>
+                <option value="500">5 Blocos (500 vias)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label>Pré-visualização do Documento</label>
+          <div class="preview-box" style="padding: 0; text-align: left; justify-content: flex-start;">
+            <div id="doc-target" style="width: 100%; background: white; padding: 20px; font-size: 0.9rem;"></div>
+          </div>
+          
+          <div style="margin-top: 15px; display: flex; gap: 10px;">
+            <button class="btn" onclick="printDocument()"><i class="fa-solid fa-print"></i> Gerar PDF / Imprimir Bloco</button>
+          </div>
+
+          <!-- Cálculo de Produção do Bloco -->
+          <div class="order-box">
+            <h4><i class="fa-solid fa-book"></i> Quero que a PrintExpress produza este Bloco</h4>
+            <div class="order-summary" id="block-cost-summary">
+              <!-- Calculado dinamicamente no JS -->
+            </div>
+            <button class="btn btn-whatsapp" onclick="orderBlockProduction()"><i class="fa-brands fa-whatsapp"></i> Enviar Pedido do Bloco pelo WhatsApp</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. GERADOR DE SENHAS -->
+    <div id="ws-senhas" class="workspace">
+      <div class="workspace-header">
+        <h3>Gerador de Senhas Seguras</h3>
+        <button class="close-workspace" onclick="closeWorkspaces()">&times;</button>
+      </div>
+      <div class="workspace-grid">
+        <div>
+          <div class="form-group">
+            <label>Tamanho da Senha: <span id="pass-length-val">16</span> caracteres</label>
+            <input type="range" id="pass-length" min="6" max="32" value="16" class="form-control" oninput="document.getElementById('pass-length-val').innerText = this.value; generatePassword();">
+          </div>
+
+          <div class="form-group">
+            <label><input type="checkbox" id="pass-upper" checked onchange="generatePassword()"> Incluir Letras Maiúsculas (A-Z)</label>
+          </div>
+          <div class="form-group">
+            <label><input type="checkbox" id="pass-lower" checked onchange="generatePassword()"> Incluir Letras Minúsculas (a-z)</label>
+          </div>
+          <div class="form-group">
+            <label><input type="checkbox" id="pass-numbers" checked onchange="generatePassword()"> Incluir Números (0-9)</label>
+          </div>
+          <div class="form-group">
+            <label><input type="checkbox" id="pass-symbols" checked onchange="generatePassword()"> Incluir Símbolos (!@#$%^&*)</label>
+          </div>
+
+          <button class="btn" onclick="generatePassword()"><i class="fa-solid fa-rotate"></i> Gerar Nova Senha</button>
+        </div>
+
+        <div>
+          <div class="preview-box">
+            <div id="pass-result" style="font-size: 1.6rem; font-family: monospace; font-weight: 700; word-break: break-all; color: var(--primary);"></div>
+            <div id="pass-strength" style="margin-top: 15px; font-weight: 600;"></div>
+          </div>
+          <div style="margin-top: 20px;">
+            <button class="btn btn-secondary" style="width: 100%;" onclick="copyPassword()"><i class="fa-solid fa-copy"></i> Copiar Senha</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO DE GUIAS & DICAS -->
+    <section id="guias" style="margin-top: 60px;">
+      <h2 class="section-title">📚 Guias & Dicas de Impressão</h2>
+      <p class="section-subtitle">Aprenda a preparar seus arquivos para obter o melhor resultado no papel.</p>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Como imprimir em A4 corretamente?</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </div>
+        <div class="accordion-content">
+          <p>Para obter uma impressão sem cortes no papel A4 (210x297mm):</p>
+          <ul style="margin-left: 20px; margin-top: 8px;">
+            <li>No programa de impressão, escolha a opção <strong>"Tamanho Real"</strong> ou escala <strong>100%</strong>.</li>
+            <li>Evite selecionar "Ajustar à Página" se você precisa manter a escala exata de documentos e blocos.</li>
+            <li>Deixe sempre uma margem de segurança de pelo menos 5mm nas bordas do arquivo.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Como imprimir pelo celular (Android e iPhone)?</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </div>
+        <div class="accordion-content">
+          <p>É muito simples imprimir direto do seu smartphone:</p>
+          <ol style="margin-left: 20px; margin-top: 8px;">
+            <li>Gere seu arquivo em PDF utilizando nossos geradores acima.</li>
+            <li>Abra o arquivo gerado e clique no ícone de <strong>Compartilhar</strong>.</li>
+            <li>Selecione a opção <strong>Imprimir</strong> e escolha a sua impressora Wi-Fi cadastrada.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Como pedir uma impressão pelo WhatsApp da PrintExpress?</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </div>
+        <div class="accordion-content">
+          <ol style="margin-left: 20px; margin-top: 8px;">
+            <li>Crie seu arquivo usando nossas ferramentas gratuitas e baixe no seu dispositivo.</li>
+            <li>Clique no botão verde de orçamento WhatsApp disponível na ferramenta.</li>
+            <li>Envie a mensagem automática pré-formatada. Em seguida, anexe o arquivo baixado na conversa.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span>Qual papel escolher para o meu projeto?</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </div>
+        <div class="accordion-content">
+          <p><strong>Sulfite 75g/90g:</strong> Ideal para documentos do dia a dia, texto e blocos administrativos.</p>
+          <p><strong>Couché 150g/180g:</strong> Perfeito para panfletos, folhetos e capas simples.</p>
+          <p><strong>Couché 300g / Fotográfico:</strong> Recomendado para cartões de visita, cardápios e tags de alta durabilidade.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO DE SERVIÇOS DO PRINTEXPRESS -->
+    <section id="servicos" style="margin-top: 60px;">
+      <h2 class="section-title">✨ Serviços de Impressão PrintExpress</h2>
+      <p class="section-subtitle">Nós produzimos o seu material com qualidade profissional e enviamos para você.</p>
+
+      <div class="services-grid">
+        <div class="service-card">
+          <i class="fa-solid fa-print" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
+          <h4>Impressão P&B e Colorida</h4>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">Documentos, apostilas e trabalhos com alta definição.</p>
+          <div class="service-price" id="price-pb">A partir de R$ 0,50</div>
+          <button class="btn btn-whatsapp" onclick="sendDirectService('Impressão de Documentos')"><i class="fa-brands fa-whatsapp"></i> Pedir Impressão</button>
+        </div>
+
+        <div class="service-card">
+          <i class="fa-solid fa-book-open" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
+          <h4>Blocos & Talões</h4>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">Blocos colados ou serrilhados com numeração sequencial.</p>
+          <div class="service-price">A partir de R$ 25,00</div>
+          <button class="btn btn-whatsapp" onclick="sendDirectService('Produção de Blocos')"><i class="fa-brands fa-whatsapp"></i> Pedir Blocos</button>
+        </div>
+
+        <div class="service-card">
+          <i class="fa-solid fa-palette" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
+          <h4>Criação & Edição de Arte</h4>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">Ajustamos e formatamos o seu arquivo para ficar perfeito.</p>
+          <div class="service-price" id="price-arte">A partir de R$ 10,00</div>
+          <button class="btn btn-whatsapp" onclick="sendDirectService('Serviço de Arte/Edição')"><i class="fa-brands fa-whatsapp"></i> Contratar Arte</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- RODAPÉ -->
+  <footer>
     <div class="container">
-        <div class="promo-carousel-container">
-            <div class="promo-track" id="promoTrack">
-                <!-- Ad 1 -->
-                <div class="promo-slide">
-                    <div class="promo-content">
-                        <h3>Precisando imprimir?</h3>
-                        <p>Crie seu arquivo aqui e deixe o resto com a PrintExpress. Entrega rápida e excelente qualidade.</p>
-                    </div>
-                    <div class="promo-icon-area"><i class="fa-solid fa-file-invoice"></i></div>
-                </div>
-                <!-- Ad 2 -->
-                <div class="promo-slide">
-                    <div class="promo-content">
-                        <h3>Seu trabalho pronto em minutos.</h3>
-                        <p>Capa ABNT, redação, referências bibliográficas, planners e muito mais sem complicação.</p>
-                    </div>
-                    <div class="promo-icon-area"><i class="fa-solid fa-graduation-cap"></i></div>
-                </div>
-                <!-- Ad 3 -->
-                <div class="promo-slide">
-                    <div class="promo-content">
-                        <h3>Seu negócio com visual profissional.</h3>
-                        <p>Cardápios impressos, tabelas de preços, QR Codes PIX, listas e etiquetas personalizadas.</p>
-                    </div>
-                    <div class="promo-icon-area"><i class="fa-solid fa-store"></i></div>
-                </div>
-                <!-- Ad 4 -->
-                <div class="promo-slide">
-                    <div class="promo-content">
-                        <h3>Você cria. A PrintExpress imprime.</h3>
-                        <p>Envie seu pedido pelo WhatsApp e receba seu orçamento instantaneamente sem sair de casa.</p>
-                    </div>
-                    <div class="promo-icon-area"><i class="fa-brands fa-whatsapp"></i></div>
-                </div>
-            </div>
-            <div class="promo-dots" id="promoDots"></div>
+      <div class="footer-content">
+        <div class="footer-col">
+          <a href="#" class="logo" style="color: white; margin-bottom: 10px;">
+            <i class="fa-solid fa-print"></i> PrintExpress
+          </a>
+          <p>Ferramentas profissionais e soluções completas em impressão e materiais gráficos.</p>
         </div>
+        <div class="footer-col">
+          <h5>Plataforma</h5>
+          <p>Geradores Gratuitos</p>
+          <p>Serviços Gráficos</p>
+          <p>Guias de Impressão</p>
+        </div>
+        <div class="footer-col">
+          <h5>Atendimento</h5>
+          <p><i class="fa-brands fa-whatsapp"></i> Suporte via WhatsApp</p>
+          <p><i class="fa-solid fa-shield-halved"></i> 100% Processamento Local</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; PrintExpress — Todos os direitos reservados. Todas as ferramentas funcionam direto no seu navegador sem armazenar seus arquivos.</p>
+      </div>
     </div>
+  </footer>
 
-    <!-- ==========================================================================
-       COMO FUNCIONA
-       ========================================================================== -->
-    <section class="how-it-works" id="como-funciona">
-        <div class="container">
-            <h2 class="section-title">Como Funciona</h2>
-            <p class="section-subtitle">Simples, rápido e sem necessidade de cadastro</p>
-            <div class="steps-grid">
-                <div class="step-card">
-                    <span class="step-num">1️⃣</span>
-                    <h4>Crie</h4>
-                    <p>Escolha um gerador gratuito e preencha os dados no formulário interativo.</p>
-                </div>
-                <div class="step-card">
-                    <span class="step-num">2️⃣</span>
-                    <h4>Baixe</h4>
-                    <p>Gere o documento final e baixe o arquivo em PDF pronto para uso imediatamente.</p>
-                </div>
-                <div class="step-card">
-                    <span class="step-num">3️⃣</span>
-                    <h4>Imprima</h4>
-                    <p>Imprima em casa ou solicite a impressão de alta qualidade com a PrintExpress.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- LÓGICA E SCRIPT JAVASCRIPT CENTRALIZADO -->
+  <script>
+    /* ===================================================
+       CONFIGURAÇÃO CENTRAL DE PREÇOS E WHATSAPP DO PRINTEXPRESS
+       =================================================== */
+    const PRINTEXPRESS = {
+      whatsapp: "5511999998888", // Alterar para o número oficial
+      precos: {
+        impressaoPB: 0.50,
+        impressaoColorida: 1.50,
+        bloco50vias: 25.00,
+        bloco100vias: 40.00,
+        edicao: 5.00,
+        arte: 10.00
+      }
+    };
 
-    <!-- ==========================================================================
-       ÁREA DE GERADORES
-       ========================================================================== -->
-    <section class="generators-section" id="geradores">
-        <div class="container">
-            <h2 class="section-title">Geradores Gratuitos</h2>
-            <p class="section-subtitle">Crie gratuitamente materiais prontos para imprimir</p>
-            
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="searchInput" class="form-control" placeholder="🔎 Pesquisar gerador..." oninput="filtrarGeradores()">
-            </div>
+    /* ===================================================
+       CARROSSEL DE PUBLICIDADE
+       =================================================== */
+    let currentSlide = 0;
+    function setSlide(index) {
+      currentSlide = index;
+      const track = document.getElementById('carouselTrack');
+      const dots = document.querySelectorAll('.dot');
+      track.style.transform = `translateX(-${index * 100}%)`;
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === index);
+      });
+    }
 
-            <div class="categories-tabs" id="categoriesTabs">
-                <button class="tab-btn active" onclick="filtrarCategoria('todos', this)">Todos</button>
-                <button class="tab-btn" onclick="filtrarCategoria('impressao', this)">📄 Impressão</button>
-                <button class="tab-btn" onclick="filtrarCategoria('estudantes', this)">🎓 Estudantes</button>
-                <button class="tab-btn" onclick="filtrarCategoria('documentos', this)">📋 Documentos</button>
-                <button class="tab-btn" onclick="filtrarCategoria('negocios', this)">🍔 Negócios</button>
-                <button class="tab-btn" onclick="filtrarCategoria('jogos', this)">🎲 Jogos</button>
-                <button class="tab-btn" onclick="filtrarCategoria('utilitarios', this)">🔐 Utilitários</button>
-            </div>
+    setInterval(() => {
+      currentSlide = (currentSlide + 1) % 4;
+      setSlide(currentSlide);
+    }, 5000);
 
-            <div class="generators-grid" id="generatorsGrid">
-                <!--Cards de Geradores Injetados pelo JS-->
-            </div>
-        </div>
-    </section>
+    /* ===================================================
+       NAVEGAÇÃO / NAVEGAÇÃO DE WORKSPACES
+       =================================================== */
+    function openWorkspace(id) {
+      closeWorkspaces();
+      const ws = document.getElementById(id);
+      if(ws) {
+        ws.classList.add('active');
+        ws.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
 
-    <!-- ==========================================================================
-       GUIAS E ARTIGOS
-       ========================================================================== -->
-    <section class="guides-section" id="guias">
-        <div class="container">
-            <h2 class="section-title">📚 Guias & Dicas de Impressão</h2>
-            <p class="section-subtitle">Aprenda a configurar e obter o melhor resultado no papel</p>
-            <div class="guides-grid" id="guidesGrid">
-                <!-- Guias injetados via JS -->
-            </div>
-        </div>
-    </section>
+    function closeWorkspaces() {
+      document.querySelectorAll('.workspace').forEach(ws => ws.classList.remove('active'));
+    }
 
-    <!-- ==========================================================================
-       SERVIÇOS PRINTEXPRESS
-       ========================================================================== -->
-    <section class="services-section" id="servicos">
-        <div class="container">
-            <h2 class="section-title">✨ Serviços PrintExpress</h2>
-            <p class="section-subtitle">A gente cuida de tudo com carinho e qualidade profissional</p>
-            <div class="services-grid" id="servicesGrid">
-                <!-- Serviços injetados via JS -->
-            </div>
-        </div>
-    </section>
+    function toggleAccordion(header) {
+      const item = header.parentElement;
+      item.classList.toggle('active');
+    }
 
-    <!-- ==========================================================================
-       FOOTER
-       ========================================================================== -->
-    <footer>
-        <div class="container">
-            <p>PrintExpress &copy; 2026 — Crie. Imprima. Pronto.</p>
-            <p style="font-size: 0.8rem; margin-top: 5px;">Processamento 100% seguro e local no navegador. Nenhum arquivo pessoal é enviado a servidores.</p>
-        </div>
-    </footer>
+    /* ===================================================
+       1. GERADOR DE QR CODE
+       =================================================== */
+    let qrcodeObj = null;
 
-    <!-- ==========================================================================
-       MODAL DE GERADOR (WORKSPACE)
-       ========================================================================== -->
-    <div class="modal-overlay" id="modalGerador">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3 id="modalTitulo"><i class="fa-solid fa-gear"></i> Nome do Gerador</h3>
-                <button class="modal-close" onclick="fecharModal('modalGerador')">&times;</button>
-            </div>
-            <div class="modal-body" id="modalConteudo">
-                <!-- Conteúdo do Formulário Dinâmico -->
-            </div>
-            <div class="modal-footer" id="modalAcoes">
-                <!-- Botões de Ação do Gerador -->
-            </div>
-        </div>
-    </div>
+    function updateQrFields() {
+      const type = document.getElementById('qr-type').value;
+      const container = document.getElementById('qr-inputs');
+      let html = '';
 
-    <!-- ==========================================================================
-       MODAL PEDIDO DE IMPRESSÃO / WHATSAPP
-       ========================================================================== -->
-    <div class="modal-overlay" id="modalPedido">
-        <div class="modal-container" style="max-width: 600px;">
-            <div class="modal-header">
-                <h3><i class="fa-brands fa-whatsapp" style="color: #10b981;"></i> Pedido de Impressão — PrintExpress</h3>
-                <button class="modal-close" onclick="fecharModal('modalPedido')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Documento / Material:</label>
-                    <input type="text" id="pedMaterial" class="form-control" readonly value="Material do Gerador">
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Tipo de Impressão:</label>
-                        <select id="pedTipo" class="form-control" onchange="calcularPedido()">
-                            <option value="PB">Preto e Branco</option>
-                            <option value="Colorida">Colorida</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Tipo de Papel:</label>
-                        <select id="pedPapel" class="form-control" onchange="calcularPedido()">
-                            <option value="A4 Comum">A4 Comum (75g)</option>
-                            <option value="A4 Resistente">A4 Resistente / Off-set (120g)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Quantidade de Cópias/Páginas:</label>
-                    <input type="number" id="pedQtd" class="form-control" value="1" min="1" onchange="calcularPedido()">
-                </div>
+      if (type === 'url') {
+        html = `<div class="form-group"><label>Link URL</label><input type="text" id="qr-content" class="form-control" placeholder="https://seusite.com.br" oninput="generateQRCode()"></div>`;
+      } else if (type === 'whatsapp') {
+        html = `
+          <div class="form-group"><label>Número do WhatsApp (com DDD)</label><input type="text" id="qr-wa-num" class="form-control" placeholder="11999998888" oninput="generateQRCode()"></div>
+          <div class="form-group"><label>Mensagem Automática</label><input type="text" id="qr-wa-msg" class="form-control" placeholder="Olá, vim pelo QR Code!" oninput="generateQRCode()"></div>
+        `;
+      } else if (type === 'wifi') {
+        html = `
+          <div class="form-group"><label>Nome da Rede (SSID)</label><input type="text" id="qr-wifi-name" class="form-control" oninput="generateQRCode()"></div>
+          <div class="form-group"><label>Senha da Rede</label><input type="text" id="qr-wifi-pass" class="form-control" oninput="generateQRCode()"></div>
+        `;
+      } else if (type === 'pix') {
+        html = `<div class="form-group"><label>Código PIX Copia e Cola</label><textarea id="qr-content" class="form-control" rows="3" placeholder="Cole o código PIX completo aqui" oninput="generateQRCode()"></textarea></div>`;
+      } else {
+        html = `<div class="form-group"><label>Texto Livre</label><textarea id="qr-content" class="form-control" rows="3" oninput="generateQRCode()"></textarea></div>`;
+      }
 
-                <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px;">
-                    <h4 style="color: #fff; margin-bottom: 10px;">✨ Serviços Extras de Edição</h4>
-                    <div id="pedExtras">
-                        <!-- Checkboxes de serviços extras -->
-                    </div>
-                </div>
+      container.innerHTML = html;
+      generateQRCode();
+    }
 
-                <div style="margin-top: 20px; background: var(--background); padding: 15px; border-radius: var(--radius-md); border: 1px solid var(--border);">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span>Impressão:</span> <strong id="resImp">R$ 0,00</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span>Extras:</span> <strong id="resExt">R$ 0,00</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 1.1rem; color: var(--accent-green); border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px;">
-                        <span>Total Estimado:</span> <strong id="resTotal">R$ 0,00</strong>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="fecharModal('modalPedido')">Cancelar</button>
-                <button class="btn btn-whatsapp" onclick="enviarPedidoWhatsapp()"><i class="fa-brands fa-whatsapp"></i> Enviar Pedido via WhatsApp</button>
-            </div>
-        </div>
-    </div>
+    function generateQRCode() {
+      const target = document.getElementById('qrcode-target');
+      target.innerHTML = '';
+      
+      const type = document.getElementById('qr-type').value;
+      let payload = '';
 
-    <!-- ==========================================================================
-       LÓGICA JAVASCRIPT COMPLETA
-       ========================================================================== -->
-    <script>
-        /* ==========================================================================
-           1. ESTRUTURA DE DADOS & LISTAS DE GERADORES
-           ========================================================================== */
-        const GERADORES = [
-            { id: 'envelope', nome: 'Envelope A4 Dobrável', cat: 'impressao', icon: 'fa-envelope', desc: 'Linhas de corte e dobra para montar envelope funcional sem comprar pronto.' },
-            { id: 'capaABNT', nome: 'Capa Escolar ABNT', cat: 'estudantes', icon: 'fa-graduation-cap', desc: 'Modelo escolar formatado automaticamente nas margens ABNT.' },
-            { id: 'tabelaPrecos', nome: 'Tabela de Preços A4', cat: 'negocios', icon: 'fa-tags', desc: 'Para lanchonetes, salões, mecânicas e comércios.' },
-            { id: 'efeitoCroqui', nome: 'Desenho para Colorir (Croqui)', cat: 'utilitarios', icon: 'fa-paint-brush', desc: 'Transforme qualquer foto em linhas para colorir via Canvas.' },
-            { id: 'cacaPalavras', nome: 'Caça-Palavras Interativo', cat: 'jogos', icon: 'fa-border-all', desc: 'Gera grade real com palavras na horizontal, vertical e diagonal.' },
-            { id: 'cruzadinhas', nome: 'Palavras Cruzadas', cat: 'jogos', icon: 'fa-square-plus', desc: 'Gera palavras cruzadas com grade numerada e dicas.' },
-            { id: 'jogosDinamicas', nome: 'Jogos e Dinâmicas Rápidas', cat: 'jogos', icon: 'fa-dice', desc: 'Quebra-gelo, integração e dinâmicas escolares prontas.' },
-            { id: 'listaPresenca', nome: 'Lista de Presença / Assinaturas', cat: 'documentos', icon: 'fa-list-check', desc: 'Tabela A4 para eventos, reuniões e aulas.' },
-            { id: 'folhaRedacao', nome: 'Folha de Redação Treino', cat: 'estudantes', icon: 'fa-pen-nib', desc: '30 linhas numeradas inspiradas no modelo oficial de exame.' },
-            { id: 'cardapio', nome: 'Cardápio Impresso', cat: 'negocios', icon: 'fa-utensils', desc: 'Layouts modernos, simples e elegantes com QR Code.' },
-            { id: 'qrCode', nome: 'Gerador de QR Code com Logo', cat: 'utilitarios', icon: 'fa-qrcode', desc: 'Crie QR Codes para PIX, Wi-Fi e links em PNG/PDF.' },
-            { id: 'ferramentasPdf', nome: 'Separar / Combinar PDF', cat: 'utilitarios', icon: 'fa-file-pdf', desc: 'Divida páginas ou junte múltiplos arquivos localmente.' },
-            { id: 'convites', nome: 'Convites Festivos', cat: 'impressao', icon: 'fa-cake-candles', desc: 'Modelos para aniversários, festas e eventos formais.' },
-            { id: 'cartoes', nome: 'Cartões Comemorativos', cat: 'impressao', icon: 'fa-heart', desc: 'Cartões para datas especiais, agradecimento e namoro.' },
-            { id: 'ferramentasEstudante', nome: 'Ferramentas de Estudo', cat: 'estudantes', icon: 'fa-stopwatch', desc: 'Cronômetro, calculadora de média e gerador de referências.' },
-            { id: 'planners', nome: 'Planners & Organizadores', cat: 'documentos', icon: 'fa-calendar-days', desc: 'Planner semanal, mensal, controle de hábitos e tarefas.' },
-            { id: 'geradorSenhas', nome: 'Gerador de Senhas Seguras', cat: 'utilitarios', icon: 'fa-key', desc: 'Crie senhas fortes localmente sem enviar à rede.' },
-            { id: 'documentosBloco', nome: 'Documentos e Recibos em Bloco', cat: 'documentos', icon: 'fa-receipt', desc: 'Recibos, orçamentos e OS para impressão em vias.' }
-        ];
+      if (type === 'url' || type === 'pix' || type === 'texto') {
+        payload = document.getElementById('qr-content')?.value || 'PrintExpress';
+      } else if (type === 'whatsapp') {
+        const num = document.getElementById('qr-wa-num')?.value || '';
+        const msg = encodeURIComponent(document.getElementById('qr-wa-msg')?.value || '');
+        payload = `https://wa.me/${num}?text=${msg}`;
+      } else if (type === 'wifi') {
+        const ssid = document.getElementById('qr-wifi-name')?.value || '';
+        const pass = document.getElementById('qr-wifi-pass')?.value || '';
+        payload = `WIFI:S:${ssid};T:WPA;P:${pass};;`;
+      }
 
-        const GUIAS = [
-            { titulo: 'Como imprimir corretamente em A4', desc: 'Ajustes de margem e escala 100% no seu navegador.' },
-            { titulo: 'Como configurar a impressora', desc: 'Escolhendo entre qualidade Rascunho, Normal e Fotográfica.' },
-            { titulo: 'Como transformar folha A4 em envelope', desc: 'Passo a passo simples de dobras sem necessidade de cola.' },
-            { titulo: 'Como fazer uma capa escolar ABNT', desc: 'Regras de espaçamento, fonte e alinhamento institucional.' },
-            { titulo: 'Diferença entre impressão Colorida e P&B', desc: 'Quando compensa investir em toner colorido ou preto.' }
-        ];
+      const colorDark = document.getElementById('qr-color-dark').value;
+      const colorLight = document.getElementById('qr-color-light').value;
 
-        const SERVICOS = [
-            { titulo: 'Impressão & Xerox A4', desc: 'Cópias rápidas com papel de alta alvura.', preco: 'A partir de R$ 0,50' },
-            { titulo: 'Digitalização de Documentos', desc: 'Envie papéis e receba em PDF de alta qualidade.', preco: 'R$ 2,00 / pág' },
-            { titulo: 'Edição & Formatação ABNT', desc: 'Formatamos seu TCC ou trabalho acadêmico.', preco: 'A partir de R$ 8,00' },
-            { titulo: 'Criação de Artes & Logos', desc: 'Design exclusivo para panfletos e cartões.', preco: 'A partir de R$ 10,00' }
-        ];
+      qrcodeObj = new QRCode(target, {
+        text: payload,
+        width: 180,
+        height: 180,
+        colorDark: colorDark,
+        colorLight: colorLight,
+        correctLevel: QRCode.CorrectLevel.H
+      });
 
-        /* ==========================================================================
-           2. INICIALIZAÇÃO & RENDERIZAÇÃO DA INTERFACE
-           ========================================================================== */
-        document.addEventListener("DOMContentLoaded", () => {
-            renderizarGeradores(GERADORES);
-            renderizarGuias();
-            renderizarServicos();
-            iniciarCarrossel();
+      const label = document.getElementById('qr-label-text').value;
+      document.getElementById('qrcode-label-target').innerText = label;
+    }
+
+    function downloadQR(format) {
+      const img = document.querySelector('#qrcode-target img');
+      if (!img) return;
+
+      if (format === 'png') {
+        const a = document.createElement('a');
+        a.href = img.src;
+        a.download = 'qrcode-printexpress.png';
+        a.click();
+      } else if (format === 'pdf') {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+        pdf.addImage(img.src, 'PNG', 60, 40, 90, 90);
+        const label = document.getElementById('qr-label-text').value;
+        if (label) {
+          pdf.setFontSize(16);
+          pdf.text(label, 105, 140, { align: 'center' });
+        }
+        pdf.save('qrcode-printexpress.pdf');
+      }
+    }
+
+    function printQR() {
+      const img = document.querySelector('#qrcode-target img');
+      if(!img) return;
+      const win = window.open('', '_blank');
+      win.document.write(`<img src="${img.src}" style="width: 300px;"><p>${document.getElementById('qr-label-text').value}</p>`);
+      win.document.close();
+      win.print();
+    }
+
+    /* ===================================================
+       2. CONVERSOR DE IMAGEM PARA PDF
+       =================================================== */
+    let selectedImages = [];
+
+    function handleImgSelection(event) {
+      const files = Array.from(event.target.files);
+      const thumbsContainer = document.getElementById('img-thumbs-container');
+      thumbsContainer.innerHTML = '';
+      selectedImages = [];
+
+      files.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          selectedImages.push(e.target.result);
+          
+          const div = document.createElement('div');
+          div.className = 'thumb-container';
+          div.innerHTML = `
+            <img src="${e.target.result}" class="thumb-item">
+            <span class="thumb-remove" onclick="removeImg(${index})">&times;</span>
+          `;
+          thumbsContainer.appendChild(div);
+          
+          document.getElementById('img2pdf-status').innerText = `${selectedImages.length} imagem(ns) carregada(s).`;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function removeImg(index) {
+      selectedImages.splice(index, 1);
+      document.getElementById('img2pdf-status').innerText = `${selectedImages.length} imagem(ns) carregada(s).`;
+    }
+
+    function generateImgToPDF() {
+      if (selectedImages.length === 0) {
+        alert('Selecione pelo menos uma imagem.');
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const size = document.getElementById('img2pdf-size').value;
+      const orient = document.getElementById('img2pdf-orient').value;
+      const margin = parseInt(document.getElementById('img2pdf-margin').value);
+
+      const pdf = new jsPDF({
+        orientation: orient,
+        format: size
+      });
+
+      selectedImages.forEach((imgData, i) => {
+        if (i > 0) pdf.addPage(size, orient);
+        
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        
+        const renderWidth = pageWidth - (margin * 2);
+        const renderHeight = pageHeight - (margin * 2);
+
+        pdf.addImage(imgData, 'JPEG', margin, margin, renderWidth, renderHeight);
+      });
+
+      pdf.save('imagens-convertidas.pdf');
+    }
+
+    /* ===================================================
+       3. CONVERSOR DE PDF PARA IMAGEM
+       =================================================== */
+    let pdfDocLoaded = null;
+    let convertedImages = [];
+
+    function loadPDFForConversion(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const fileReader = new FileReader();
+      fileReader.onload = function() {
+        const typedarray = new Uint8Array(this.result);
+        pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+          pdfDocLoaded = pdf;
+          document.getElementById('pdf2img-status').innerText = `PDF Carregado: ${pdf.numPages} página(s).`;
         });
+      };
+      fileReader.readAsArrayBuffer(file);
+    }
 
-        function renderizarGeradores(lista) {
-            const grid = document.getElementById("generatorsGrid");
-            grid.innerHTML = "";
-            lista.forEach(item => {
-                grid.innerHTML += `
-                    <div class="gen-card">
-                        <div>
-                            <div class="gen-card-header">
-                                <div class="gen-card-icon"><i class="fa-solid ${item.icon}"></i></div>
-                                <h3>${item.nome}</h3>
-                            </div>
-                            <p>${item.desc}</p>
-                        </div>
-                        <button class="btn btn-primary btn-sm" onclick="abrirGerador('${item.id}')">
-                            <i class="fa-solid fa-play"></i> Abrir Gerador
-                        </button>
-                    </div>
-                `;
-            });
-        }
+    async function convertPDFToImages() {
+      if (!pdfDocLoaded) {
+        alert('Carregue um arquivo PDF primeiro.');
+        return;
+      }
 
-        function renderizarGuias() {
-            const grid = document.getElementById("guidesGrid");
-            grid.innerHTML = "";
-            GUIAS.forEach(g => {
-                grid.innerHTML += `
-                    <div class="guide-card" onclick="exibirGuiaModal('${g.titulo}', '${g.desc}')">
-                        <h4><i class="fa-solid fa-book-open" style="color: var(--accent);"></i> ${g.titulo}</h4>
-                        <p>${g.desc}</p>
-                    </div>
-                `;
-            });
-        }
+      const container = document.getElementById('pdf2img-preview-container');
+      container.innerHTML = '<p>Convertendo páginas...</p>';
+      convertedImages = [];
 
-        function renderizarServicos() {
-            const grid = document.getElementById("servicesGrid");
-            grid.innerHTML = "";
-            SERVICOS.forEach(s => {
-                grid.innerHTML += `
-                    <div class="service-card">
-                        <i class="fa-solid fa-print"></i>
-                        <h4>${s.titulo}</h4>
-                        <p>${s.desc}</p>
-                        <div class="service-price">${s.preco}</div>
-                        <button class="btn btn-whatsapp btn-sm" onclick="solicitarServicoDirect('${s.titulo}')">
-                            <i class="fa-brands fa-whatsapp"></i> Solicitado via WhatsApp
-                        </button>
-                    </div>
-                `;
-            });
-        }
+      const format = document.getElementById('pdf2img-format').value;
 
-        /* ==========================================================================
-           3. LÓGICA DO CARROSSEL PROMO
-           ========================================================================== */
-        let slideIndex = 0;
-        function iniciarCarrossel() {
-            const track = document.getElementById("promoTrack");
-            const dotsContainer = document.getElementById("promoDots");
-            const slides = document.querySelectorAll(".promo-slide");
+      for (let i = 1; i <= pdfDocLoaded.numPages; i++) {
+        const page = await pdfDocLoaded.getPage(i);
+        const viewport = page.getViewport({ scale: 1.5 });
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
 
-            slides.forEach((_, idx) => {
-                const dot = document.createElement("div");
-                dot.classList.add("dot");
-                if (idx === 0) dot.classList.add("active");
-                dot.onclick = () => mudarSlide(idx);
-                dotsContainer.appendChild(dot);
-            });
+        await page.render({ canvasContext: context, viewport: viewport }).promise;
+        const imgData = canvas.toDataURL(format);
+        convertedImages.push(imgData);
+      }
 
-            setInterval(() => {
-                slideIndex = (slideIndex + 1) % slides.length;
-                mudarSlide(slideIndex);
-            }, 5000);
-        }
+      container.innerHTML = '';
+      convertedImages.forEach((src, idx) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.style.width = '100px';
+        img.style.margin = '5px';
+        img.style.border = '1px solid #ccc';
+        container.appendChild(img);
+      });
 
-        function mudarSlide(index) {
-            slideIndex = index;
-            const track = document.getElementById("promoTrack");
-            track.style.transform = `translateX(-${index * 100}%)`;
-            document.querySelectorAll(".dot").forEach((d, idx) => {
-                d.classList.toggle("active", idx === index);
-            });
-        }
+      document.getElementById('pdf2img-download-actions').classList.remove('hidden');
+    }
 
-        /* ==========================================================================
-           4. FILTROS & BUSCA EM TEMPO REAL
-           ========================================================================== */
-        function filtrarGeradores() {
-            const termo = document.getElementById("searchInput").value.toLowerCase();
-            const filtrados = GERADORES.filter(g => 
-                g.nome.toLowerCase().includes(termo) || g.desc.toLowerCase().includes(termo)
-            );
-            renderizarGeradores(filtrados);
-        }
+    function downloadPDFImagesZIP() {
+      if (convertedImages.length === 0) return;
+      const zip = new JSZip();
+      
+      convertedImages.forEach((data, index) => {
+        const base64Data = data.replace(/^data:image\/(png|jpeg);base64,/, "");
+        zip.file(`pagina_${index + 1}.png`, base64Data, { base64: true });
+      });
 
-        function filtrarCategoria(cat, btn) {
-            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            if (cat === 'todos') {
-                renderizarGeradores(GERADORES);
-            } else {
-                renderizarGeradores(GERADORES.filter(g => g.cat === cat));
-            }
-        }
+      zip.generateAsync({ type: "blob" }).then(function(content) {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(content);
+        a.download = "paginas_pdf.zip";
+        a.click();
+      });
+    }
 
-        /* ==========================================================================
-           5. ROTEADOR DE GERADORES & INTERFACE DINÂMICA
-           ========================================================================== */
-        let geradorAtualId = "";
+    /* ===================================================
+       4. GERADOR DE CARDÁPIOS
+       =================================================== */
+    let menuItems = [
+      { name: "Hambúrguer Artesanal", desc: "Pão brioche, 180g de carne, queijo cheddar", price: "32.00" },
+      { name: "Refrigerante Lata", desc: "350ml trincando de gelado", price: "6.00" }
+    ];
 
-        function abrirGerador(id) {
-            geradorAtualId = id;
-            const modal = document.getElementById("modalGerador");
-            const titulo = document.getElementById("modalTitulo");
-            const conteudo = document.getElementById("modalConteudo");
-            const acoes = document.getElementById("modalAcoes");
+    function addMenuItem() {
+      menuItems.push({ name: "Novo Item", desc: "Descrição do produto", price: "0.00" });
+      renderMenuEditor();
+      renderMenuPreview();
+    }
 
-            const gInfo = GERADORES.find(item => item.id === id);
-            titulo.innerHTML = `<i class="fa-solid ${gInfo.icon}"></i> ${gInfo.nome}`;
-            
-            // Injeta formulário e estrutura específica de cada gerador
-            conteudo.innerHTML = construirFormularioGerador(id);
-            acoes.innerHTML = `
-                <button class="btn btn-secondary" onclick="fecharModal('modalGerador')">Fechar</button>
-                <button class="btn btn-secondary" onclick="imprimirPreviewA4()"><i class="fa-solid fa-print"></i> Imprimir</button>
-                <button class="btn btn-primary" onclick="baixarPdfPreview()"><i class="fa-solid fa-download"></i> Baixar PDF</button>
-                <button class="btn btn-whatsapp" onclick="abrirModalPedido('${gInfo.nome}')"><i class="fa-brands fa-whatsapp"></i> Quero que o PrintExpress imprima</button>
-            `;
+    function renderMenuEditor() {
+      const container = document.getElementById('menu-items-list');
+      container.innerHTML = '';
+      menuItems.forEach((item, index) => {
+        container.innerHTML += `
+          <div style="background: var(--bg-light); padding: 10px; margin-bottom: 8px; border-radius: 6px;">
+            <div class="form-row">
+              <input type="text" value="${item.name}" class="form-control" oninput="menuItems[${index}].name = this.value; renderMenuPreview();">
+              <input type="text" value="${item.price}" class="form-control" style="width: 90px;" oninput="menuItems[${index}].price = this.value; renderMenuPreview();">
+            </div>
+            <input type="text" value="${item.desc}" class="form-control" style="margin-top: 5px;" oninput="menuItems[${index}].desc = this.value; renderMenuPreview();">
+          </div>
+        `;
+      });
+    }
 
-            modal.classList.add("active");
-            executarInicializacaoGerador(id);
-        }
+    function renderMenuPreview() {
+      const name = document.getElementById('menu-name').value;
+      const slogan = document.getElementById('menu-slogan').value;
+      const phone = document.getElementById('menu-phone').value;
+      const theme = document.getElementById('menu-theme').value;
+      
+      const target = document.getElementById('menu-target');
+      
+      let bg = "#ffffff", text = "#000000", accent = "#2563eb";
+      if (theme === 'moderno') { bg = "#0f172a"; text = "#ffffff"; accent = "#f59e0b"; }
 
-        function fecharModal(id) {
-            document.getElementById(id).classList.remove("active");
-        }
+      target.style.background = bg;
+      target.style.color = text;
 
-        /* ==========================================================================
-           6. CONSTRUÇÃO DOS FORMULÁRIOS & COMPONENTES A4
-           ========================================================================== */
-        function construirFormularioGerador(id) {
-            switch (id) {
-                case 'envelope':
-                    return `
-                        <p class="section-subtitle" style="text-align:left;">O envelope A4 dobrável possui marcações exatas de corte e dobra para você recortar e colar.</p>
-                        <div class="print-preview-container">
-                            <div class="a4-page" id="a4Preview">
-                                <div style="border: 2px dashed #000; height: 100%; position: relative; padding: 20px; box-sizing: border-box;">
-                                    <div style="position: absolute; top: 10px; left: 10px; font-size: 10px; color: #666;">✂️ LINHA DE CORTE EXTERNA</div>
-                                    <div style="border-bottom: 1px dashed #999; margin-top: 80px; text-align: center; font-size: 11px; color: #666;">--- DOBRA DA ABA SUPERIOR ---</div>
-                                    <div style="height: 120px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; border: 1px solid #ddd; margin: 20px 0;">
-                                        ÁREA DO ENVELOPE (FRENTE)
-                                    </div>
-                                    <div style="border-bottom: 1px dashed #999; text-align: center; font-size: 11px; color: #666;">--- DOBRA DA ABA INFERIOR ---</div>
-                                    <div style="margin-top: 40px; font-size: 12px; line-height: 1.8;">
-                                        <strong>INSTRUÇÕES:</strong><br>
-                                        1. Recorte nas linhas tracejadas externas.<br>
-                                        2. Dobre as abas laterais para dentro.<br>
-                                        3. Passe cola nas abas e dobre a parte inferior para fechar o envelope.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+      let itemsHtml = '';
+      menuItems.forEach(item => {
+        itemsHtml += `
+          <div style="margin-bottom: 12px; border-bottom: 1px dashed rgba(150,150,150,0.3); padding-bottom: 6px;">
+            <div style="display: flex; justify-content: space-between; font-weight: bold;">
+              <span>${item.name}</span>
+              <span style="color: ${accent}">R$ ${item.price}</span>
+            </div>
+            <div style="font-size: 0.8rem; opacity: 0.8;">${item.desc}</div>
+          </div>
+        `;
+      });
 
-                case 'capaABNT':
-                    return `
-                        <div class="form-row">
-                            <div class="form-group"><label>Instituição de Ensino:</label><input type="text" id="abntEscola" class="form-control" value="NOME DA ESCOLA / UNIVERSIDADE" oninput="atualizarCapaABNT()"></div>
-                            <div class="form-group"><label>Disciplina:</label><input type="text" id="abntDisciplina" class="form-control" value="DISCIPLINA DE PORTUGUÊS" oninput="atualizarCapaABNT()"></div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group"><label>Título do Trabalho:</label><input type="text" id="abntTitulo" class="form-control" value="TÍTULO PRINCIPAL DO TRABALHO" oninput="atualizarCapaABNT()"></div>
-                            <div class="form-group"><label>Subtítulo:</label><input type="text" id="abntSub" class="form-control" value="Subtítulo Descritivo ABNT" oninput="atualizarCapaABNT()"></div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group"><label>Nome do Aluno:</label><input type="text" id="abntAluno" class="form-control" value="Nome Completo do Estudante" oninput="atualizarCapaABNT()"></div>
-                            <div class="form-group"><label>Professor:</label><input type="text" id="abntProf" class="form-control" value="Prof. Nome do Professor" oninput="atualizarCapaABNT()"></div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group"><label>Cidade:</label><input type="text" id="abntCidade" class="form-control" value="São Paulo" oninput="atualizarCapaABNT()"></div>
-                            <div class="form-group"><label>Ano:</label><input type="text" id="abntAno" class="form-control" value="2026" oninput="atualizarCapaABNT()"></div>
-                        </div>
-                        <div class="print-preview-container">
-                            <div class="a4-page" id="a4Preview" style="display: flex; flex-direction: column; justify-content: space-between; text-align: center; padding: 30mm 20mm 20mm 30mm;">
-                                <div>
-                                    <h3 id="prevEscola" style="font-size: 14pt; font-weight: bold; text-transform: uppercase;">NOME DA ESCOLA / UNIVERSIDADE</h3>
-                                    <p id="prevDisc" style="font-size: 12pt; margin-top: 5px;">DISCIPLINA DE PORTUGUÊS</p>
-                                </div>
-                                <div>
-                                    <h1 id="prevTitulo" style="font-size: 16pt; font-weight: bold; text-transform: uppercase;">TÍTULO PRINCIPAL DO TRABALHO</h1>
-                                    <h4 id="prevSub" style="font-size: 12pt; font-weight: normal; margin-top: 10px;">Subtítulo Descritivo ABNT</h4>
-                                </div>
-                                <div style="text-align: right; width: 60%; margin-left: auto;">
-                                    <p id="prevAluno" style="font-size: 12pt;"><strong>Aluno:</strong> Nome Completo do Estudante</p>
-                                    <p id="prevProf" style="font-size: 12pt;"><strong>Professor:</strong> Prof. Nome do Professor</p>
-                                </div>
-                                <div>
-                                    <p id="prevCidadeAno" style="font-size: 12pt; text-transform: uppercase;">SÃO PAULO<br>2026</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+      target.innerHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h2 style="color: ${accent}; margin: 0;">${name}</h2>
+          <small>${slogan}</small>
+        </div>
+        <div>${itemsHtml}</div>
+        <div style="text-align: center; margin-top: 20px; font-size: 0.8rem; opacity: 0.8;">
+          Pedidos pelo WhatsApp: ${phone}
+        </div>
+      `;
+    }
 
-                case 'efeitoCroqui':
-                    return `
-                        <div class="form-group">
-                            <label>Selecione uma imagem do seu computador:</label>
-                            <input type="file" id="imgCroqui" class="form-control" accept="image/*" onchange="processarCroqui()">
-                        </div>
-                        <div class="form-group">
-                            <label>Intensidade do Traço:</label>
-                            <input type="range" id="limiarCroqui" min="10" max="150" value="70" class="form-control" onchange="processarCroqui()">
-                        </div>
-                        <div class="print-preview-container">
-                            <div class="a4-page" id="a4Preview" style="text-align: center;">
-                                <h3 style="margin-bottom: 20px;">Desenho para Colorir</h3>
-                                <canvas id="canvasCroqui" style="max-width: 100%; height: auto; border: 1px solid #ccc;"></canvas>
-                            </div>
-                        </div>
-                    `;
+    function printMenu() {
+      const content = document.getElementById('menu-target').innerHTML;
+      const win = window.open('', '_blank');
+      win.document.write(`<html><body style="font-family: sans-serif; padding: 30px;">${content}</body></html>`);
+      win.document.close();
+      win.print();
+    }
 
-                case 'cacaPalavras':
-                    return `
-                        <div class="form-group">
-                            <label>Digite as palavras separadas por vírgula:</label>
-                            <input type="text" id="palavrasCaca" class="form-control" value="PRINTEXPRESS, IMPRESSAO, PAPEL, CANVAS, A4, ESCOLA" oninput="gerarCacaPalavras()">
-                        </div>
-                        <div class="print-preview-container">
-                            <div class="a4-page" id="a4Preview">
-                                <h2 style="text-align: center; margin-bottom: 20px;">CAÇA-PALAVRAS</h2>
-                                <div id="gridCaca" style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; text-align: center; font-family: monospace; font-size: 16px; font-weight: bold; margin-bottom: 30px;"></div>
-                                <h3>Palavras para Encontrar:</h3>
-                                <ul id="listaPalavrasCaca" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;"></ul>
-                            </div>
-                        </div>
-                    `;
+    /* ===================================================
+       5. DOCUMENTOS FISCAIS / ADM EM BLOCOS
+       =================================================== */
+    function renderDocPreview() {
+      const type = document.getElementById('doc-type').value;
+      const empresa = document.getElementById('doc-empresa').value;
+      const cnpj = document.getElementById('doc-cnpj').value;
+      const cliente = document.getElementById('doc-cliente').value;
+      const valor = parseFloat(document.getElementById('doc-valor').value || 0).toFixed(2);
+      const startNum = document.getElementById('block-start').value.padStart(3, '0');
 
-                case 'geradorSenhas':
-                    return `
-                        <div class="form-row">
-                            <div class="form-group"><label>Tamanho da Senha:</label><input type="number" id="senhaTam" class="form-control" value="16" min="6" max="64" oninput="gerarNovasSenhas()"></div>
-                            <div class="form-group"><label>Quantidade:</label><input type="number" id="senhaQtd" class="form-control" value="5" min="1" max="20" oninput="gerarNovasSenhas()"></div>
-                        </div>
-                        <button class="btn btn-primary" onclick="gerarNovasSenhas()" style="margin-bottom: 20px;"><i class="fa-solid fa-rotate"></i> Gerar Novas Senhas</button>
-                        <p style="font-size: 0.85rem; color: var(--accent-green); margin-bottom: 10px;">🔒 Senhas geradas 100% no seu navegador com Javascript de criptografia local. Nada é enviado ao servidor.</p>
-                        <div class="print-preview-container">
-                            <div class="a4-page" id="a4Preview">
-                                <h3>Suas Senhas Seguras Geradas:</h3>
-                                <div id="listaSenhas" style="margin-top: 15px; font-family: monospace; font-size: 16px; line-height: 2;"></div>
-                            </div>
-                        </div>
-                    `;
+      const target = document.getElementById('doc-target');
+      target.innerHTML = `
+        <div style="border: 2px solid #000; padding: 15px;">
+          <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 8px;">
+            <div>
+              <strong>${empresa}</strong><br>
+              <small>CNPJ/CPF: ${cnpj}</small>
+            </div>
+            <div style="text-align: right;">
+              <span style="color: red; font-weight: bold;">Nº ${startNum}</span><br>
+              <small>${type}</small>
+            </div>
+          </div>
+          <div style="margin-top: 15px;">
+            <p><strong>Recebemos de / Cliente:</strong> ${cliente}</p>
+            <p><strong>Valor:</strong> R$ ${valor}</p>
+            <p style="margin-top: 20px;">________________________________________<br>Assinatura do Emitente</p>
+          </div>
+        </div>
+      `;
+    }
 
-                case 'qrCode':
-                    return `
-                        <div class="form-row">
-                            <div class="form-group"><label>Conteúdo / Link / Chave PIX:</label><input type="text" id="qrText" class="form-control" value="https://printexpress.com.br" oninput="renderizarQRCode()"></div>
-                            <div class="form-group"><label>Legenda / Rótulo:</label><input type="text" id="qrLabel" class="form-control" value="Escaneie para Acessar" oninput="renderizarQRCode()"></div>
-                        </div>
-                        <div class="print-preview-container">
-                            <div class="a4-page" id="a4Preview" style="text-align: center; padding-top: 50px;">
-                                <h2 id="prevQrLabel" style="margin-bottom: 30px;">Escaneie para Acessar</h2>
-                                <div id="qrcodeDisplay" style="display: flex; justify-content: center; margin-bottom: 20px;"></div>
-                            </div>
-                        </div>
-                    `;
+    function calculateBlockPricing() {
+      renderDocPreview();
+      const qty = parseInt(document.getElementById('block-qty').value);
+      const start = parseInt(document.getElementById('block-start').value);
+      const end = start + qty - 1;
 
-                case 'documentosBloco':
-                    return `
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Modelo de Documento:</label>
-                                <select id="blocoModelo" class="form-control" onchange="atualizarBloco()">
-                                    <option value="Recibo">1. Recibo Comercial</option>
-                                    <option value="Orçamento">2. Orçamento de Serviços</option>
-                                    <option value="OS">3. Ordem de Serviço</option>
-                                </select>
-                            </div>
-                            <div class="form-group"><label>Nome do Emitente:</label><input type="text" id="blocoEmitente" class="form-control" value="PrintExpress Serviços Gráficos" oninput="atualizarBloco()"></div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group"><label>Nome do Cliente:</label><input type="text" id="blocoCliente" class="form-control" value="João da Silva" oninput="atualizarBloco()"></div>
-                            <div class="form-group"><label>Valor R$:</label><input type="text" id="blocoValor" class="form-control" value="150,00" oninput="atualizarBloco()"></div>
-                        </div>
-                        <div class="form-group"><label>Descrição / Referência:</label><input type="text" id="blocoDesc" class="form-control" value="Prestação de serviços de impressão e encadernação." oninput="atualizarBloco()"></div>
-                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">* Este gerador cria modelos para uso administrativo e interno. Não substitui nota fiscal oficial eletrônica.</p>
-                        <div class="print-preview-container">
-                            <div class="a4-page" id="a4Preview">
-                                <div style="border: 2px solid #000; padding: 20px; position: relative;">
-                                    <h2 id="docTit" style="text-align: center; text-transform: uppercase; margin-bottom: 15px;">RECIBO COMERCIAL</h2>
-                                    <p><strong>EMITENTE:</strong> <span id="docEm">PrintExpress Serviços Gráficos</span></p>
-                                    <p><strong>CLIENTE:</strong> <span id="docCli">João da Silva</span></p>
-                                    <p><strong>VALOR:</strong> R$ <span id="docVal">150,00</span></p>
-                                    <p style="margin-top: 15px;"><strong>REFERENTE A:</strong></p>
-                                    <p id="docTexto" style="border: 1px solid #ccc; padding: 10px; margin-top: 5px;">Prestação de serviços de impressão e encadernação.</p>
-                                    <div style="margin-top: 60px; text-align: center;">
-                                        ______________________________________________________<br>
-                                        Assinatura do Responsável
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+      let price = PRINTEXPRESS.precos.bloco50vias;
+      if (qty === 100) price = PRINTEXPRESS.precos.bloco100vias;
+      if (qty === 500) price = PRINTEXPRESS.precos.bloco100vias * 4.5;
 
-                default:
-                    return `
-                        <div class="print-preview-container">
-                            <div class="a4-page" id="a4Preview">
-                                <h2 style="text-align: center; margin-bottom: 20px;">${id.toUpperCase()}</h2>
-                                <p>Gerador pronto e formatado para tamanho A4 padrão. Preencha os campos e realize o download em PDF ou envie diretamente para impressão na PrintExpress.</p>
-                            </div>
-                        </div>
-                    `;
-            }
-        }
+      const summary = document.getElementById('block-cost-summary');
+      if (qty === 1) {
+        summary.innerHTML = `<p>Documento Avulso (Impressão simples em folha única).</p>`;
+      } else {
+        summary.innerHTML = `
+          <p><strong>Quantidade:</strong> ${qty} vias em Bloco</p>
+          <p><strong>Numeração Sequencial:</strong> N° ${String(start).padStart(3, '0')} até N° ${String(end).padStart(3, '0')}</p>
+          <p><strong>Valor estimado de Impressão:</strong> R$ ${price.toFixed(2)}</p>
+        `;
+      }
+    }
 
-        /* ==========================================================================
-           7. INICIALIZAÇÃO DE REGRAS ESPECÍFICAS DE CADA GERADOR
-           ========================================================================== */
-        function executarInicializacaoGerador(id) {
-            if (id === 'cacaPalavras') gerarCacaPalavras();
-            if (id === 'geradorSenhas') gerarNovasSenhas();
-            if (id === 'qrCode') setTimeout(renderizarQRCode, 200);
-        }
+    function printDocument() {
+      const content = document.getElementById('doc-target').innerHTML;
+      const win = window.open('', '_blank');
+      win.document.write(`<html><body style="font-family: sans-serif; padding: 20px;">${content}</body></html>`);
+      win.document.close();
+      win.print();
+    }
 
-        /* Funções de Atualização Dinâmica do DOM / Canvas */
-        function atualizarCapaABNT() {
-            document.getElementById("prevEscola").innerText = document.getElementById("abntEscola").value;
-            document.getElementById("prevDisc").innerText = document.getElementById("abntDisciplina").value;
-            document.getElementById("prevTitulo").innerText = document.getElementById("abntTitulo").value;
-            document.getElementById("prevSub").innerText = document.getElementById("abntSub").value;
-            document.getElementById("prevAluno").innerHTML = "<strong>Aluno:</strong> " + document.getElementById("abntAluno").value;
-            document.getElementById("prevProf").innerHTML = "<strong>Professor:</strong> " + document.getElementById("abntProf").value;
-            document.getElementById("prevCidadeAno").innerHTML = document.getElementById("abntCidade").value + "<br>" + document.getElementById("abntAno").value;
-        }
+    function orderBlockProduction() {
+      const qty = document.getElementById('block-qty').value;
+      const type = document.getElementById('doc-type').value;
+      const text = `Olá PrintExpress! Gostaria de encomendar a impressão do bloco de ${type} (${qty} vias).`;
+      window.open(`https://wa.me/${PRINTEXPRESS.whatsapp}?text=${encodeURIComponent(text)}`, '_blank');
+    }
 
-        function processarCroqui() {
-            const fileInput = document.getElementById("imgCroqui");
-            const limiar = parseInt(document.getElementById("limiarCroqui").value);
-            const canvas = document.getElementById("canvasCroqui");
-            const ctx = canvas.getContext("2d");
+    /* ===================================================
+       6. GERADOR DE SENHAS
+       =================================================== */
+    function generatePassword() {
+      const length = parseInt(document.getElementById('pass-length').value);
+      const upper = document.getElementById('pass-upper').checked;
+      const lower = document.getElementById('pass-lower').checked;
+      const numbers = document.getElementById('pass-numbers').checked;
+      const symbols = document.getElementById('pass-symbols').checked;
 
-            if (!fileInput.files[0]) return;
+      let chars = "";
+      if (upper) chars += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      if (lower) chars += "abcdefghijklmnopqrstuvwxyz";
+      if (numbers) chars += "0123456789";
+      if (symbols) chars += "!@#$%^&*()_+-=[]{}|";
 
-            const img = new Image();
-            img.onload = function() {
-                canvas.width = 400;
-                canvas.height = (img.height / img.width) * 400;
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      if (chars === "") {
+        document.getElementById('pass-result').innerText = "Selecione uma opção";
+        return;
+      }
 
-                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const data = imgData.data;
+      let password = "";
+      for (let i = 0; i < length; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
 
-                // Algoritmo de Sobel / Filtro de Linha Preto e Branco
-                for (let i = 0; i < data.length; i += 4) {
-                    let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                    let v = avg < limiar ? 0 : 255;
-                    data[i] = v;     // R
-                    data[i + 1] = v; // G
-                    data[i + 2] = v; // B
-                }
-                ctx.putImageData(imgData, 0, 0);
-            };
-            img.src = URL.createObjectURL(fileInput.files[0]);
-        }
+      document.getElementById('pass-result').innerText = password;
 
-        function gerarCacaPalavras() {
-            const raw = document.getElementById("palavrasCaca").value;
-            const palavras = raw.split(",").map(s => s.trim().toUpperCase()).filter(s => s.length > 0);
-            const grid = document.getElementById("gridCaca");
-            const lista = document.getElementById("listaPalavrasCaca");
-            grid.innerHTML = "";
-            lista.innerHTML = "";
+      // Força da Senha
+      const strengthElem = document.getElementById('pass-strength');
+      if (length < 8) {
+        strengthElem.innerText = "Força: Fraca";
+        strengthElem.style.color = "#dc2626";
+      } else if (length < 12) {
+        strengthElem.innerText = "Força: Média";
+        strengthElem.style.color = "#f59e0b";
+      } else {
+        strengthElem.innerText = "Força: Muito Forte";
+        strengthElem.style.color = "#16a34a";
+      }
+    }
 
-            const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            for (let i = 0; i < 144; i++) {
-                const char = letras.charAt(Math.floor(Math.random() * letras.length));
-                grid.innerHTML += `<div style="border:1px solid #eee; padding: 4px;">${char}</div>`;
-            }
+    function copyPassword() {
+      const pass = document.getElementById('pass-result').innerText;
+      if (pass) {
+        navigator.clipboard.writeText(pass);
+        alert('Senha copiada para a área de transferência!');
+      }
+    }
 
-            palavras.forEach(p => {
-                lista.innerHTML += `<li style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px;">${p}</li>`;
-            });
-        }
+    /* ===================================================
+       INTEGRAÇÃO WHATSAPP GERAL
+       =================================================== */
+    function sendOrder(item) {
+      const msg = `Olá! Criei o arquivo para ${item} no site da PrintExpress e quero solicitar a impressão profissional.`;
+      window.open(`https://wa.me/${PRINTEXPRESS.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
 
-        function gerarNovasSenhas() {
-            const tam = parseInt(document.getElementById("senhaTam").value);
-            const qtd = parseInt(document.getElementById("senhaQtd").value);
-            const container = document.getElementById("listaSenhas");
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
-            container.innerHTML = "";
+    function sendDirectService(servico) {
+      const msg = `Olá! Tenho interesse no serviço de: ${servico}. Podem me passar mais informações?`;
+      window.open(`https://wa.me/${PRINTEXPRESS.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
 
-            for (let i = 0; i < qtd; i++) {
-                let pass = "";
-                for (let j = 0; j < tam; j++) {
-                    pass += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
-                container.innerHTML += `<div>🔑 ${pass}</div>`;
-            }
-        }
-
-        function renderizarQRCode() {
-            const display = document.getElementById("qrcodeDisplay");
-            const txt = document.getElementById("qrText").value;
-            const lbl = document.getElementById("qrLabel").value;
-            document.getElementById("prevQrLabel").innerText = lbl;
-            display.innerHTML = "";
-
-            if (txt.trim().length > 0) {
-                new QRCode(display, {
-                    text: txt,
-                    width: 200,
-                    height: 200
-                });
-            }
-        }
-
-        function atualizarBloco() {
-            document.getElementById("docTit").innerText = document.getElementById("blocoModelo").value;
-            document.getElementById("docEm").innerText = document.getElementById("blocoEmitente").value;
-            document.getElementById("docCli").innerText = document.getElementById("blocoCliente").value;
-            document.getElementById("docVal").innerText = document.getElementById("blocoValor").value;
-            document.getElementById("docTexto").innerText = document.getElementById("blocoDesc").value;
-        }
-
-        /* ==========================================================================
-           8. DOWNLOAD DE PDF E IMPRESSÃO
-           ========================================================================== */
-        function imprimirPreviewA4() {
-            window.print();
-        }
-
-        function baixarPdfPreview() {
-            const element = document.getElementById("a4Preview");
-            const { jsPDF } = window.jspdf;
-
-            html2canvas(element, { scale: 2 }).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const imgProps = pdf.getImageProperties(imgData);
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                pdf.save(`PrintExpress_${geradorAtualId}.pdf`);
-            });
-        }
-
-        /* ==========================================================================
-           9. INTEGRAÇÃO WHATSAPP & CÁLCULO DE ORÇAMENTO DE IMPRESSÃO
-           ========================================================================== */
-        let materialSelecionadoPedido = "";
-
-        function abrirModalPedido(nomeMaterial) {
-            materialSelecionadoPedido = nomeMaterial;
-            document.getElementById("pedMaterial").value = nomeMaterial;
-            
-            // Monta lista de checkboxes para serviços extras
-            const extrasContainer = document.getElementById("pedExtras");
-            extrasContainer.innerHTML = `
-                <label style="display:block; margin-bottom: 6px;"><input type="checkbox" id="extEdicao" onchange="calcularPedido()"> Edição e Ajuste de Texto (+R$ ${PRINTEXPRESS_CONFIG.precos.edicaoTexto.toFixed(2)})</label>
-                <label style="display:block; margin-bottom: 6px;"><input type="checkbox" id="extArte" onchange="calcularPedido()"> Arte Personalizada (+R$ ${PRINTEXPRESS_CONFIG.precos.arte.toFixed(2)})</label>
-                <label style="display:block;"><input type="checkbox" id="extAjuste" onchange="calcularPedido()"> Ajuste Fino para Impressão (+R$ ${PRINTEXPRESS_CONFIG.precos.ajusteImpressao.toFixed(2)})</label>
-            `;
-
-            calcularPedido();
-            document.getElementById("modalPedido").classList.add("active");
-        }
-
-        function abrirPedidoWhatsappDirect() {
-            abrirModalPedido("Impressão / Material Geral");
-        }
-
-        function solicitarServicoDirect(nomeServico) {
-            abrirModalPedido(nomeServico);
-        }
-
-        function calcularPedido() {
-            const tipo = document.getElementById("pedTipo").value;
-            const papel = document.getElementById("pedPapel").value;
-            const qtd = parseInt(document.getElementById("pedQtd").value) || 1;
-
-            let precoUnitario = (tipo === "Colorida") ? PRINTEXPRESS_CONFIG.precos.impressaoColorida : PRINTEXPRESS_CONFIG.precos.impressaoPB;
-            if (papel.includes("Resistente")) {
-                precoUnitario += PRINTEXPRESS_CONFIG.precos.papelResistente;
-            }
-
-            const valorImpressao = precoUnitario * qtd;
-
-            let valorExtras = 0;
-            if (document.getElementById("extEdicao")?.checked) valorExtras += PRINTEXPRESS_CONFIG.precos.edicaoTexto;
-            if (document.getElementById("extArte")?.checked) valorExtras += PRINTEXPRESS_CONFIG.precos.arte;
-            if (document.getElementById("extAjuste")?.checked) valorExtras += PRINTEXPRESS_CONFIG.precos.ajusteImpressao;
-
-            const total = valorImpressao + valorExtras;
-
-            document.getElementById("resImp").innerText = `R$ ${valorImpressao.toFixed(2)}`;
-            document.getElementById("resExt").innerText = `R$ ${valorExtras.toFixed(2)}`;
-            document.getElementById("resTotal").innerText = `R$ ${total.toFixed(2)}`;
-        }
-
-        function enviarPedidoWhatsapp() {
-            const mat = document.getElementById("pedMaterial").value;
-            const tipo = document.getElementById("pedTipo").value;
-            const papel = document.getElementById("pedPapel").value;
-            const qtd = document.getElementById("pedQtd").value;
-            const total = document.getElementById("resTotal").innerText;
-
-            const edicao = document.getElementById("extEdicao")?.checked ? "Sim" : "Não";
-
-            const msg = `Olá! Quero fazer um pedido na ${PRINTEXPRESS_CONFIG.empresa.nome}.%0A%0A` +
-                        `📄 *Serviço/Material:* ${mat}%0A` +
-                        `📑 *Quantidade:* ${qtd}%0A` +
-                        `🎨 *Impressão:* ${tipo}%0A` +
-                        `📃 *Papel:* ${papel}%0A` +
-                        `✏️ *Edição Extra:* ${edicao}%0A%0A` +
-                        `💰 *Valor Estimado:* ${total}%0A%0A` +
-                        `Gostaria de confirmar o pedido e enviar o arquivo!`;
-
-            const url = `https://wa.me/${PRINTEXPRESS_CONFIG.whatsapp}?text=${msg}`;
-            window.open(url, '_blank');
-        }
-
-        function exibirGuiaModal(titulo, conteudo) {
-            alert(`📚 GUIAS PRINTEXPRESS\n\n${titulo}\n\n${conteudo}\n\nDica: Para obter o melhor resultado, configure as margens da impressora como "Nenhuma" ou "Padrão" e selecione escala 100%.`);
-        }
-    </script>
+    /* INICIALIZAÇÃO */
+    window.onload = function() {
+      updateQrFields();
+      renderMenuEditor();
+      renderMenuPreview();
+      calculateBlockPricing();
+      generatePassword();
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    };
+  </script>
 </body>
 </html>
