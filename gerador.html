@@ -1,577 +1,1589 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="light">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PrintExpress - Central de Geradores & Impressão</title>
-  <style>
-    :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --accent: #f59e0b;
-      --bg: #f8fafc;
-      --surface: #ffffff;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-    }
-
-    [data-theme="dark"] {
-      --bg: #0f172a;
-      --surface: #1e293b;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --border: #334155;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); line-height: 1.5; transition: background-color 0.3s, color 0.3s; }
-
-    header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
-    .header-controls { display: flex; align-items: center; gap: 1rem; }
-    .search-bar { padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 20px; width: 280px; background: var(--bg); color: var(--text); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrintExpress — Crie. Imprima. Pronto.</title>
     
-    .theme-toggle {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 600;
-    }
+    <!-- CDNs para Bibliotecas Externas -->
+    <!-- Font Awesome (Ícones) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- jsPDF & html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- pdf-lib (Para Separar/Combinar PDFs) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <!-- QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-    /* Publicidade Estilo Filme (Carrossel Full Width) */
-    .ad-carousel-container {
-      width: 100%;
-      overflow: hidden;
-      background: #000;
-      color: #fff;
-      position: relative;
-      height: 250px;
-    }
+    <style>
+        /* ==========================================================================
+           RESET & ESTILOS BASE
+           ========================================================================== */
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary: #0f172a;
+            --accent: #06b6d4;
+            --accent-green: #10b981;
+            --background: #0b0f19;
+            --surface: #1e293b;
+            --surface-card: #0f172a;
+            --surface-hover: #334155;
+            --border: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-    .ad-carousel-track {
-      display: flex;
-      width: 400%;
-      height: 100%;
-      transition: transform 0.6s ease-in-out;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
 
-    .ad-slide {
-      width: 25%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 2rem 4rem;
-      background-size: cover;
-      background-position: center;
-      position: relative;
-    }
+        body {
+            background-color: var(--background);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-    .ad-slide::before {
-      content: '';
-      position: absolute;
-      top:0; left:0; right:0; bottom:0;
-      background: linear-gradient(90deg, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0.3) 100%);
-    }
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: var(--transition);
+        }
 
-    .ad-content { position: relative; z-index: 2; max-width: 600px; }
-    .ad-tag { background: var(--accent); color: #000; padding: 0.2rem 0.6rem; font-weight: bold; font-size: 0.75rem; border-radius: 4px; text-transform: uppercase; }
-    .ad-title { font-size: 2rem; margin: 0.5rem 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
-    .ad-desc { font-size: 1rem; color: #cbd5e1; margin-bottom: 1rem; }
+        a:hover {
+            color: var(--primary);
+        }
 
-    /* Layout Principal */
-    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
-    .section-title { font-size: 1.5rem; margin-bottom: 1rem; border-left: 4px solid var(--primary); padding-left: 0.5rem; }
+        /* Container Padrão */
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-    .grid-tools {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 3rem;
-    }
+        /* Botões Estilizados */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            text-align: center;
+        }
 
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      transition: transform 0.2s, box-shadow 0.2s;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
 
-    .card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-    .card-icon { font-size: 2rem; margin-bottom: 0.5rem; }
-    .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .card-desc { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem; }
-    
-    .btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.6rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      text-align: center;
-      text-decoration: none;
-    }
-    .btn:hover { background: var(--primary-dark); }
-    .btn-whatsapp { background: #25d366; }
-    .btn-whatsapp:hover { background: #128c7e; }
+        .btn-primary:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
 
-    /* Módulo de Nota Fiscal / Impressão */
-    .invoice-builder {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2rem;
-      margin-top: 2rem;
-    }
+        .btn-secondary {
+            background-color: var(--surface);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
 
-    .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; margin-bottom: 0.3rem; font-weight: 600; font-size: 0.9rem; }
-    .form-control { width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); }
-    
-    .checkbox-group { display: flex; gap: 1rem; align-items: center; margin: 1rem 0; }
+        .btn-secondary:hover {
+            background-color: var(--surface-hover);
+            color: #ffffff;
+        }
 
-    /* Modal / Area do Gerador Integrado */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-content {
-      background: var(--surface);
-      padding: 2rem;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 700px;
-      max-height: 90vh;
-      overflow-y: auto;
-      position: relative;
-    }
-    .close-btn { position: absolute; top: 1rem; right: 1rem; cursor: pointer; font-size: 1.5rem; font-weight: bold; }
-    
-    /* Folha A4 para Impressão Automática */
-    #printableArea {
-      background: white;
-      color: black;
-      padding: 20px;
-      border: 1px solid #ccc;
-      margin-top: 1rem;
-      min-height: 400px;
-      font-family: Arial, sans-serif;
-    }
+        .btn-whatsapp {
+            background-color: var(--accent-green);
+            color: #ffffff;
+        }
 
-    @media print {
-      body * { visibility: hidden; }
-      #printableArea, #printableArea * { visibility: visible; }
-      #printableArea { position: absolute; left: 0; top: 0; width: 100%; border: none; }
-    }
-  </style>
+        .btn-whatsapp:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 0.85rem;
+        }
+
+        /* Campos de Formulário */
+        .form-group {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            background-color: var(--background);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            width: 100%;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        /* ==========================================================================
+           CABEÇALHO / HEADER
+           ========================================================================== */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+        }
+
+        /* ==========================================================================
+           HERO SECTION
+           ========================================================================== */
+        .hero {
+            padding: 70px 0 40px;
+            text-align: center;
+            background: radial-gradient(circle at top center, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            line-height: 1.15;
+            background: linear-gradient(to right, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 680px;
+            margin: 0 auto 30px;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        /* ==========================================================================
+           CARROSSEL DE PUBLICIDADE
+           ========================================================================== */
+        .promo-carousel-container {
+            margin: 30px auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            background: var(--surface-card);
+        }
+
+        .promo-track {
+            display: flex;
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .promo-slide {
+            min-width: 100%;
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+        }
+
+        .promo-content {
+            max-width: 60%;
+        }
+
+        .promo-content h3 {
+            font-size: 1.8rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .promo-content p {
+            font-size: 1.05rem;
+            color: var(--text-main);
+        }
+
+        .promo-icon-area {
+            font-size: 5rem;
+            color: var(--primary);
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 140px;
+            height: 140px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .promo-dots {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .dot.active {
+            background-color: var(--accent);
+            width: 24px;
+            border-radius: 10px;
+        }
+
+        /* ==========================================================================
+           SEÇÃO COMO FUNCIONA
+           ========================================================================== */
+        .how-it-works {
+            padding: 50px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .step-card {
+            background-color: var(--surface);
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            text-align: center;
+            position: relative;
+        }
+
+        .step-num {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .step-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .step-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* ==========================================================================
+           ÁREA DE GERADORES & BUSCA
+           ========================================================================== */
+        .generators-section {
+            padding: 60px 0;
+        }
+
+        .search-box {
+            max-width: 500px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .search-box input {
+            padding-left: 44px;
+            height: 48px;
+            border-radius: 30px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .categories-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            background-color: var(--surface);
+            color: var(--text-muted);
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background-color: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        .generators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .gen-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: var(--transition);
+        }
+
+        .gen-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: var(--shadow);
+        }
+
+        .gen-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .gen-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            background: rgba(37, 99, 235, 0.15);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .gen-card-header h3 {
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .gen-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        /* ==========================================================================
+           MODAL / WORKSPACE DO GERADOR (Abertura de Geradores)
+           ========================================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-container {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--surface-card);
+        }
+
+        .modal-header h3 {
+            font-size: 1.2rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            background-color: var(--surface-card);
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        /* ==========================================================================
+           IMPRESSÃO & CANVAS / PREVIEW A4
+           ========================================================================== */
+        .print-preview-container {
+            background-color: #525659;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .a4-page {
+            background-color: #ffffff;
+            color: #000000;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            box-sizing: border-box;
+            position: relative;
+            font-family: Arial, sans-serif;
+            margin: 0 auto;
+        }
+
+        /* Ocultar elementos desnecessários durante a Impressão Real */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .print-preview-container, .print-preview-container * {
+                visibility: visible;
+            }
+            .print-preview-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 0;
+                background: none;
+            }
+            .a4-page {
+                box-shadow: none;
+                margin: 0;
+                width: 100%;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        /* ==========================================================================
+           SEÇÃO DE GUIAS / ARTIGOS
+           ========================================================================== */
+        .guides-section {
+            padding: 60px 0;
+            background-color: var(--surface-card);
+            border-top: 1px solid var(--border);
+        }
+
+        .guides-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .guide-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .guide-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .guide-card h4 {
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+        }
+
+        .guide-card p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+
+        /* ==========================================================================
+           SEÇÃO DE SERVIÇOS DO PRINTEXPRESS
+           ========================================================================== */
+        .services-section {
+            padding: 60px 0;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .service-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            text-align: center;
+        }
+
+        .service-card i {
+            font-size: 2.2rem;
+            color: var(--accent);
+            margin-bottom: 14px;
+        }
+
+        .service-card h4 {
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .service-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .service-price {
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+        }
+
+        /* ==========================================================================
+           FOOTER
+           ========================================================================== */
+        footer {
+            background-color: var(--surface-card);
+            border-top: 1px solid var(--border);
+            padding: 40px 0 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.1rem; }
+            .hero p { font-size: 1rem; }
+            .header-container { flex-direction: row; justify-content: space-between; }
+            .nav-menu { display: none; } /* Ocultar menu em telas muito pequenas */
+            .promo-slide { flex-direction: column; text-align: center; padding: 24px; }
+            .promo-content { max-width: 100%; }
+            .promo-icon-area { width: 80px; height: 80px; font-size: 2.5rem; margin: 0 auto; }
+            .a4-page { width: 100%; padding: 10mm; min-height: auto; }
+        }
+    </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo">PrintExpress</div>
-    <div class="header-controls">
-      <input type="text" id="searchInput" class="search-bar" placeholder="Buscar entre os 32 geradores..." onkeyup="filterTools()">
-      <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙 Modo Escuro</button>
-    </div>
-  </header>
+    <!-- ==========================================================================
+       CONFIGURAÇÕES CENTRALIZADAS (JAVASCRIPT)
+       ========================================================================== -->
+    <script>
+        const PRINTEXPRESS_CONFIG = {
+            whatsapp: "5541999999999", // Número configurável
+            precos: {
+                impressaoPB: 0.50,
+                impressaoColorida: 1.50,
+                papelResistente: 1.00, // Adicional por folha
+                edicaoTexto: 5.00,
+                arte: 10.00,
+                digitalizacao: 2.00,
+                formatacao: 8.00,
+                ajusteImpressao: 3.00
+            },
+            empresa: {
+                nome: "PrintExpress",
+                slogan: "Crie. Imprima. Pronto.",
+                cidade: "Curitiba - PR"
+            }
+        };
+    </script>
 
-  <!-- Carrossel de Publicidade (Estilo Filme / Full Width) -->
-  <div class="ad-carousel-container">
-    <div class="ad-carousel-track" id="carouselTrack">
-      <div class="ad-slide" style="background-image: url('https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?auto=format&fit=crop&w=1200&q=80');">
-        <div class="ad-content">
-          <span class="ad-tag">PrintExpress Apresenta</span>
-          <h2 class="ad-title">Seus Documentos com Qualidade Gráfica</h2>
-          <p class="ad-desc">Gere grátis no site e receba impresso em papel offset de alta gramatura direto na sua casa!</p>
+    <!-- ==========================================================================
+       TOPO / CABEÇALHO
+       ========================================================================== -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <i class="fa-solid fa-print"></i> PrintExpress
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#geradores" class="nav-link">Geradores</a></li>
+                <li><a href="#guias" class="nav-link">Guias</a></li>
+                <li><a href="#servicos" class="nav-link">Serviços</a></li>
+                <li><a href="#como-funciona" class="nav-link">Como Funciona</a></li>
+            </ul>
+            <button class="btn btn-whatsapp btn-sm" onclick="abrirPedidoWhatsappDirect()">
+                <i class="fa-solid fa-print"></i> Quero Imprimir
+            </button>
         </div>
-      </div>
-      <div class="ad-slide" style="background-image: url('https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=1200&q=80');">
-        <div class="ad-content">
-          <span class="ad-tag">Edição Profissional</span>
-          <h2 class="ad-title">Precisa Ajustar Sua Arte?</h2>
-          <p class="ad-desc">Contrate nosso serviço extra de edição. Ajustamos margens, logotipos e layouts com precisão.</p>
+    </header>
+
+    <!-- ==========================================================================
+       HERO
+       ========================================================================== -->
+    <section class="hero">
+        <div class="container">
+            <h1>Crie seus materiais em poucos cliques.</h1>
+            <p>Use nossos geradores gratuitamente, baixe seus arquivos ou peça para o PrintExpress imprimir para você.</p>
+            <div class="hero-btns">
+                <a href="#geradores" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Explorar Geradores</a>
+                <button class="btn btn-secondary" onclick="abrirPedidoWhatsappDirect()"><i class="fa-solid fa-print"></i> Quero Imprimir</button>
+            </div>
         </div>
-      </div>
-      <div class="ad-slide" style="background-image: url('https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=1200&q=80');">
-        <div class="ad-content">
-          <span class="ad-tag">Material Escolar e ABNT</span>
-          <h2 class="ad-title">Imprima Suas Capas e Planners</h2>
-          <p class="ad-desc">Formatação 100% pronta. Evite dores de cabeça com a impressora de casa.</p>
+    </section>
+
+    <!-- ==========================================================================
+       PUBLICIDADE (CARROSSEL)
+       ========================================================================== -->
+    <div class="container">
+        <div class="promo-carousel-container">
+            <div class="promo-track" id="promoTrack">
+                <!-- Ad 1 -->
+                <div class="promo-slide">
+                    <div class="promo-content">
+                        <h3>Precisando imprimir?</h3>
+                        <p>Crie seu arquivo aqui e deixe o resto com a PrintExpress. Entrega rápida e excelente qualidade.</p>
+                    </div>
+                    <div class="promo-icon-area"><i class="fa-solid fa-file-invoice"></i></div>
+                </div>
+                <!-- Ad 2 -->
+                <div class="promo-slide">
+                    <div class="promo-content">
+                        <h3>Seu trabalho pronto em minutos.</h3>
+                        <p>Capa ABNT, redação, referências bibliográficas, planners e muito mais sem complicação.</p>
+                    </div>
+                    <div class="promo-icon-area"><i class="fa-solid fa-graduation-cap"></i></div>
+                </div>
+                <!-- Ad 3 -->
+                <div class="promo-slide">
+                    <div class="promo-content">
+                        <h3>Seu negócio com visual profissional.</h3>
+                        <p>Cardápios impressos, tabelas de preços, QR Codes PIX, listas e etiquetas personalizadas.</p>
+                    </div>
+                    <div class="promo-icon-area"><i class="fa-solid fa-store"></i></div>
+                </div>
+                <!-- Ad 4 -->
+                <div class="promo-slide">
+                    <div class="promo-content">
+                        <h3>Você cria. A PrintExpress imprime.</h3>
+                        <p>Envie seu pedido pelo WhatsApp e receba seu orçamento instantaneamente sem sair de casa.</p>
+                    </div>
+                    <div class="promo-icon-area"><i class="fa-brands fa-whatsapp"></i></div>
+                </div>
+            </div>
+            <div class="promo-dots" id="promoDots"></div>
         </div>
-      </div>
-      <div class="ad-slide" style="background-image: url('https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1200&q=80');">
-        <div class="ad-content">
-          <span class="ad-tag">Solução Comercial</span>
-          <h2 class="ad-title">Blocos de Notas Fiscais e Recibos</h2>
-          <p class="ad-desc">Monte o seu bloco personalizado online e receba o talão impresso e numerado.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <main class="container">
-    <h2 class="section-title">Geradores e Ferramentas Gratuitas (32 Recursos)</h2>
-    <div class="grid-tools" id="toolsGrid">
-      
-      <!-- OS 32 CARDS DOS GERADORES -->
-      <div class="card" data-title="envelope a4 dobravel">
-        <div><div class="card-icon">✉️</div><div class="card-title">1. Envelope A4 Dobrável</div><div class="card-desc">Gere linhas de corte e dobra para envelopes funcionais em folha A4.</div></div>
-        <button class="btn" onclick="openGenerator('Envelope A4', 'Digite o destinatário e remetente para montar as dobras.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="capa de trabalho escolar abnt">
-        <div><div class="card-icon">🎓</div><div class="card-title">2. Capa Escolar / ABNT</div><div class="card-desc">Ajusta automaticamente margens, instituição, título e autores na ABNT.</div></div>
-        <button class="btn" onclick="openGenerator('Capa ABNT', 'Preencha a Escola, Disciplina e Título do Trabalho.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="tabela de precos a4">
-        <div><div class="card-icon">📋</div><div class="card-title">3. Tabela de Preços A4</div><div class="card-desc">Layout para lanchonetes, salões e oficinas fixarem na parede ou balcão.</div></div>
-        <button class="btn" onclick="openGenerator('Tabela de Preços', 'Monte os produtos e valores em colunas organizadas.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="desenhos para colorir efeito croqui">
-        <div><div class="card-icon">🎨</div><div class="card-title">4. Desenho para Colorir</div><div class="card-desc">Converte imagens em contornos pretos para impressão e pintura.</div></div>
-        <button class="btn" onclick="openGenerator('Desenho Croqui', 'Selecione uma imagem do seu computador para conversão.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="caca palavras e cruzadinhas">
-        <div><div class="card-icon">🧩</div><div class="card-title">5. Caça-Palavras & Cruzadinhas</div><div class="card-desc">Digite palavras para criar uma grade de jogo A4 personalizada.</div></div>
-        <button class="btn" onclick="openGenerator('Caça-Palavras', 'Digite as palavras separadas por vírgula para gerar a grade.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="lista de presenca assinaturas">
-        <div><div class="card-icon">📝</div><div class="card-title">6. Lista de Presença</div><div class="card-desc">Cabeçalho do evento com tabela de Nome, RG e Assinatura.</div></div>
-        <button class="btn" onclick="openGenerator('Lista de Presença', 'Informe o Nome do Evento, Data e número de linhas.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="folha de redacao enem concursos">
-        <div><div class="card-icon">📄</div><div class="card-title">7. Folha de Redação ENEM</div><div class="card-desc">Folha A4 oficial com 30 linhas numeradas e campo de avaliação.</div></div>
-        <button class="btn" onclick="openGenerator('Folha ENEM', 'Gere o modelo padronizado de 30 linhas pronto para treino.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="cardapios impressos qr code">
-        <div><div class="card-icon">🍔</div><div class="card-title">8. Cardápio A4 com QR Code</div><div class="card-desc">Layout completo para restaurantes com opções e QR do WhatsApp.</div></div>
-        <button class="btn" onclick="openGenerator('Cardápio A4', 'Informe os pratos, valores e link para QR Code.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="qr code com logo pix wifi">
-        <div><div class="card-icon">📲</div><div class="card-title">9. QR Code com Logo</div><div class="card-desc">Gere códigos PIX, Wi-Fi e redes sociais com dimensionamento gráfico.</div></div>
-        <button class="btn" onclick="openGenerator('QR Code', 'Digite o texto, chave PIX ou link para gerar o código.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="pdf separador combinador">
-        <div><div class="card-icon">🛠️</div><div class="card-title">10. Separador / Combinador PDF</div><div class="card-desc">Selecione páginas específicas de PDF ou una arquivos para imprimir.</div></div>
-        <button class="btn" onclick="openGenerator('Ferramenta PDF', 'Escolha os arquivos PDF e as páginas para extração.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="convites de aniversario e festas">
-        <div><div class="card-icon">🎉</div><div class="card-title">11. Gerador de Convites</div><div class="card-desc">Preencha data, horário e local para convites prontos de festas.</div></div>
-        <button class="btn" onclick="openGenerator('Convites', 'Informe Anfitrião, Evento, Data, Hora e Endereço.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="cartoes de aniversario e namoro">
-        <div><div class="card-icon">💌</div><div class="card-title">12. Cartões Comemorativos</div><div class="card-desc">Aniversário, Agradecimento, Dia das Mães e Namoro dobráveis.</div></div>
-        <button class="btn" onclick="openGenerator('Cartões', 'Escolha a ocasião e digite sua mensagem personalizada.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="cronometro e temporizador de estudos">
-        <div><div class="card-icon">⏱️</div><div class="card-title">13. Cronômetro & Pomodoro</div><div class="card-desc">Temporizador de ciclos de estudo para aumentar a produtividade.</div></div>
-        <button class="btn" onclick="openGenerator('Cronômetro Pomodoro', 'Ajuste os tempos de foco e descansos de estudo.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="calculadora de notas escolares">
-        <div><div class="card-icon">🧮</div><div class="card-title">14. Calculadora de Notas</div><div class="card-desc">Calcule médias ponderadas escolares e descubra quanto falta para passar.</div></div>
-        <button class="btn" onclick="openGenerator('Calculadora de Notas', 'Insira as notas dos bimestres e os pesos.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="gerador de referencias bibliograficas abnt">
-        <div><div class="card-icon">📚</div><div class="card-title">15. Gerador de Referências ABNT</div><div class="card-desc">Formatador automático de citação de livros, sites e artigos.</div></div>
-        <button class="btn" onclick="openGenerator('Referências ABNT', 'Preencha Autor, Título, Ano e Editora para formatar.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="planejamento e plano de estudos">
-        <div><div class="card-icon">📖</div><div class="card-title">16. Planejamento de Estudos</div><div class="card-desc">Matriz semanal para distribuição de matérias e horários.</div></div>
-        <button class="btn" onclick="openGenerator('Plano de Estudos', 'Defina as matérias por dias da semana e turnos.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="planner semanal a4">
-        <div><div class="card-icon">📅</div><div class="card-title">17. Planner Semanal A4</div><div class="card-desc">Organizador visual de segunda a domingo com quadro de prioridades.</div></div>
-        <button class="btn" onclick="openGenerator('Planner Semanal', 'Monte sua rotina semanal para impressão em A4.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="planner mensal a4">
-        <div><div class="card-icon">🗓️</div><div class="card-title">18. Planner Mensal A4</div><div class="card-desc">Calendário contínuo sem data para planejamento de longo prazo.</div></div>
-        <button class="btn" onclick="openGenerator('Planner Mensal', 'Selecione o mês e ano para gerar a grade mensal.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="lista de tarefas e checklist">
-        <div><div class="card-icon">☑️</div><div class="card-title">19. Lista de Tarefas / Checklist</div><div class="card-desc">Checklist estruturado com caixas de marcação e níveis de urgência.</div></div>
-        <button class="btn" onclick="openGenerator('Checklist', 'Insira as tarefas para gerar a lista com quadrinhos.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="controle de habitos habit tracker">
-        <div><div class="card-icon">📊</div><div class="card-title">20. Controle de Hábitos</div><div class="card-desc">Grade de acompanhamento diário para 30 dias de hábitos saudáveis.</div></div>
-        <button class="btn" onclick="openGenerator('Tracker de Hábitos', 'Digite os hábitos que deseja monitorar este mês.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="gerador de senhas seguras">
-        <div><div class="card-icon">🔒</div><div class="card-title">21. Gerador de Senhas</div><div class="card-desc">Crie senhas criptográficas fortes personalizando caracteres.</div></div>
-        <button class="btn" onclick="openGenerator('Gerador de Senhas', 'Escolha o tamanho e símbolos para gerar a senha.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="gerador de notas fiscais bloco recibo">
-        <div><div class="card-icon">🧾</div><div class="card-title">22. Bloco de Notas Fiscais/Recibos</div><div class="card-desc">Modelo comercial com dados da empresa, cliente e tabela de itens.</div></div>
-        <button class="btn" onclick="openGenerator('Bloco de Nota Fiscal', 'Preencha os itens para gerar a Nota/Recibo pronto.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="jogos e dinamicas rapidas">
-        <div><div class="card-icon">🎲</div><div class="card-title">23. Jogos & Dinâmicas Rápidas</div><div class="card-desc">Gerador de Stop/Adedanha, Bingo e Cartelas de brincadeiras.</div></div>
-        <button class="btn" onclick="openGenerator('Jogo Stop/Bingo', 'Escolha as categorias para imprimir a folha do jogo.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="recibo simples de pagamento">
-        <div><div class="card-icon">💵</div><div class="card-title">24. Recibo de Pagamento</div><div class="card-desc">Comprovante individual de pagamento impresso em 2 vias na folha.</div></div>
-        <button class="btn" onclick="openGenerator('Recibo Simples', 'Insira Pagador, Recebedor, Valor e Referência.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="etiquetas para cadernos e pastas">
-        <div><div class="card-icon">🏷️</div><div class="card-title">25. Criador de Etiquetas A4</div><div class="card-desc">Cartela de etiquetas escolares e organizadoras de objetos.</div></div>
-        <button class="btn" onclick="openGenerator('Etiquetas', 'Digite o nome e matéria para replicar na cartela.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="contrato simples de servicos">
-        <div><div class="card-icon">📜</div><div class="card-title">26. Contrato de Serviços Simples</div><div class="card-desc">Minuta rápida de prestação de serviços com cláusulas básicas.</div></div>
-        <button class="btn" onclick="openGenerator('Contrato Simples', 'Informe Contratante, Contratado e Valor do Serviço.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="rifa e talao de sorteio">
-        <div><div class="card-icon">🎟️</div><div class="card-title">27. Gerador de Rifas / Talão</div><div class="card-desc">Rifas numeradas com canhoto destacados para eventos e prêmios.</div></div>
-        <button class="btn" onclick="openGenerator('Gerador de Rifas', 'Defina o prêmio, valor do bilhete e quantidade.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="placa de aviso e sinalizacao">
-        <div><div class="card-icon">🚫</div><div class="card-title">28. Placas de Aviso A4</div><div class="card-desc">Placas para 'Sorria você está sendo filmado', 'Proibido Estacionar', etc.</div></div>
-        <button class="btn" onclick="openGenerator('Placas de Aviso', 'Escolha o símbolo e a frase principal do aviso.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="controle financeiro orcamento">
-        <div><div class="card-icon">💰</div><div class="card-title">29. Planilha de Orçamento A4</div><div class="card-desc">Tabela de controle de entradas, saídas e economias do mês.</div></div>
-        <button class="btn" onclick="openGenerator('Controle Financeiro', 'Crie o formulário de fluxo de caixa para balcão.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="certificados e diplomas">
-        <div><div class="card-icon">🏆</div><div class="card-title">30. Gerador de Certificados</div><div class="card-desc">Certificados de cursos, palestras e participação em eventos.</div></div>
-        <button class="btn" onclick="openGenerator('Certificado', 'Preencha o nome do participante, curso e carga horária.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="pauta e ata de reuniao">
-        <div><div class="card-icon">📌</div><div class="card-title">31. Pauta & Ata de Reunião</div><div class="card-desc">Documento formal para registro de pautas e deliberações de equipe.</div></div>
-        <button class="btn" onclick="openGenerator('Ata de Reunião', 'Informe a pauta, participantes e decisões tomadas.')">Gerar Agora</button>
-      </div>
-
-      <div class="card" data-title="vale presente e cupom de desconto">
-        <div><div class="card-icon">🎁</div><div class="card-title">32. Vale-Presente / Vouchers</div><div class="card-desc">Cartões de cupom de presente para estabelecimentos comerciais.</div></div>
-        <button class="btn" onclick="openGenerator('Vale-Presente', 'Digite a empresa, valor e código de validação.')">Gerar Agora</button>
-      </div>
-
     </div>
 
-    <!-- Seção do Gerador de Nota Fiscal & Pedido de Impressão -->
-    <h2 class="section-title">Emissão de Nota Fiscal / Pedido de Impressão</h2>
-    <div class="invoice-builder">
-      <p style="margin-bottom: 1rem; color: var(--text-muted);">Todos os geradores são 100% grátis para uso e impressão local. Se preferir receber o bloco impresso em papel gráfico ou precisar de edições personalizadas, solicite abaixo via WhatsApp.</p>
-      
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
-        <div class="form-group">
-          <label>Nome / Razão Social</label>
-          <input type="text" id="cliName" class="form-control" placeholder="Seu nome ou empresa">
+    <!-- ==========================================================================
+       COMO FUNCIONA
+       ========================================================================== -->
+    <section class="how-it-works" id="como-funciona">
+        <div class="container">
+            <h2 class="section-title">Como Funciona</h2>
+            <p class="section-subtitle">Simples, rápido e sem necessidade de cadastro</p>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <span class="step-num">1️⃣</span>
+                    <h4>Crie</h4>
+                    <p>Escolha um gerador gratuito e preencha os dados no formulário interativo.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-num">2️⃣</span>
+                    <h4>Baixe</h4>
+                    <p>Gere o documento final e baixe o arquivo em PDF pronto para uso imediatamente.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-num">3️⃣</span>
+                    <h4>Imprima</h4>
+                    <p>Imprima em casa ou solicite a impressão de alta qualidade com a PrintExpress.</p>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-          <label>CNPJ / CPF</label>
-          <input type="text" id="cliDoc" class="form-control" placeholder="00.000.000/0001-00">
+    </section>
+
+    <!-- ==========================================================================
+       ÁREA DE GERADORES
+       ========================================================================== -->
+    <section class="generators-section" id="geradores">
+        <div class="container">
+            <h2 class="section-title">Geradores Gratuitos</h2>
+            <p class="section-subtitle">Crie gratuitamente materiais prontos para imprimir</p>
+            
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" class="form-control" placeholder="🔎 Pesquisar gerador..." oninput="filtrarGeradores()">
+            </div>
+
+            <div class="categories-tabs" id="categoriesTabs">
+                <button class="tab-btn active" onclick="filtrarCategoria('todos', this)">Todos</button>
+                <button class="tab-btn" onclick="filtrarCategoria('impressao', this)">📄 Impressão</button>
+                <button class="tab-btn" onclick="filtrarCategoria('estudantes', this)">🎓 Estudantes</button>
+                <button class="tab-btn" onclick="filtrarCategoria('documentos', this)">📋 Documentos</button>
+                <button class="tab-btn" onclick="filtrarCategoria('negocios', this)">🍔 Negócios</button>
+                <button class="tab-btn" onclick="filtrarCategoria('jogos', this)">🎲 Jogos</button>
+                <button class="tab-btn" onclick="filtrarCategoria('utilitarios', this)">🔐 Utilitários</button>
+            </div>
+
+            <div class="generators-grid" id="generatorsGrid">
+                <!--Cards de Geradores Injetados pelo JS-->
+            </div>
         </div>
-      </div>
+    </section>
 
-      <div class="form-group">
-        <label>Descrição do Documento / Bloco</label>
-        <input type="text" id="docDesc" class="form-control" placeholder="Ex: Bloco de Notas Fiscais (50 folhas A4) ou Planners">
-      </div>
+    <!-- ==========================================================================
+       GUIAS E ARTIGOS
+       ========================================================================== -->
+    <section class="guides-section" id="guias">
+        <div class="container">
+            <h2 class="section-title">📚 Guias & Dicas de Impressão</h2>
+            <p class="section-subtitle">Aprenda a configurar e obter o melhor resultado no papel</p>
+            <div class="guides-grid" id="guidesGrid">
+                <!-- Guias injetados via JS -->
+            </div>
+        </div>
+    </section>
 
-      <div class="checkbox-group">
-        <input type="checkbox" id="checkPrint" onchange="calcTotal()">
-        <label for="checkPrint">Quero receber impresso via correio (+ R$ 35,00)</label>
-      </div>
+    <!-- ==========================================================================
+       SERVIÇOS PRINTEXPRESS
+       ========================================================================== -->
+    <section class="services-section" id="servicos">
+        <div class="container">
+            <h2 class="section-title">✨ Serviços PrintExpress</h2>
+            <p class="section-subtitle">A gente cuida de tudo com carinho e qualidade profissional</p>
+            <div class="services-grid" id="servicesGrid">
+                <!-- Serviços injetados via JS -->
+            </div>
+        </div>
+    </section>
 
-      <div class="checkbox-group">
-        <input type="checkbox" id="checkEdit" onchange="calcTotal()">
-        <label for="checkEdit">Solicitar serviço de edição/ajuste de arte (+ R$ 20,00)</label>
-      </div>
+    <!-- ==========================================================================
+       FOOTER
+       ========================================================================== -->
+    <footer>
+        <div class="container">
+            <p>PrintExpress &copy; 2026 — Crie. Imprima. Pronto.</p>
+            <p style="font-size: 0.8rem; margin-top: 5px;">Processamento 100% seguro e local no navegador. Nenhum arquivo pessoal é enviado a servidores.</p>
+        </div>
+    </footer>
 
-      <div style="margin-top: 1.5rem; font-size: 1.2rem; font-weight: bold;">
-        Valor Estimado: R$ <span id="totalValue">0,00</span>
-      </div>
-
-      <button class="btn btn-whatsapp" style="margin-top: 1rem; width: 100%; font-size: 1rem;" onclick="sendToWhatsApp()">
-        📲 Gerar e Enviar Pedido via WhatsApp
-      </button>
+    <!-- ==========================================================================
+       MODAL DE GERADOR (WORKSPACE)
+       ========================================================================== -->
+    <div class="modal-overlay" id="modalGerador">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalTitulo"><i class="fa-solid fa-gear"></i> Nome do Gerador</h3>
+                <button class="modal-close" onclick="fecharModal('modalGerador')">&times;</button>
+            </div>
+            <div class="modal-body" id="modalConteudo">
+                <!-- Conteúdo do Formulário Dinâmico -->
+            </div>
+            <div class="modal-footer" id="modalAcoes">
+                <!-- Botões de Ação do Gerador -->
+            </div>
+        </div>
     </div>
-  </main>
 
-  <!-- Modal Interativo de Geração do Documento -->
-  <div class="modal" id="generatorModal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeGenerator()">&times;</span>
-      <h3 id="modalTitle" style="margin-bottom: 0.5rem;">Gerador</h3>
-      <p id="modalDesc" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;"></p>
-      
-      <div class="form-group">
-        <label>Conteúdo / Título Principal</label>
-        <input type="text" id="genInput1" class="form-control" placeholder="Digite a informação principal..." oninput="updatePreview()">
-      </div>
+    <!-- ==========================================================================
+       MODAL PEDIDO DE IMPRESSÃO / WHATSAPP
+       ========================================================================== -->
+    <div class="modal-overlay" id="modalPedido">
+        <div class="modal-container" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fa-brands fa-whatsapp" style="color: #10b981;"></i> Pedido de Impressão — PrintExpress</h3>
+                <button class="modal-close" onclick="fecharModal('modalPedido')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Documento / Material:</label>
+                    <input type="text" id="pedMaterial" class="form-control" readonly value="Material do Gerador">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de Impressão:</label>
+                        <select id="pedTipo" class="form-control" onchange="calcularPedido()">
+                            <option value="PB">Preto e Branco</option>
+                            <option value="Colorida">Colorida</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Papel:</label>
+                        <select id="pedPapel" class="form-control" onchange="calcularPedido()">
+                            <option value="A4 Comum">A4 Comum (75g)</option>
+                            <option value="A4 Resistente">A4 Resistente / Off-set (120g)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Quantidade de Cópias/Páginas:</label>
+                    <input type="number" id="pedQtd" class="form-control" value="1" min="1" onchange="calcularPedido()">
+                </div>
 
-      <div class="form-group">
-        <label>Detalhes Adicionais / Subtítulo</label>
-        <textarea id="genInput2" class="form-control" rows="3" placeholder="Digite os dados adicionais..." oninput="updatePreview()"></textarea>
-      </div>
+                <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px;">
+                    <h4 style="color: #fff; margin-bottom: 10px;">✨ Serviços Extras de Edição</h4>
+                    <div id="pedExtras">
+                        <!-- Checkboxes de serviços extras -->
+                    </div>
+                </div>
 
-      <h4 style="margin-top: 1rem;">Visualização para Impressão (A4)</h4>
-      <div id="printableArea">
-        <h2 id="prevTitle" style="text-align: center; margin-bottom: 1rem;">TÍTULO DO DOCUMENTO</h2>
-        <div id="prevContent">Preencha os campos acima para ver a geração automática do documento aqui...</div>
-      </div>
-
-      <button class="btn" style="margin-top: 1rem; width: 100%;" onclick="window.print()">🖨️ Imprimir / Salvar como PDF</button>
+                <div style="margin-top: 20px; background: var(--background); padding: 15px; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>Impressão:</span> <strong id="resImp">R$ 0,00</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>Extras:</span> <strong id="resExt">R$ 0,00</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 1.1rem; color: var(--accent-green); border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px;">
+                        <span>Total Estimado:</span> <strong id="resTotal">R$ 0,00</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="fecharModal('modalPedido')">Cancelar</button>
+                <button class="btn btn-whatsapp" onclick="enviarPedidoWhatsapp()"><i class="fa-brands fa-whatsapp"></i> Enviar Pedido via WhatsApp</button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    // Sistema de Dark / Light Mode
-    function toggleTheme() {
-      const html = document.documentElement;
-      const themeBtn = document.getElementById('themeBtn');
-      if (html.getAttribute('data-theme') === 'light') {
-        html.setAttribute('data-theme', 'dark');
-        themeBtn.innerText = '☀️ Modo Claro';
-      } else {
-        html.setAttribute('data-theme', 'light');
-        themeBtn.innerText = '🌙 Modo Escuro';
-      }
-    }
+    <!-- ==========================================================================
+       LÓGICA JAVASCRIPT COMPLETA
+       ========================================================================== -->
+    <script>
+        /* ==========================================================================
+           1. ESTRUTURA DE DADOS & LISTAS DE GERADORES
+           ========================================================================== */
+        const GERADORES = [
+            { id: 'envelope', nome: 'Envelope A4 Dobrável', cat: 'impressao', icon: 'fa-envelope', desc: 'Linhas de corte e dobra para montar envelope funcional sem comprar pronto.' },
+            { id: 'capaABNT', nome: 'Capa Escolar ABNT', cat: 'estudantes', icon: 'fa-graduation-cap', desc: 'Modelo escolar formatado automaticamente nas margens ABNT.' },
+            { id: 'tabelaPrecos', nome: 'Tabela de Preços A4', cat: 'negocios', icon: 'fa-tags', desc: 'Para lanchonetes, salões, mecânicas e comércios.' },
+            { id: 'efeitoCroqui', nome: 'Desenho para Colorir (Croqui)', cat: 'utilitarios', icon: 'fa-paint-brush', desc: 'Transforme qualquer foto em linhas para colorir via Canvas.' },
+            { id: 'cacaPalavras', nome: 'Caça-Palavras Interativo', cat: 'jogos', icon: 'fa-border-all', desc: 'Gera grade real com palavras na horizontal, vertical e diagonal.' },
+            { id: 'cruzadinhas', nome: 'Palavras Cruzadas', cat: 'jogos', icon: 'fa-square-plus', desc: 'Gera palavras cruzadas com grade numerada e dicas.' },
+            { id: 'jogosDinamicas', nome: 'Jogos e Dinâmicas Rápidas', cat: 'jogos', icon: 'fa-dice', desc: 'Quebra-gelo, integração e dinâmicas escolares prontas.' },
+            { id: 'listaPresenca', nome: 'Lista de Presença / Assinaturas', cat: 'documentos', icon: 'fa-list-check', desc: 'Tabela A4 para eventos, reuniões e aulas.' },
+            { id: 'folhaRedacao', nome: 'Folha de Redação Treino', cat: 'estudantes', icon: 'fa-pen-nib', desc: '30 linhas numeradas inspiradas no modelo oficial de exame.' },
+            { id: 'cardapio', nome: 'Cardápio Impresso', cat: 'negocios', icon: 'fa-utensils', desc: 'Layouts modernos, simples e elegantes com QR Code.' },
+            { id: 'qrCode', nome: 'Gerador de QR Code com Logo', cat: 'utilitarios', icon: 'fa-qrcode', desc: 'Crie QR Codes para PIX, Wi-Fi e links em PNG/PDF.' },
+            { id: 'ferramentasPdf', nome: 'Separar / Combinar PDF', cat: 'utilitarios', icon: 'fa-file-pdf', desc: 'Divida páginas ou junte múltiplos arquivos localmente.' },
+            { id: 'convites', nome: 'Convites Festivos', cat: 'impressao', icon: 'fa-cake-candles', desc: 'Modelos para aniversários, festas e eventos formais.' },
+            { id: 'cartoes', nome: 'Cartões Comemorativos', cat: 'impressao', icon: 'fa-heart', desc: 'Cartões para datas especiais, agradecimento e namoro.' },
+            { id: 'ferramentasEstudante', nome: 'Ferramentas de Estudo', cat: 'estudantes', icon: 'fa-stopwatch', desc: 'Cronômetro, calculadora de média e gerador de referências.' },
+            { id: 'planners', nome: 'Planners & Organizadores', cat: 'documentos', icon: 'fa-calendar-days', desc: 'Planner semanal, mensal, controle de hábitos e tarefas.' },
+            { id: 'geradorSenhas', nome: 'Gerador de Senhas Seguras', cat: 'utilitarios', icon: 'fa-key', desc: 'Crie senhas fortes localmente sem enviar à rede.' },
+            { id: 'documentosBloco', nome: 'Documentos e Recibos em Bloco', cat: 'documentos', icon: 'fa-receipt', desc: 'Recibos, orçamentos e OS para impressão em vias.' }
+        ];
 
-    // Carrossel de Publicidade Automático
-    let currentSlide = 0;
-    const track = document.getElementById('carouselTrack');
-    const totalSlides = 4;
+        const GUIAS = [
+            { titulo: 'Como imprimir corretamente em A4', desc: 'Ajustes de margem e escala 100% no seu navegador.' },
+            { titulo: 'Como configurar a impressora', desc: 'Escolhendo entre qualidade Rascunho, Normal e Fotográfica.' },
+            { titulo: 'Como transformar folha A4 em envelope', desc: 'Passo a passo simples de dobras sem necessidade de cola.' },
+            { titulo: 'Como fazer uma capa escolar ABNT', desc: 'Regras de espaçamento, fonte e alinhamento institucional.' },
+            { titulo: 'Diferença entre impressão Colorida e P&B', desc: 'Quando compensa investir em toner colorido ou preto.' }
+        ];
 
-    setInterval(() => {
-      currentSlide = (currentSlide + 1) % totalSlides;
-      track.style.transform = `translateX(-${currentSlide * 25}%)`;
-    }, 4000);
+        const SERVICOS = [
+            { titulo: 'Impressão & Xerox A4', desc: 'Cópias rápidas com papel de alta alvura.', preco: 'A partir de R$ 0,50' },
+            { titulo: 'Digitalização de Documentos', desc: 'Envie papéis e receba em PDF de alta qualidade.', preco: 'R$ 2,00 / pág' },
+            { titulo: 'Edição & Formatação ABNT', desc: 'Formatamos seu TCC ou trabalho acadêmico.', preco: 'A partir de R$ 8,00' },
+            { titulo: 'Criação de Artes & Logos', desc: 'Design exclusivo para panfletos e cartões.', preco: 'A partir de R$ 10,00' }
+        ];
 
-    // Filtro de Busca dos Geradores
-    function filterTools() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      const cards = document.querySelectorAll('.card');
+        /* ==========================================================================
+           2. INICIALIZAÇÃO & RENDERIZAÇÃO DA INTERFACE
+           ========================================================================== */
+        document.addEventListener("DOMContentLoaded", () => {
+            renderizarGeradores(GERADORES);
+            renderizarGuias();
+            renderizarServicos();
+            iniciarCarrossel();
+        });
 
-      cards.forEach(card => {
-        const title = card.getAttribute('data-title');
-        if (title.includes(query)) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
+        function renderizarGeradores(lista) {
+            const grid = document.getElementById("generatorsGrid");
+            grid.innerHTML = "";
+            lista.forEach(item => {
+                grid.innerHTML += `
+                    <div class="gen-card">
+                        <div>
+                            <div class="gen-card-header">
+                                <div class="gen-card-icon"><i class="fa-solid ${item.icon}"></i></div>
+                                <h3>${item.nome}</h3>
+                            </div>
+                            <p>${item.desc}</p>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="abrirGerador('${item.id}')">
+                            <i class="fa-solid fa-play"></i> Abrir Gerador
+                        </button>
+                    </div>
+                `;
+            });
         }
-      });
-    }
 
-    // Cálculo do Pedido de Impressão / Edição
-    function calcTotal() {
-      let total = 0;
-      if(document.getElementById('checkPrint').checked) total += 35.00;
-      if(document.getElementById('checkEdit').checked) total += 20.00;
-      
-      document.getElementById('totalValue').innerText = total.toFixed(2).replace('.', ',');
-    }
+        function renderizarGuias() {
+            const grid = document.getElementById("guidesGrid");
+            grid.innerHTML = "";
+            GUIAS.forEach(g => {
+                grid.innerHTML += `
+                    <div class="guide-card" onclick="exibirGuiaModal('${g.titulo}', '${g.desc}')">
+                        <h4><i class="fa-solid fa-book-open" style="color: var(--accent);"></i> ${g.titulo}</h4>
+                        <p>${g.desc}</p>
+                    </div>
+                `;
+            });
+        }
 
-    // Envio para WhatsApp
-    function sendToWhatsApp() {
-      const name = document.getElementById('cliName').value || 'Não informado';
-      const doc = document.getElementById('cliDoc').value || 'Não informado';
-      const desc = document.getElementById('docDesc').value || 'Geração de Documento';
-      const print = document.getElementById('checkPrint').checked ? 'SIM' : 'NÃO';
-      const edit = document.getElementById('checkEdit').checked ? 'SIM' : 'NÃO';
-      const total = document.getElementById('totalValue').innerText;
+        function renderizarServicos() {
+            const grid = document.getElementById("servicesGrid");
+            grid.innerHTML = "";
+            SERVICOS.forEach(s => {
+                grid.innerHTML += `
+                    <div class="service-card">
+                        <i class="fa-solid fa-print"></i>
+                        <h4>${s.titulo}</h4>
+                        <p>${s.desc}</p>
+                        <div class="service-price">${s.preco}</div>
+                        <button class="btn btn-whatsapp btn-sm" onclick="solicitarServicoDirect('${s.titulo}')">
+                            <i class="fa-brands fa-whatsapp"></i> Solicitado via WhatsApp
+                        </button>
+                    </div>
+                `;
+            });
+        }
 
-      const phoneNumber = "5500000000000"; // Insira seu número com DDD
+        /* ==========================================================================
+           3. LÓGICA DO CARROSSEL PROMO
+           ========================================================================== */
+        let slideIndex = 0;
+        function iniciarCarrossel() {
+            const track = document.getElementById("promoTrack");
+            const dotsContainer = document.getElementById("promoDots");
+            const slides = document.querySelectorAll(".promo-slide");
 
-      const message = `*NOVO PEDIDO DE IMPRESSÃO / GERADOR*%0A%0A` +
-        `*Cliente:* ${name}%0A` +
-        `*CPF/CNPJ:* ${doc}%0A` +
-        `*Documento:* ${desc}%0A` +
-        `*Deseja Impresso:* ${print}%0A` +
-        `*Serviço de Edição Extra:* ${edit}%0A` +
-        `*Valor Total Estimado:* R$ ${total}%0A%0A` +
-        `_Aguardando confirmação de layout/impressão._`;
+            slides.forEach((_, idx) => {
+                const dot = document.createElement("div");
+                dot.classList.add("dot");
+                if (idx === 0) dot.classList.add("active");
+                dot.onclick = () => mudarSlide(idx);
+                dotsContainer.appendChild(dot);
+            });
 
-      window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
-    }
+            setInterval(() => {
+                slideIndex = (slideIndex + 1) % slides.length;
+                mudarSlide(slideIndex);
+            }, 5000);
+        }
 
-    // Motor Unificado do Gerador Dinâmico em Tela
-    function openGenerator(title, desc) {
-      document.getElementById('modalTitle').innerText = 'Gerador de ' + title;
-      document.getElementById('modalDesc').innerText = desc;
-      document.getElementById('genInput1').value = '';
-      document.getElementById('genInput2').value = '';
-      document.getElementById('prevTitle').innerText = title.toUpperCase();
-      document.getElementById('prevContent').innerText = 'Aguardando digitação para compor a folha...';
-      document.getElementById('generatorModal').style.display = 'flex';
-    }
+        function mudarSlide(index) {
+            slideIndex = index;
+            const track = document.getElementById("promoTrack");
+            track.style.transform = `translateX(-${index * 100}%)`;
+            document.querySelectorAll(".dot").forEach((d, idx) => {
+                d.classList.toggle("active", idx === index);
+            });
+        }
 
-    function closeGenerator() {
-      document.getElementById('generatorModal').style.display = 'none';
-    }
+        /* ==========================================================================
+           4. FILTROS & BUSCA EM TEMPO REAL
+           ========================================================================== */
+        function filtrarGeradores() {
+            const termo = document.getElementById("searchInput").value.toLowerCase();
+            const filtrados = GERADORES.filter(g => 
+                g.nome.toLowerCase().includes(termo) || g.desc.toLowerCase().includes(termo)
+            );
+            renderizarGeradores(filtrados);
+        }
 
-    function updatePreview() {
-      const input1 = document.getElementById('genInput1').value;
-      const input2 = document.getElementById('genInput2').value;
+        function filtrarCategoria(cat, btn) {
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            if (cat === 'todos') {
+                renderizarGeradores(GERADORES);
+            } else {
+                renderizarGeradores(GERADORES.filter(g => g.cat === cat));
+            }
+        }
 
-      if (input1) {
-        document.getElementById('prevTitle').innerText = input1.toUpperCase();
-      }
-      
-      if (input2) {
-        document.getElementById('prevContent').innerHTML = input2.replace(/\n/g, '<br>');
-      } else {
-        document.getElementById('prevContent').innerText = 'Preencha os campos acima para estruturar este documento A4.';
-      }
-    }
-  </script>
+        /* ==========================================================================
+           5. ROTEADOR DE GERADORES & INTERFACE DINÂMICA
+           ========================================================================== */
+        let geradorAtualId = "";
+
+        function abrirGerador(id) {
+            geradorAtualId = id;
+            const modal = document.getElementById("modalGerador");
+            const titulo = document.getElementById("modalTitulo");
+            const conteudo = document.getElementById("modalConteudo");
+            const acoes = document.getElementById("modalAcoes");
+
+            const gInfo = GERADORES.find(item => item.id === id);
+            titulo.innerHTML = `<i class="fa-solid ${gInfo.icon}"></i> ${gInfo.nome}`;
+            
+            // Injeta formulário e estrutura específica de cada gerador
+            conteudo.innerHTML = construirFormularioGerador(id);
+            acoes.innerHTML = `
+                <button class="btn btn-secondary" onclick="fecharModal('modalGerador')">Fechar</button>
+                <button class="btn btn-secondary" onclick="imprimirPreviewA4()"><i class="fa-solid fa-print"></i> Imprimir</button>
+                <button class="btn btn-primary" onclick="baixarPdfPreview()"><i class="fa-solid fa-download"></i> Baixar PDF</button>
+                <button class="btn btn-whatsapp" onclick="abrirModalPedido('${gInfo.nome}')"><i class="fa-brands fa-whatsapp"></i> Quero que o PrintExpress imprima</button>
+            `;
+
+            modal.classList.add("active");
+            executarInicializacaoGerador(id);
+        }
+
+        function fecharModal(id) {
+            document.getElementById(id).classList.remove("active");
+        }
+
+        /* ==========================================================================
+           6. CONSTRUÇÃO DOS FORMULÁRIOS & COMPONENTES A4
+           ========================================================================== */
+        function construirFormularioGerador(id) {
+            switch (id) {
+                case 'envelope':
+                    return `
+                        <p class="section-subtitle" style="text-align:left;">O envelope A4 dobrável possui marcações exatas de corte e dobra para você recortar e colar.</p>
+                        <div class="print-preview-container">
+                            <div class="a4-page" id="a4Preview">
+                                <div style="border: 2px dashed #000; height: 100%; position: relative; padding: 20px; box-sizing: border-box;">
+                                    <div style="position: absolute; top: 10px; left: 10px; font-size: 10px; color: #666;">✂️ LINHA DE CORTE EXTERNA</div>
+                                    <div style="border-bottom: 1px dashed #999; margin-top: 80px; text-align: center; font-size: 11px; color: #666;">--- DOBRA DA ABA SUPERIOR ---</div>
+                                    <div style="height: 120px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; border: 1px solid #ddd; margin: 20px 0;">
+                                        ÁREA DO ENVELOPE (FRENTE)
+                                    </div>
+                                    <div style="border-bottom: 1px dashed #999; text-align: center; font-size: 11px; color: #666;">--- DOBRA DA ABA INFERIOR ---</div>
+                                    <div style="margin-top: 40px; font-size: 12px; line-height: 1.8;">
+                                        <strong>INSTRUÇÕES:</strong><br>
+                                        1. Recorte nas linhas tracejadas externas.<br>
+                                        2. Dobre as abas laterais para dentro.<br>
+                                        3. Passe cola nas abas e dobre a parte inferior para fechar o envelope.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                case 'capaABNT':
+                    return `
+                        <div class="form-row">
+                            <div class="form-group"><label>Instituição de Ensino:</label><input type="text" id="abntEscola" class="form-control" value="NOME DA ESCOLA / UNIVERSIDADE" oninput="atualizarCapaABNT()"></div>
+                            <div class="form-group"><label>Disciplina:</label><input type="text" id="abntDisciplina" class="form-control" value="DISCIPLINA DE PORTUGUÊS" oninput="atualizarCapaABNT()"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Título do Trabalho:</label><input type="text" id="abntTitulo" class="form-control" value="TÍTULO PRINCIPAL DO TRABALHO" oninput="atualizarCapaABNT()"></div>
+                            <div class="form-group"><label>Subtítulo:</label><input type="text" id="abntSub" class="form-control" value="Subtítulo Descritivo ABNT" oninput="atualizarCapaABNT()"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Nome do Aluno:</label><input type="text" id="abntAluno" class="form-control" value="Nome Completo do Estudante" oninput="atualizarCapaABNT()"></div>
+                            <div class="form-group"><label>Professor:</label><input type="text" id="abntProf" class="form-control" value="Prof. Nome do Professor" oninput="atualizarCapaABNT()"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Cidade:</label><input type="text" id="abntCidade" class="form-control" value="São Paulo" oninput="atualizarCapaABNT()"></div>
+                            <div class="form-group"><label>Ano:</label><input type="text" id="abntAno" class="form-control" value="2026" oninput="atualizarCapaABNT()"></div>
+                        </div>
+                        <div class="print-preview-container">
+                            <div class="a4-page" id="a4Preview" style="display: flex; flex-direction: column; justify-content: space-between; text-align: center; padding: 30mm 20mm 20mm 30mm;">
+                                <div>
+                                    <h3 id="prevEscola" style="font-size: 14pt; font-weight: bold; text-transform: uppercase;">NOME DA ESCOLA / UNIVERSIDADE</h3>
+                                    <p id="prevDisc" style="font-size: 12pt; margin-top: 5px;">DISCIPLINA DE PORTUGUÊS</p>
+                                </div>
+                                <div>
+                                    <h1 id="prevTitulo" style="font-size: 16pt; font-weight: bold; text-transform: uppercase;">TÍTULO PRINCIPAL DO TRABALHO</h1>
+                                    <h4 id="prevSub" style="font-size: 12pt; font-weight: normal; margin-top: 10px;">Subtítulo Descritivo ABNT</h4>
+                                </div>
+                                <div style="text-align: right; width: 60%; margin-left: auto;">
+                                    <p id="prevAluno" style="font-size: 12pt;"><strong>Aluno:</strong> Nome Completo do Estudante</p>
+                                    <p id="prevProf" style="font-size: 12pt;"><strong>Professor:</strong> Prof. Nome do Professor</p>
+                                </div>
+                                <div>
+                                    <p id="prevCidadeAno" style="font-size: 12pt; text-transform: uppercase;">SÃO PAULO<br>2026</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                case 'efeitoCroqui':
+                    return `
+                        <div class="form-group">
+                            <label>Selecione uma imagem do seu computador:</label>
+                            <input type="file" id="imgCroqui" class="form-control" accept="image/*" onchange="processarCroqui()">
+                        </div>
+                        <div class="form-group">
+                            <label>Intensidade do Traço:</label>
+                            <input type="range" id="limiarCroqui" min="10" max="150" value="70" class="form-control" onchange="processarCroqui()">
+                        </div>
+                        <div class="print-preview-container">
+                            <div class="a4-page" id="a4Preview" style="text-align: center;">
+                                <h3 style="margin-bottom: 20px;">Desenho para Colorir</h3>
+                                <canvas id="canvasCroqui" style="max-width: 100%; height: auto; border: 1px solid #ccc;"></canvas>
+                            </div>
+                        </div>
+                    `;
+
+                case 'cacaPalavras':
+                    return `
+                        <div class="form-group">
+                            <label>Digite as palavras separadas por vírgula:</label>
+                            <input type="text" id="palavrasCaca" class="form-control" value="PRINTEXPRESS, IMPRESSAO, PAPEL, CANVAS, A4, ESCOLA" oninput="gerarCacaPalavras()">
+                        </div>
+                        <div class="print-preview-container">
+                            <div class="a4-page" id="a4Preview">
+                                <h2 style="text-align: center; margin-bottom: 20px;">CAÇA-PALAVRAS</h2>
+                                <div id="gridCaca" style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; text-align: center; font-family: monospace; font-size: 16px; font-weight: bold; margin-bottom: 30px;"></div>
+                                <h3>Palavras para Encontrar:</h3>
+                                <ul id="listaPalavrasCaca" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;"></ul>
+                            </div>
+                        </div>
+                    `;
+
+                case 'geradorSenhas':
+                    return `
+                        <div class="form-row">
+                            <div class="form-group"><label>Tamanho da Senha:</label><input type="number" id="senhaTam" class="form-control" value="16" min="6" max="64" oninput="gerarNovasSenhas()"></div>
+                            <div class="form-group"><label>Quantidade:</label><input type="number" id="senhaQtd" class="form-control" value="5" min="1" max="20" oninput="gerarNovasSenhas()"></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="gerarNovasSenhas()" style="margin-bottom: 20px;"><i class="fa-solid fa-rotate"></i> Gerar Novas Senhas</button>
+                        <p style="font-size: 0.85rem; color: var(--accent-green); margin-bottom: 10px;">🔒 Senhas geradas 100% no seu navegador com Javascript de criptografia local. Nada é enviado ao servidor.</p>
+                        <div class="print-preview-container">
+                            <div class="a4-page" id="a4Preview">
+                                <h3>Suas Senhas Seguras Geradas:</h3>
+                                <div id="listaSenhas" style="margin-top: 15px; font-family: monospace; font-size: 16px; line-height: 2;"></div>
+                            </div>
+                        </div>
+                    `;
+
+                case 'qrCode':
+                    return `
+                        <div class="form-row">
+                            <div class="form-group"><label>Conteúdo / Link / Chave PIX:</label><input type="text" id="qrText" class="form-control" value="https://printexpress.com.br" oninput="renderizarQRCode()"></div>
+                            <div class="form-group"><label>Legenda / Rótulo:</label><input type="text" id="qrLabel" class="form-control" value="Escaneie para Acessar" oninput="renderizarQRCode()"></div>
+                        </div>
+                        <div class="print-preview-container">
+                            <div class="a4-page" id="a4Preview" style="text-align: center; padding-top: 50px;">
+                                <h2 id="prevQrLabel" style="margin-bottom: 30px;">Escaneie para Acessar</h2>
+                                <div id="qrcodeDisplay" style="display: flex; justify-content: center; margin-bottom: 20px;"></div>
+                            </div>
+                        </div>
+                    `;
+
+                case 'documentosBloco':
+                    return `
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Modelo de Documento:</label>
+                                <select id="blocoModelo" class="form-control" onchange="atualizarBloco()">
+                                    <option value="Recibo">1. Recibo Comercial</option>
+                                    <option value="Orçamento">2. Orçamento de Serviços</option>
+                                    <option value="OS">3. Ordem de Serviço</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Nome do Emitente:</label><input type="text" id="blocoEmitente" class="form-control" value="PrintExpress Serviços Gráficos" oninput="atualizarBloco()"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Nome do Cliente:</label><input type="text" id="blocoCliente" class="form-control" value="João da Silva" oninput="atualizarBloco()"></div>
+                            <div class="form-group"><label>Valor R$:</label><input type="text" id="blocoValor" class="form-control" value="150,00" oninput="atualizarBloco()"></div>
+                        </div>
+                        <div class="form-group"><label>Descrição / Referência:</label><input type="text" id="blocoDesc" class="form-control" value="Prestação de serviços de impressão e encadernação." oninput="atualizarBloco()"></div>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">* Este gerador cria modelos para uso administrativo e interno. Não substitui nota fiscal oficial eletrônica.</p>
+                        <div class="print-preview-container">
+                            <div class="a4-page" id="a4Preview">
+                                <div style="border: 2px solid #000; padding: 20px; position: relative;">
+                                    <h2 id="docTit" style="text-align: center; text-transform: uppercase; margin-bottom: 15px;">RECIBO COMERCIAL</h2>
+                                    <p><strong>EMITENTE:</strong> <span id="docEm">PrintExpress Serviços Gráficos</span></p>
+                                    <p><strong>CLIENTE:</strong> <span id="docCli">João da Silva</span></p>
+                                    <p><strong>VALOR:</strong> R$ <span id="docVal">150,00</span></p>
+                                    <p style="margin-top: 15px;"><strong>REFERENTE A:</strong></p>
+                                    <p id="docTexto" style="border: 1px solid #ccc; padding: 10px; margin-top: 5px;">Prestação de serviços de impressão e encadernação.</p>
+                                    <div style="margin-top: 60px; text-align: center;">
+                                        ______________________________________________________<br>
+                                        Assinatura do Responsável
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                default:
+                    return `
+                        <div class="print-preview-container">
+                            <div class="a4-page" id="a4Preview">
+                                <h2 style="text-align: center; margin-bottom: 20px;">${id.toUpperCase()}</h2>
+                                <p>Gerador pronto e formatado para tamanho A4 padrão. Preencha os campos e realize o download em PDF ou envie diretamente para impressão na PrintExpress.</p>
+                            </div>
+                        </div>
+                    `;
+            }
+        }
+
+        /* ==========================================================================
+           7. INICIALIZAÇÃO DE REGRAS ESPECÍFICAS DE CADA GERADOR
+           ========================================================================== */
+        function executarInicializacaoGerador(id) {
+            if (id === 'cacaPalavras') gerarCacaPalavras();
+            if (id === 'geradorSenhas') gerarNovasSenhas();
+            if (id === 'qrCode') setTimeout(renderizarQRCode, 200);
+        }
+
+        /* Funções de Atualização Dinâmica do DOM / Canvas */
+        function atualizarCapaABNT() {
+            document.getElementById("prevEscola").innerText = document.getElementById("abntEscola").value;
+            document.getElementById("prevDisc").innerText = document.getElementById("abntDisciplina").value;
+            document.getElementById("prevTitulo").innerText = document.getElementById("abntTitulo").value;
+            document.getElementById("prevSub").innerText = document.getElementById("abntSub").value;
+            document.getElementById("prevAluno").innerHTML = "<strong>Aluno:</strong> " + document.getElementById("abntAluno").value;
+            document.getElementById("prevProf").innerHTML = "<strong>Professor:</strong> " + document.getElementById("abntProf").value;
+            document.getElementById("prevCidadeAno").innerHTML = document.getElementById("abntCidade").value + "<br>" + document.getElementById("abntAno").value;
+        }
+
+        function processarCroqui() {
+            const fileInput = document.getElementById("imgCroqui");
+            const limiar = parseInt(document.getElementById("limiarCroqui").value);
+            const canvas = document.getElementById("canvasCroqui");
+            const ctx = canvas.getContext("2d");
+
+            if (!fileInput.files[0]) return;
+
+            const img = new Image();
+            img.onload = function() {
+                canvas.width = 400;
+                canvas.height = (img.height / img.width) * 400;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imgData.data;
+
+                // Algoritmo de Sobel / Filtro de Linha Preto e Branco
+                for (let i = 0; i < data.length; i += 4) {
+                    let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                    let v = avg < limiar ? 0 : 255;
+                    data[i] = v;     // R
+                    data[i + 1] = v; // G
+                    data[i + 2] = v; // B
+                }
+                ctx.putImageData(imgData, 0, 0);
+            };
+            img.src = URL.createObjectURL(fileInput.files[0]);
+        }
+
+        function gerarCacaPalavras() {
+            const raw = document.getElementById("palavrasCaca").value;
+            const palavras = raw.split(",").map(s => s.trim().toUpperCase()).filter(s => s.length > 0);
+            const grid = document.getElementById("gridCaca");
+            const lista = document.getElementById("listaPalavrasCaca");
+            grid.innerHTML = "";
+            lista.innerHTML = "";
+
+            const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            for (let i = 0; i < 144; i++) {
+                const char = letras.charAt(Math.floor(Math.random() * letras.length));
+                grid.innerHTML += `<div style="border:1px solid #eee; padding: 4px;">${char}</div>`;
+            }
+
+            palavras.forEach(p => {
+                lista.innerHTML += `<li style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px;">${p}</li>`;
+            });
+        }
+
+        function gerarNovasSenhas() {
+            const tam = parseInt(document.getElementById("senhaTam").value);
+            const qtd = parseInt(document.getElementById("senhaQtd").value);
+            const container = document.getElementById("listaSenhas");
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+            container.innerHTML = "";
+
+            for (let i = 0; i < qtd; i++) {
+                let pass = "";
+                for (let j = 0; j < tam; j++) {
+                    pass += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                container.innerHTML += `<div>🔑 ${pass}</div>`;
+            }
+        }
+
+        function renderizarQRCode() {
+            const display = document.getElementById("qrcodeDisplay");
+            const txt = document.getElementById("qrText").value;
+            const lbl = document.getElementById("qrLabel").value;
+            document.getElementById("prevQrLabel").innerText = lbl;
+            display.innerHTML = "";
+
+            if (txt.trim().length > 0) {
+                new QRCode(display, {
+                    text: txt,
+                    width: 200,
+                    height: 200
+                });
+            }
+        }
+
+        function atualizarBloco() {
+            document.getElementById("docTit").innerText = document.getElementById("blocoModelo").value;
+            document.getElementById("docEm").innerText = document.getElementById("blocoEmitente").value;
+            document.getElementById("docCli").innerText = document.getElementById("blocoCliente").value;
+            document.getElementById("docVal").innerText = document.getElementById("blocoValor").value;
+            document.getElementById("docTexto").innerText = document.getElementById("blocoDesc").value;
+        }
+
+        /* ==========================================================================
+           8. DOWNLOAD DE PDF E IMPRESSÃO
+           ========================================================================== */
+        function imprimirPreviewA4() {
+            window.print();
+        }
+
+        function baixarPdfPreview() {
+            const element = document.getElementById("a4Preview");
+            const { jsPDF } = window.jspdf;
+
+            html2canvas(element, { scale: 2 }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(`PrintExpress_${geradorAtualId}.pdf`);
+            });
+        }
+
+        /* ==========================================================================
+           9. INTEGRAÇÃO WHATSAPP & CÁLCULO DE ORÇAMENTO DE IMPRESSÃO
+           ========================================================================== */
+        let materialSelecionadoPedido = "";
+
+        function abrirModalPedido(nomeMaterial) {
+            materialSelecionadoPedido = nomeMaterial;
+            document.getElementById("pedMaterial").value = nomeMaterial;
+            
+            // Monta lista de checkboxes para serviços extras
+            const extrasContainer = document.getElementById("pedExtras");
+            extrasContainer.innerHTML = `
+                <label style="display:block; margin-bottom: 6px;"><input type="checkbox" id="extEdicao" onchange="calcularPedido()"> Edição e Ajuste de Texto (+R$ ${PRINTEXPRESS_CONFIG.precos.edicaoTexto.toFixed(2)})</label>
+                <label style="display:block; margin-bottom: 6px;"><input type="checkbox" id="extArte" onchange="calcularPedido()"> Arte Personalizada (+R$ ${PRINTEXPRESS_CONFIG.precos.arte.toFixed(2)})</label>
+                <label style="display:block;"><input type="checkbox" id="extAjuste" onchange="calcularPedido()"> Ajuste Fino para Impressão (+R$ ${PRINTEXPRESS_CONFIG.precos.ajusteImpressao.toFixed(2)})</label>
+            `;
+
+            calcularPedido();
+            document.getElementById("modalPedido").classList.add("active");
+        }
+
+        function abrirPedidoWhatsappDirect() {
+            abrirModalPedido("Impressão / Material Geral");
+        }
+
+        function solicitarServicoDirect(nomeServico) {
+            abrirModalPedido(nomeServico);
+        }
+
+        function calcularPedido() {
+            const tipo = document.getElementById("pedTipo").value;
+            const papel = document.getElementById("pedPapel").value;
+            const qtd = parseInt(document.getElementById("pedQtd").value) || 1;
+
+            let precoUnitario = (tipo === "Colorida") ? PRINTEXPRESS_CONFIG.precos.impressaoColorida : PRINTEXPRESS_CONFIG.precos.impressaoPB;
+            if (papel.includes("Resistente")) {
+                precoUnitario += PRINTEXPRESS_CONFIG.precos.papelResistente;
+            }
+
+            const valorImpressao = precoUnitario * qtd;
+
+            let valorExtras = 0;
+            if (document.getElementById("extEdicao")?.checked) valorExtras += PRINTEXPRESS_CONFIG.precos.edicaoTexto;
+            if (document.getElementById("extArte")?.checked) valorExtras += PRINTEXPRESS_CONFIG.precos.arte;
+            if (document.getElementById("extAjuste")?.checked) valorExtras += PRINTEXPRESS_CONFIG.precos.ajusteImpressao;
+
+            const total = valorImpressao + valorExtras;
+
+            document.getElementById("resImp").innerText = `R$ ${valorImpressao.toFixed(2)}`;
+            document.getElementById("resExt").innerText = `R$ ${valorExtras.toFixed(2)}`;
+            document.getElementById("resTotal").innerText = `R$ ${total.toFixed(2)}`;
+        }
+
+        function enviarPedidoWhatsapp() {
+            const mat = document.getElementById("pedMaterial").value;
+            const tipo = document.getElementById("pedTipo").value;
+            const papel = document.getElementById("pedPapel").value;
+            const qtd = document.getElementById("pedQtd").value;
+            const total = document.getElementById("resTotal").innerText;
+
+            const edicao = document.getElementById("extEdicao")?.checked ? "Sim" : "Não";
+
+            const msg = `Olá! Quero fazer um pedido na ${PRINTEXPRESS_CONFIG.empresa.nome}.%0A%0A` +
+                        `📄 *Serviço/Material:* ${mat}%0A` +
+                        `📑 *Quantidade:* ${qtd}%0A` +
+                        `🎨 *Impressão:* ${tipo}%0A` +
+                        `📃 *Papel:* ${papel}%0A` +
+                        `✏️ *Edição Extra:* ${edicao}%0A%0A` +
+                        `💰 *Valor Estimado:* ${total}%0A%0A` +
+                        `Gostaria de confirmar o pedido e enviar o arquivo!`;
+
+            const url = `https://wa.me/${PRINTEXPRESS_CONFIG.whatsapp}?text=${msg}`;
+            window.open(url, '_blank');
+        }
+
+        function exibirGuiaModal(titulo, conteudo) {
+            alert(`📚 GUIAS PRINTEXPRESS\n\n${titulo}\n\n${conteudo}\n\nDica: Para obter o melhor resultado, configure as margens da impressora como "Nenhuma" ou "Padrão" e selecione escala 100%.`);
+        }
+    </script>
 </body>
 </html>
