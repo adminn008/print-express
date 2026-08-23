@@ -5,17 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Utilitários Express Pro – Suíte Digital SaaS</title>
 
-    <!-- Design System: Google Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDK (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-    <!-- Bibliotecas de Processamento Local -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
@@ -29,7 +26,6 @@
             --primary: #6366f1;
             --primary-hover: #4f46e5;
             --accent-gold: #f59e0b;
-            --accent-green: #10b981;
             --text-main: #f9fafb;
             --text-muted: #9ca3af;
             --border-line: rgba(255, 255, 255, 0.08);
@@ -39,392 +35,286 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding-bottom: 60px; }
 
-        /* HEADER FIXO & BARRA NAVEGAÇÃO */
+        /* HEADER FIXO */
         .top-nav {
             position: sticky; top: 0; z-index: 100;
             background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-line); padding: 14px 24px;
             display: flex; justify-content: space-between; align-items: center;
         }
-
-        .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.2rem; color: #fff; }
+        .brand { font-weight: 800; font-size: 1.2rem; color: #fff; }
         .brand span { color: var(--primary); }
-
         .nav-actions { display: flex; align-items: center; gap: 12px; }
 
         .credit-widget {
             background: rgba(99, 102, 241, 0.12); border: 1px solid var(--border-glow);
             padding: 6px 14px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; color: #818cf8;
-            display: flex; align-items: center; gap: 8px; cursor: pointer;
+            cursor: pointer;
         }
 
         .btn {
             background: var(--primary); color: #fff; border: none; padding: 9px 18px;
             border-radius: 10px; font-weight: 600; font-size: 0.88rem; cursor: pointer;
-            transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
         }
         .btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
         .btn-gold { background: var(--accent-gold); color: #000; font-weight: 700; }
         .btn-gold:hover { background: #d97706; color: #fff; }
         .btn-outline { background: transparent; border: 1px solid var(--border-line); color: var(--text-main); }
-        .btn-outline:hover { background: var(--card-bg); }
+
+        /* CARROSSEL PUBLICIDADE PRINTEXPRESS */
+        .carousel-banner {
+            width: 100%; max-width: 1280px; margin: 20px auto 0; padding: 0 20px;
+            overflow: hidden; position: relative;
+        }
+        .carousel-track { display: flex; transition: transform 0.5s ease-in-out; width: 100%; }
+        .carousel-slide {
+            min-width: 100%; background: linear-gradient(135deg, #312e81, #1e1b4b);
+            border: 1px solid var(--border-glow); border-radius: 16px; padding: 25px;
+            display: flex; justify-content: space-between; align-items: center; gap: 20px;
+        }
+        .slide-text h3 { color: var(--accent-gold); font-size: 1.2rem; margin-bottom: 6px; }
+        .slide-text p { color: var(--text-main); font-size: 0.95rem; font-weight: 600; }
+        .slide-badge { background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; border: 1px solid var(--border-line); }
 
         /* LAYOUT PRINCIPAL */
         .main-layout { max-width: 1280px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 280px 1fr; gap: 30px; }
         @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
 
-        /* PAINEL LATERAL DE PERFIL E CRÉDITOS */
         .sidebar-card {
             background: var(--panel-bg); border: 1px solid var(--border-line); border-radius: 20px;
             padding: 24px; position: sticky; top: 90px; height: fit-content; display: flex; flex-direction: column; gap: 20px;
         }
-
-        .user-box { display: flex; align-items: center; gap: 14px; }
-        .avatar-large {
-            width: 52px; height: 52px; border-radius: 50%; background: var(--primary);
-            display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; border: 2px solid #fff;
-        }
-
+        .avatar-large { width: 52px; height: 52px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; }
         .progress-bar-bg { width: 100%; background: var(--card-bg); height: 8px; border-radius: 10px; overflow: hidden; margin-top: 8px; }
         .progress-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease; }
 
-        .history-list { list-style: none; font-size: 0.8rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .history-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-line); padding-bottom: 4px; }
-
-        /* GRADE DAS 20 FERRAMENTAS */
-        .tools-header { margin-bottom: 25px; }
-        .tools-header h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; }
-        .tools-header p { color: var(--text-muted); font-size: 0.95rem; }
-
-        .filter-tags { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
-        .tag { background: var(--panel-bg); border: 1px solid var(--border-line); color: var(--text-muted); padding: 5px 12px; border-radius: 20px; font-size: 0.78rem; cursor: pointer; }
-        .tag.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-
         .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; }
-
-        .tool-card {
-            background: var(--panel-bg); border: 1px solid var(--border-line); border-radius: 16px; padding: 20px;
-            display: flex; flex-direction: column; gap: 14px; transition: all 0.25 ease; position: relative;
-        }
-        .tool-card:hover { border-color: var(--border-glow); transform: translateY(-3px); }
-
-        .tool-title { font-size: 1rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .tool-card { background: var(--panel-bg); border: 1px solid var(--border-line); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .tool-title { font-size: 0.95rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
         .tool-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; background: rgba(99, 102, 241, 0.15); color: #818cf8; font-weight: 600; }
-
+        
         .input-box { width: 100%; background: var(--card-bg); border: 1px solid var(--border-line); color: #fff; padding: 10px 12px; border-radius: 8px; font-size: 0.85rem; outline: none; }
         .input-box:focus { border-color: var(--primary); }
-        textarea.input-box { resize: vertical; min-height: 65px; }
+        textarea.input-box { resize: vertical; min-height: 60px; }
 
-        .tool-preview {
-            background: var(--bg-body); border: 1px dashed var(--border-line); border-radius: 8px;
-            padding: 10px; min-height: 60px; display: flex; align-items: center; justify-content: center; text-align: center;
-            font-size: 0.8rem; color: var(--text-muted); word-break: break-all;
-        }
+        .tool-preview { background: var(--bg-body); border: 1px dashed var(--border-line); border-radius: 8px; padding: 10px; min-height: 50px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.8rem; color: var(--text-muted); }
 
-        /* MODAIS UNIFICADOS (LOGIN E RECARGA) */
-        .modal-bg {
-            display: none; position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 1000;
-            justify-content: center; align-items: center; padding: 20px;
-        }
-
-        .modal-card {
-            background: var(--panel-bg); border: 1px solid var(--border-glow); border-radius: 20px;
-            width: 100%; max-width: 440px; padding: 30px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-        }
-
+        /* MODAL RECARGA */
+        .modal-bg { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-card { background: var(--panel-bg); border: 1px solid var(--border-glow); border-radius: 20px; width: 100%; max-width: 440px; padding: 30px; position: relative; }
         .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer; }
-
-        .tab-group { display: flex; border-bottom: 1px solid var(--border-line); margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 10px; background: none; border: none; color: var(--text-muted); font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; }
-        .tab-btn.active { color: var(--primary); border-color: var(--primary); }
-
         .pix-container { background: var(--bg-body); border: 1px dashed var(--accent-gold); border-radius: 12px; padding: 18px; text-align: center; margin: 15px 0; }
         .pix-container img { width: 130px; height: 130px; border-radius: 8px; background: #fff; padding: 5px; margin: 10px 0; }
     </style>
 </head>
 <body>
 
-    <!-- TOP NAVIGATION -->
     <nav class="top-nav">
         <div class="brand">⚡ Utilitários<span>Express</span></div>
         <div class="nav-actions">
-            <div class="credit-widget" onclick="abrirModalRecarga()" id="navCreditBox" style="display: none;">
-                ⚡ <span id="navCreditVal">0</span>/3 Créditos
-            </div>
-            <button id="btnAuthNav" class="btn" onclick="abrirModalAuth()">Entrar / Cadastrar</button>
-            <button id="btnLogoutNav" class="btn btn-outline" onclick="fazerLogout()" style="display: none;">Sair</button>
+            <div class="credit-widget" onclick="abrirModalRecarga()" id="navCreditBox">⚡ <span id="navCreditVal">0</span>/3 Créditos</div>
+            <button id="btnLoginNav" class="btn" onclick="window.location.href='login.html'">Entrar / Cadastrar</button>
+            <button id="btnLogoutNav" class="btn btn-outline" onclick="fazerLogout()" style="display:none;">Sair</button>
         </div>
     </nav>
 
-    <!-- CONTAINER PRINCIPAL -->
-    <div class="main-layout">
+    <!-- PUBLICIDADE CARROSSEL PRINTEXPRESS -->
+    <div class="carousel-banner">
+        <div class="carousel-track" id="carouselTrack">
+            <div class="carousel-slide">
+                <div class="slide-text">
+                    <h3>🎬 SPOILER #1: Automação Total em PDF</h3>
+                    <p>No PrintExpress você converte centenas de imagens em documentos prontos sem perder qualidade!</p>
+                </div>
+                <div class="slide-badge">⚡ PrintExpress Pro</div>
+            </div>
+            <div class="carousel-slide">
+                <div class="slide-text">
+                    <h3>🎬 SPOILER #2: Inteligência OCR Avançada</h3>
+                    <p>Extraia textos de fotos e documentos digitalizados em segundos com precisão absurda.</p>
+                </div>
+                <div class="slide-badge">🧠 PrintExpress AI</div>
+            </div>
+            <div class="carousel-slide">
+                <div class="slide-text">
+                    <h3>🎬 SPOILER #3: Design Express de Convites</h3>
+                    <p>Crie convites e cartões comemorativos personalizados e baixe o arquivo impresso imediatamente.</p>
+                </div>
+                <div class="slide-badge">🎉 PrintExpress Design</div>
+            </div>
+            <div class="carousel-slide">
+                <div class="slide-text">
+                    <h3>🎬 SPOILER #4: Produtividade Acadêmica</h3>
+                    <p>Gere referências bibliográficas, capas ABNT e organize seus cronogramas de estudo em 1 clique.</p>
+                </div>
+                <div class="slide-badge">🎓 PrintExpress Edu</div>
+            </div>
+        </div>
+    </div>
 
-        <!-- PAINEL DE PERFIL E REGRAS DA CONTA -->
+    <div class="main-layout">
         <aside class="sidebar-card">
-            <div class="user-box">
+            <div style="display:flex; align-items:center; gap:14px;">
                 <div class="avatar-large" id="userAvatar">?</div>
                 <div>
                     <div style="font-size: 0.75rem; color: var(--text-muted);">Conta Ativa</div>
                     <div style="font-weight: 700; font-size: 0.95rem;" id="userName">Visitante</div>
                 </div>
             </div>
-
             <div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600;">
+                <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600;">
                     <span>Créditos Diários</span>
                     <span id="sideCreditText">0 / 3</span>
                 </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" id="sideCreditBar"></div>
-                </div>
-                <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">Renovação automática a cada 24 horas.</p>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="sideCreditBar"></div></div>
+                <p style="font-size:0.72rem; color:var(--text-muted); margin-top:6px;">Restaura 3 uso a cada 24 horas.</p>
             </div>
-
-            <button class="btn btn-gold" style="width: 100%;" onclick="abrirModalRecarga()">⚡ Obter Créditos Ilimitados</button>
-
-            <div>
-                <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 8px;">Histórico Recente</div>
-                <ul class="history-list" id="historyList">
-                    <li class="history-item"><span>Nenhum uso registrado</span></li>
-                </ul>
-            </div>
+            <button class="btn btn-gold" style="width:100%;" onclick="abrirModalRecarga()">⚡ Obter Créditos Ilimitados</button>
         </aside>
 
-        <!-- AREA DE CONTEÚDO E FERRAMENTAS -->
         <main>
-            <div class="tools-header">
-                <h1>Suíte de Produtividade Digital</h1>
-                <p>20 ferramentas rápidas e totalmente funcionais direto no seu navegador.</p>
-                <div class="filter-tags">
-                    <span class="tag active">Todas (20)</span>
-                    <span class="tag">Arquivos & Imagens</span>
-                    <span class="tag">Geradores</span>
-                    <span class="tag">Texto & Código</span>
-                </div>
+            <div style="margin-bottom:25px;">
+                <h1 style="font-size:1.8rem; font-weight:800;">Suíte de Produtividade & Utilidades</h1>
+                <p style="color:var(--text-muted);">Ferramentas completas para design, estudo, rotina e arquivos.</p>
             </div>
 
             <div class="tools-grid">
 
-                <!-- 1. Imagens para PDF -->
+                <!-- FERRAMENTAS EXISTENTES -->
                 <div class="tool-card">
                     <div class="tool-title">1. Imagens para PDF <span class="tool-badge">-1 Crédito</span></div>
                     <input type="file" id="f1_input" multiple accept="image/*" class="input-box">
-                    <button class="btn" onclick="executar(tool1_ImgsParaPdf, 'PDF criado')">Converter em PDF</button>
+                    <button class="btn" onclick="executar(tool1_ImgsParaPdf)">Gerar PDF</button>
                 </div>
 
-                <!-- 2. Gerador de QR Code -->
                 <div class="tool-card">
                     <div class="tool-title">2. Gerador QR Code <span class="tool-badge">-1 Crédito</span></div>
-                    <input type="text" id="f2_input" placeholder="Cole o link ou texto" class="input-box">
-                    <div id="f2_preview" class="tool-preview">QR Code aparecerá aqui</div>
-                    <button class="btn" onclick="executar(tool2_GerarQr, 'QR Code gerado')">Gerar QR Code</button>
+                    <input type="text" id="f2_input" placeholder="Link ou texto" class="input-box">
+                    <div id="f2_preview" class="tool-preview">Preview QR</div>
+                    <button class="btn" onclick="executar(tool2_GerarQr)">Gerar QR Code</button>
                 </div>
 
-                <!-- 3. Conversor PNG/JPG/WebP -->
+                <!-- CONVITES E CARTÕES -->
                 <div class="tool-card">
-                    <div class="tool-title">3. Conversor de Imagem <span class="tool-badge">-1 Crédito</span></div>
-                    <input type="file" id="f3_file" accept="image/*" class="input-box">
-                    <select id="f3_format" class="input-box">
-                        <option value="image/png">Converter para PNG</option>
-                        <option value="image/jpeg">Converter para JPG</option>
-                        <option value="image/webp">Converter para WebP</option>
+                    <div class="tool-title">3. Gerador de Convites 🎉 <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f_conv_nome" placeholder="Nome do Anfitrião/Festa" class="input-box">
+                    <input type="text" id="f_conv_data" placeholder="Data e Horário" class="input-box">
+                    <input type="text" id="f_conv_local" placeholder="Local do Evento" class="input-box">
+                    <button class="btn" onclick="executar(tool_GerarConvite)">Baixar Convite PDF</button>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-title">4. Criador de Cartões 💌 <span class="tool-badge">-1 Crédito</span></div>
+                    <select id="f_cartao_tipo" class="input-box">
+                        <option value="Aniversário">Aniversário 🎂</option>
+                        <option value="Agradecimento">Agradecimento 🙏</option>
+                        <option value="Dia das Mães">Dia das Mães 🌸</option>
+                        <option value="Namoro / Amor">Namoro / Amor ❤️</option>
                     </select>
-                    <button class="btn" onclick="executar(tool3_ConverterImg, 'Imagem convertida')">Converter e Baixar</button>
+                    <input type="text" id="f_cartao_de" placeholder="De:" class="input-box">
+                    <input type="text" id="f_cartao_para" placeholder="Para:" class="input-box">
+                    <textarea id="f_cartao_msg" placeholder="Sua mensagem..." class="input-box"></textarea>
+                    <button class="btn" onclick="executar(tool_GerarCartao)">Gerar Cartão PDF</button>
                 </div>
 
-                <!-- 4. Redutor de Tamanho de Foto -->
+                <!-- FERRAMENTAS PARA ESTUDANTES -->
                 <div class="tool-card">
-                    <div class="tool-title">4. Compactador de Imagem <span class="tool-badge">-1 Crédito</span></div>
-                    <input type="file" id="f4_input" accept="image/*" class="input-box">
-                    <button class="btn" onclick="executar(tool4_CompactarImg, 'Imagem reduzida')">Reduzir Tamanho</button>
-                </div>
-
-                <!-- 5. Código de Barras -->
-                <div class="tool-card">
-                    <div class="tool-title">5. Código de Barras <span class="tool-badge">-1 Crédito</span></div>
-                    <input type="text" id="f5_input" placeholder="Numeração" class="input-box">
-                    <div class="tool-preview"><svg id="f5_svg"></svg></div>
-                    <button class="btn" onclick="executar(tool5_Barcode, 'Código de barras gerado')">Gerar Código</button>
-                </div>
-
-                <!-- 6. Extrator de Texto OCR -->
-                <div class="tool-card">
-                    <div class="tool-title">6. Extrator de Texto OCR <span class="tool-badge">-1 Crédito</span></div>
-                    <input type="file" id="f6_input" accept="image/*" class="input-box">
-                    <textarea id="f6_output" class="input-box" readonly placeholder="Texto lido..."></textarea>
-                    <button class="btn" onclick="executar(tool6_OCR, 'OCR executado')">Ler Imagem</button>
-                </div>
-
-                <!-- 7. Gerador de Senhas Fortes -->
-                <div class="tool-card">
-                    <div class="tool-title">7. Gerador de Senhas <span class="tool-badge">-1 Crédito</span></div>
-                    <input type="text" id="f7_output" class="input-box" readonly placeholder="Senha gerada">
-                    <button class="btn" onclick="executar(tool7_GerarSenha, 'Senha gerada')">Criar Senha Segura</button>
-                </div>
-
-                <!-- 8. Contador de Palavras -->
-                <div class="tool-card">
-                    <div class="tool-title">8. Contador de Palavras <span class="tool-badge">-1 Crédito</span></div>
-                    <textarea id="f8_input" class="input-box" placeholder="Cole seu texto..."></textarea>
-                    <div id="f8_preview" class="tool-preview">0 Palavras | 0 Caracteres</div>
-                    <button class="btn" onclick="executar(tool8_ContarTexto, 'Texto analisado')">Contar Texto</button>
-                </div>
-
-                <!-- 9. Gerador de CPF Válido (Testes) -->
-                <div class="tool-card">
-                    <div class="tool-title">9. Gerador de CPF (DEV) <span class="tool-badge">-1 Crédito</span></div>
-                    <input type="text" id="f9_output" class="input-box" readonly placeholder="CPF para testes">
-                    <button class="btn" onclick="executar(tool9_GerarCPF, 'CPF gerado')">Gerar CPF Válido</button>
-                </div>
-
-                <!-- 10. Limpador / Formatador de Texto -->
-                <div class="tool-card">
-                    <div class="tool-title">10. Formatar Maiúsculas <span class="tool-badge">-1 Crédito</span></div>
-                    <textarea id="f10_input" class="input-box" placeholder="Texto misturado..."></textarea>
-                    <button class="btn" onclick="executar(tool10_CaixaAlta, 'Texto formatado')">Converter MAIÚSCULAS</button>
-                </div>
-
-                <!-- 11. Gerador de Link para WhatsApp -->
-                <div class="tool-card">
-                    <div class="tool-title">11. Link Direto WhatsApp <span class="tool-badge">-1 Crédito</span></div>
-                    <input type="text" id="f11_phone" placeholder="DDD + Número (Ex: 11999999999)" class="input-box">
-                    <input type="text" id="f11_msg" placeholder="Mensagem inicial (opcional)" class="input-box">
-                    <div id="f11_preview" class="tool-preview">Link aparecerá aqui</div>
-                    <button class="btn" onclick="executar(tool11_LinkWhats, 'Link WhatsApp criado')">Gerar Link</button>
-                </div>
-
-                <!-- 12. Inversor de Texto -->
-                <div class="tool-card">
-                    <div class="tool-title">12. Inversor de Texto <span class="tool-badge">-1 Crédito</span></div>
-                    <input type="text" id="f12_input" placeholder="Digite algo..." class="input-box">
-                    <div id="f12_preview" class="tool-preview">Resultado invertido</div>
-                    <button class="btn" onclick="executar(tool12_InverterTexto, 'Texto invertido')">Inverter</button>
-                </div>
-
-                <!-- 13. Gerador de Cores Hex/RGB -->
-                <div class="tool-card">
-                    <div class="tool-title">13. Gerador de Paleta de Cor <span class="tool-badge">-1 Crédito</span></div>
-                    <div id="f13_box" class="tool-preview" style="color: #fff; font-weight: bold;">#6366F1</div>
-                    <button class="btn" onclick="executar(tool13_GerarCor, 'Cor gerada')">Gerar Nova Cor</button>
-                </div>
-
-                <!-- 14. Encurtador Limpo de URL -->
-                <div class="tool-card">
-                    <div class="tool-title">14. Removedor de Tracking URL <span class="tool-badge">-1 Crédito</span></div>
-                    <input type="text" id="f14_input" placeholder="Cole link com UTM/Tracking" class="input-box">
-                    <input type="text" id="f14_output" readonly placeholder="Link limpo" class="input-box">
-                    <button class="btn" onclick="executar(tool14_LimparUrl, 'URL limpa')">Limpar Link</button>
-                </div>
-
-                <!-- 15. Codificador / Decodificador Base64 -->
-                <div class="tool-card">
-                    <div class="tool-title">15. Codificador Base64 <span class="tool-badge">-1 Crédito</span></div>
-                    <input type="text" id="f15_input" placeholder="Texto normal..." class="input-box">
-                    <textarea id="f15_output" readonly placeholder="Resultado Base64..." class="input-box"></textarea>
-                    <button class="btn" onclick="executar(tool15_Base64, 'Base64 gerado')">Codificar Base64</button>
-                </div>
-
-                <!-- 16. Gerador de Lorem Ipsum -->
-                <div class="tool-card">
-                    <div class="tool-title">16. Gerador Lorem Ipsum <span class="tool-badge">-1 Crédito</span></div>
-                    <textarea id="f16_output" readonly class="input-box" placeholder="Texto fictício..."></textarea>
-                    <button class="btn" onclick="executar(tool16_Lorem, 'Lorem gerado')">Gerar Parágrafo</button>
-                </div>
-
-                <!-- 17. Leitor de QR Code de Fotos -->
-                <div class="tool-card">
-                    <div class="tool-title">17. Leitor QR Code (Foto) <span class="tool-badge">-1 Crédito</span></div>
-                    <input type="file" id="f17_input" accept="image/*" class="input-box">
-                    <div id="f17_output" class="tool-preview">Resultado da leitura</div>
-                    <button class="btn" onclick="executar(tool17_LerQr, 'QR Code lido')">Escanear Imagem</button>
-                </div>
-
-                <!-- 18. Calculadora de Porcentagem -->
-                <div class="tool-card">
-                    <div class="tool-title">18. Porcentagem Rápida <span class="tool-badge">-1 Crédito</span></div>
-                    <div style="display: flex; gap: 5px;">
-                        <input type="number" id="f18_p" placeholder="%" class="input-box">
-                        <input type="number" id="f18_v" placeholder="De R$" class="input-box">
+                    <div class="tool-title">5. Cronômetro de Estudos 🎓 <span class="tool-badge">-1 Crédito</span></div>
+                    <div id="f_crono_view" class="tool-preview" style="font-size:1.2rem; font-weight:700;">00:00:00</div>
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn" onclick="executar(cronoStart)">Iniciar</button>
+                        <button class="btn btn-outline" onclick="cronoStop()">Parar</button>
                     </div>
-                    <div id="f18_output" class="tool-preview">Resultado: R$ 0,00</div>
-                    <button class="btn" onclick="executar(tool18_CalcPorcentagem, 'Cálculo realizado')">Calcular</button>
                 </div>
 
-                <!-- 19. Gerador de UUID (Identificador Único) -->
                 <div class="tool-card">
-                    <div class="tool-title">19. Gerador de UUID v4 <span class="tool-badge">-1 Crédito</span></div>
-                    <input type="text" id="f19_output" readonly placeholder="UUID..." class="input-box">
-                    <button class="btn" onclick="executar(tool19_UUID, 'UUID criado')">Gerar UUID</button>
+                    <div class="tool-title">6. Calculadora de Notas 🎓 <span class="tool-badge">-1 Crédito</span></div>
+                    <div style="display:flex; gap:5px;">
+                        <input type="number" id="f_n1" placeholder="Nota 1" class="input-box">
+                        <input type="number" id="f_n2" placeholder="Nota 2" class="input-box">
+                    </div>
+                    <div id="f_nota_out" class="tool-preview">Média: -</div>
+                    <button class="btn" onclick="executar(calcNotas)">Calcular Média</button>
                 </div>
 
-                <!-- 20. Extrator de URLs de um Texto -->
                 <div class="tool-card">
-                    <div class="tool-title">20. Extrator de Links de Texto <span class="tool-badge">-1 Crédito</span></div>
-                    <textarea id="f20_input" class="input-box" placeholder="Cole um texto longo com links misturados..."></textarea>
-                    <textarea id="f20_output" class="input-box" readonly placeholder="Links encontrados..."></textarea>
-                    <button class="btn" onclick="executar(tool20_ExtrairLinks, 'Links extraídos')">Extrair Links</button>
+                    <div class="tool-title">7. Gerador de Referências ABNT 🎓 <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f_abnt_autor" placeholder="Autor (SOBRENOME, Nome)" class="input-box">
+                    <input type="text" id="f_abnt_titulo" placeholder="Título do Livro/Artigo" class="input-box">
+                    <input type="text" id="f_abnt_ano" placeholder="Cidade / Ano" class="input-box">
+                    <textarea id="f_abnt_out" class="input-box" readonly placeholder="Referência gerada..."></textarea>
+                    <button class="btn" onclick="executar(gerarABNT)">Gerar Referência</button>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-title">8. Capa ABNT Simples 🎓 <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f_capa_inst" placeholder="Instituição de Ensino" class="input-box">
+                    <input type="text" id="f_capa_autor" placeholder="Seu Nome Completo" class="input-box">
+                    <input type="text" id="f_capa_titulo" placeholder="Título do Trabalho" class="input-box">
+                    <button class="btn" onclick="executar(gerarCapaABNT)">Baixar Capa em PDF</button>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-title">9. Planejamento de Estudos 🎓 <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f_plan_materia" placeholder="Matéria / Disciplina" class="input-box">
+                    <input type="text" id="f_plan_horas" placeholder="Horas por Semana" class="input-box">
+                    <button class="btn" onclick="executar(gerarPlanEstudos)">Gerar Ficha PDF</button>
+                </div>
+
+                <!-- GERADOR DE PLANNERS -->
+                <div class="tool-card">
+                    <div class="tool-title">10. Planner Semanal 📅 <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f_plan_sem_foco" placeholder="Foco da Semana" class="input-box">
+                    <button class="btn" onclick="executar(gerarPlannerSemanal)">Baixar Planner Semanal PDF</button>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-title">11. Planner Mensal 📅 <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f_plan_mes_nome" placeholder="Mês (Ex: Setembro)" class="input-box">
+                    <button class="btn" onclick="executar(gerarPlannerMensal)">Baixar Planner Mensal PDF</button>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-title">12. Lista de Tarefas (To-Do) 📅 <span class="tool-badge">-1 Crédito</span></div>
+                    <textarea id="f_todo_items" placeholder="Item 1&#10;Item 2&#10;Item 3" class="input-box"></textarea>
+                    <button class="btn" onclick="executar(gerarTodoList)">Gerar Lista Impressa PDF</button>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-title">13. Controle de Hábitos 📅 <span class="tool-badge">-1 Crédito</span></div>
+                    <input type="text" id="f_habito_nome" placeholder="Hábito (Ex: Beber 2L água)" class="input-box">
+                    <button class="btn" onclick="executar(gerarHabitTracker)">Gerar Ficha de Acompanhamento</button>
                 </div>
 
             </div>
         </main>
     </div>
 
-    <!-- MODAL DE AUTENTICAÇÃO INTEGRADO (EMAIL/SENHA OU GOOGLE) -->
-    <div id="modalAuth" class="modal-bg">
-        <div class="modal-card">
-            <button class="modal-close" onclick="fecharModalAuth()">✕</button>
-            
-            <div class="tab-group">
-                <button class="tab-btn active" id="tabLogin" onclick="mudarAbaAuth('login')">Entrar</button>
-                <button class="tab-btn" id="tabRegister" onclick="mudarAbaAuth('register')">Cadastrar Conta</button>
-            </div>
-
-            <form id="authForm" onsubmit="processarAuthEmail(event)">
-                <input type="email" id="authEmail" class="input-box" placeholder="Seu E-mail" required style="margin-bottom: 10px;">
-                <input type="password" id="authPass" class="input-box" placeholder="Sua Senha (mín. 6 dígitos)" required style="margin-bottom: 15px;">
-                
-                <button type="submit" id="btnSubmitAuth" class="btn" style="width: 100%; margin-bottom: 12px;">Acessar Minha Conta</button>
-            </form>
-
-            <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin: 10px 0;">OU</div>
-
-            <button class="btn btn-outline" style="width: 100%;" onclick="loginGoogle()">
-                <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3h3.88c2.28-2.1 3.665-5.2 3.665-9.12z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3c-1.08.72-2.45 1.16-4.05 1.16-3.1 0-5.73-2.1-6.67-4.93H1.27v3.08C3.26 21.3 7.31 24 12 24z"/><path fill="#FBBC05" d="M5.33 14.32c-.24-.72-.38-1.49-.38-2.32s.14-1.6.38-2.32V6.6H1.27C.46 8.23 0 10.06 0 12s.46 3.77 1.27 5.4l4.06-3.08z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.27 6.6l4.06 3.08c.94-2.83 3.57-4.93 6.67-4.93z"/></svg>
-                Continuar com o Google
-            </button>
-        </div>
-    </div>
-
-    <!-- MODAL DE RECARGA / PIX PRO -->
     <div id="modalRecarga" class="modal-bg">
         <div class="modal-card">
             <button class="modal-close" onclick="fecharModalRecarga()">✕</button>
             <h3 style="color: var(--accent-gold); margin-bottom: 8px;">⚡ Desbloquear Créditos Ilimitados</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem;">Seus 3 créditos diários acabaram! Eles renovam em 24h, ou liberte o acesso ilimitado por apenas R$ 10,00:</p>
-
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Seus 3 créditos diários acabaram! Desbloqueie acesso ilimitado no PrintExpress:</p>
             <form action="https://formsubmit.co/ws8530135@gmail.com" method="POST">
-                <input type="hidden" name="_subject" value="Novo Pedido de Crédito Ilimitado">
+                <input type="hidden" name="_subject" value="Pedido Crédito Ilimitado PrintExpress">
                 <input type="hidden" name="_captcha" value="false">
-
                 <div class="pix-container">
-                    <p style="font-size: 0.85rem; font-weight: bold; color: var(--accent-gold);">Valor: R$ 10,00 (Acesso Ilimitado)</p>
-                    <img src="qrcode-pix.jpg" alt="QR Code PIX">
-                    <div style="display: flex; gap: 5px;">
-                        <input type="text" id="pixKey" class="input-box" value="SUA_CHAVE_PIX_AQUI" readonly style="font-size: 0.75rem;">
-                        <button type="button" class="btn" style="width: auto; padding: 5px 10px;" onclick="copiarPix()">Copiar</button>
+                    <p style="font-size:0.85rem; font-weight:bold; color:var(--accent-gold);">Valor: R$ 10,00</p>
+                    <img src="qrcode-pix.jpg" alt="PIX QR Code">
+                    <div style="display:flex; gap:5px;">
+                        <input type="text" id="pixKey" class="input-box" value="SUA_CHAVE_PIX_AQUI" readonly style="font-size:0.75rem;">
+                        <button type="button" class="btn" style="width:auto; padding:5px 10px;" onclick="copiarPix()">Copiar</button>
                     </div>
                 </div>
-
-                <input type="text" name="Nome" id="recargaNome" class="input-box" placeholder="Seu Nome" required style="margin-bottom: 8px;">
-                <input type="text" name="WhatsApp" class="input-box" placeholder="Seu WhatsApp com DDD" required style="margin-bottom: 12px;">
-                <button type="submit" class="btn btn-gold" style="width: 100%;">Confirmar Pagamento e Enviar</button>
+                <input type="text" name="Nome" id="recargaNome" class="input-box" placeholder="Seu Nome" required style="margin-bottom:8px;">
+                <input type="text" name="WhatsApp" class="input-box" placeholder="WhatsApp com DDD" required style="margin-bottom:12px;">
+                <button type="submit" class="btn btn-gold" style="width:100%;">Confirmar e Enviar</button>
             </form>
         </div>
     </div>
 
     <script>
-        // === 1. CONFIGURAÇÃO OFICIAL FIREBASE ===
         const firebaseConfig = {
     apiKey: "AIzaSyA-ZZ5wB9_2p9vAMRlpJ5JBUliJS3g9g7c",
     authDomain: "utilitarios-express.firebaseapp.com",
@@ -434,57 +324,56 @@
     messagingSenderId: "421983822616",
     appId: "1:421983822616:web:bca6f2ebc1b6990871b46d"
   };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
         let userState = null;
         let userCredits = 0;
-        let currentAuthMode = 'login';
 
-        // === 2. GERENCIAMENTO DE ESTADO E SESSÃO ===
+        // CARROSSEL AUTOMÁTICO
+        let slideIndex = 0;
+        setInterval(() => {
+            const track = document.getElementById('carouselTrack');
+            slideIndex = (slideIndex + 1) % 4;
+            track.style.transform = `translateX(-${slideIndex * 100}%)`;
+        }, 4000);
+
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 userState = user;
                 document.getElementById('userName').innerText = user.displayName || user.email.split('@')[0];
                 document.getElementById('userAvatar').innerText = (user.email).charAt(0).toUpperCase();
-                
-                document.getElementById('btnAuthNav').style.display = 'none';
+                document.getElementById('btnLoginNav').style.display = 'none';
                 document.getElementById('btnLogoutNav').style.display = 'inline-flex';
-                document.getElementById('navCreditBox').style.display = 'inline-flex';
-
-                await sincronizarCreditos24h(user.uid);
+                await sincronizarCreditos(user.uid);
             } else {
                 userState = null;
                 document.getElementById('userName').innerText = 'Visitante';
                 document.getElementById('userAvatar').innerText = '?';
-                
-                document.getElementById('btnAuthNav').style.display = 'inline-flex';
+                document.getElementById('btnLoginNav').style.display = 'inline-flex';
                 document.getElementById('btnLogoutNav').style.display = 'none';
-                document.getElementById('navCreditBox').style.display = 'none';
                 atualizarInterface(0);
             }
         });
 
-        async function sincronizarCreditos24h(uid) {
+        async function sincronizarCreditos(uid) {
             const ref = db.collection('usuarios').doc(uid);
             const doc = await ref.get();
             const agora = new Date().getTime();
-            const limite24h = 24 * 60 * 60 * 1000;
+            const ciclo = 24 * 60 * 60 * 1000;
 
             if (!doc.exists) {
-                await ref.set({ creditos: 3, ultimaRecarga: agora, historico: [] });
+                await ref.set({ creditos: 3, ultimaRecarga: agora });
                 userCredits = 3;
             } else {
                 const data = doc.data();
-                if (agora - data.ultimaRecarga >= limite24h) {
+                if (agora - data.ultimaRecarga >= ciclo) {
                     await ref.update({ creditos: 3, ultimaRecarga: agora });
                     userCredits = 3;
                 } else {
                     userCredits = data.creditos;
                 }
-                carregarHistorico(data.historico || []);
             }
             atualizarInterface(userCredits);
         }
@@ -492,93 +381,33 @@
         function atualizarInterface(qtd) {
             document.getElementById('navCreditVal').innerText = qtd;
             document.getElementById('sideCreditText').innerText = qtd + ' / 3';
-            const pct = (qtd / 3) * 100;
-            document.getElementById('sideCreditBar').style.width = pct + '%';
+            document.getElementById('sideCreditBar').style.width = ((qtd/3)*100) + '%';
         }
 
-        function carregarHistorico(lista) {
-            const box = document.getElementById('historyList');
-            if(lista.length === 0) return;
-            box.innerHTML = lista.slice(-4).reverse().map(i => `<li class="history-item"><span>${i.nome}</span> <span>${i.hora}</span></li>`).join('');
-        }
-
-        // === 3. MOTOR DE EXECUÇÃO DAS FERRAMENTAS ===
-        async function executar(funcaoTool, nomeAcao) {
+        async function executar(fn) {
             if (!userState) {
-                alert('Faça login para usar as ferramentas!');
-                return abrirModalAuth();
+                alert('Acesse sua conta para continuar!');
+                return window.location.href = 'login.html';
             }
-
-            if (userCredits <= 0) {
-                return abrirModalRecarga();
-            }
+            if (userCredits <= 0) return abrirModalRecarga();
 
             try {
-                await funcaoTool();
+                await fn();
                 userCredits--;
                 atualizarInterface(userCredits);
-
-                const horaAtual = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                const ref = db.collection('usuarios').doc(userState.uid);
-                
-                await ref.update({
-                    creditos: userCredits,
-                    historico: firebase.firestore.FieldValue.arrayUnion({ nome: nomeAcao, hora: horaAtual })
-                });
-
-            } catch (err) {
-                alert('Atenção: ' + err.message);
-            }
+                await db.collection('usuarios').doc(userState.uid).update({ creditos: userCredits });
+            } catch(e) { alert('Erro: ' + e.message); }
         }
 
-        // === 4. MODAIS E AUTENTICAÇÃO ===
-        function abrirModalAuth() { document.getElementById('modalAuth').style.display = 'flex'; }
-        function fecharModalAuth() { document.getElementById('modalAuth').style.display = 'none'; }
-        function abrirModalRecarga() { 
-            if(userState) document.getElementById('recargaNome').value = userState.displayName || userState.email;
-            document.getElementById('modalRecarga').style.display = 'flex'; 
-        }
+        function abrirModalRecarga() { document.getElementById('modalRecarga').style.display = 'flex'; }
         function fecharModalRecarga() { document.getElementById('modalRecarga').style.display = 'none'; }
+        function fazerLogout() { auth.signOut().then(() => window.location.href='login.html'); }
+        function copiarPix() { const k = document.getElementById('pixKey'); k.select(); navigator.clipboard.writeText(k.value); alert('PIX copiado!'); }
 
-        function mudarAbaAuth(modo) {
-            currentAuthMode = modo;
-            document.getElementById('tabLogin').classList.toggle('active', modo === 'login');
-            document.getElementById('tabRegister').classList.toggle('active', modo === 'register');
-            document.getElementById('btnSubmitAuth').innerText = modo === 'login' ? 'Acessar Minha Conta' : 'Criar Nova Conta';
-        }
-
-        async function processarAuthEmail(e) {
-            e.preventDefault();
-            const email = document.getElementById('authEmail').value;
-            const pass = document.getElementById('authPass').value;
-
-            try {
-                if (currentAuthMode === 'login') {
-                    await auth.signInWithEmailAndPassword(email, pass);
-                } else {
-                    await auth.createUserWithEmailAndPassword(email, pass);
-                }
-                fecharModalAuth();
-            } catch (err) {
-                alert("Erro na Autenticação: " + err.message);
-            }
-        }
-
-        function loginGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).then(() => fecharModalAuth()).catch(err => alert("Erro Google: " + err.message));
-        }
-
-        function fazerLogout() { auth.signOut(); }
-        function copiarPix() {
-            const input = document.getElementById('pixKey');
-            input.select(); navigator.clipboard.writeText(input.value); alert('PIX Copiado!');
-        }
-
-        // === 5. CÓDIGO DAS 20 FERRAMENTAS ===
+        // --- LÓGICA DAS FERRAMENTAS NOVAS & EXISTENTES ---
         async function tool1_ImgsParaPdf() {
             const files = document.getElementById('f1_input').files;
-            if (!files.length) throw new Error('Selecione ao menos 1 imagem');
+            if(!files.length) throw new Error('Selecione imagens');
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
             for(let i=0; i<files.length; i++){
                 const data = await new Promise(r => { const rd = new FileReader(); rd.onload = e => r(e.target.result); rd.readAsDataURL(files[i]); });
@@ -588,141 +417,119 @@
         }
 
         function tool2_GerarQr() {
-            const txt = document.getElementById('f2_input').value;
-            if(!txt) throw new Error('Digite um link');
+            const val = document.getElementById('f2_input').value;
+            if(!val) throw new Error('Digite um texto');
             const box = document.getElementById('f2_preview'); box.innerHTML = '';
-            new QRCode(box, { text: txt, width: 110, height: 110 });
+            new QRCode(box, { text: val, width: 100, height: 100 });
         }
 
-        function tool3_ConverterImg() {
-            const file = document.getElementById('f3_file').files[0];
-            const fmt = document.getElementById('f3_format').value;
-            if(!file) throw new Error('Selecione a imagem');
-            const rd = new FileReader();
-            rd.onload = e => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height;
-                    canvas.getContext('2d').drawImage(img, 0, 0);
-                    const a = document.createElement('a'); a.download = 'convertida.' + fmt.split('/')[1];
-                    a.href = canvas.toDataURL(fmt); a.click();
-                }; img.src = e.target.result;
-            }; rd.readAsDataURL(file);
+        function tool_GerarConvite() {
+            const nome = document.getElementById('f_conv_nome').value;
+            const data = document.getElementById('f_conv_data').value;
+            const local = document.getElementById('f_conv_local').value;
+            if(!nome) throw new Error('Preencha os dados');
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.setFontSize(22); doc.text("CONVITE ESPECIAL 🎉", 60, 40);
+            doc.setFontSize(16); doc.text(`Você está convidado para: ${nome}`, 20, 70);
+            doc.text(`Data/Hora: ${data}`, 20, 90);
+            doc.text(`Local: ${local}`, 20, 110);
+            doc.save('convite.pdf');
         }
 
-        function tool4_CompactarImg() {
-            const file = document.getElementById('f4_input').files[0];
-            if(!file) throw new Error('Selecione a imagem');
-            const rd = new FileReader();
-            rd.onload = e => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height;
-                    canvas.getContext('2d').drawImage(img, 0, 0);
-                    const a = document.createElement('a'); a.download = 'compactada.jpg';
-                    a.href = canvas.toDataURL('image/jpeg', 0.35); a.click();
-                }; img.src = e.target.result;
-            }; rd.readAsDataURL(file);
+        function tool_GerarCartao() {
+            const tipo = document.getElementById('f_cartao_tipo').value;
+            const de = document.getElementById('f_cartao_de').value;
+            const para = document.getElementById('f_cartao_para').value;
+            const msg = document.getElementById('f_cartao_msg').value;
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.setFontSize(20); doc.text(`Cartão de ${tipo}`, 60, 40);
+            doc.setFontSize(14); doc.text(`Para: ${para}`, 20, 70);
+            doc.text(`De: ${de}`, 20, 85);
+            doc.text(`Mensagem: ${msg}`, 20, 105);
+            doc.save('cartao.pdf');
         }
 
-        function tool5_Barcode() {
-            const val = document.getElementById('f5_input').value;
-            if(!val) throw new Error('Digite os números');
-            JsBarcode("#f5_svg", val, { format: "CODE128", width: 2, height: 40, displayValue: true });
+        let cronoTimer; let cronoSec = 0;
+        function cronoStart() {
+            clearInterval(cronoTimer);
+            cronoTimer = setInterval(() => {
+                cronoSec++;
+                const h = String(Math.floor(cronoSec/3600)).padStart(2,'0');
+                const m = String(Math.floor((cronoSec%3600)/60)).padStart(2,'0');
+                const s = String(cronoSec%60).padStart(2,'0');
+                document.getElementById('f_crono_view').innerText = `${h}:${m}:${s}`;
+            }, 1000);
+        }
+        function cronoStop() { clearInterval(cronoTimer); }
+
+        function calcNotas() {
+            const n1 = parseFloat(document.getElementById('f_n1').value);
+            const n2 = parseFloat(document.getElementById('f_n2').value);
+            if(isNaN(n1) || isNaN(n2)) throw new Error('Digite as notas');
+            const media = (n1 + n2) / 2;
+            document.getElementById('f_nota_out').innerText = `Média: ${media.toFixed(1)} - ${media >= 6 ? 'Aprovado' : 'Recuperação'}`;
         }
 
-        function tool6_OCR() {
-            const file = document.getElementById('f6_input').files[0];
-            const out = document.getElementById('f6_output');
-            if(!file) throw new Error('Selecione uma imagem');
-            out.value = 'Lendo e extraindo texto...';
-            return Tesseract.recognize(file, 'por').then(({ data: { text } }) => out.value = text);
+        function gerarABNT() {
+            const autor = document.getElementById('f_abnt_autor').value;
+            const titulo = document.getElementById('f_abnt_titulo').value;
+            const ano = document.getElementById('f_abnt_ano').value;
+            document.getElementById('f_abnt_out').value = `${autor.toUpperCase()}. ${titulo}. ${ano}.`;
         }
 
-        function tool7_GerarSenha() {
-            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%&*";
-            let p = ""; for(let i=0; i<16; i++) p += chars.charAt(Math.floor(Math.random() * chars.length));
-            document.getElementById('f7_output').value = p;
+        function gerarCapaABNT() {
+            const inst = document.getElementById('f_capa_inst').value;
+            const autor = document.getElementById('f_capa_autor').value;
+            const titulo = document.getElementById('f_capa_titulo').value;
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.setFontSize(14); doc.text(inst.toUpperCase(), 105, 40, {align:'center'});
+            doc.text(autor.toUpperCase(), 105, 80, {align:'center'});
+            doc.setFontSize(18); doc.text(titulo.toUpperCase(), 105, 140, {align:'center'});
+            doc.save('capa_abnt.pdf');
         }
 
-        function tool8_ContarTexto() {
-            const val = document.getElementById('f8_input').value.trim();
-            const w = val ? val.split(/\s+/).length : 0;
-            document.getElementById('f8_preview').innerText = `${w} Palavras | ${val.length} Caracteres`;
+        function gerarPlanEstudos() {
+            const mat = document.getElementById('f_plan_materia').value;
+            const hrs = document.getElementById('f_plan_horas').value;
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.setFontSize(18); doc.text("Plano de Estudos", 20, 30);
+            doc.setFontSize(12); doc.text(`Matéria: ${mat}`, 20, 50);
+            doc.text(`Meta de Horas: ${hrs}h / semana`, 20, 65);
+            doc.save('plano_estudos.pdf');
         }
 
-        function tool9_GerarCPF() {
-            const r = () => Math.floor(Math.random() * 9);
-            const n = [r(),r(),r(),r(),r(),r(),r(),r(),r()];
-            let d1 = n.reduce((a,v,i) => a + v * (10-i), 0) % 11; d1 = d1 < 2 ? 0 : 11 - d1;
-            let d2 = [...n, d1].reduce((a,v,i) => a + v * (11-i), 0) % 11; d2 = d2 < 2 ? 0 : 11 - d2;
-            document.getElementById('f9_output').value = `${n.slice(0,3).join('')}.${n.slice(3,6).join('')}.${n.slice(6,9).join('')}-${d1}${d2}`;
+        function gerarPlannerSemanal() {
+            const foco = document.getElementById('f_plan_sem_foco').value;
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.setFontSize(18); doc.text(`Planner Semanal - Foco: ${foco}`, 20, 30);
+            const dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+            dias.forEach((d, i) => doc.text(`[  ] ${d}: ____________________`, 20, 50 + (i*15)));
+            doc.save('planner_semanal.pdf');
         }
 
-        function tool10_CaixaAlta() {
-            const input = document.getElementById('f10_input');
-            if(!input.value) throw new Error('Cole o texto');
-            input.value = input.value.toUpperCase();
+        function gerarPlannerMensal() {
+            const mes = document.getElementById('f_plan_mes_nome').value;
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.setFontSize(18); doc.text(`Planner Mensal - ${mes}`, 20, 30);
+            for(let i=1; i<=31; i++) doc.text(`${i}. [  ] ___________________`, (i<=16?20:110), 45 + ((i<=16?i:i-16)*12));
+            doc.save('planner_mensal.pdf');
         }
 
-        function tool11_LinkWhats() {
-            const p = document.getElementById('f11_phone').value.replace(/\D/g,'');
-            const m = encodeURIComponent(document.getElementById('f11_msg').value);
-            if(!p) throw new Error('Digite o número');
-            const url = `https://wa.me/55${p}?text=${m}`;
-            document.getElementById('f11_preview').innerHTML = `<a href="${url}" target="_blank" style="color:var(--primary)">${url}</a>`;
+        function gerarTodoList() {
+            const items = document.getElementById('f_todo_items').value.split('\n');
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.setFontSize(18); doc.text("Lista de Tarefas (To-Do)", 20, 30);
+            items.forEach((it, i) => { if(it.trim()) doc.text(`[  ] ${it}`, 20, 50 + (i*12)); });
+            doc.save('lista_tarefas.pdf');
         }
 
-        function tool12_InverterTexto() {
-            const val = document.getElementById('f12_input').value;
-            document.getElementById('f12_preview').innerText = val.split('').reverse().join('');
-        }
-
-        function tool13_GerarCor() {
-            const hex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
-            const box = document.getElementById('f13_box');
-            box.style.background = hex; box.innerText = hex.toUpperCase();
-        }
-
-        function tool14_LimparUrl() {
-            const val = document.getElementById('f14_input').value;
-            if(!val) throw new Error('Cole a URL');
-            const clean = val.split('?')[0];
-            document.getElementById('f14_output').value = clean;
-        }
-
-        function tool15_Base64() {
-            const val = document.getElementById('f15_input').value;
-            if(!val) throw new Error('Digite o texto');
-            document.getElementById('f15_output').value = btoa(val);
-        }
-
-        function tool16_Lorem() {
-            document.getElementById('f16_output').value = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.";
-        }
-
-        function tool17_LerQr() {
-            const file = document.getElementById('f17_input').files[0];
-            if(!file) throw new Error('Selecione a imagem');
-            document.getElementById('f17_output').innerText = "QR Code identificado e válido.";
-        }
-
-        function tool18_CalcPorcentagem() {
-            const p = parseFloat(document.getElementById('f18_p').value);
-            const v = parseFloat(document.getElementById('f18_v').value);
-            if(isNaN(p) || isNaN(v)) throw new Error('Preencha os valores');
-            const res = (p / 100) * v;
-            document.getElementById('f18_output').innerText = `Resultado: R$ ${res.toFixed(2)}`;
-        }
-
-        function tool19_UUID() {
-            document.getElementById('f19_output').value = crypto.randomUUID();
-        }
-
-        function tool20_ExtrairLinks() {
-            const val = document.getElementById('f20_input').value;
-            const matches = val.match(/(https?:\/\/[^\s]+)/g) || [];
-            document.getElementById('f20_output').value = matches.join('\n');
+        function gerarHabitTracker() {
+            const hab = document.getElementById('f_habito_nome').value;
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.setFontSize(18); doc.text(`Rastreador de Hábito: ${hab}`, 20, 30);
+            doc.setFontSize(10); doc.text("Marque os dias concluídos no mês:", 20, 45);
+            for(let i=1; i<=30; i++) doc.text(`Dia ${i} [  ]`, (i<=15?20:100), 55 + ((i<=15?i:i-15)*12));
+            doc.save('controle_habitos.pdf');
         }
     </script>
 </body>
