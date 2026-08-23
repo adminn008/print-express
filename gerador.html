@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Utilitários Express Pro – Suíte Digital SaaS</title>
+    <title>Utilitários Express Pro – Suíte Digital Completa</title>
 
     <!-- Design System: Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +20,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 
     <style>
         :root {
@@ -30,7 +30,6 @@
             --primary: #6366f1;
             --primary-hover: #4f46e5;
             --accent-gold: #f59e0b;
-            --accent-green: #10b981;
             --text-main: #f9fafb;
             --text-muted: #9ca3af;
             --border-line: rgba(255, 255, 255, 0.08);
@@ -48,7 +47,6 @@
             --primary: #4f46e5;
             --primary-hover: #4338ca;
             --accent-gold: #d97706;
-            --accent-green: #059669;
             --text-main: #111827;
             --text-muted: #6b7280;
             --border-line: rgba(0, 0, 0, 0.08);
@@ -59,61 +57,50 @@
             --ad-bg: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.25s ease, border-color 0.25s ease; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.2s, border-color 0.2s; }
         body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding-bottom: 60px; }
 
         .top-nav {
-            position: sticky; top: 0; z-index: 100;
-            background: var(--panel-bg); backdrop-filter: blur(12px);
+            position: sticky; top: 0; z-index: 100; background: var(--panel-bg);
             border-bottom: 1px solid var(--border-line); padding: 14px 24px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: var(--shadow-card);
+            display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-card);
         }
 
-        .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.25rem; color: var(--text-main); }
+        .brand { font-weight: 800; font-size: 1.25rem; color: var(--text-main); }
         .brand span { color: var(--primary); }
-
         .nav-actions { display: flex; align-items: center; gap: 12px; }
 
         .credit-widget {
             background: rgba(99, 102, 241, 0.12); border: 1px solid var(--border-glow);
             padding: 7px 16px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; color: var(--primary);
-            display: flex; align-items: center; gap: 8px; cursor: pointer;
+            cursor: pointer;
         }
-        .credit-widget.unlimited {
-            background: rgba(245, 158, 11, 0.15); border-color: var(--accent-gold); color: var(--accent-gold);
-        }
+        .credit-widget.unlimited { background: rgba(245, 158, 11, 0.15); border-color: var(--accent-gold); color: var(--accent-gold); }
 
         .btn {
             background: var(--primary); color: #fff; border: none; padding: 10px 20px;
-            border-radius: 12px; font-weight: 600; font-size: 0.88rem; cursor: pointer;
-            transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+            border-radius: 12px; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .btn:hover { background: var(--primary-hover); transform: translateY(-2px); }
-        .btn-gold { background: var(--accent-gold); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
-        .btn-gold:hover { background: #d97706; color: #fff; }
-        .btn-outline { background: transparent; border: 1px solid var(--border-line); color: var(--text-main); box-shadow: none; }
-        .btn-outline:hover { background: var(--card-bg); }
+        .btn:hover { background: var(--primary-hover); }
+        .btn-gold { background: var(--accent-gold); color: #fff; font-weight: 700; }
+        .btn-gold:hover { background: #d97706; }
+        .btn-outline { background: transparent; border: 1px solid var(--border-line); color: var(--text-main); }
 
         .theme-toggle {
             background: var(--card-bg); border: 1px solid var(--border-line);
-            border-radius: 50%; width: 40px; height: 40px; display: flex;
-            align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem;
-            color: var(--text-main);
+            border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.1rem; color: var(--text-main);
         }
 
-        .main-layout { max-width: 1280px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 280px 1fr; gap: 30px; }
+        .main-layout { max-width: 1320px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 280px 1fr; gap: 30px; }
         @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
 
         .carousel-ad {
             background: var(--ad-bg); border: 1px solid var(--border-glow);
-            border-radius: 20px; padding: 24px; margin-bottom: 25px;
-            position: relative; overflow: hidden; box-shadow: var(--shadow-card);
+            border-radius: 20px; padding: 24px; margin-bottom: 25px; position: relative; overflow: hidden;
         }
         .carousel-slides { display: flex; transition: transform 0.5s ease-in-out; }
         .carousel-slide { min-width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-        .slide-content h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; color: var(--text-main); }
+        .slide-content h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; }
         .slide-content p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px; }
         .carousel-dots { display: flex; justify-content: center; gap: 8px; margin-top: 15px; }
         .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border-line); cursor: pointer; }
@@ -122,18 +109,16 @@
         .sidebar-card {
             background: var(--panel-bg); border: 1px solid var(--border-line); border-radius: 20px;
             padding: 24px; position: sticky; top: 90px; height: fit-content; display: flex; flex-direction: column; gap: 20px;
-            box-shadow: var(--shadow-card);
         }
 
         .user-box { display: flex; align-items: center; gap: 14px; }
         .avatar-large {
             width: 52px; height: 52px; border-radius: 50%; background: var(--primary);
             display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; color: #fff;
-            border: 2px solid var(--panel-bg); box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
 
         .progress-bar-bg { width: 100%; background: var(--card-bg); height: 10px; border-radius: 10px; overflow: hidden; margin-top: 8px; border: 1px solid var(--border-line); }
-        .progress-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease; border-radius: 10px; }
+        .progress-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease; }
 
         .history-list { list-style: none; font-size: 0.82rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
         .history-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-line); padding-bottom: 6px; }
@@ -146,24 +131,22 @@
 
         .tool-card {
             background: var(--panel-bg); border: 1px solid var(--border-line); border-radius: 20px; padding: 22px;
-            display: flex; flex-direction: column; gap: 14px; transition: all 0.25s ease; position: relative;
-            box-shadow: var(--shadow-card); cursor: pointer;
+            display: flex; flex-direction: column; gap: 10px; transition: all 0.2s ease; cursor: pointer;
         }
         .tool-card:hover { border-color: var(--border-glow); transform: translateY(-4px); }
 
-        .tool-title { font-size: 1rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; color: var(--text-main); }
+        .tool-title { font-size: 0.95rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
         .tool-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; background: rgba(99, 102, 241, 0.12); color: var(--primary); font-weight: 700; }
-        .tool-desc { font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; }
+        .tool-desc { font-size: 0.82rem; color: var(--text-muted); }
 
         .input-box {
             width: 100%; background: var(--input-bg); border: 1px solid var(--input-border);
-            color: var(--text-main); padding: 12px 14px; border-radius: 12px; font-size: 0.88rem; outline: none;
-            transition: all 0.2s ease; margin-bottom: 12px;
+            color: var(--text-main); padding: 12px 14px; border-radius: 12px; font-size: 0.88rem; outline: none; margin-bottom: 10px;
         }
-        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+        .input-box:focus { border-color: var(--primary); }
         textarea.input-box { resize: vertical; min-height: 90px; }
 
-        /* MODAL EM TELA CHEIA (FULLSCREEN) */
+        /* FULLSCREEN MODAL */
         .fullscreen-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: var(--bg-body); z-index: 2000; flex-direction: column; overflow-y: auto;
@@ -172,9 +155,7 @@
             background: var(--panel-bg); border-bottom: 1px solid var(--border-line);
             padding: 16px 30px; display: flex; justify-content: space-between; align-items: center;
         }
-        .fullscreen-header h2 { font-size: 1.3rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
         .close-fullscreen { background: none; border: none; color: var(--text-muted); font-size: 1.8rem; cursor: pointer; }
-        .close-fullscreen:hover { color: var(--text-main); }
 
         .fullscreen-body {
             flex: 1; max-width: 1400px; width: 100%; margin: 0 auto; padding: 30px;
@@ -182,26 +163,21 @@
         }
         @media (max-width: 850px) { .fullscreen-body { grid-template-columns: 1fr; } }
 
-        .form-pane {
-            background: var(--panel-bg); border: 1px solid var(--border-line);
-            border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px;
-        }
+        .form-pane { background: var(--panel-bg); border: 1px solid var(--border-line); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 10px; }
         .preview-pane {
             background: var(--panel-bg); border: 1px solid var(--border-line);
-            border-radius: 20px; padding: 25px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; position: relative; min-height: 400px;
+            border-radius: 20px; padding: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
         .preview-paper {
-            background: #ffffff; color: #111827; width: 100%; max-width: 420px; min-height: 520px;
+            background: #ffffff; color: #111827; width: 100%; max-width: 420px; min-height: 500px;
             border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-            word-break: break-word; text-align: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; word-break: break-word;
         }
-        .preview-paper h3 { color: #1e1b4b; margin-bottom: 10px; font-size: 1.2rem; text-transform: uppercase; border-bottom: 2px solid #6366f1; padding-bottom: 5px; width: 100%; }
-        .preview-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; gap: 15px; }
+        .preview-paper h3 { color: #1e1b4b; margin-bottom: 10px; font-size: 1.1rem; text-transform: uppercase; border-bottom: 2px solid #6366f1; padding-bottom: 5px; width: 100%; }
+        .preview-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; gap: 12px; font-size: 0.85rem; color: #374151; text-align: left; }
 
-        /* MODAIS MENORES (AUTH / RECARGA) */
+        /* MODAIS MENORES */
         .modal-bg {
             display: none; position: fixed; top:0; left:0; width:100%; height:100%;
             background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); z-index: 3000;
@@ -209,15 +185,14 @@
         }
         .modal-card {
             background: var(--panel-bg); border: 1px solid var(--border-glow); border-radius: 24px;
-            width: 100%; max-width: 440px; padding: 32px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            color: var(--text-main);
+            width: 100%; max-width: 440px; padding: 32px; position: relative; color: var(--text-main);
         }
         .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer; }
         .tab-group { display: flex; border-bottom: 1px solid var(--border-line); margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 10px; background: none; border: none; color: var(--text-muted); font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; }
-        .tab-btn.active { color: var(--primary); border-color: var(--primary); }
+        .tab-btn { flex: 1; padding: 10px; background: none; border: none; color: var(--text-muted); font-weight: 600; cursor: pointer; }
+        .tab-btn.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
         .pix-container { background: var(--card-bg); border: 1px dashed var(--accent-gold); border-radius: 16px; padding: 18px; text-align: center; margin: 15px 0; }
-        .pix-container img { width: 130px; height: 130px; border-radius: 10px; background: #fff; padding: 5px; margin: 10px 0; }
+        .pix-container img { width: 120px; height: 120px; border-radius: 8px; background: #fff; padding: 4px; margin: 8px 0; }
     </style>
 </head>
 <body>
@@ -226,7 +201,7 @@
     <nav class="top-nav">
         <div class="brand">⚡ Utilitários<span>Express</span></div>
         <div class="nav-actions">
-            <button class="theme-toggle" onclick="toggleTheme()" id="btnTheme" title="Alternar Modo Claro/Escuro">🌙</button>
+            <button class="theme-toggle" onclick="toggleTheme()" id="btnTheme">🌙</button>
             <div class="credit-widget" onclick="abrirModalRecarga()" id="navCreditBox" style="display: none;">
                 ⚡ <span id="navCreditVal">0</span>/3 Créditos
             </div>
@@ -237,8 +212,6 @@
 
     <!-- CONTAINER PRINCIPAL -->
     <div class="main-layout">
-
-        <!-- PAINEL DE PERFIL -->
         <aside class="sidebar-card">
             <div class="user-box">
                 <div class="avatar-large" id="userAvatar">?</div>
@@ -259,7 +232,7 @@
                 <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">Renovação automática a cada 24 horas.</p>
             </div>
 
-            <button class="btn btn-gold" style="width: 100%;" onclick="abrirModalRecarga()">⚡ Obter Créditos Ilimitados</button>
+            <button class="btn btn-gold" style="width: 100%;" onclick="abrirModalRecarga()">⚡ Créditos Ilimitados</button>
 
             <div>
                 <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 8px;">Histórico Recente</div>
@@ -269,30 +242,29 @@
             </div>
         </aside>
 
-        <!-- AREA DE FERRAMENTAS -->
         <main>
-            <!-- CARROSSEL DE PUBLICIDADE PRINT-EXPRESS -->
+            <!-- CARROSSEL PUBLICIDADE -->
             <div class="carousel-ad">
                 <div class="carousel-slides" id="carouselSlides">
                     <div class="carousel-slide">
                         <div class="slide-content">
                             <h3>🖨️ Print-Express Gráfica</h3>
-                            <p>Impressões expressas de alta qualidade, panfletos, cartões de visita e banners.</p>
-                            <a href="https://wa.me/558598530135?text=Ol%C3%A1,%20gostaria%20de%20um%20or%C3%A7amento%20de%20impress%C3%A3o" target="_blank" class="btn btn-gold">Pedir Impressão Agora</a>
+                            <p>Impressões expressas de alta qualidade, panfletos e cartões.</p>
+                            <a href="https://wa.me/558598530135?text=Ol%C3%A1,%20gostaria%20de%20um%20or%C3%A7amento" target="_blank" class="btn btn-gold">Pedir Impressão</a>
                         </div>
                     </div>
                     <div class="carousel-slide">
                         <div class="slide-content">
                             <h3>📄 Encadernação & Plastificação</h3>
-                            <p>Deixe seus documentos, apostilas e trabalhos com acabamento profissional imediato.</p>
-                            <a href="https://wa.me/558598530135?text=Ol%C3%A1,%20gostaria%20de%20saber%20sobre%20encaderna%C3%A7%C3%A3o" target="_blank" class="btn btn-gold">Consultar Preços</a>
+                            <p>Proteja seus documentos e apostilas com acabamento rápido.</p>
+                            <a href="https://wa.me/558598530135?text=Ol%C3%A1,%20saber%20sobre%20encaderna%C3%A7%C3%A3o" target="_blank" class="btn btn-gold">Consultar Preços</a>
                         </div>
                     </div>
                     <div class="carousel-slide">
                         <div class="slide-content">
                             <h3>🎁 Brindes Personalizados</h3>
-                            <p>Canecas, adesivos, fardamentos e brindes corporativos para sua empresa.</p>
-                            <a href="https://wa.me/558598530135?text=Ol%C3%A1,%20quero%20um%20or%C3%A7amento%20de%20brindes" target="_blank" class="btn btn-gold">Solicitar Catálogo</a>
+                            <p>Canecas, adesivos e fardamentos para sua marca.</p>
+                            <a href="https://wa.me/558598530135?text=Ol%C3%A1,%20orcamento%20brindes" target="_blank" class="btn btn-gold">Solicitar Catálogo</a>
                         </div>
                     </div>
                 </div>
@@ -304,98 +276,113 @@
             </div>
 
             <div class="tools-header">
-                <h1>Suíte de Produtividade Digital</h1>
-                <p>Clique em qualquer ferramenta para abrir o painel em tela cheia com visualização ao vivo.</p>
+                <h1>Suíte de Produtividade Digital (12 Ferramentas)</h1>
+                <p>Acesse e utilize todas as ferramentas com visualização em tempo real.</p>
             </div>
 
+            <!-- GRADE DAS 12 FERRAMENTAS -->
             <div class="tools-grid">
                 <div class="tool-card" onclick="abrirFerramenta('qr')">
                     <div class="tool-title">1. QR Code com Título <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Gere QR Codes personalizados com títulos para impressão ou download.</div>
+                    <div class="tool-desc">Gere QR Code com título personalizado.</div>
                 </div>
                 <div class="tool-card" onclick="abrirFerramenta('recibo')">
                     <div class="tool-title">2. Gerador de Recibo <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Crie recibos profissionais de pagamento com preenchimento instantâneo.</div>
+                    <div class="tool-desc">Emita recibos comerciais rapidamente.</div>
                 </div>
                 <div class="tool-card" onclick="abrirFerramenta('barcode')">
                     <div class="tool-title">3. Código de Barras <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Gere etiquetas de código de barras prontas para impressão em PDF.</div>
+                    <div class="tool-desc">Gere códigos de barras nos formatos padrão.</div>
                 </div>
                 <div class="tool-card" onclick="abrirFerramenta('ocr')">
                     <div class="tool-title">4. Extrator de Texto OCR <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Envie uma imagem e extraia o texto digitado automaticamente.</div>
+                    <div class="tool-desc">Extraia texto de fotos e digitalizações.</div>
                 </div>
                 <div class="tool-card" onclick="abrirFerramenta('imgs2pdf')">
                     <div class="tool-title">5. Imagens para PDF <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Junte várias imagens JPG/PNG em um único arquivo PDF organizado.</div>
+                    <div class="tool-desc">Junte várias fotos num único PDF.</div>
                 </div>
                 <div class="tool-card" onclick="abrirFerramenta('promissoria')">
                     <div class="tool-title">6. Nota Promissória <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Emita notas promissórias com campos claros e válidos para impressão.</div>
+                    <div class="tool-desc">Crie promissórias válidas para impressão.</div>
+                </div>
+                <div class="tool-card" onclick="abrirFerramenta('orçamento')">
+                    <div class="tool-title">7. Gerador de Orçamento <span class="tool-badge">-1 Crédito</span></div>
+                    <div class="tool-desc">Monte propostas comerciais para clientes.</div>
+                </div>
+                <div class="tool-card" onclick="abrirFerramenta('contrato')">
+                    <div class="tool-title">8. Contrato Simples <span class="tool-badge">-1 Crédito</span></div>
+                    <div class="tool-desc">Elabore contratos básicos de prestação de serviço.</div>
+                </div>
+                <div class="tool-card" onclick="abrirFerramenta('declaracao')">
+                    <div class="tool-title">9. Declaração de Residência <span class="tool-badge">-1 Crédito</span></div>
+                    <div class="tool-desc">Gere comprovantes de residência simples.</div>
+                </div>
+                <div class="tool-card" onclick="abrirFerramenta('curriculo')">
+                    <div class="tool-title">10. Gerador de Currículo <span class="tool-badge">-1 Crédito</span></div>
+                    <div class="tool-desc">Crie currículos formatados em PDF.</div>
+                </div>
+                <div class="tool-card" onclick="abrirFerramenta('etiqueta')">
+                    <div class="tool-title">11. Etiqueta de Envio <span class="tool-badge">-1 Crédito</span></div>
+                    <div class="tool-desc">Gere etiquetas de remetente e destinatário.</div>
+                </div>
+                <div class="tool-card" onclick="abrirFerramenta('mesclar')">
+                    <div class="tool-title">12. Mesclar PDFs <span class="tool-badge">-1 Crédito</span></div>
+                    <div class="tool-desc">Junte múltiplos arquivos PDF em um só.</div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- MODAL EM TELA CHEIA (FULLSCREEN) PARA FERRAMENTAS -->
+    <!-- MODAL FULLSCREEN -->
     <div id="fullscreenModal" class="fullscreen-modal">
         <div class="fullscreen-header">
-            <h2 id="fsTitle">Nome da Ferramenta</h2>
+            <h2 id="fsTitle">Ferramenta</h2>
             <button class="close-fullscreen" onclick="fecharFullscreen()">✕</button>
         </div>
         <div class="fullscreen-body">
-            <!-- PAINEL DE INPUTS -->
-            <div class="form-pane" id="fsFormPane">
-                <!-- Conteúdo Injetado Dinamicamente -->
-            </div>
-
-            <!-- PAINEL DE PRÉVIA EM TEMPO REAL -->
+            <div class="form-pane" id="fsFormPane"></div>
             <div class="preview-pane">
-                <div class="preview-paper" id="previewPaper">
-                    <h3 id="prevTitle">PRÉVIA DO DOCUMENTO</h3>
-                    <div class="preview-content" id="prevContent">
-                        <p style="color:#9ca3af;">Preencha os campos ao lado para gerar a prévia.</p>
-                    </div>
-                    <p style="font-size: 0.7rem; color: #9ca3af; margin-top: 15px;">Utilitários Express Pro - Documento Digital</p>
+                <div class="preview-paper">
+                    <h3 id="prevTitle">PRÉVIA</h3>
+                    <div class="preview-content" id="prevContent"></div>
+                    <p style="font-size: 0.68rem; color: #9ca3af; margin-top: 10px;">Utilitários Express Pro - Documento Gerado</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL AUTENTICAÇÃO -->
+    <!-- MODAL AUTH -->
     <div id="modalAuth" class="modal-bg">
         <div class="modal-card">
             <button class="modal-close" onclick="fecharModalAuth()">✕</button>
             <div class="tab-group">
                 <button class="tab-btn active" id="tabLogin" onclick="mudarAbaAuth('login')">Entrar</button>
-                <button class="tab-btn" id="tabRegister" onclick="mudarAbaAuth('register')">Cadastrar Conta</button>
+                <button class="tab-btn" id="tabRegister" onclick="mudarAbaAuth('register')">Cadastrar</button>
             </div>
             <form id="authForm" onsubmit="processarAuthEmail(event)">
                 <input type="email" id="authEmail" class="input-box" placeholder="Seu E-mail" required>
-                <input type="password" id="authPass" class="input-box" placeholder="Sua Senha (mín. 6 dígitos)" required>
-                <button type="submit" id="btnSubmitAuth" class="btn" style="width: 100%; margin-bottom: 12px;">Acessar Minha Conta</button>
+                <input type="password" id="authPass" class="input-box" placeholder="Sua Senha" required>
+                <button type="submit" id="btnSubmitAuth" class="btn" style="width: 100%; margin-bottom: 12px;">Entrar</button>
             </form>
-            <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin: 10px 0;">OU</div>
-            <button class="btn btn-outline" style="width: 100%;" onclick="loginGoogle()">
-                Continuar com o Google
-            </button>
+            <button class="btn btn-outline" style="width: 100%;" onclick="loginGoogle()">Entrar com Google</button>
         </div>
     </div>
 
-    <!-- MODAL RECARGA / PIX -->
+    <!-- MODAL RECARGA -->
     <div id="modalRecarga" class="modal-bg">
         <div class="modal-card">
             <button class="modal-close" onclick="fecharModalRecarga()">✕</button>
-            <h3 style="color: var(--accent-gold); margin-bottom: 8px;">⚡ Desbloquear Créditos Ilimitados</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem;">Seus 3 créditos diários acabaram! Libere o acesso ilimitado por apenas R$ 10,00:</p>
+            <h3 style="color: var(--accent-gold); margin-bottom: 8px;">⚡ Créditos Ilimitados</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Libere acesso sem limites por R$ 10,00:</p>
 
             <form action="https://formsubmit.co/ws8530135@gmail.com" method="POST">
-                <input type="hidden" name="_subject" value="Novo Pedido de Crédito Ilimitado">
+                <input type="hidden" name="_subject" value="Solicitação Crédito Ilimitado">
                 <input type="hidden" name="_captcha" value="false">
 
                 <div class="pix-container">
-                    <p style="font-size: 0.85rem; font-weight: bold; color: var(--accent-gold);">Valor: R$ 10,00 (Acesso Ilimitado)</p>
-                    <img src="qrcode-pix.jpg" alt="QR Code PIX">
+                    <p style="font-size: 0.85rem; font-weight: bold; color: var(--accent-gold);">R$ 10,00 - Acesso Ilimitado</p>
+                    <img src="qrcode-pix.jpg" alt="PIX">
                     <div style="display: flex; gap: 5px;">
                         <input type="text" id="pixKey" class="input-box" value="SUA_CHAVE_PIX_AQUI" readonly style="font-size: 0.75rem; margin-bottom:0;">
                         <button type="button" class="btn" style="width: auto; padding: 5px 12px;" onclick="copiarPix()">Copiar</button>
@@ -403,41 +390,33 @@
                 </div>
 
                 <input type="text" name="Nome" id="recargaNome" class="input-box" placeholder="Seu Nome" required>
-                <input type="text" name="WhatsApp" class="input-box" placeholder="Seu WhatsApp com DDD" required>
-                <button type="submit" class="btn btn-gold" style="width: 100%;">Confirmar Pagamento e Enviar</button>
+                <input type="text" name="WhatsApp" class="input-box" placeholder="WhatsApp com DDD" required>
+                <button type="submit" class="btn btn-gold" style="width: 100%;">Confirmar e Enviar</button>
             </form>
         </div>
     </div>
 
     <script>
-        // GERENCIAMENTO DE MODO CLARO / ESCURO
         function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            document.getElementById('btnTheme').innerText = newTheme === 'light' ? '☀️' : '🌙';
-            localStorage.setItem('theme', newTheme);
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', next);
+            document.getElementById('btnTheme').innerText = next === 'light' ? '☀️' : '🌙';
+            localStorage.setItem('theme', next);
         }
 
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
         document.getElementById('btnTheme').innerText = savedTheme === 'light' ? '☀️' : '🌙';
 
-        // CARROSSEL
         let currentSlide = 0;
-        function setSlide(index) {
-            currentSlide = index;
-            document.getElementById('carouselSlides').style.transform = `translateX(-${index * 100}%)`;
-            document.querySelectorAll('.dot').forEach((dot, i) => {
-                dot.classList.toggle('active', i === index);
-            });
+        function setSlide(i) {
+            currentSlide = i;
+            document.getElementById('carouselSlides').style.transform = `translateX(-${i * 100}%)`;
+            document.querySelectorAll('.dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
         }
-        setInterval(() => {
-            currentSlide = (currentSlide + 1) % 3;
-            setSlide(currentSlide);
-        }, 5000);
+        setInterval(() => { setSlide((currentSlide + 1) % 3); }, 5000);
 
-        // CONFIGURAÇÃO FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyA-ZZ5wB9_2p9vAMRlpJ5JBUliJS3g9g7c",
             authDomain: "utilitarios-express.firebaseapp.com",
@@ -455,25 +434,22 @@
         let userState = null;
         let userData = null;
         let currentAuthMode = 'login';
-        let activeTool = null;
+        let pdfsParaMesclar = [];
 
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 userState = user;
                 document.getElementById('userName').innerText = user.displayName || user.email.split('@')[0];
                 document.getElementById('userAvatar').innerText = (user.email).charAt(0).toUpperCase();
-                
                 document.getElementById('btnAuthNav').style.display = 'none';
                 document.getElementById('btnLogoutNav').style.display = 'inline-flex';
                 document.getElementById('navCreditBox').style.display = 'inline-flex';
-
                 await sincronizarUsuario(user);
             } else {
                 userState = null;
                 userData = null;
                 document.getElementById('userName').innerText = 'Visitante';
                 document.getElementById('userAvatar').innerText = '?';
-                
                 document.getElementById('btnAuthNav').style.display = 'inline-flex';
                 document.getElementById('btnLogoutNav').style.display = 'none';
                 document.getElementById('navCreditBox').style.display = 'none';
@@ -485,391 +461,465 @@
             const ref = db.collection('usuarios').doc(user.uid);
             const doc = await ref.get();
             const agora = new Date().getTime();
-            const limite24h = 24 * 60 * 60 * 1000;
 
             if (!doc.exists) {
-                userData = {
-                    email: user.email,
-                    creditos: 3,
-                    ultimaRecarga: agora,
-                    isIlimitado: false,
-                    vencimentoIlimitado: 0,
-                    historico: []
-                };
+                userData = { email: user.email, creditos: 3, ultimaRecarga: agora, isIlimitado: false, historico: [] };
                 await ref.set(userData);
             } else {
                 userData = doc.data();
-
-                if (userData.isIlimitado && userData.vencimentoIlimitado < agora) {
-                    userData.isIlimitado = false;
-                    await ref.update({ isIlimitado: false });
-                }
-
-                if (!userData.isIlimitado && (agora - (userData.ultimaRecarga || 0) >= limite24h)) {
+                if (!userData.isIlimitado && (agora - (userData.ultimaRecarga || 0) >= 86400000)) {
                     userData.creditos = 3;
                     userData.ultimaRecarga = agora;
                     await ref.update({ creditos: 3, ultimaRecarga: agora });
                 }
             }
-
             carregarHistorico(userData.historico || []);
             atualizarInterface();
         }
 
         function atualizarInterface() {
             const widget = document.getElementById('navCreditBox');
-            if (!userData) {
-                document.getElementById('navCreditVal').innerText = "0";
-                document.getElementById('sideCreditText').innerText = "0 / 3";
-                document.getElementById('sideCreditBar').style.width = "0%";
-                return;
-            }
+            if (!userData) return;
 
             if (userData.isIlimitado) {
                 widget.className = "credit-widget unlimited";
-                widget.innerHTML = "⚡ PLANO VIP (ILIMITADO)";
+                widget.innerHTML = "⚡ PLANO VIP";
                 document.getElementById('sideCreditText').innerText = "ILIMITADO";
                 document.getElementById('sideCreditBar').style.width = "100%";
             } else {
                 widget.className = "credit-widget";
                 widget.innerHTML = `⚡ <span id="navCreditVal">${userData.creditos}</span>/3 Créditos`;
                 document.getElementById('sideCreditText').innerText = userData.creditos + ' / 3';
-                const pct = (userData.creditos / 3) * 100;
-                document.getElementById('sideCreditBar').style.width = pct + '%';
+                document.getElementById('sideCreditBar').style.width = (userData.creditos / 3 * 100) + '%';
             }
         }
 
         function carregarHistorico(lista) {
             const box = document.getElementById('historyList');
-            if(!lista || lista.length === 0) return;
+            if(!lista || !lista.length) return;
             box.innerHTML = lista.slice(-4).reverse().map(i => `<li class="history-item"><span>${i.nome}</span> <span>${i.hora}</span></li>`).join('');
         }
 
-        // CONTROLADOR DE MODAL FULLSCREEN E PRÉVIA
+        /* LÓGICA DAS 12 FERRAMENTAS */
         function abrirFerramenta(tipo) {
-            activeTool = tipo;
             const modal = document.getElementById('fullscreenModal');
             const formPane = document.getElementById('fsFormPane');
             const prevTitle = document.getElementById('prevTitle');
-            const prevContent = document.getElementById('prevContent');
             const fsTitle = document.getElementById('fsTitle');
 
             modal.style.display = 'flex';
 
             if (tipo === 'qr') {
-                fsTitle.innerText = "Gerador de QR Code Personalizado";
-                prevTitle.innerText = "QR CODE FINAL";
+                fsTitle.innerText = "1. QR Code com Título";
+                prevTitle.innerText = "QR CODE";
                 formPane.innerHTML = `
-                    <label>Título / Legenda do QR Code</label>
-                    <input type="text" id="fs_qr_title" class="input-box" placeholder="Ex: Acesse nosso Wi-Fi" oninput="updateQRPreview()">
-                    <label>Link ou Texto do QR Code</label>
-                    <input type="text" id="fs_qr_text" class="input-box" placeholder="https://seusite.com" oninput="updateQRPreview()">
-                    <button class="btn btn-gold" style="margin-top:20px;" onclick="baixarPDF_QR()">Baixar PDF com Prévia</button>
+                    <label>Título / Legenda</label>
+                    <input type="text" id="f_title" class="input-box" placeholder="Ex: Wi-Fi do Cliente" oninput="renderQR()">
+                    <label>Conteúdo / Link</label>
+                    <input type="text" id="f_text" class="input-box" placeholder="https://..." oninput="renderQR()">
+                    <button class="btn btn-gold" onclick="baixarQR()">Baixar PDF</button>
                 `;
-                prevContent.innerHTML = `<div id="qr_box"></div><h4 id="qr_title_prev" style="margin-top:15px; font-weight:700; color:#1e1b4b;"></h4>`;
-                updateQRPreview();
-            } 
+                document.getElementById('prevContent').innerHTML = `<div id="qrBox"></div><h4 id="qrLabel" style="margin-top:10px; text-align:center;"></h4>`;
+                renderQR();
+            }
             else if (tipo === 'recibo') {
-                fsTitle.innerText = "Gerador de Recibo de Pagamento";
-                prevTitle.innerText = "RECIBO DE PAGAMENTO";
+                fsTitle.innerText = "2. Gerador de Recibo";
+                prevTitle.innerText = "RECIBO";
                 formPane.innerHTML = `
-                    <label>Quem Recebeu (Nome/Empresa)</label>
-                    <input type="text" id="fs_rec_recebedor" class="input-box" placeholder="Sua Empresa" oninput="updateReciboPreview()">
-                    <label>Quem Pagou (Cliente)</label>
-                    <input type="text" id="fs_rec_pagador" class="input-box" placeholder="Nome do Cliente" oninput="updateReciboPreview()">
-                    <label>Valor (R$)</label>
-                    <input type="number" id="fs_rec_valor" class="input-box" placeholder="100.00" oninput="updateReciboPreview()">
-                    <label>Referente a</label>
-                    <input type="text" id="fs_rec_ref" class="input-box" placeholder="Prestação de serviços..." oninput="updateReciboPreview()">
-                    <button class="btn btn-gold" style="margin-top:10px;" onclick="baixarPDF_Recibo()">Baixar Recibo PDF</button>
+                    <label>Recebedor</label><input type="text" id="f_rec" class="input-box" oninput="renderRecibo()">
+                    <label>Pagador</label><input type="text" id="f_pag" class="input-box" oninput="renderRecibo()">
+                    <label>Valor (R$)</label><input type="number" id="f_val" class="input-box" oninput="renderRecibo()">
+                    <label>Referente a</label><input type="text" id="f_ref" class="input-box" oninput="renderRecibo()">
+                    <button class="btn btn-gold" onclick="baixarRecibo()">Baixar PDF</button>
                 `;
-                updateReciboPreview();
+                renderRecibo();
             }
             else if (tipo === 'barcode') {
-                fsTitle.innerText = "Gerador de Código de Barras";
+                fsTitle.innerText = "3. Código de Barras";
                 prevTitle.innerText = "CÓDIGO DE BARRAS";
                 formPane.innerHTML = `
-                    <label>Numeração / Código</label>
-                    <input type="text" id="fs_bc_val" class="input-box" placeholder="7891234567890" value="123456789" oninput="updateBarcodePreview()">
-                    <button class="btn btn-gold" style="margin-top:10px;" onclick="baixarPDF_Barcode()">Baixar PDF</button>
+                    <label>Código / Numeração</label>
+                    <input type="text" id="f_bc" class="input-box" value="789123456789" oninput="renderBarcode()">
+                    <button class="btn btn-gold" onclick="baixarBarcode()">Baixar PDF</button>
                 `;
-                prevContent.innerHTML = `<svg id="bc_svg"></svg>`;
-                updateBarcodePreview();
+                document.getElementById('prevContent').innerHTML = `<svg id="bcSvg"></svg>`;
+                renderBarcode();
             }
             else if (tipo === 'ocr') {
-                fsTitle.innerText = "Extrator de Texto OCR";
-                prevTitle.innerText = "TEXTO EXTRAÍDO";
+                fsTitle.innerText = "4. Extrator de Texto OCR";
+                prevTitle.innerText = "RESULTADO OCR";
                 formPane.innerHTML = `
-                    <label>Selecione a Imagem com Texto</label>
-                    <input type="file" id="fs_ocr_file" class="input-box" accept="image/*" onchange="processarOCR(this)">
-                    <button class="btn btn-gold" style="margin-top:10px;" onclick="baixarPDF_OCR()">Baixar Texto em PDF</button>
+                    <label>Selecione a Imagem</label>
+                    <input type="file" id="f_ocr_file" class="input-box" accept="image/*" onchange="runOCR(this)">
+                    <button class="btn btn-gold" onclick="baixarOCR()">Baixar PDF</button>
                 `;
-                prevContent.innerHTML = `<textarea id="ocr_res" style="width:100%; height:280px; border:1px solid #d1d5db; border-radius:8px; padding:10px;" readonly placeholder="O texto extraído aparecerá aqui..."></textarea>`;
+                document.getElementById('prevContent').innerHTML = `<textarea id="ocrOut" style="width:100%; height:250px;" readonly placeholder="Texto extraído..."></textarea>`;
             }
             else if (tipo === 'imgs2pdf') {
-                fsTitle.innerText = "Converter Imagens para PDF";
-                prevTitle.innerText = "IMAGENS SELECIONADAS";
+                fsTitle.innerText = "5. Imagens para PDF";
+                prevTitle.innerText = "PREVIA IMAGENS";
                 formPane.innerHTML = `
-                    <label>Selecione uma ou mais imagens</label>
-                    <input type="file" id="fs_imgs_files" class="input-box" accept="image/*" multiple onchange="updateImgsPreview(this)">
-                    <button class="btn btn-gold" style="margin-top:10px;" onclick="baixarPDF_Imagens()">Gerar e Baixar PDF</button>
+                    <label>Imagens (JPG/PNG)</label>
+                    <input type="file" id="f_imgs" class="input-box" accept="image/*" multiple onchange="renderImgs(this)">
+                    <button class="btn btn-gold" onclick="baixarImgsPDF()">Gerar PDF</button>
                 `;
-                prevContent.innerHTML = `<div id="imgs_prev_box" style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">Nenhuma imagem selecionada</div>`;
+                document.getElementById('prevContent').innerHTML = `<div id="imgBox" style="display:flex; gap:8px; flex-wrap:wrap;"></div>`;
             }
             else if (tipo === 'promissoria') {
-                fsTitle.innerText = "Emissor de Nota Promissória";
-                prevTitle.innerText = "NOTA PROMISSÓRIA";
+                fsTitle.innerText = "6. Nota Promissória";
+                prevTitle.innerText = "PROMISSÓRIA";
                 formPane.innerHTML = `
-                    <label>Nome do Emitente (Quem paga)</label>
-                    <input type="text" id="fs_prom_emit" class="input-box" placeholder="Nome Completo" oninput="updatePromissoriaPreview()">
-                    <label>Nome do Beneficiário (Quem recebe)</label>
-                    <input type="text" id="fs_prom_ben" class="input-box" placeholder="Nome ou Razão Social" oninput="updatePromissoriaPreview()">
-                    <label>Valor (R$)</label>
-                    <input type="number" id="fs_prom_val" class="input-box" placeholder="500.00" oninput="updatePromissoriaPreview()">
-                    <label>Data de Vencimento</label>
-                    <input type="date" id="fs_prom_venc" class="input-box" oninput="updatePromissoriaPreview()">
-                    <button class="btn btn-gold" style="margin-top:10px;" onclick="baixarPDF_Promissoria()">Baixar Nota Promissória PDF</button>
+                    <label>Emitente</label><input type="text" id="f_p_emi" class="input-box" oninput="renderPromissoria()">
+                    <label>Beneficiário</label><input type="text" id="f_p_ben" class="input-box" oninput="renderPromissoria()">
+                    <label>Valor (R$)</label><input type="number" id="f_p_val" class="input-box" oninput="renderPromissoria()">
+                    <label>Vencimento</label><input type="date" id="f_p_venc" class="input-box" oninput="renderPromissoria()">
+                    <button class="btn btn-gold" onclick="baixarPromissoria()">Baixar PDF</button>
                 `;
-                updatePromissoriaPreview();
+                renderPromissoria();
+            }
+            else if (tipo === 'orçamento') {
+                fsTitle.innerText = "7. Gerador de Orçamento";
+                prevTitle.innerText = "ORÇAMENTO";
+                formPane.innerHTML = `
+                    <label>Cliente</label><input type="text" id="f_o_cli" class="input-box" oninput="renderOrcamento()">
+                    <label>Descrição do Serviço/Produto</label><textarea id="f_o_desc" class="input-box" oninput="renderOrcamento()"></textarea>
+                    <label>Valor Total (R$)</label><input type="number" id="f_o_val" class="input-box" oninput="renderOrcamento()">
+                    <button class="btn btn-gold" onclick="baixarOrcamento()">Baixar PDF</button>
+                `;
+                renderOrcamento();
+            }
+            else if (tipo === 'contrato') {
+                fsTitle.innerText = "8. Contrato Simples";
+                prevTitle.innerText = "CONTRATO";
+                formPane.innerHTML = `
+                    <label>Contratante</label><input type="text" id="f_c_nte" class="input-box" oninput="renderContrato()">
+                    <label>Contratado</label><input type="text" id="f_c_tdo" class="input-box" oninput="renderContrato()">
+                    <label>Objeto do Contrato</label><textarea id="f_c_obj" class="input-box" oninput="renderContrato()"></textarea>
+                    <button class="btn btn-gold" onclick="baixarContrato()">Baixar PDF</button>
+                `;
+                renderContrato();
+            }
+            else if (tipo === 'declaracao') {
+                fsTitle.innerText = "9. Declaração de Residência";
+                prevTitle.innerText = "DECLARAÇÃO";
+                formPane.innerHTML = `
+                    <label>Nome Declarante</label><input type="text" id="f_d_nome" class="input-box" oninput="renderDeclaracao()">
+                    <label>CPF</label><input type="text" id="f_d_cpf" class="input-box" oninput="renderDeclaracao()">
+                    <label>Endereço Completo</label><input type="text" id="f_d_end" class="input-box" oninput="renderDeclaracao()">
+                    <button class="btn btn-gold" onclick="baixarDeclaracao()">Baixar PDF</button>
+                `;
+                renderDeclaracao();
+            }
+            else if (tipo === 'curriculo') {
+                fsTitle.innerText = "10. Gerador de Currículo";
+                prevTitle.innerText = "CURRÍCULO";
+                formPane.innerHTML = `
+                    <label>Nome Completo</label><input type="text" id="f_cv_nome" class="input-box" oninput="renderCurriculo()">
+                    <label>Contato / E-mail / Fone</label><input type="text" id="f_cv_cont" class="input-box" oninput="renderCurriculo()">
+                    <label>Experiência / Resumo</label><textarea id="f_cv_exp" class="input-box" oninput="renderCurriculo()"></textarea>
+                    <button class="btn btn-gold" onclick="baixarCurriculo()">Baixar PDF</button>
+                `;
+                renderCurriculo();
+            }
+            else if (tipo === 'etiqueta') {
+                fsTitle.innerText = "11. Etiqueta de Envio";
+                prevTitle.innerText = "ETIQUETA";
+                formPane.innerHTML = `
+                    <label>Destinatário</label><textarea id="f_e_dest" class="input-box" placeholder="Nome, Endereço e CEP" oninput="renderEtiqueta()"></textarea>
+                    <label>Remetente</label><textarea id="f_e_rem" class="input-box" placeholder="Nome, Endereço e CEP" oninput="renderEtiqueta()"></textarea>
+                    <button class="btn btn-gold" onclick="baixarEtiqueta()">Baixar PDF</button>
+                `;
+                renderEtiqueta();
+            }
+            else if (tipo === 'mesclar') {
+                fsTitle.innerText = "12. Mesclar PDFs";
+                prevTitle.innerText = "ARQUIVOS";
+                formPane.innerHTML = `
+                    <label>Selecione arquivos PDF</label>
+                    <input type="file" id="f_m_files" class="input-box" accept="application/pdf" multiple onchange="carregarPDFsMesclar(this)">
+                    <button class="btn btn-gold" onclick="processarMesclaPDF()">Unificar e Baixar PDF</button>
+                `;
+                document.getElementById('prevContent').innerHTML = `<ul id="mList" style="list-style:none;">Nenhum PDF selecionado</ul>`;
             }
         }
 
-        function fecharFullscreen() {
-            document.getElementById('fullscreenModal').style.display = 'none';
-        }
+        function fecharFullscreen() { document.getElementById('fullscreenModal').style.display = 'none'; }
 
-        // FUNÇÕES DE ATUALIZAÇÃO DA PRÉVIA EM TEMPO REAL
-        function updateQRPreview() {
-            const title = document.getElementById('fs_qr_title')?.value || "Título do QR Code";
-            const text = document.getElementById('fs_qr_text')?.value || "https://utilitariosexpress.com";
-            
-            document.getElementById('qr_title_prev').innerText = title;
-            const box = document.getElementById('qr_box');
-            if (box) {
-                box.innerHTML = '';
-                new QRCode(box, { text: text, width: 160, height: 160 });
+        /* RENDERIZADORES EM TEMPO REAL */
+        function renderQR() {
+            const t = document.getElementById('f_title')?.value || 'Título';
+            const v = document.getElementById('f_text')?.value || 'https://utilitariosexpress.com';
+            const b = document.getElementById('qrBox');
+            if (b) {
+                b.innerHTML = '';
+                new QRCode(b, { text: v, width: 140, height: 140 });
+                document.getElementById('qrLabel').innerText = t;
             }
         }
 
-        function updateReciboPreview() {
-            const rec = document.getElementById('fs_rec_recebedor')?.value || "---";
-            const pag = document.getElementById('fs_rec_pagador')?.value || "---";
-            const val = document.getElementById('fs_rec_valor')?.value || "0.00";
-            const ref = document.getElementById('fs_rec_ref')?.value || "---";
-
+        function renderRecibo() {
             document.getElementById('prevContent').innerHTML = `
-                <div style="text-align:left; width:100%; font-size:0.9rem; display:flex; flex-direction:column; gap:12px; color:#374151;">
-                    <p><strong>Recebedor:</strong> ${rec}</p>
-                    <p><strong>Pagador:</strong> ${pag}</p>
-                    <p><strong>Valor:</strong> R$ ${parseFloat(val || 0).toFixed(2)}</p>
-                    <p><strong>Referente a:</strong> ${ref}</p>
-                    <hr style="margin: 15px 0; border:none; border-top:1px dashed #ccc;">
-                    <p style="text-align:center; font-size:0.8rem; margin-top:20px;">Assinatura: ___________________________</p>
+                <p><strong>Recebedor:</strong> ${document.getElementById('f_rec')?.value || '---'}</p>
+                <p><strong>Pagador:</strong> ${document.getElementById('f_pag')?.value || '---'}</p>
+                <p><strong>Valor:</strong> R$ ${document.getElementById('f_val')?.value || '0,00'}</p>
+                <p><strong>Ref:</strong> ${document.getElementById('f_ref')?.value || '---'}</p>
+            `;
+        }
+
+        function renderBarcode() {
+            try { JsBarcode("#bcSvg", document.getElementById('f_bc')?.value || "789123456789", { format: "CODE128", width: 2, height: 50 }); } catch(e){}
+        }
+
+        function renderPromissoria() {
+            document.getElementById('prevContent').innerHTML = `
+                <p><strong>Vencimento:</strong> ${document.getElementById('f_p_venc')?.value || '---'}</p>
+                <p><strong>Valor:</strong> R$ ${document.getElementById('f_p_val')?.value || '0,00'}</p>
+                <p>Pagarei a ${document.getElementById('f_p_ben')?.value || '---'} a quantia informada.</p>
+                <p><strong>Emitente:</strong> ${document.getElementById('f_p_emi')?.value || '---'}</p>
+            `;
+        }
+
+        function renderOrcamento() {
+            document.getElementById('prevContent').innerHTML = `
+                <p><strong>Cliente:</strong> ${document.getElementById('f_o_cli')?.value || '---'}</p>
+                <p><strong>Serviços:</strong> ${document.getElementById('f_o_desc')?.value || '---'}</p>
+                <p><strong>Total:</strong> R$ ${document.getElementById('f_o_val')?.value || '0,00'}</p>
+            `;
+        }
+
+        function renderContrato() {
+            document.getElementById('prevContent').innerHTML = `
+                <p><strong>Contratante:</strong> ${document.getElementById('f_c_nte')?.value || '---'}</p>
+                <p><strong>Contratado:</strong> ${document.getElementById('f_c_tdo')?.value || '---'}</p>
+                <p><strong>Objeto:</strong> ${document.getElementById('f_c_obj')?.value || '---'}</p>
+            `;
+        }
+
+        function renderDeclaracao() {
+            document.getElementById('prevContent').innerHTML = `
+                <p>Eu, <strong>${document.getElementById('f_d_nome')?.value || '---'}</strong>, CPF ${document.getElementById('f_d_cpf')?.value || '---'}, declaro residir no endereço: ${document.getElementById('f_d_end')?.value || '---'}.</p>
+            `;
+        }
+
+        function renderCurriculo() {
+            document.getElementById('prevContent').innerHTML = `
+                <h4>${document.getElementById('f_cv_nome')?.value || 'Nome Completo'}</h4>
+                <p style="font-size:0.75rem; color:#6b7280;">${document.getElementById('f_cv_cont')?.value || 'Contato'}</p>
+                <hr style="margin:8px 0; border:none; border-top:1px solid #ccc;">
+                <p>${document.getElementById('f_cv_exp')?.value || 'Experiência profissional...'}</p>
+            `;
+        }
+
+        function renderEtiqueta() {
+            document.getElementById('prevContent').innerHTML = `
+                <div style="border:1px dashed #000; padding:10px; width:100%;">
+                    <p><strong>DESTINATÁRIO:</strong></p>
+                    <p>${document.getElementById('f_e_dest')?.value || '---'}</p>
+                    <hr style="margin:8px 0;">
+                    <p><strong>REMETENTE:</strong></p>
+                    <p>${document.getElementById('f_e_rem')?.value || '---'}</p>
                 </div>
             `;
         }
 
-        function updateBarcodePreview() {
-            const val = document.getElementById('fs_bc_val')?.value || "123456789";
-            try {
-                JsBarcode("#bc_svg", val, { format: "CODE128", width: 2, height: 50, displayValue: true });
-            } catch(e){}
-        }
-
-        function updatePromissoriaPreview() {
-            const emi = document.getElementById('fs_prom_emit')?.value || "---";
-            const ben = document.getElementById('fs_prom_ben')?.value || "---";
-            const val = document.getElementById('fs_prom_val')?.value || "0.00";
-            const venc = document.getElementById('fs_prom_venc')?.value || "---";
-
-            document.getElementById('prevContent').innerHTML = `
-                <div style="text-align:left; width:100%; font-size:0.85rem; display:flex; flex-direction:column; gap:10px; color:#374151;">
-                    <p><strong>Vencimento:</strong> ${venc}</p>
-                    <p><strong>Valor:</strong> R$ ${parseFloat(val || 0).toFixed(2)}</p>
-                    <p>Pagarei por esta via de Nota Promissória a <strong>${ben}</strong> a quantia de R$ ${parseFloat(val || 0).toFixed(2)}.</p>
-                    <p><strong>Emitente:</strong> ${emi}</p>
-                    <p style="text-align:center; margin-top:30px;">Assinatura: ___________________________</p>
-                </div>
-            `;
-        }
-
-        function updateImgsPreview(input) {
-            const box = document.getElementById('imgs_prev_box');
+        function renderImgs(input) {
+            const box = document.getElementById('imgBox');
             box.innerHTML = '';
             if (input.files) {
-                Array.from(input.files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = e => {
+                Array.from(input.files).forEach(f => {
+                    const r = new FileReader();
+                    r.onload = e => {
                         const img = document.createElement('img');
                         img.src = e.target.result;
-                        img.style.width = '80px'; img.style.height = '80px';
-                        img.style.objectFit = 'cover'; img.style.borderRadius = '6px';
+                        img.style.width = '60px'; img.style.height = '60px'; img.style.objectFit = 'cover';
                         box.appendChild(img);
                     };
-                    reader.readAsDataURL(file);
+                    r.readAsDataURL(f);
                 });
             }
         }
 
-        function processarOCR(input) {
+        function runOCR(input) {
             const file = input.files[0];
-            const out = document.getElementById('ocr_res');
+            const out = document.getElementById('ocrOut');
             if(!file) return;
-            out.value = 'Processando e lendo imagem... Aguarde...';
-            Tesseract.recognize(file, 'por').then(({ data: { text } }) => {
-                out.value = text;
-            });
+            out.value = 'Lendo imagem...';
+            Tesseract.recognize(file, 'por').then(({ data: { text } }) => { out.value = text; });
         }
 
-        // VALIDAÇÃO DE CRÉDITO E CONSUMO
-        async function validarConsumo(nomeAcao) {
-            if (!userState) {
-                alert('Faça login para utilizar a ferramenta!');
-                abrirModalAuth();
-                return false;
-            }
-            if (!userData.isIlimitado && userData.creditos <= 0) {
-                abrirModalRecarga();
-                return false;
-            }
+        function carregarPDFsMesclar(input) {
+            pdfsParaMesclar = Array.from(input.files);
+            document.getElementById('mList').innerHTML = pdfsParaMesclar.map(f => `<li>📄 ${f.name}</li>`).join('');
+        }
+
+        /* GERENCIAMENTO DE CONSUMO E PDFS */
+        async function validarConsumo(nome) {
+            if (!userState) { alert('Faça login primeiro!'); abrirModalAuth(); return false; }
+            if (!userData.isIlimitado && userData.creditos <= 0) { abrirModalRecarga(); return false; }
 
             const ref = db.collection('usuarios').doc(userState.uid);
-            const horaAtual = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const hora = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
             if (!userData.isIlimitado) {
                 userData.creditos--;
-                await ref.update({
-                    creditos: userData.creditos,
-                    historico: firebase.firestore.FieldValue.arrayUnion({ nome: nomeAcao, hora: horaAtual })
-                });
+                await ref.update({ creditos: userData.creditos, historico: firebase.firestore.FieldValue.arrayUnion({ nome, hora }) });
             } else {
-                await ref.update({
-                    historico: firebase.firestore.FieldValue.arrayUnion({ nome: nomeAcao, hora: horaAtual })
-                });
+                await ref.update({ historico: firebase.firestore.FieldValue.arrayUnion({ nome, hora }) });
             }
 
             if(!userData.historico) userData.historico = [];
-            userData.historico.push({ nome: nomeAcao, hora: horaAtual });
+            userData.historico.push({ nome, hora });
             carregarHistorico(userData.historico);
             atualizarInterface();
             return true;
         }
 
-        // MOTORES DE DOWNLOAD DE PDF
-        async function baixarPDF_QR() {
-            if (!(await validarConsumo('QR Code com Título'))) return;
-            const title = document.getElementById('fs_qr_title').value || 'QR Code';
-            const img = document.querySelector('#qr_box img') || document.querySelector('#qr_box canvas');
-            if(!img) return alert('Insira o conteúdo do QR Code');
-            
-            const imgSrc = img.tagName === 'IMG' ? img.src : img.toDataURL('image/png');
-
+        async function baixarQR() {
+            if (!(await validarConsumo('QR Code'))) return;
+            const img = document.querySelector('#qrBox img') || document.querySelector('#qrBox canvas');
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFontSize(18);
-            doc.text(title, 105, 40, { align: 'center' });
-            doc.addImage(imgSrc, 'PNG', 55, 60, 100, 100);
+            doc.text(document.getElementById('f_title').value || 'QR Code', 105, 30, { align: 'center' });
+            doc.addImage(img.tagName === 'IMG' ? img.src : img.toDataURL(), 'PNG', 55, 50, 100, 100);
             doc.save('qrcode.pdf');
         }
 
-        async function baixarPDF_Recibo() {
-            if (!(await validarConsumo('Recibo de Pagamento'))) return;
-            const rec = document.getElementById('fs_rec_recebedor').value;
-            const pag = document.getElementById('fs_rec_pagador').value;
-            const val = document.getElementById('fs_rec_valor').value;
-            const ref = document.getElementById('fs_rec_ref').value;
-
+        async function baixarRecibo() {
+            if (!(await validarConsumo('Recibo'))) return;
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFontSize(18);
             doc.text("RECIBO DE PAGAMENTO", 105, 30, { align: 'center' });
-            doc.setFontSize(12);
-            doc.text(`Recebedor: ${rec}`, 20, 50);
-            doc.text(`Pagador: ${pag}`, 20, 60);
-            doc.text(`Valor: R$ ${parseFloat(val || 0).toFixed(2)}`, 20, 70);
-            doc.text(`Referente a: ${ref}`, 20, 80);
-            doc.text("Assinatura: ____________________________________", 20, 120);
+            doc.text(`Recebedor: ${document.getElementById('f_rec').value}`, 20, 50);
+            doc.text(`Pagador: ${document.getElementById('f_pag').value}`, 20, 60);
+            doc.text(`Valor: R$ ${document.getElementById('f_val').value}`, 20, 70);
+            doc.text(`Ref: ${document.getElementById('f_ref').value}`, 20, 80);
             doc.save('recibo.pdf');
         }
 
-        async function baixarPDF_Barcode() {
+        async function baixarBarcode() {
             if (!(await validarConsumo('Código de Barras'))) return;
-            const val = document.getElementById('fs_bc_val').value;
-            const svg = document.getElementById('bc_svg');
+            const svg = document.getElementById('bcSvg');
             const xml = new XMLSerializer().serializeToString(svg);
-            const svg64 = btoa(xml);
-            const image64 = 'data:image/svg+xml;base64,' + svg64;
-
             const img = new Image();
             img.onload = function() {
                 const canvas = document.createElement('canvas');
                 canvas.width = img.width; canvas.height = img.height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0);
+                canvas.getContext('2d').drawImage(img, 0, 0);
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
-                doc.setFontSize(16);
-                doc.text("ETIQUETA CÓDIGO DE BARRAS", 105, 30, { align: 'center' });
-                doc.addImage(canvas.toDataURL('image/png'), 'PNG', 40, 50, 130, 60);
-                doc.save('codigo_barras.pdf');
+                doc.addImage(canvas.toDataURL('image/png'), 'PNG', 40, 40, 130, 60);
+                doc.save('barcode.pdf');
             };
-            img.src = image64;
+            img.src = 'data:image/svg+xml;base64,' + btoa(xml);
         }
 
-        async function baixarPDF_OCR() {
-            if (!(await validarConsumo('Extrator OCR'))) return;
-            const text = document.getElementById('ocr_res').value;
+        async function baixarOCR() {
+            if (!(await validarConsumo('OCR'))) return;
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFontSize(14);
-            doc.text("TEXTO EXTRAÍDO VIA OCR", 20, 20);
-            const splitText = doc.splitTextToSize(text, 170);
-            doc.setFontSize(10);
-            doc.text(splitText, 20, 35);
-            doc.save('texto_ocr.pdf');
+            doc.text(doc.splitTextToSize(document.getElementById('ocrOut').value, 170), 20, 20);
+            doc.save('ocr.pdf');
         }
 
-        async function baixarPDF_Imagens() {
+        async function baixarImgsPDF() {
             if (!(await validarConsumo('Imagens para PDF'))) return;
-            const files = document.getElementById('fs_imgs_files').files;
-            if(!files || !files.length) return alert('Selecione ao menos 1 imagem');
-
+            const files = document.getElementById('f_imgs').files;
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-
-            for(let i = 0; i < files.length; i++) {
-                const data = await new Promise(r => {
-                    const rd = new FileReader();
-                    rd.onload = e => r(e.target.result);
-                    rd.readAsDataURL(files[i]);
-                });
+            for(let i=0; i<files.length; i++) {
+                const data = await new Promise(r => { const rd = new FileReader(); rd.onload = e => r(e.target.result); rd.readAsDataURL(files[i]); });
                 if(i > 0) doc.addPage();
                 doc.addImage(data, 'JPEG', 15, 15, 180, 240);
             }
-            doc.save('imagens_unificadas.pdf');
+            doc.save('imagens.pdf');
         }
 
-        async function baixarPDF_Promissoria() {
-            if (!(await validarConsumo('Nota Promissória'))) return;
-            const emi = document.getElementById('fs_prom_emit').value;
-            const ben = document.getElementById('fs_prom_ben').value;
-            const val = document.getElementById('fs_prom_val').value;
-            const venc = document.getElementById('fs_prom_venc').value;
-
+        async function baixarPromissoria() {
+            if (!(await validarConsumo('Promissória'))) return;
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.setFontSize(18);
             doc.text("NOTA PROMISSÓRIA", 105, 30, { align: 'center' });
-            doc.setFontSize(12);
-            doc.text(`Vencimento: ${venc}`, 20, 50);
-            doc.text(`Valor: R$ ${parseFloat(val || 0).toFixed(2)}`, 20, 60);
-            doc.text(`Pagarei por esta via de Nota Promissória a ${ben} a quantia acima.`, 20, 75);
-            doc.text(`Emitente: ${emi}`, 20, 95);
-            doc.text("Assinatura: ____________________________________", 20, 130);
-            doc.save('nota_promissoria.pdf');
+            doc.text(`Vencimento: ${document.getElementById('f_p_venc').value}`, 20, 50);
+            doc.text(`Valor: R$ ${document.getElementById('f_p_val').value}`, 20, 60);
+            doc.text(`Emitente: ${document.getElementById('f_p_emi').value}`, 20, 70);
+            doc.text(`Beneficiário: ${document.getElementById('f_p_ben').value}`, 20, 80);
+            doc.save('promissoria.pdf');
         }
 
-        // AUTENTICAÇÃO E MODAIS MENORES
+        async function baixarOrcamento() {
+            if (!(await validarConsumo('Orçamento'))) return;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("ORÇAMENTO COMERCIAL", 105, 30, { align: 'center' });
+            doc.text(`Cliente: ${document.getElementById('f_o_cli').value}`, 20, 50);
+            doc.text(`Descrição: ${document.getElementById('f_o_desc').value}`, 20, 60);
+            doc.text(`Total: R$ ${document.getElementById('f_o_val').value}`, 20, 80);
+            doc.save('orcamento.pdf');
+        }
+
+        async function baixarContrato() {
+            if (!(await validarConsumo('Contrato'))) return;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("CONTRATO DE PRESTAÇÃO DE SERVIÇOS", 105, 30, { align: 'center' });
+            doc.text(`Contratante: ${document.getElementById('f_c_nte').value}`, 20, 50);
+            doc.text(`Contratado: ${document.getElementById('f_c_tdo').value}`, 20, 60);
+            doc.text(`Objeto: ${document.getElementById('f_c_obj').value}`, 20, 70);
+            doc.save('contrato.pdf');
+        }
+
+        async function baixarDeclaracao() {
+            if (!(await validarConsumo('Declaração'))) return;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("DECLARAÇÃO DE RESIDÊNCIA", 105, 30, { align: 'center' });
+            doc.text(`Nome: ${document.getElementById('f_d_nome').value}`, 20, 50);
+            doc.text(`CPF: ${document.getElementById('f_d_cpf').value}`, 20, 60);
+            doc.text(`Endereço: ${document.getElementById('f_d_end').value}`, 20, 70);
+            doc.save('declaracao.pdf');
+        }
+
+        async function baixarCurriculo() {
+            if (!(await validarConsumo('Currículo'))) return;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text(document.getElementById('f_cv_nome').value || "CURRÍCULO", 20, 20);
+            doc.text(document.getElementById('f_cv_cont').value || "", 20, 30);
+            doc.text(doc.splitTextToSize(document.getElementById('f_cv_exp').value || "", 170), 20, 45);
+            doc.save('curriculo.pdf');
+        }
+
+        async function baixarEtiqueta() {
+            if (!(await validarConsumo('Etiqueta'))) return;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("DESTINATÁRIO:", 20, 20);
+            doc.text(document.getElementById('f_e_dest').value, 20, 30);
+            doc.text("REMETENTE:", 20, 70);
+            doc.text(document.getElementById('f_e_rem').value, 20, 80);
+            doc.save('etiqueta.pdf');
+        }
+
+        async function processarMesclaPDF() {
+            if (!pdfsParaMesclar.length) return alert('Selecione arquivos PDF');
+            if (!(await validarConsumo('Mesclar PDFs'))) return;
+
+            const mergedPdf = await PDFLib.PDFDocument.create();
+            for (let file of pdfsParaMesclar) {
+                const bytes = await file.arrayBuffer();
+                const pdf = await PDFLib.PDFDocument.load(bytes);
+                const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                copiedPages.forEach((page) => mergedPdf.addPage(page));
+            }
+            const mergedPdfBytes = await mergedPdf.save();
+            const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'pdf_mesclado.pdf';
+            link.click();
+        }
+
+        /* AUTH E MODAIS */
         function abrirModalAuth() { document.getElementById('modalAuth').style.display = 'flex'; }
         function fecharModalAuth() { document.getElementById('modalAuth').style.display = 'none'; }
         function abrirModalRecarga() { 
@@ -878,33 +928,25 @@
         }
         function fecharModalRecarga() { document.getElementById('modalRecarga').style.display = 'none'; }
 
-        function mudarAbaAuth(modo) {
-            currentAuthMode = modo;
-            document.getElementById('tabLogin').classList.toggle('active', modo === 'login');
-            document.getElementById('tabRegister').classList.toggle('active', modo === 'register');
-            document.getElementById('btnSubmitAuth').innerText = modo === 'login' ? 'Acessar Minha Conta' : 'Criar Nova Conta';
+        function mudarAbaAuth(m) {
+            currentAuthMode = m;
+            document.getElementById('tabLogin').classList.toggle('active', m === 'login');
+            document.getElementById('tabRegister').classList.toggle('active', m === 'register');
         }
 
         async function processarAuthEmail(e) {
             e.preventDefault();
             const email = document.getElementById('authEmail').value;
             const pass = document.getElementById('authPass').value;
-
             try {
-                if (currentAuthMode === 'login') {
-                    await auth.signInWithEmailAndPassword(email, pass);
-                } else {
-                    await auth.createUserWithEmailAndPassword(email, pass);
-                }
+                if (currentAuthMode === 'login') await auth.signInWithEmailAndPassword(email, pass);
+                else await auth.createUserWithEmailAndPassword(email, pass);
                 fecharModalAuth();
-            } catch (err) {
-                alert("Erro na Autenticação: " + err.message);
-            }
+            } catch (err) { alert("Erro: " + err.message); }
         }
 
         function loginGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).then(() => fecharModalAuth()).catch(err => alert("Erro Google: " + err.message));
+            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(() => fecharModalAuth()).catch(e => alert(e.message));
         }
 
         function fazerLogout() { auth.signOut(); }
