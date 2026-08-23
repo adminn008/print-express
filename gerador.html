@@ -3,831 +3,417 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PrintExpress – Central de Geradores e Ferramentas Gráficas</title>
+    <title>Utilitários Express – Com Créditos Diários</title>
+
+    <!-- SDKs do Firebase (Versão Modular via CDN) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <!-- Bibliotecas das Ferramentas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            --card-bg: rgba(30, 41, 59, 0.75);
-            --border-color: rgba(255, 255, 255, 0.1);
+            --bg: #0f172a;
+            --card-bg: #1e293b;
             --primary: #6366f1;
             --primary-hover: #4f46e5;
             --accent-pro: #f59e0b;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            scroll-behavior: smooth;
-        }
-
-        body {
-            background: var(--bg-gradient);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px 15px;
-            overflow-x: hidden;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 900px;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+        body { background: var(--bg); color: var(--text-main); padding: 20px 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        .container { width: 100%; max-width: 900px; }
+        
+        /* Barra de Usuário e Créditos */
+        .user-bar {
             background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            margin-bottom: 25px;
-            animation: fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes fadeInScale {
-            0% { opacity: 0; transform: translateY(20px) scale(0.95); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .icon-badge {
-            width: 60px;
-            height: 60px;
-            background: rgba(99, 102, 241, 0.15);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 50%;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px 20px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px auto;
-            color: var(--primary);
-            font-size: 26px;
-        }
-
-        h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            letter-spacing: -0.5px;
-        }
-
-        p {
-            color: var(--text-muted);
-            font-size: 1rem;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-
-        /* Sistema de Abas */
-        .tabs-nav {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
             margin-bottom: 25px;
             flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .tab-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
+        .credits-badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border: 1px solid var(--primary);
         }
 
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-        }
+        header { text-align: center; margin-bottom: 30px; }
+        header h1 { font-size: 2rem; margin-bottom: 8px; color: #fff; }
+        header p { color: var(--text-muted); font-size: 0.95rem; }
 
-        .tab-content {
-            display: none;
-            text-align: left;
-        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; }
+        .card-title { font-size: 1.1rem; font-weight: 600; }
+        
+        .badge-free { background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 0.75rem; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
 
-        .tab-content.active {
-            display: block;
-        }
+        .form-control { width: 100%; background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.9rem; }
+        textarea.form-control { resize: vertical; min-height: 80px; }
 
-        /* Grid de Ferramentas */
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 15px;
-        }
+        .btn { background: var(--primary); color: #fff; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: background 0.2s; text-align: center; }
+        .btn:hover { background: var(--primary-hover); }
+        .btn-pro { background: var(--accent-pro); color: #000; }
+        .btn-pro:hover { background: #d97706; color: #fff; }
 
-        .tool-card {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 18px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.2s, border-color 0.2s;
-        }
+        .preview-box { background: #0f172a; border: 1px dashed var(--border); padding: 10px; border-radius: 8px; text-align: center; min-height: 50px; display: flex; align-items: center; justify-content: center; }
 
-        .tool-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--primary);
-        }
-
-        .tool-card.pro {
-            border-color: rgba(245, 158, 11, 0.4);
-        }
-
-        .tool-card.pro:hover {
-            border-color: var(--accent-pro);
-        }
-
-        .tool-title {
-            font-size: 1.05rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .badge-free {
-            background: rgba(16, 185, 129, 0.15);
-            color: #34d399;
-            font-size: 0.75rem;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-weight: 500;
-        }
-
-        .badge-pro {
-            background: rgba(245, 158, 11, 0.15);
-            color: #fbbf24;
-            font-size: 0.75rem;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-weight: 500;
-        }
-
-        .tool-desc {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-            line-height: 1.4;
-        }
-
-        .btn-tool {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-align: center;
-            transition: background 0.2s;
-        }
-
-        .btn-tool:hover {
-            background: var(--primary-hover);
-        }
-
-        .btn-tool.btn-pro {
-            background: var(--accent-pro);
-            color: #1e1b4b;
-        }
-
-        .btn-tool.btn-pro:hover {
-            background: #d97706;
-            color: #fff;
-        }
-
-        /* Modal / Área de Execução */
-        #modal-area {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal-box {
-            background: #1e293b;
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            width: 100%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 25px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            text-align: left;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        .modal-header h3 {
-            color: #fff;
-            font-size: 1.2rem;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-        }
-
-        .form-control {
-            width: 100%;
-            background: #0f172a;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px;
-            color: #fff;
-            font-size: 0.95rem;
-        }
-
-        textarea.form-control {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        /* PIX Box */
-        .pix-box {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px dashed var(--accent-pro);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .pix-box img {
-            width: 140px;
-            height: 140px;
-            margin: 10px 0;
-            border-radius: 8px;
-            background: #fff;
-            padding: 5px;
-        }
-
-        .copy-input {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .btn-copy {
-            background: #334155;
-            color: #fff;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
-        .btn-copy:hover {
-            background: #475569;
-        }
-
-        footer {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
-            text-align: center;
-            width: 100%;
-            max-width: 900px;
-            margin-top: 20px;
-        }
-
-        @media (max-width: 600px) {
-            .tools-grid { grid-template-columns: 1fr; }
-        }
+        /* Modais */
+        .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; justify-content: center; align-items: center; padding: 15px; }
+        .modal { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 450px; padding: 25px; position: relative; }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
+        
+        .pix-container { background: #0f172a; border: 1px dashed var(--accent-pro); border-radius: 10px; padding: 15px; text-align: center; margin: 15px 0; }
+        .pix-container img { width: 130px; height: 130px; border-radius: 8px; background: #fff; padding: 5px; margin: 8px 0; }
+        
+        footer { margin-top: 40px; color: var(--text-muted); font-size: 0.85rem; text-align: center; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="icon-badge">⚡</div>
-        <h1>PrintExpress – Geradores Automáticos</h1>
-        <p>Crie documentos, modelos e artes de forma instantânea. Baixe direto no seu celular ou utilize ferramentas profissionais avançadas.</p>
-
-        <!-- Navegação de Abas -->
-        <div class="tabs-nav">
-            <button class="tab-btn active" onclick="switchTab('free')">Ferramentas Gratuitas (20)</button>
-            <button class="tab-btn" onclick="switchTab('pro')">Ferramentas Premium (15)</button>
-        </div>
-
-        <!-- ABA DE FERRAMENTAS GRATUITAS -->
-        <div id="tab-free" class="tab-content active">
-            <div class="tools-grid">
-                
-                <!-- 1 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Envelope A4 Dobrável <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Gera folha com linhas de corte e dobra para montar envelope funcional sem precisar comprar pronto.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Envelope A4 Dobrável', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 2 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Capa ABNT Simples <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Insira escola, título e nome para formatar automaticamente nas margens padrão ABNT.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Capa ABNT Simples', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 3 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Tabela de Preços A4 <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Modelo limpo para lanchonetes ou salões fixarem na parede com itens e valores destacados.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Tabela de Preços A4', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 4 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Desenhos p/ Colorir (Croqui) <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Converte imagens em traços em preto e branco para imprimir e colorir em papel comum.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Desenhos p/ Colorir (Croqui)', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 5 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Caça-Palavras e Cruzadinhas <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Digite sua lista de palavras e o sistema monta o jogo automaticamente na folha A4.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Caça-Palavras e Cruzadinhas', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 6 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Lista de Presença <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Cabeçalho com nome do evento e linhas numeradas com campo para Nome, RG e Assinatura.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Lista de Presença', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 7 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Folha de Redação ENEM <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Gera folha A4 com as 30 linhas numeradas e o cabeçalho oficial para treino de redação.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Folha de Redação ENEM', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 8 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Jogos e Dinâmicas Rápidas <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Cria fichas de passatempo, adivinhações e dinâmicas impressas em formato padronizado.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Jogos e Dinâmicas Rápidas', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 9 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Cardápios Impressos A4 <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Layout automático para lanchonetes ou marmitarias com categorias, preços e WhatsApp.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Cardápios Impressos A4', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 10 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">QR Code com Logo <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Ferramenta para criar QR Codes de PIX ou Wi-Fi com tamanho ajustado para impressão.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('QR Code com Logo', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 11 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Separador / Combinador PDF <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Selecione páginas específicas para isolar ou juntar documentos antes de mandar para gráfica.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Separador / Combinador PDF', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 12 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Vales e Cupons de Desconto <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Gera blocos de cupons picotados em A4 para promoções e sorteios comerciais.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Vales e Cupons de Desconto', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 13 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Calendário de Bolso / Mesa <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Monta o grid do ano atual com destaque para feriados e espaço para anotações rápidas.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Calendário de Bolso / Mesa', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 14 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Crachás de Identificação <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Gera modelos em grade vertical para crachás de eventos, congressos ou escolas.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Crachás de Identificação', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 15 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Planilhas de Controle Diário <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Gera tabelas pautadas de controle de caixa, ponto ou estoque simples para preencher à mão.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Planilhas de Controle Diário', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 16 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Etiquetas Escolares Caderno <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Gera etiquetas autoadesivas padrão com nome, matéria, série e turma em grade.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Etiquetas Escolares Caderno', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 17 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Recibos de Pagamento Simples <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Dois recibos por folha A4 com campos preencíveis para valores, remetente e assinatura.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Recibos de Pagamento Simples', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 18 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Folhas Pautadas e Quadriculadas <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Gera folhas de caderno com linhas ou grades matemáticas precisas para impressão urgente.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Folhas Pautadas e Quadriculadas', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 19 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Certificados de Conclusão <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Modelo paisagem com bordas formais, espaço para nome do aluno, curso e data.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Certificados de Conclusão', 'free')">Abrir Gerador</button>
-                </div>
-
-                <!-- 20 -->
-                <div class="tool-card">
-                    <div>
-                        <div class="tool-title">Folhas de Ponto de Funcionários <span class="badge-free">Grátis</span></div>
-                        <div class="tool-desc">Tabela mensal com dias da semana, entradas, saídas e assinatura diária.</div>
-                    </div>
-                    <button class="btn-tool" onclick="abrirGerador('Folhas de Ponto de Funcionários', 'free')">Abrir Gerador</button>
-                </div>
-
+        
+        <!-- Barra de Login e Créditos -->
+        <div class="user-bar">
+            <div id="userInfo">
+                <span style="color: var(--text-muted)">Status:</span> 
+                <strong id="userName">Não conectado</strong>
+            </div>
+            <div id="userCredits" class="credits-badge" style="display: none;">
+                ⚡ <span id="creditCount">0</span>/3 Créditos Diários
+            </div>
+            <div>
+                <button id="btnLogin" class="btn" onclick="fazerLoginGoogle()" style="width: auto; padding: 8px 15px;">Entrar com Google</button>
+                <button id="btnLogout" class="btn" onclick="fazerLogout()" style="width: auto; padding: 8px 15px; display: none; background: #dc2626;">Sair</button>
             </div>
         </div>
 
-        <!-- ABA DE FERRAMENTAS PREMIUM (PAGAS) -->
-        <div id="tab-pro" class="tab-content">
-            <div class="tools-grid">
+        <header>
+            <h1>⚡ Utilitários Express</h1>
+            <p>Conversores e geradores. Ganhe 3 uso grátis a cada 24 horas!</p>
+        </header>
 
-                <!-- 21 -->
-                <div class="tool-card pro">
-                    <div>
-                        <div class="tool-title">Cartão de Visita Express <span class="badge-pro">R$ 10,00</span></div>
-                        <div class="tool-desc">Gera vetor pronto em alta resolução com corte e sangria para impressão em gráfica offset.</div>
-                    </div>
-                    <button class="btn-tool btn-pro" onclick="abrirGerador('Cartão de Visita Express', 'pro', '10.00')">Solicitar / Pagar</button>
+        <div class="grid">
+
+            <!-- 1. Imagens para PDF -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">1. Imagens para PDF</span>
+                    <span class="badge-free">Consome 1 Crédito</span>
                 </div>
-
-                <!-- 22 -->
-                <div class="tool-card pro">
-                    <div>
-                        <div class="tool-title">Panfleto Comercial 10x15 <span class="badge-pro">R$ 15,00</span></div>
-                        <div class="tool-desc">Diagramação profissional frente e verso com foco em conversão para comércio e serviços.</div>
-                    </div>
-                    <button class="btn-tool btn-pro" onclick="abrirGerador('Panfleto Comercial 10x15', 'pro', '15.00')">Solicitar / Pagar</button>
-                </div>
-
-                <!-- 23 -->
-                <div class="tool-card pro">
-                    <div>
-                        <div class="tool-title">Folder 3 Dobras (Tri-fold) <span class="badge-pro">R$ 20,00</span></div>
-                        <div class="tool-desc">Layout estruturado em 6 painéis com alinhamento milimétrico para dobras perfeitas.</div>
-                    </div>
-                    <button class="btn-tool btn-pro" onclick="abrirGerador('Folder 3 Dobras (Tri-fold)', 'pro', '20.00')">Solicitar / Pagar</button>
-                </div>
-
-                <!-- 24 -->
-                <div class="tool-card pro">
-                    <div>
-                        <div class="tool-title">Banner Promocional Lona 1x0,6m <span class="badge-pro">R$ 25,00</span></div>
-                        <div class="tool-desc">Arte vetorial de grande formato com indicação de bastão e ponteira.</div>
-                    </div>
-                    <button class="btn-tool btn-pro" onclick="abrirGerador('Banner Promocional Lona 1x0,6m', 'pro', '25.00')">Solicitar / Pagar</button>
-                </div>
-
-                <!-- 25 -->
-                <div class="tool-card pro">
-                    <div>
-                        <div class="tool-title">Cardápio de Luxo Plastificado <span class="badge-pro">R$ 25,00</span></div>
-                        <div class="tool-desc">Design sofisticado para restaurantes, hamburguerias e pizzarias de alto padrão.</div>
-                    </div>
-                    <button class="btn-tool btn-pro" onclick="abrirGerador('Cardápio de Luxo Plastificado', 'pro', '25.00')">Solicitar / Pagar</button>
-                </div>
-
-                <!-- 26 -->
-                <div class="tool-card pro">
-                    <div>
-                        <div class="tool-title">Bloco de Pedidos / Comandas <span class="badge-pro">R$ 12,00</span></div>
-                        <div class="tool-desc">Layout numérico personalizado com logo e campos de controle interno para comércios.</div>
-                    </div>
-                    <button class="btn-tool btn-pro" onclick="abrirGerador('Bloco de Pedidos / Comandas', 'pro', '12.00')">Solicitar / Pagar</button>
-                </div>
-
-                <!-- 27 -->
-                <div class="tool-card pro">
-                    <div>
-                        <div class="tool-title">Timbrado Corporativo em PDF <span class="badge-pro">R$ 10,00</span></div>
-                        <div class="tool-desc">Folha corporativa com cabeçalho e rodapé institucionais em alta definição.</div>
-                    </div>
-                    <button class="btn-tool btn-pro" onclick="abrirGerador('Timbrado Corporativo em PDF', 'pro', '10.00')">Solicitar / Pagar</button>
-                </div>
-
-                <!-- 28 -->
-                <div class="tool-card pro">
-                    <div>
-                        <div class="tool-title">Adesivos Rótulos Redondos <span class="badge-pro">R$ 15,00</span></div>
-                        <div class="tool-desc">Gera gabarito circular com linhas de corte para embalagens, potes e lembrancinhas.</div>
-                    </div>
-                    <button class="btn-tool btn-pro" onclick="abrirGerador('Adesivos Rótulos Redondos', 'pro', '15.00')">Solicitar / Pagar</button>
-                </div>
-
-                <!-- 29 -->
-                <div class="tool-card pro">
-                    <div>
-                        <div class="tool-title">Convite de Casamento / Aniversário <span class="badge-pro">R$ 18,00</span></div>
-                        <div class="tool-desc">Arte elegante pronta para impressão gráfica ou envio digital interativo.</div>
-                    </div>
-                    <button class="btn-tool btn-pro" onclick="abrirGerador('Convite de Casamento / Aniversário', 'pro', '18.00')">Solicitar / Pagar</button>
-                </div>
-
-                <!-- 30 -->
-                <div class="tool-card pro">
-                    <div>
-                        <div class="tool-title">Catálogo de Produtos Multi-páginas <span class="badge-pro">R$ 35,00</span></div>
-                        <div class="tool-desc">Estrutura completa em formato livreto para exibição de linhas de produtos.</div>
-                    </div>
-                    <button class="btn-tool btn-pro" onclick="abrirGerador('Catálogo de Produtos Multi-páginas', 'pro', '35.00')">Solicitar / Pagar</button>
-                </div>
-
-                <!-- 31 -->
-                <div class="tool-card pro">
-                    <div>
-                        <div class="tool-title">Pastas com Orelha / Bolsa <span class="badge-pro">R$ 30,00</span></div>
-                        <div class="tool-desc">Gabarito técnico com dobras e vincos para apresentação corporativa.</div>
-                    </div>
-                    <button class="btn-tool btn-pro" onclick="abrirGerador('Pastas com Orelha / Bolsa', 'pro', '30.00')">Solicitar / Pagar</button>
-                </div>
-
-                <!-- 32 -->
-                <div class="tool-card pro">
-                    <div>
-                        <div class="tool-title">Tags para Roupas e Produtos <span class="badge-pro">R$ 12,00</span></div>
-                        <div class="tool-desc">Geração em grade com marcação exata para furo e corte em alta resolução.</div>
-                    </div>
-                    <button class="btn-tool btn-pro" onclick="abrirGerador('Tags para Roupas e Produtos', 'pro', '12.00')">Solicitar / Pagar</button>
-                </div>
-
-                <!-- 33 -->
-                <div class="tool-card pro">
-                    <div>
-                        <div class="tool-title">Imãs de Geladeira Promocionais <span class="badge-pro">R$ 15,00</span></div>
-                        <div class="tool-desc">Layout compacto em grade com calendário ou telefones úteis de prestadores.</div>
-                    </div>
-                    <button class="btn-tool btn-pro" onclick="abrirGerador('Imãs de Geladeira Promocionais', 'pro', '15.00')">Solicitar / Pagar</button>
-                </div>
-
-                <!-- 34 -->
-                <div class="tool-card pro">
-                    <div>
-                        <div class="tool-title">Placa de Sinalização Comercial <span class="badge-pro">R$ 22,00</span></div>
-                        <div class="tool-desc">Avisos de "Proibido Fumar", "Sentido Obrigatório" ou "Caixa" em alta escala.</div>
-                    </div>
-                    <button class="btn-tool btn-pro" onclick="abrirGerador('Placa de Sinalização Comercial', 'pro', '22.00')">Solicitar / Pagar</button>
-                </div>
-
-                <!-- 35 -->
-                <div class="tool-card pro">
-                    <div>
-                        <div class="tool-title">Capa de Caderno Personalizada <span class="badge-pro">R$ 15,00</span></div>
-                        <div class="tool-desc">Design exclusivo com nome, tema e lombada ajustada para encadernação.</div>
-                    </div>
-                    <button class="btn-tool btn-pro" onclick="abrirGerador('Capa de Caderno Personalizada', 'pro', '15.00')">Solicitar / Pagar</button>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL DINÂMICO DE EXECUÇÃO / PAGAMENTO -->
-    <div id="modal-area">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h3 id="modal-title">Título da Ferramenta</h3>
-                <button class="close-modal" onclick="fecharModal()">✕</button>
+                <input type="file" id="imgPdfInput" multiple accept="image/*" class="form-control">
+                <button class="btn" onclick="executarComCredito(converterImagensPDF)">Gerar PDF</button>
             </div>
 
-            <!-- Formulário para Grátis (Gera direto) -->
-            <div id="content-free" style="display:none;">
-                <p style="font-size: 0.9rem; margin-bottom: 15px;">Preencha os campos abaixo para gerar seu documento instantaneamente:</p>
-                <div class="form-group">
-                    <label>Título / Nome Principal:</label>
-                    <input type="text" id="free-input-1" class="form-control" placeholder="Ex: Meu Documento ou Atividade">
+            <!-- 2. Gerador de QR Code -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">2. Gerador de QR Code</span>
+                    <span class="badge-free">Consome 1 Crédito</span>
                 </div>
-                <div class="form-group">
-                    <label>Observações ou Textos Detalhados:</label>
-                    <textarea id="free-input-2" class="form-control" placeholder="Digite as informações complementares..."></textarea>
-                </div>
-                <button class="btn-tool" style="width:100%; padding: 12px;" onclick="executarGeradorGratis()">Gerar e Baixar Documento</button>
+                <input type="text" id="qrText" class="form-control" placeholder="Cole o link ou texto">
+                <div id="qrPreview" class="preview-box">O QR Code aparecerá aqui</div>
+                <button class="btn" onclick="executarComCredito(gerarQRCode)">Gerar QR Code</button>
             </div>
 
-            <!-- Formulário para Pago (Envia via FormSubmit para ws8530135@gmail.com) -->
-            <div id="content-pro" style="display:none;">
-                <form action="https://formsubmit.co/ws8530135@gmail.com" method="POST">
-                    <!-- Configurações ocultas do FormSubmit -->
-                    <input type="hidden" name="_subject" id="form-subject" value="Novo Pedido Premium - PrintExpress">
-                    <input type="hidden" name="_captcha" value="false">
-                    <input type="hidden" name="Ferramenta_Solicitada" id="form-tool-name" value="">
-                    <input type="hidden" name="Valor_Pedido" id="form-tool-price" value="">
+            <!-- 3. Conversor de Imagens -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">3. Conversor de Imagens</span>
+                    <span class="badge-free">Consome 1 Crédito</span>
+                </div>
+                <input type="file" id="convertImgInput" accept="image/*" class="form-control">
+                <select id="convertFormat" class="form-control">
+                    <option value="image/png">Converter para PNG</option>
+                    <option value="image/jpeg">Converter para JPG</option>
+                    <option value="image/webp">Converter para WebP</option>
+                </select>
+                <button class="btn" onclick="executarComCredito(converterImagem)">Converter e Baixar</button>
+            </div>
 
-                    <p style="font-size: 0.9rem; margin-bottom: 15px;">Para liberar este serviço profissional, preencha seus dados, efetue o pagamento via PIX e clique em enviar pedido:</p>
-                    
-                    <div class="form-group">
-                        <label>Seu Nome / Nome da Empresa:</label>
-                        <input type="text" name="Nome_Cliente" class="form-control" required placeholder="Digite seu nome completo">
-                    </div>
-                    <div class="form-group">
-                        <label>Seu WhatsApp com DDD (Para receber o arquivo):</label>
-                        <input type="text" name="WhatsApp" class="form-control" required placeholder="(00) 00000-0000">
-                    </div>
-                    <div class="form-group">
-                        <label>Instruções ou Dados para a Arte:</label>
-                        <textarea name="Detalhes_Arte" class="form-control" required placeholder="Descreva o que deseja escrito, cores preferidas, etc."></textarea>
-                    </div>
+            <!-- 4. Compactador de Imagens -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">4. Redutor de Imagem</span>
+                    <span class="badge-free">Consome 1 Crédito</span>
+                </div>
+                <input type="file" id="compressImgInput" accept="image/*" class="form-control">
+                <button class="btn" onclick="executarComCredito(compactarImagem)">Compactar Imagem</button>
+            </div>
 
-                    <!-- Bloco de Pagamento PIX -->
-                    <div class="pix-box">
-                        <p style="font-size: 0.85rem; font-weight: bold; color: var(--accent-pro); margin-bottom: 5px;">Pague via PIX o valor de <span id="display-price">R$ 0,00</span></p>
-                        <!-- Imagem do QR Code fornecida por você -->
-                        <img src="qrcode-pix.jpg" alt="QR Code PIX">
-                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px;">Chave PIX (Copia e Cola):</p>
-                        <div class="copy-input">
-                            <input type="text" id="pix-chave" class="form-control" value="SUA_CHAVE_PIX_AQUI" readonly style="font-size: 0.8rem;">
-                            <button type="button" class="btn-copy" onclick="copiarPix()">Copiar</button>
-                        </div>
-                    </div>
+            <!-- 5. Código de Barras -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">5. Código de Barras</span>
+                    <span class="badge-free">Consome 1 Crédito</span>
+                </div>
+                <input type="text" id="barcodeValue" class="form-control" placeholder="Número do código">
+                <div class="preview-box"><svg id="barcodeSvg"></svg></div>
+                <button class="btn" onclick="executarComCredito(gerarBarcode)">Gerar Código</button>
+            </div>
 
-                    <button type="submit" class="btn-tool btn-pro" style="width:100%; padding: 12px; margin-top: 15px;">Já Paguei - Enviar Pedido para WhatsApp/E-mail</button>
-                </form>
+            <!-- 6. Extrator de Texto (OCR) -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">6. Extrator de Texto (OCR)</span>
+                    <span class="badge-free">Consome 1 Crédito</span>
+                </div>
+                <input type="file" id="ocrInput" accept="image/*" class="form-control">
+                <textarea id="ocrOutput" class="form-control" placeholder="Resultado..." readonly></textarea>
+                <button class="btn" onclick="executarComCredito(extrairTexto)">Extrair Texto</button>
             </div>
 
         </div>
     </div>
 
-    <footer>
-        &copy; 2026 PrintExpress. Todos os direitos reservados.
-    </footer>
+    <!-- MODAL SEM CRÉDITOS / COMPRAR PRO -->
+    <div id="modalPro" class="modal-bg">
+        <div class="modal">
+            <button class="modal-close" onclick="fecharModalPro()">✕</button>
+            <h3 style="color: var(--accent-pro); margin-bottom: 10px;">⚡ Seus Créditos Zeraram!</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Seus 3 créditos diários acabaram. Eles serão <strong>restaurados automaticamente em 24 horas</strong>. Quer usar agora sem limites?</p>
+
+            <form action="https://formsubmit.co/ws8530135@gmail.com" method="POST">
+                <input type="hidden" name="_subject" value="Solicitação de Acesso Ilimitado / Créditos Extra">
+                <input type="hidden" name="_captcha" value="false">
+
+                <div class="pix-container">
+                    <p style="font-size: 0.85rem; font-weight: bold; color: var(--accent-pro)">Liberar Acesso Ilimitado: R$ 10,00</p>
+                    <img src="qrcode-pix.jpg" alt="QR Code PIX">
+                    <div style="display: flex; gap: 5px; margin-top: 5px;">
+                        <input type="text" id="chavePix" class="form-control" value="SUA_CHAVE_PIX_AQUI" readonly style="font-size: 0.75rem;">
+                        <button type="button" class="btn" style="width: auto; padding: 5px 10px;" onclick="copiarPix()">Copiar</button>
+                    </div>
+                </div>
+
+                <input type="text" name="Nome" id="formNome" class="form-control" placeholder="Seu Nome" required style="margin-bottom: 8px;">
+                <input type="text" name="WhatsApp" class="form-control" placeholder="Seu WhatsApp com DDD" required style="margin-bottom: 12px;">
+                <button type="submit" class="btn btn-pro">Já paguei - Liberar Uso pelo WhatsApp</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 Utilitários Express. Todos os direitos reservados.</footer>
 
     <script>
-        // Alternância de Abas
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        // === 1. CONFIGURAÇÃO DO SEU FIREBASE (COLE SEUS DADOS AQUI) ===
+        const firebaseConfig = {
+    apiKey: "AIzaSyA-ZZ5wB9_2p9vAMRlpJ5JBUliJS3g9g7c",
+    authDomain: "utilitarios-express.firebaseapp.com",
+    databaseURL: "https://utilitarios-express-default-rtdb.firebaseio.com",
+    projectId: "utilitarios-express",
+    storageBucket: "utilitarios-express.firebasestorage.app",
+    messagingSenderId: "421983822616",
+    appId: "1:421983822616:web:bca6f2ebc1b6990871b46d"
+  };
 
-            if(tab === 'free') {
-                document.querySelectorAll('.tab-btn')[0].classList.add('active');
-                document.getElementById('tab-free').classList.add('active');
+        // Inicializa o Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let usuarioAtual = null;
+        let creditosDisponiveis = 0;
+
+        // === 2. GERENCIAMENTO DE USUÁRIO E RENOVAÇÃO DE 24h ===
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                usuarioAtual = user;
+                document.getElementById('userName').innerText = user.displayName || user.email;
+                document.getElementById('btnLogin').style.display = 'none';
+                document.getElementById('btnLogout').style.display = 'block';
+                document.getElementById('userCredits').style.display = 'block';
+
+                await verificarERecarregarCreditos(user.uid);
             } else {
-                document.querySelectorAll('.tab-btn')[1].classList.add('active');
-                document.getElementById('tab-pro').classList.add('active');
+                usuarioAtual = null;
+                document.getElementById('userName').innerText = 'Não conectado';
+                document.getElementById('btnLogin').style.display = 'block';
+                document.getElementById('btnLogout').style.display = 'none';
+                document.getElementById('userCredits').style.display = 'none';
             }
-        }
+        });
 
-        // Abrir Modal de Ferramentas
-        function abrirGerador(nome, tipo, preco = '0') {
-            document.getElementById('modal-area').style.display = 'flex';
-            document.getElementById('modal-title').innerText = nome;
+        async function verificarERecarregarCreditos(uid) {
+            const userRef = db.collection('usuarios').doc(uid);
+            const doc = await userRef.get();
+            const agora = new Date().getTime();
+            const vinteEQuatroHoras = 24 * 60 * 60 * 1000;
 
-            if(tipo === 'free') {
-                document.getElementById('content-free').style.display = 'block';
-                document.getElementById('content-pro').style.display = 'none';
+            if (!doc.exists) {
+                // Primeiro acesso: Cria usuário com 3 créditos
+                await userRef.set({
+                    creditos: 3,
+                    ultimaRecarga: agora
+                });
+                creditosDisponiveis = 3;
             } else {
-                document.getElementById('content-free').style.display = 'none';
-                document.getElementById('content-pro').style.display = 'block';
-                document.getElementById('display-price').innerText = 'R$ ' + preco;
-                document.getElementById('form-tool-name').value = nome;
-                document.getElementById('form-tool-price').value = 'R$ ' + preco;
-                document.getElementById('form-subject').value = 'Novo Pedido Premium: ' + nome;
+                const dados = doc.data();
+                // Verifica se já se passaram 24h desde a última recarga
+                if (agora - dados.ultimaRecarga >= vinteEQuatroHoras) {
+                    await userRef.update({
+                        creditos: 3,
+                        ultimaRecarga: agora
+                    });
+                    creditosDisponiveis = 3;
+                } else {
+                    creditosDisponiveis = dados.creditos;
+                }
             }
+            atualizarInterfaceCreditos();
         }
 
-        function fecharModal() {
-            document.getElementById('modal-area').style.display = 'none';
+        function atualizarInterfaceCreditos() {
+            document.getElementById('creditCount').innerText = creditosDisponiveis;
         }
 
-        // Função do gerador gratuito (abre uma janela de impressão formatada instantânea)
-        function executarGeradorGratis() {
-            const titulo = document.getElementById('free-input-1').value || 'Documento PrintExpress';
-            const texto = document.getElementById('free-input-2').value || 'Nenhuma observação informada.';
-            
-            const janela = window.open('', '_blank');
-            janela.document.write(`
-                <html>
-                <head>
-                    <title>${titulo}</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 40px; color: #000; line-height: 1.6; }
-                        h1 { border-bottom: 2px solid #000; padding-bottom: 10px; font-size: 24px; }
-                        .content { margin-top: 20px; font-size: 16px; white-space: pre-wrap; }
-                        .footer { margin-top: 50px; font-size: 12px; text-align: center; color: #666; }
-                    </style>
-                </head>
-                <body>
-                    <h1>${titulo}</h1>
-                    <div class="content">${texto}</div>
-                    <div class="footer">Gerado automaticamente por PrintExpress - 2026</div>
-                    <script>window.print();<\/script>
-                </body>
-                </html>
-            `);
-            janela.document.close();
-            fecharModal();
+        function fazerLoginGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(err => alert("Erro ao fazer login: " + err.message));
         }
 
-        // Copiar Chave PIX
+        function fazerLogout() {
+            auth.signOut();
+        }
+
+        // === 3. CONTROLE DE USO DAS FERRAMENTAS ===
+        async function executarComCredito(funcaoFerramenta) {
+            if (!usuarioAtual) {
+                alert("Por favor, faça login com sua conta do Google para usar as ferramentas gratuitas!");
+                return fazerLoginGoogle();
+            }
+
+            if (creditosDisponiveis <= 0) {
+                document.getElementById('formNome').value = usuarioAtual.displayName || '';
+                document.getElementById('modalPro').style.display = 'flex';
+                return;
+            }
+
+            // Executa a ferramenta
+            await funcaoFerramenta();
+
+            // Desconta 1 crédito
+            creditosDisponiveis--;
+            atualizarInterfaceCreditos();
+            await db.collection('usuarios').doc(usuarioAtual.uid).update({
+                creditos: creditosDisponiveis
+            });
+        }
+
+        function fecharModalPro() {
+            document.getElementById('modalPro').style.display = 'none';
+        }
+
         function copiarPix() {
-            const inputPix = document.getElementById('pix-chave');
-            inputPix.select();
-            inputPix.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(inputPix.value);
-            alert('Chave PIX copiada com sucesso!');
+            const pix = document.getElementById('chavePix');
+            pix.select();
+            navigator.clipboard.writeText(pix.value);
+            alert('Chave PIX copiada!');
+        }
+
+        // === 4. FUNÇÕES DAS FERRAMENTAS ===
+        async function converterImagensPDF() {
+            const files = document.getElementById('imgPdfInput').files;
+            if (files.length === 0) return alert('Selecione imagens.');
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            for (let i = 0; i < files.length; i++) {
+                const imgData = await new Promise(r => {
+                    const rd = new FileReader();
+                    rd.onload = e => r(e.target.result);
+                    rd.readAsDataURL(files[i]);
+                });
+                if (i > 0) doc.addPage();
+                doc.addImage(imgData, 'JPEG', 15, 15, 180, 240);
+            }
+            doc.save('documento.pdf');
+        }
+
+        function gerarQRCode() {
+            const text = document.getElementById('qrText').value;
+            if(!text) return alert('Digite um texto ou link!');
+            const box = document.getElementById('qrPreview');
+            box.innerHTML = '';
+            new QRCode(box, { text: text, width: 120, height: 120 });
+        }
+
+        function converterImagem() {
+            const file = document.getElementById('convertImgInput').files[0];
+            const format = document.getElementById('convertFormat').value;
+            if (!file) return alert('Selecione uma imagem.');
+            const rd = new FileReader();
+            rd.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width; canvas.height = img.height;
+                    canvas.getContext('2d').drawImage(img, 0, 0);
+                    const link = document.createElement('a');
+                    link.download = 'imagem-convertida.' + format.split('/')[1];
+                    link.href = canvas.toDataURL(format);
+                    link.click();
+                };
+                img.src = e.target.result;
+            };
+            rd.readAsDataURL(file);
+        }
+
+        function compactarImagem() {
+            const file = document.getElementById('compressImgInput').files[0];
+            if (!file) return alert('Selecione uma imagem.');
+            const rd = new FileReader();
+            rd.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width; canvas.height = img.height;
+                    canvas.getContext('2d').drawImage(img, 0, 0);
+                    const link = document.createElement('a');
+                    link.download = 'imagem-compactada.jpg';
+                    link.href = canvas.toDataURL('image/jpeg', 0.4);
+                    link.click();
+                };
+                img.src = e.target.result;
+            };
+            rd.readAsDataURL(file);
+        }
+
+        function gerarBarcode() {
+            const val = document.getElementById('barcodeValue').value;
+            if(!val) return alert('Digite um número.');
+            JsBarcode("#barcodeSvg", val, { format: "CODE128", width: 2, height: 50, displayValue: true });
+        }
+
+        function extrairTexto() {
+            const file = document.getElementById('ocrInput').files[0];
+            const output = document.getElementById('ocrOutput');
+            if (!file) return alert('Selecione uma imagem.');
+            output.value = 'Lendo e extraindo texto...';
+            Tesseract.recognize(file, 'por').then(({ data: { text } }) => {
+                output.value = text;
+            });
         }
     </script>
-
 </body>
 </html>
