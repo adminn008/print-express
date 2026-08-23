@@ -1,255 +1,400 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PrintExpress • Geradores</title>
-<meta name="description" content="Geradores para impressão: documentos, planners, jogos, convites, cardápios, QR Codes e ferramentas para estudantes.">
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<style>
-:root{--bg:#07111f;--card:#0e1b2d;--card2:#13243a;--text:#f4f7fb;--muted:#9fb0c5;--accent:#35d0ba;--accent2:#6d7cff;--danger:#ff6577;--line:#20344d;--shadow:0 18px 50px #0007}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0,#173657 0,transparent 35%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
-header{position:sticky;top:0;z-index:20;background:#07111fe8;backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
-.nav{max-width:1200px;margin:auto;padding:14px 18px;display:flex;align-items:center;gap:16px}.logo{font-weight:900;font-size:22px;letter-spacing:-.8px}.logo b{color:var(--accent)}.spacer{flex:1}
-.pill{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 12px;color:var(--muted);font-size:13px}
-.btn{border:0;border-radius:12px;padding:11px 15px;background:linear-gradient(135deg,var(--accent),#4de4d2);color:#06131b;font-weight:800}.btn.secondary{background:var(--card2);color:var(--text);border:1px solid var(--line)}.btn.vip{background:linear-gradient(135deg,#ffd66b,#ff9d4d)}
-main{max-width:1200px;margin:auto;padding:28px 18px 60px}.hero{padding:32px 0 22px;display:grid;grid-template-columns:1.5fr .8fr;gap:24px;align-items:center}.hero h1{font-size:clamp(34px,6vw,62px);line-height:.98;margin:0 0 15px;letter-spacing:-3px}.hero p{color:var(--muted);font-size:17px;max-width:700px}
-.status{background:linear-gradient(145deg,#11253a,#0b1727);border:1px solid var(--line);padding:20px;border-radius:22px;box-shadow:var(--shadow)}.status strong{font-size:28px}.bar{height:8px;background:#091321;border-radius:99px;margin:12px 0;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0}
-.ads{position:relative;overflow:hidden;border-radius:22px;border:1px solid var(--line);margin:15px 0 30px;background:#0b1727}.adtrack{display:flex;transition:transform .55s ease}.ad{min-width:100%;height:190px;padding:28px;display:flex;align-items:center;justify-content:space-between;gap:20px;background:linear-gradient(120deg,#172b45,#102035)}.ad:nth-child(2){background:linear-gradient(120deg,#192c4d,#22204a)}.ad:nth-child(3){background:linear-gradient(120deg,#193b3b,#12272f)}.ad:nth-child(4){background:linear-gradient(120deg,#402b1b,#261c18)}.ad h2{font-size:30px;margin:0 0 6px}.ad p{margin:0;color:#d5deea}.ad .visual{font-size:72px}.dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px}.dots i{width:8px;height:8px;border-radius:50%;background:#ffffff55}.dots i.on{background:white}
-h2.section{margin:32px 0 15px}.search{width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:#0b1727;color:white;margin-bottom:16px}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.tool{background:linear-gradient(160deg,var(--card),#0b1727);border:1px solid var(--line);border-radius:18px;padding:17px;min-height:180px;display:flex;flex-direction:column;transition:.2s}.tool:hover{transform:translateY(-3px);border-color:#365575}.icon{font-size:30px}.tool h3{margin:9px 0 5px;font-size:17px}.tool p{color:var(--muted);font-size:13px;line-height:1.4;margin:0 0 14px}.tool .btn{margin-top:auto;width:100%}
-footer{text-align:center;color:var(--muted);padding:30px;border-top:1px solid var(--line)}
-.modal{position:fixed;inset:0;background:#000a;z-index:50;display:none;align-items:center;justify-content:center;padding:16px}.modal.show{display:flex}.box{width:min(760px,100%);max-height:92vh;overflow:auto;background:#0b1727;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow)}.box h2{margin-top:0}.close{float:right;background:transparent;border:0;color:#9fb0c5;font-size:28px}.form{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}input,select,textarea{width:100%;border:1px solid var(--line);background:#071321;color:white;border-radius:10px;padding:11px}textarea{min-height:100px;resize:vertical}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.notice{padding:12px;border-radius:12px;background:#13243a;color:#c8d5e5;margin:10px 0}.ok{color:var(--accent)}.err{color:#ff8b98}.hidden{display:none}
-.preview{background:white;color:#111;margin-top:15px;padding:24px;min-height:300px;overflow:auto}.a4{width:794px;max-width:100%;min-height:1123px;margin:auto;background:white;color:#111;padding:70px}.lines{border-collapse:collapse;width:100%}.lines td,.lines th{border:1px solid #333;padding:7px;color:#111}
-@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.hero{grid-template-columns:1fr}.ad{height:170px}.ad h2{font-size:23px}.ad .visual{font-size:52px}}
-@media(max-width:520px){.grid{grid-template-columns:1fr}.form{grid-template-columns:1fr}.ad{padding:20px}.status{display:none}.hero h1{letter-spacing:-2px}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrintExpress - Central de Geradores & Impressão</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --accent: #f59e0b;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --border: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.5; }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+    .search-bar { padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 20px; width: 300px; }
+
+    /* Publicidade Estilo Filme (Carrossel Full Width) */
+    .ad-carousel-container {
+      width: 100%;
+      overflow: hidden;
+      background: #000;
+      color: #fff;
+      position: relative;
+      height: 250px;
+    }
+
+    .ad-carousel-track {
+      display: flex;
+      width: 400%;
+      height: 100%;
+      transition: transform 0.6s ease-in-out;
+    }
+
+    .ad-slide {
+      width: 25%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2rem 4rem;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    .ad-slide::before {
+      content: '';
+      position: absolute;
+      top:0; left:0; right:0; bottom:0;
+      background: linear-gradient(90deg, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0.3) 100%);
+    }
+
+    .ad-content { position: relative; z-index: 2; max-width: 600px; }
+    .ad-tag { background: var(--accent); color: #000; padding: 0.2rem 0.6rem; font-weight: bold; font-size: 0.75rem; border-radius: 4px; text-transform: uppercase; }
+    .ad-title { font-size: 2rem; margin: 0.5rem 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
+    .ad-desc { font-size: 1rem; color: #cbd5e1; margin-bottom: 1rem; }
+
+    /* Layout Principal */
+    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    .section-title { font-size: 1.5rem; margin-bottom: 1rem; border-left: 4px solid var(--primary); padding-left: 0.5rem; }
+
+    .grid-tools {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    .card-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .card-desc { font-size: 0.875rem; color: #64748b; margin-bottom: 1rem; }
+    
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      text-align: center;
+      text-decoration: none;
+    }
+    .btn:hover { background: var(--primary-dark); }
+    .btn-whatsapp { background: #25d366; }
+    .btn-whatsapp:hover { background: #128c7e; }
+
+    /* Módulo de Nota Fiscal / Impressão */
+    .invoice-builder {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; margin-bottom: 0.3rem; font-weight: 600; font-size: 0.9rem; }
+    .form-control { width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; }
+    
+    .checkbox-group { display: flex; gap: 1rem; align-items: center; margin: 1rem 0; }
+  </style>
 </head>
 <body>
-<header><div class="nav"><div class="logo">Print<b>Express</b> ✦</div><div class="spacer"></div><div class="pill" id="account">Visitante</div><button class="btn secondary" id="loginBtn">Entrar</button><button class="btn vip" onclick="openVip()">VIP</button></div></header>
 
-<main>
-<section class="hero">
-<div><div class="pill">⚡ Gere • personalize • imprima</div><h1>Tudo pronto para<br><span style="color:var(--accent)">imprimir.</span></h1><p>Geradores automáticos para documentos, escola, comércio, festas e muito mais. Crie no celular e baixe seu arquivo pronto.</p></div>
-<div class="status"><div>Seu acesso</div><strong id="credits">3 créditos</strong><div id="renew">Renova a cada 24h</div><div class="bar"><i id="creditbar"></i></div><button class="btn vip" style="width:100%" onclick="openVip()">∞ Assinar VIP</button></div>
-</section>
+  <header>
+    <div class="logo">PrintExpress</div>
+    <input type="text" id="searchInput" class="search-bar" placeholder="Buscar gerador..." onkeyup="filterTools()">
+  </header>
 
-<section class="ads"><div class="adtrack" id="adtrack">
-<div class="ad"><div><h2>📄 Gere seus arquivos</h2><p>Chega de montar tudo manualmente. O PrintExpress faz por você.</p></div><div class="visual">✨</div></div>
-<div class="ad"><div><h2>🎓 Escola sem complicação</h2><p>Capa, redação, referências, notas e planejamento em poucos cliques.</p></div><div class="visual">📚</div></div>
-<div class="ad"><div><h2>🏪 Seu negócio mais profissional</h2><p>Cardápios, tabelas de preços, QR Codes e materiais prontos para impressão.</p></div><div class="visual">💼</div></div>
-<div class="ad"><div><h2>🎉 Crie para qualquer ocasião</h2><p>Convites, cartões, planners e jogos para imprimir em casa.</p></div><div class="visual">🎨</div></div>
-</div><div class="dots" id="dots"></div></section>
+  <!-- Carrossel de Publicidade (Estilo Filme / Full Width) -->
+  <div class="ad-carousel-container">
+    <div class="ad-carousel-track" id="carouselTrack">
+      <div class="ad-slide" style="background-image: url('https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?auto=format&fit=crop&w=1200&q=80');">
+        <div class="ad-content">
+          <span class="ad-tag">PrintExpress Apresenta</span>
+          <h2 class="ad-title">Seus Documentos com Qualidade Gráfica</h2>
+          <p class="ad-desc">Gere grátis no site e receba impresso em papel offset de alta gramatura direto na sua casa!</p>
+        </div>
+      </div>
+      <div class="ad-slide" style="background-image: url('https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=1200&q=80');">
+        <div class="ad-content">
+          <span class="ad-tag">Edição Profissional</span>
+          <h2 class="ad-title">Precisa Ajustar Sua Arte?</h2>
+          <p class="ad-desc">Contrate nosso serviço extra de edição. Ajustamos margens, logotipos e layouts com precisão.</p>
+        </div>
+      </div>
+      <div class="ad-slide" style="background-image: url('https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=1200&q=80');">
+        <div class="ad-content">
+          <span class="ad-tag">Material Escolar e ABNT</span>
+          <h2 class="ad-title">Imprima Suas Capas e Planners</h2>
+          <p class="ad-desc">Formatação 100% pronta. Evite dores de cabeça com a impressora de casa.</p>
+        </div>
+      </div>
+      <div class="ad-slide" style="background-image: url('https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=1200&q=80');">
+        <div class="ad-content">
+          <span class="ad-tag">Solução Comercial</span>
+          <h2 class="ad-title">Blocos de Notas Fiscais e Recibos</h2>
+          <p class="ad-desc">Monte o seu bloco personalizado online e receba o talão impresso e numerado.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<input class="search" id="search" placeholder="🔎 Pesquisar gerador...">
+  <main class="container">
+    <h2 class="section-title">Geradores e Ferramentas Gratuitas</h2>
+    <div class="grid-tools" id="toolsGrid">
+      
+      <!-- Cards dos Geradores -->
+      <div class="card" data-title="envelope a4 dobravel">
+        <div>
+          <div class="card-icon">✉️</div>
+          <div class="card-title">Gerador de Envelope A4 Dobrável</div>
+          <div class="card-desc">Imprime linhas de corte e dobra para criar envelopes funcionais em folha comum.</div>
+        </div>
+        <button class="btn">Gerar Envelope</button>
+      </div>
 
-<div id="sections"></div>
-</main>
-<footer>PrintExpress • Geradores para impressão<br><small>Os créditos são vinculados à sua conta. Arquivos gerados são feitos no seu dispositivo.</small></footer>
+      <div class="card" data-title="capa de trabalho escolar abnt">
+        <div>
+          <div class="card-icon">🎓</div>
+          <div class="card-title">Capa Escolar / ABNT Simples</div>
+          <div class="card-desc">Ajusta automaticamente margens, escola, disciplina e autor na norma A4.</div>
+        </div>
+        <button class="btn">Gerar Capa</button>
+      </div>
 
-<div class="modal" id="modal"><div class="box"><button class="close" onclick="closeModal()">×</button><div id="modalBody"></div></div></div>
+      <div class="card" data-title="tabela de precos a4">
+        <div>
+          <div class="card-icon">📋</div>
+          <div class="card-title">Tabela de Preços A4</div>
+          <div class="card-desc">Layout limpo para balcão ou parede em lanchonetes, salões e oficinas.</div>
+        </div>
+        <button class="btn">Criar Tabela</button>
+      </div>
 
-<script>
-/* ================= FIREBASE =================
-   Cole aqui a MESMA configuração usada no seu admin.html.
-   O restante do arquivo não precisa ser alterado.
-*/
-const firebaseConfig = {
-  apiKey: "AIzaSyA-ZZ5wB9_2p9vAMRlpJ5JBUliJS3g9g7c",
-  authDomain: "utilitarios-express.firebaseapp.com",
-  databaseURL: "https://utilitarios-express-default-rtdb.firebaseio.com",
-  projectId: "utilitarios-express",
-  storageBucket: "utilitarios-express.firebasestorage.app",
-  messagingSenderId: "421983822616",
-  appId: "1:421983822616:web:bca6f2ebc1b6990871b46d"
-};
+      <div class="card" data-title="desenhos para colorir efeito croqui">
+        <div>
+          <div class="card-icon">🎨</div>
+          <div class="card-title">Desenhos para Colorir (Croqui)</div>
+          <div class="card-desc">Converte qualquer foto em traços prêtos para imprimir e pintar.</div>
+        </div>
+        <button class="btn">Converter Foto</button>
+      </div>
 
+      <div class="card" data-title="caca palavras e cruzadinhas">
+        <div>
+          <div class="card-icon">🧩</div>
+          <div class="card-title">Caça-Palavras & Cruzadinhas</div>
+          <div class="card-desc">Digite sua lista de palavras e gere o jogo montado pronto na folha A4.</div>
+        </div>
+        <button class="btn">Criar Jogo</button>
+      </div>
 
-let fbReady=false, auth=null, db=null, currentUser=null, userData=null;
-try{
-  if(firebaseConfig.apiKey!=="AIzaSyA-ZZ5wB9_2p9vAMRlpJ5JBUliJS3g9g7c"){
-    firebase.initializeApp(firebaseConfig); auth=firebase.auth(); db=firebase.firestore(); fbReady=true;
-    auth.onAuthStateChanged(async u=>{currentUser=u; await loadUser();});
-  }
-}catch(e){console.warn(e)}
+      <div class="card" data-title="lista de presenca assinaturas">
+        <div>
+          <div class="card-icon">📝</div>
+          <div class="card-title">Lista de Presença / Assinaturas</div>
+          <div class="card-desc">Cabeçalho de reunião com linhas numeradas para Nome, RG e Assinatura.</div>
+        </div>
+        <button class="btn">Gerar Lista</button>
+      </div>
 
-const tools=[
-{cat:"Impressão",icon:"✉️",name:"Envelope A4 Dobrável",desc:"Linhas de corte e dobra para transformar uma folha A4 em envelope.",type:"envelope"},
-{cat:"Impressão",icon:"📘",name:"Capa de Trabalho • ABNT Simples",desc:"Nome da escola, disciplina, título, aluno e cidade com layout A4.",type:"abnt"},
-{cat:"Impressão",icon:"💰",name:"Tabela de Preços A4",desc:"Categorias, produtos/serviços e valores em um modelo limpo.",type:"prices"},
-{cat:"Impressão",icon:"🎨",name:"Desenhos para Colorir • Croqui",desc:"Converte imagem em linhas para imprimir e colorir.",type:"color"},
-{cat:"Jogos",icon:"🔎",name:"Caça-Palavras",desc:"Digite as palavras e gere o jogo automaticamente.",type:"wordsearch"},
-{cat:"Jogos",icon:"🧩",name:"Cruzadinha",desc:"Monte uma atividade de palavras para imprimir.",type:"crossword"},
-{cat:"Documentos",icon:"✍️",name:"Lista de Presença / Assinaturas",desc:"Evento, reunião e linhas numeradas com Nome, RG e assinatura.",type:"attendance"},
-{cat:"Documentos",icon:"📝",name:"Folha de Redação • 30 linhas",desc:"Folha A4 de treino com cabeçalho e 30 linhas numeradas.",type:"essay"},
-{cat:"Jogos",icon:"🎲",name:"Jogos e Dinâmicas Rápidas",desc:"Gere uma dinâmica aleatória para grupos, escola ou eventos.",type:"games"},
-{cat:"Comércio",icon:"🍔",name:"Cardápio Impresso",desc:"Categorias, itens, preços e espaço para QR Code do WhatsApp.",type:"menu"},
-{cat:"Comércio",icon:"▣",name:"QR Code com Logo",desc:"Crie QR Codes para PIX, Wi-Fi, cardápio ou qualquer texto.",type:"qr"},
-{cat:"PDF",icon:"📑",name:"Separar / Combinar PDF",desc:"Escolha páginas específicas ou junte vários PDFs.",type:"pdf"},
-{cat:"Festas",icon:"🎉",name:"Gerador de Convites",desc:"Preencha os dados e baixe um convite pronto.",type:"invite"},
-{cat:"Festas",icon:"💌",name:"Criador de Cartões",desc:"Aniversário, agradecimento, Dia das Mães e outras ocasiões.",type:"card"},
-{cat:"Estudantes",icon:"⏱️",name:"Cronômetro",desc:"Cronômetro simples para estudos e atividades.",type:"timer"},
-{cat:"Estudantes",icon:"🧮",name:"Calculadora de Notas",desc:"Calcule média e veja quanto precisa nas próximas avaliações.",type:"grades"},
-{cat:"Estudantes",icon:"📚",name:"Gerador de Referências",desc:"Gere referências em um formato acadêmico simples.",type:"refs"},
-{cat:"Estudantes",icon:"📖",name:"Planejamento de Estudos",desc:"Monte um plano semanal por matéria.",type:"study"},
-{cat:"Planners",icon:"📅",name:"Planner Semanal",desc:"Organize compromissos, tarefas e prioridades.",type:"weekly"},
-{cat:"Planners",icon:"🗓️",name:"Planner Mensal",desc:"Calendário mensal para imprimir.",type:"monthly"},
-{cat:"Planners",icon:"☑️",name:"Lista de Tarefas",desc:"Folha A4 simples para tarefas e prioridades.",type:"tasks"},
-{cat:"Planners",icon:"📈",name:"Controle de Hábitos",desc:"Acompanhe hábitos ao longo do mês.",type:"habits"}
-];
+      <div class="card" data-title="folha de redacao enem concursos">
+        <div>
+          <div class="card-icon">📄</div>
+          <div class="card-title">Folha de Redação (ENEM)</div>
+          <div class="card-desc">Folha oficial de 30 linhas numeradas e cabeçalho para treino.</div>
+        </div>
+        <button class="btn">Gerar Folha</button>
+      </div>
 
-function renderTools(filter=""){
- const wrap=document.getElementById("sections"); wrap.innerHTML="";
- const cats=[...new Set(tools.map(x=>x.cat))];
- cats.forEach(cat=>{
-   const list=tools.filter(x=>x.cat===cat && (x.name+" "+x.desc).toLowerCase().includes(filter.toLowerCase()));
-   if(!list.length)return;
-   const sec=document.createElement("section"); sec.innerHTML=`<h2 class="section">${cat}</h2><div class="grid"></div>`;
-   const grid=sec.querySelector(".grid");
-   list.forEach(t=>{const el=document.createElement("article");el.className="tool";el.innerHTML=`<div class="icon">${t.icon}</div><h3>${t.name}</h3><p>${t.desc}</p><button class="btn" onclick="openTool('${t.type}')">Criar agora</button>`;grid.appendChild(el)});
-   wrap.appendChild(sec);
- });
-}
-renderTools(); document.getElementById("search").oninput=e=>renderTools(e.target.value);
+      <div class="card" data-title="cardapios impressos qr code">
+        <div>
+          <div class="card-icon">🍔</div>
+          <div class="card-title">Cardápios Impressos A4</div>
+          <div class="card-desc">Layout para bares e restaurantes com itens, preços e QR Code de WhatsApp.</div>
+        </div>
+        <button class="btn">Montar Cardápio</button>
+      </div>
 
-function openModal(html){document.getElementById("modalBody").innerHTML=html;document.getElementById("modal").classList.add("show")}
-function closeModal(){document.getElementById("modal").classList.remove("show");document.getElementById("modalBody").innerHTML=""}
+      <div class="card" data-title="qr code com logo pix wifi">
+        <div>
+          <div class="card-icon">📲</div>
+          <div class="card-title">QR Code com Logo</div>
+          <div class="card-desc">Crie códigos PIX, Wi-Fi ou links dimensionados para impressão.</div>
+        </div>
+        <button class="btn">Gerar QR Code</button>
+      </div>
 
-async function loadUser(){
- const account=document.getElementById("account"), login=document.getElementById("loginBtn");
- if(!currentUser){account.textContent="Visitante";login.textContent="Entrar";userData=null;updateCredits();return}
- account.textContent=currentUser.email||"Conta";
- login.textContent="Sair";
- if(db){
-   try{
-     const ref=db.collection("users").doc(currentUser.uid), snap=await ref.get();
-     userData=snap.exists?snap.data():{};
-     await refreshCredits(ref);
-   }catch(e){console.warn("Firestore:",e);updateCredits()}
- }else updateCredits();
-}
-async function refreshCredits(ref){
- const now=Date.now(); let d=userData||{};
- let last=d.creditResetAt?.toMillis?d.creditResetAt.toMillis():Number(d.creditResetAt||0);
- if(last && now-last>=86400000){d.credits=3;d.creditResetAt=firebase.firestore.Timestamp.fromMillis(now);await ref.set({credits:3,creditResetAt:d.creditResetAt},{merge:true})}
- if(typeof d.credits!=="number")d.credits=3;
- userData=d;updateCredits();
-}
-function updateCredits(){
- let vip=!!(userData&&(userData.vip===true || (userData.vipUntil && new Date(userData.vipUntil)>new Date())));
- const n=vip?"∞":String(userData?.credits??3);
- document.getElementById("credits").textContent=vip?"VIP • ilimitado":`${n} crédito${n==="1"?"":"s"}`;
- document.getElementById("creditbar").style.width=vip?"100%":`${Math.max(0,Math.min(100,(Number(n)/3)*100))}%`;
- let last=userData?.creditResetAt?.toDate?userData.creditResetAt.toDate():new Date();
- let next=new Date(last.getTime()+86400000);
- document.getElementById("renew").textContent=vip?"Acesso VIP ativo":`Renova em ${next.toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"})}`;
-}
-async function useCredit(){
- if(!currentUser){openLogin();return false}
- const vip=!!(userData&&(userData.vip===true || (userData.vipUntil && new Date(userData.vipUntil)>new Date())));
- if(vip)return true;
- if(!userData||Number(userData.credits??3)<=0){openVip();return false}
- const next=Number(userData.credits)-1; userData.credits=next;
- if(db)try{await db.collection("users").doc(currentUser.uid).set({credits:next,creditResetAt:userData.creditResetAt||firebase.firestore.Timestamp.now()},{merge:true})}catch(e){}
- updateCredits();return true;
-}
-function openLogin(){
- openModal(`<h2>Entrar no PrintExpress</h2><p class="notice">Use seu e-mail para salvar seus créditos e seu acesso VIP.</p><div class="form"><div class="full"><label>E-mail</label><input id="email" type="email" placeholder="voce@email.com"></div><div><label>Senha</label><input id="pass" type="password" placeholder="Mínimo 6 caracteres"></div></div><div class="actions"><button class="btn" onclick="emailLogin()">Entrar</button><button class="btn secondary" onclick="emailSignup()">Criar conta</button></div><p id="authmsg"></p>`)}
-async function emailLogin(){if(!fbReady)return authmsg("Configure o Firebase no arquivo.","err");try{await auth.signInWithEmailAndPassword(email.value,pass.value);closeModal()}catch(e){authmsg(e.message,"err")}}
-async function emailSignup(){if(!fbReady)return authmsg("Configure o Firebase no arquivo.","err");try{await auth.createUserWithEmailAndPassword(email.value,pass.value);closeModal()}catch(e){authmsg(e.message,"err")}}
-function authmsg(t,c){document.getElementById("authmsg").className=c;document.getElementById("authmsg").textContent=t}
-document.getElementById("loginBtn").onclick=()=>currentUser?auth.signOut():openLogin();
+      <div class="card" data-title="pdf separador combinador">
+        <div>
+          <div class="card-icon">🛠️</div>
+          <div class="card-title">Separador / Combinador PDF</div>
+          <div class="card-desc">Extraia páginas específicas (ex: 3 a 5) ou junte múltiplos arquivos num só.</div>
+        </div>
+        <button class="btn">Organizar PDF</button>
+      </div>
 
-function openVip(){openModal(`<h2>⭐ PrintExpress VIP</h2><p>Gere quantos arquivos quiser durante o período da assinatura.</p><div class="notice"><b>30 dias de acesso ilimitado</b><br>Sem descontar créditos enquanto o VIP estiver ativo.</div><div class="actions"><button class="btn vip" onclick="alert('Conecte aqui o seu checkout de pagamento. Depois, o seu admin.html pode liberar vip=true e vipUntil para a conta.')">Assinar VIP</button><button class="btn secondary" onclick="closeModal()">Agora não</button></div><small style="color:var(--muted)">O pagamento não foi inventado neste modelo: basta ligar o botão ao seu meio de pagamento.</small>`)}
+      <div class="card" data-title="convites cartoes aniversario namoro">
+        <div>
+          <div class="card-icon">🎉</div>
+          <div class="card-title">Gerador de Convites & Cartões</div>
+          <div class="card-desc">Modelos para Aniversário, Agradecimento, Dia das Mães e Namoro.</div>
+        </div>
+        <button class="btn">Criar Cartão</button>
+      </div>
 
-async function openTool(type){
- if(!(await useCredit()))return;
- const map={envelope:envelope,abnt:abnt,prices:prices,color:color,wordsearch:wordsearch,crossword:crossword,attendance:attendance,essay:essay,games:games,menu:menu,qr:qr,pdf:pdf,invite:invite,card:card,timer:timer,grades:grades,refs:refs,study:study,weekly:weekly,monthly:monthly,tasks:tasks,habits:habits};
- map[type]();
-}
+      <div class="card" data-title="planners organizador tarefas habitos">
+        <div>
+          <div class="card-icon">📅</div>
+          <div class="card-title">Planners & Controle de Hábitos</div>
+          <div class="card-desc">Planejamento semanal, mensal e listas organizadoras para A4.</div>
+        </div>
+        <button class="btn">Baixar Planner</button>
+      </div>
 
-function form(title,body,actions=""){
- openModal(`<h2>${title}</h2><div class="form">${body}</div><div class="actions">${actions||`<button class="btn" onclick="makePrint()">Gerar / Imprimir</button><button class="btn secondary" onclick="closeModal()">Cancelar</button>`}</div>`);
-}
-function field(id,label,ph="",extra=""){return `<div class="${extra}"><label>${label}</label><input id="${id}" placeholder="${ph}"></div>`}
-function area(id,label,ph="",extra=""){return `<div class="${extra}"><label>${label}</label><textarea id="${id}" placeholder="${ph}"></textarea></div>`}
-function makePrint(){window.print()}
+      <div class="card" data-title="gerador de senhas seguras">
+        <div>
+          <div class="card-icon">🔒</div>
+          <div class="card-title">Gerador de Senhas</div>
+          <div class="card-desc">Crie senhas fortes e aleatórias para segurança digital.</div>
+        </div>
+        <button class="btn">Gerar Senha</button>
+      </div>
 
-function envelope(){form("✉️ Envelope A4 Dobrável",field("envName","Destinatário","Nome ou empresa","full")+`<div class="full notice">O modelo imprime marcações de corte e dobra em uma folha A4. Use escala 100% na impressão.</div><div class="full"><button class="btn" onclick="previewEnvelope()">Gerar prévia A4</button></div>`)}
-function previewEnvelope(){document.getElementById("modalBody").innerHTML+=`<div class="preview"><div class="a4" style="border:2px dashed #555;position:relative"><h2 style="text-align:center">ENVELOPE A4</h2><p style="text-align:center">✂ linhas externas = corte • - - - linhas = dobra</p><div style="height:600px;border:2px dashed #777;margin-top:40px;display:flex;align-items:center;justify-content:center;font-size:25px">ÁREA DO ENVELOPE</div><p style="text-align:center">Dobre nas linhas indicadas e cole as abas.</p></div></div>`}
+    </div>
 
-function abnt(){form("📘 Capa de Trabalho • ABNT Simples",field("school","Nome da escola","Colégio...","full")+field("course","Disciplina","Matemática")+field("title","Título","Título do trabalho")+field("student","Seu nome","Nome completo")+field("city","Cidade","São José dos Pinhais")+field("year","Ano","2026")+`<div class="full"><button class="btn" onclick="previewABNT()">Gerar capa</button></div>`)}
-function previewABNT(){let x=`<div class="a4" style="display:flex;flex-direction:column;justify-content:space-between;text-align:center"><div><b>${school.value||"NOME DA ESCOLA"}</b><p>${course.value||"DISCIPLINA"}</p></div><div><h2>${title.value||"TÍTULO DO TRABALHO"}</h2><p>${student.value||"NOME DO ALUNO"}</p></div><div>${city.value||"CIDADE"}<br>${year.value||"2026"}</div></div>`;document.getElementById("modalBody").innerHTML+=`<div class="preview">${x}</div><div class="actions"><button class="btn" onclick="window.print()">🖨️ Imprimir</button></div>`}
+    <!-- Seção do Gerador de Nota Fiscal & Pedido de Impressão -->
+    <h2 class="section-title">Emissão de Nota Fiscal / Pedido de Impressão</h2>
+    <div class="invoice-builder">
+      <p style="margin-bottom: 1rem; color: #64748b;">Todos os geradores são 100% grátis para download. Caso prefira receber o bloco impresso ou precise de ajustes profissionais, preencha abaixo para enviar direto para nosso WhatsApp.</p>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label>Nome / Razão Social</label>
+          <input type="text" id="cliName" class="form-control" placeholder="Seu nome ou empresa">
+        </div>
+        <div class="form-group">
+          <label>CNPJ / CPF</label>
+          <input type="text" id="cliDoc" class="form-control" placeholder="00.000.000/0001-00">
+        </div>
+      </div>
 
-function prices(){form("💰 Tabela de Preços A4",field("biz","Nome do negócio","Minha empresa","full")+area("items","Itens (um por linha)","X-Burger — R$ 20,00\nBatata — R$ 10,00\nSuco — R$ 7,00","full")+`<div class="full"><button class="btn" onclick="previewPrices()">Gerar tabela</button></div>`)}
-function previewPrices(){let rows=(items.value||"Produto — R$ 0,00").split("\n").filter(Boolean).map(x=>{let p=x.split("—");return `<tr><td>${p[0]}</td><td style="text-align:right"><b>${p[1]||""}</b></td></tr>`}).join("");document.getElementById("modalBody").innerHTML+=`<div class="preview"><div class="a4"><h1 style="text-align:center">${biz.value||"TABELA DE PREÇOS"}</h1><table class="lines">${rows}</table></div></div><div class="actions"><button class="btn" onclick="window.print()">🖨️ Imprimir</button></div>`}
+      <div class="form-group">
+        <label>Descrição do Documento / Bloco</label>
+        <input type="text" id="docDesc" class="form-control" placeholder="Ex: Bloco de Notas Fiscais (50 folhas A4) ou Tabela de Preços">
+      </div>
 
-function color(){form("🎨 Desenho para Colorir • Croqui",`<div class="full"><label>Escolha uma imagem</label><input id="img" type="file" accept="image/*"></div><div class="full notice">A imagem é processada no seu navegador e transformada em linhas pretas.</div><div class="full"><button class="btn" onclick="makeColor()">Converter</button></div>`)}
-function makeColor(){const f=img.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{const im=new Image();im.onload=()=>{let c=document.createElement("canvas"),w=Math.min(1100,im.width),h=Math.round(im.height*w/im.width);c.width=w;c.height=h;let x=c.getContext("2d");x.drawImage(im,0,0,w,h);let d=x.getImageData(0,0,w,h),p=d.data;for(let i=0;i<p.length;i+=4){let g=(p[i]+p[i+1]+p[i+2])/3,v=g<150?0:255;p[i]=p[i+1]=p[i+2]=v;p[i+3]=255}x.putImageData(d,0,0);document.getElementById("modalBody").innerHTML+=`<div class="preview"><img style="max-width:100%" src="${c.toDataURL('image/png')}"></div><div class="actions"><button class="btn" onclick="window.print()">🖨️ Imprimir</button></div>`};im.src=e.target.result};r.readAsDataURL(f)}
+      <div class="checkbox-group">
+        <input type="checkbox" id="checkPrint" onchange="calcTotal()">
+        <label for="checkPrint">Quero receber impresso via correio (+ R$ 35,00)</label>
+      </div>
 
-function wordsearch(){form("🔎 Caça-Palavras",area("words","Palavras","ESCOLA\nAMIGO\nLIVRO\nFUTURO","full")+field("size","Tamanho da grade","12")+`<div class="full"><button class="btn" onclick="makeWordsearch()">Gerar</button></div>`)}
-function makeWordsearch(){let words=words.value.toUpperCase().split(/\n|,/).map(x=>x.trim()).filter(Boolean).slice(0,12),n=Math.max(8,Math.min(20,parseInt(size.value)||12)),g=Array.from({length:n},()=>Array(n).fill(""));let dirs=[[1,0],[0,1],[1,1],[-1,1]];for(let w of words){let placed=false;for(let z=0;z<200&&!placed;z++){let d=dirs[Math.floor(Math.random()*dirs.length)],r=Math.floor(Math.random()*n),c=Math.floor(Math.random()*n),rr=r+d[1]*(w.length-1),cc=c+d[0]*(w.length-1);if(rr>=0&&rr<n&&cc>=0&&cc<n){let ok=true;for(let k=0;k<w.length;k++){let q=g[r+d[1]*k][c+d[0]*k];if(q&&q!==w[k])ok=false}if(ok){for(let k=0;k<w.length;k++)g[r+d[1]*k][c+d[0]*k]=w[k];placed=true}}}}let abc="ABCDEFGHIJKLMNOPQRSTUVWXYZ",table=g.map(row=>row.map(c=>c||abc[Math.floor(Math.random()*26)]));let html=`<div class="preview"><h2>CAÇA-PALAVRAS</h2><table class="lines" style="max-width:600px;margin:auto;text-align:center;font-size:20px">`+table.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")+`</table><h3>Encontre:</h3><p>${words.join(" • ")}</p></div>`;document.getElementById("modalBody").innerHTML+=html+`<div class="actions"><button class="btn" onclick="window.print()">🖨️ Imprimir</button></div>`}
+      <div class="checkbox-group">
+        <input type="checkbox" id="checkEdit" onchange="calcTotal()">
+        <label for="checkEdit">Solicitar serviço de edição/ajuste de arte (+ R$ 20,00)</label>
+      </div>
 
-function crossword(){form("🧩 Cruzadinha",area("cw","Palavras (uma por linha)","CASA\nESCOLA\nAMOR\nLIVRO","full")+`<div class="full notice">Modelo automático simples: as palavras são organizadas em blocos para você preencher.</div><div class="full"><button class="btn" onclick="makeCrossword()">Gerar</button></div>`)}
-function makeCrossword(){let ws=cw.value.toUpperCase().split(/\n|,/).map(x=>x.trim()).filter(Boolean);let html=`<div class="preview"><h2>CRUZADINHA</h2>${ws.map((w,i)=>`<p>${i+1}. ${"□ ".repeat(w.length)} <small>(${w.length} letras)</small></p>`).join("")}</div>`;document.getElementById("modalBody").innerHTML+=html+`<div class="actions"><button class="btn" onclick="window.print()">🖨️ Imprimir</button></div>`}
+      <div style="margin-top: 1.5rem; font-size: 1.2rem; font-weight: bold;">
+        Valor Estimado: R$ <span id="totalValue">0,00</span>
+      </div>
 
-function attendance(){form("✍️ Lista de Presença",field("event","Evento / reunião","Nome do evento","full")+field("date","Data","23/08/2026")+field("place","Local","Local")+`<div class="full"><button class="btn" onclick="makeAttendance()">Gerar lista</button></div>`)}
-function makeAttendance(){let rows=Array.from({length:20},(_,i)=>`<tr><td>${i+1}</td><td style="height:32px"></td><td></td><td></td></tr>`).join("");document.getElementById("modalBody").innerHTML+=`<div class="preview"><div class="a4"><h2 style="text-align:center">${event.value||"LISTA DE PRESENÇA"}</h2><p>Data: ${date.value||""} &nbsp; Local: ${place.value||""}</p><table class="lines"><tr><th>#</th><th>Nome</th><th>RG</th><th>Assinatura</th></tr>${rows}</table></div></div><div class="actions"><button class="btn" onclick="window.print()">🖨️ Imprimir</button></div>`}
+      <button class="btn btn-whatsapp" style="margin-top: 1rem; width: 100%; font-size: 1rem;" onclick="sendToWhatsApp()">
+        📲 Gerar e Enviar Pedido via WhatsApp
+      </button>
+    </div>
+  </main>
 
-function essay(){form("📝 Folha de Redação",field("essayTitle","Título","Redação","full")+field("candidate","Nome","Nome do candidato")+field("theme","Tema","Tema da redação")+`<div class="full"><button class="btn" onclick="makeEssay()">Gerar folha</button></div>`)}
-function makeEssay(){let rows=Array.from({length:30},(_,i)=>`<div style="border-bottom:1px solid #777;height:29px"><span style="font-size:10px;color:#555">${i+1}</span></div>`).join("");document.getElementById("modalBody").innerHTML+=`<div class="preview"><div class="a4"><h2 style="text-align:center">${essayTitle.value||"REDAÇÃO"}</h2><p>${candidate.value||"Nome:"}</p><p>${theme.value||"Tema:"}</p>${rows}</div></div><div class="actions"><button class="btn" onclick="window.print()">🖨️ Imprimir</button></div>`}
+  <script>
+    // Carrossel de Publicidade Automático
+    let currentSlide = 0;
+    const track = document.getElementById('carouselTrack');
+    const totalSlides = 4;
 
-function games(){let arr=["Duas verdades e uma mentira","Desafio do desenho","Mímica relâmpago","Quiz de 5 perguntas","Bingo de palavras","Quem sou eu?"];let g=arr[Math.floor(Math.random()*arr.length)];openModal(`<h2>🎲 Dinâmica rápida</h2><div class="notice" style="font-size:24px">${g}</div><p>Gere novamente até encontrar uma atividade que combine com seu grupo.</p><div class="actions"><button class="btn" onclick="games()">🎲 Outra</button><button class="btn secondary" onclick="closeModal()">Fechar</button></div>`)}
+    setInterval(() => {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      track.style.transform = `translateX(-${currentSlide * 25}%)`;
+    }, 4000);
 
-function menu(){form("🍔 Cardápio Impresso",field("menuName","Nome do estabelecimento","Lanchonete do Bairro","full")+area("menuItems","Itens e preços","X-Burger — R$ 20\nX-Salada — R$ 22\nBatata — R$ 10","full")+field("whats","WhatsApp (com DDI)","5541999999999")+`<div class="full"><button class="btn" onclick="makeMenu()">Gerar cardápio</button></div>`)}
-function makeMenu(){let qr=`https://wa.me/${(whats.value||"").replace(/\D/g,"")}`;let rows=(menuItems.value||"").split("\n").filter(Boolean).map(x=>{let p=x.split("—");return `<tr><td>${p[0]}</td><td style="text-align:right"><b>${p[1]||""}</b></td></tr>`}).join("");document.getElementById("modalBody").innerHTML+=`<div class="preview"><div class="a4"><h1 style="text-align:center">${menuName.value||"CARDÁPIO"}</h1><table class="lines">${rows}</table><p style="text-align:center;margin-top:40px">📲 Peça pelo WhatsApp: ${qr}</p></div></div><div class="actions"><button class="btn" onclick="window.print()">🖨️ Imprimir</button></div>`}
+    // Filtro de Busca dos Geradores
+    function filterTools() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.card');
 
-function qr(){form("▣ QR Code com Logo",area("qrtext","Conteúdo do QR Code","Cole aqui o PIX copia e cola, Wi-Fi, link do cardápio ou texto.","full")+`<div class="full"><label>Logo opcional</label><input id="qrlogo" type="file" accept="image/*"></div><div class="full"><button class="btn" onclick="makeQR()">Gerar QR Code</button></div>`)}
-function makeQR(){document.getElementById("modalBody").innerHTML+=`<div class="preview" style="text-align:center"><div id="qrcode"></div><p>PrintExpress • QR Code</p></div><div class="actions"><button class="btn" onclick="window.print()">🖨️ Imprimir</button></div>`;new QRCode(document.getElementById("qrcode"),{text:qrtext.value||"PrintExpress",width:300,height:300,colorDark:"#111",colorLight:"#fff"})}
+      cards.forEach(card => {
+        const title = card.getAttribute('data-title');
+        if (title.includes(query)) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
 
-function pdf(){openModal(`<h2>📑 Separar / Combinar PDF</h2><p class="notice">Selecione um ou mais PDFs. A ferramenta roda localmente no navegador.</p><div class="form"><div class="full"><label>Arquivos PDF</label><input id="pdfFiles" type="file" accept="application/pdf" multiple></div><div class="full"><label>Páginas para manter no primeiro arquivo (ex.: 3-5,12)</label><input id="pages" placeholder="Deixe vazio para todas"></div></div><div class="actions"><button class="btn" onclick="combinePDF()">Juntar PDFs</button><button class="btn secondary" onclick="splitPDF()">Separar páginas</button></div><p id="pdfmsg"></p>`)}
-async function combinePDF(){let fs=[...pdfFiles.files];if(!fs.length)return;let out=await PDFLib.PDFDocument.create();for(let f of fs){let src=await PDFLib.PDFDocument.load(await f.arrayBuffer());let pages=await out.copyPages(src,src.getPageIndices());pages.forEach(p=>out.addPage(p))}downloadBlob(await out.save(),"print-express-combinado.pdf","application/pdf")}
-async function splitPDF(){let f=pdfFiles.files[0];if(!f)return;let src=await PDFLib.PDFDocument.load(await f.arrayBuffer()),out=await PDFLib.PDFDocument.create(),wanted=parsePages(pages.value,src.getPageCount());let ps=await out.copyPages(src,wanted.map(x=>x-1));ps.forEach(p=>out.addPage(p));downloadBlob(await out.save(),"print-express-paginas.pdf","application/pdf")}
-function parsePages(s,max){if(!s)return Array.from({length:max},(_,i)=>i+1);let a=[];s.split(",").forEach(v=>{let p=v.trim().split("-"),x=parseInt(p[0]),y=parseInt(p[1]||p[0]);if(x)for(let i=x;i<=Math.min(y,max);i++)if(i>=1)a.push(i)});return [...new Set(a)]}
-function downloadBlob(data,name,type){let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+    // Cálculo do Pedido de Impressão / Edição
+    function calcTotal() {
+      let total = 0;
+      if(document.getElementById('checkPrint').checked) total += 35.00;
+      if(document.getElementById('checkEdit').checked) total += 20.00;
+      
+      document.getElementById('totalValue').innerText = total.toFixed(2).replace('.', ',');
+    }
 
-function invite(){form("🎉 Gerador de Convites",field("ivTitle","Evento","Meu aniversário","full")+field("ivName","Nome","Welington")+field("ivDate","Data","30/08/2026")+field("ivTime","Horário","15h")+field("ivPlace","Local","Minha casa")+area("ivExtra","Mensagem","Venha comemorar comigo!","full")+`<div class="full"><button class="btn" onclick="makeInvite()">Gerar convite</button></div>`)}
-function makeInvite(){document.getElementById("modalBody").innerHTML+=`<div class="preview"><div class="a4" style="display:flex;align-items:center;justify-content:center;text-align:center;background:linear-gradient(135deg,#fff,#eafaf7)"><div><div style="font-size:70px">🎉</div><h1>${ivTitle.value||"VOCÊ ESTÁ CONVIDADO!"}</h1><h2>${ivName.value||""}</h2><p>${ivDate.value||""} • ${ivTime.value||""}</p><p>${ivPlace.value||""}</p><p>${ivExtra.value||""}</p></div></div></div><div class="actions"><button class="btn" onclick="window.print()">🖨️ Imprimir</button></div>`}
+    // Integração com WhatsApp
+    function sendToWhatsApp() {
+      const name = document.getElementById('cliName').value || 'Não informado';
+      const doc = document.getElementById('cliDoc').value || 'Não informado';
+      const desc = document.getElementById('docDesc').value || 'Geração de Documento';
+      const print = document.getElementById('checkPrint').checked ? 'SIM' : 'NÃO';
+      const edit = document.getElementById('checkEdit').checked ? 'SIM' : 'NÃO';
+      const total = document.getElementById('totalValue').innerText;
 
-function card(){form("💌 Criador de Cartões",field("cardOcc","Ocasião","Aniversário")+field("cardTo","Para","Uma pessoa especial")+area("cardMsg","Mensagem","Escreva sua mensagem...","full")+`<div class="full"><button class="btn" onclick="makeCard()">Gerar cartão</button></div>`)}
-function makeCard(){document.getElementById("modalBody").innerHTML+=`<div class="preview"><div class="a4" style="display:flex;align-items:center;justify-content:center;text-align:center"><div><div style="font-size:64px">💌</div><h1>${cardOcc.value||"Um cartão para você"}</h1><h2>Para: ${cardTo.value||""}</h2><p style="font-size:22px">${(cardMsg.value||"Com carinho!").replace(/\n/g,"<br>")}</p></div></div></div><div class="actions"><button class="btn" onclick="window.print()">🖨️ Imprimir</button></div>`}
+      const phoneNumber = "5500000000000"; // Substituir pelo seu número de WhatsApp com DDD
 
-function timer(){openModal(`<h2>⏱️ Cronômetro</h2><div style="font-size:70px;text-align:center" id="clock">00:00:00</div><div class="actions" style="justify-content:center"><button class="btn" onclick="startTimer()">Iniciar</button><button class="btn secondary" onclick="stopTimer()">Parar</button><button class="btn secondary" onclick="resetTimer()">Zerar</button></div>`)}
-let timerId=0,seconds=0;function startTimer(){clearInterval(timerId);timerId=setInterval(()=>{seconds++;document.getElementById("clock").textContent=new Date(seconds*1000).toISOString().substring(11,19)},1000)}function stopTimer(){clearInterval(timerId)}function resetTimer(){stopTimer();seconds=0;document.getElementById("clock").textContent="00:00:00"}
+      const message = `*NOVO PEDIDO DE IMPRESSÃO / GERADOR*%0A%0A` +
+        `*Cliente:* ${name}%0A` +
+        `*CPF/CNPJ:* ${doc}%0A` +
+        `*Documento:* ${desc}%0A` +
+        `*Deseja Impresso:* ${print}%0A` +
+        `*Serviço de Edição Extra:* ${edit}%0A` +
+        `*Valor Total Estimado:* R$ ${total}%0A%0A` +
+        `_Aguardando confirmação de layout/impressão._`;
 
-function grades(){form("🧮 Calculadora de Notas",field("n1","Nota 1","6,0")+field("n2","Nota 2","6,0")+field("n3","Nota 3","6,0")+field("n4","Nota 4","6,0")+`<div class="full"><button class="btn" onclick="calcGrades()">Calcular média</button></div>`)}
-function calcGrades(){let a=[n1,n2,n3,n4].map(x=>parseFloat(x.value.replace(",","."))||0),m=a.reduce((x,y)=>x+y,0)/4;document.getElementById("modalBody").innerHTML+=`<div class="notice"><b>Média: ${m.toFixed(2).replace(".",",")}</b><br>${m>=6?"Você atingiu 6,0 ou mais.":"Ainda falta para 6,0."}</div>`}
-
-function refs(){form("📚 Gerador de Referências",field("author","Autor","SOBRENOME, Nome","full")+field("rtitle","Título","Título da obra","full")+field("year","Ano","2026")+field("publisher","Editora / site","Editora")+field("url","URL","https://...","full")+`<div class="full"><button class="btn" onclick="makeRef()">Gerar referência</button></div>`)}
-function makeRef(){let r=`${author.value||"AUTOR"}. <b>${rtitle.value||"Título"}</b>. ${publisher.value||""}, ${year.value||""}. ${url.value||""}`;document.getElementById("modalBody").innerHTML+=`<div class="notice">${r}</div>`}
-
-function study(){form("📖 Planejamento de Estudos",field("stWeek","Semana","25 a 29/08","full")+area("stItems","Matérias e tarefas","Matemática — exercícios\nPortuguês — leitura\nHistória — revisão","full")+`<div class="full"><button class="btn" onclick="makeStudy()">Gerar plano</button></div>`)}
-function makeStudy(){let rows=(stItems.value||"").split("\n").filter(Boolean).map((x,i)=>`<tr><td>${["Seg","Ter","Qua","Qui","Sex"][i%5]}</td><td>${x}</td><td>☐</td></tr>`).join("");document.getElementById("modalBody").innerHTML+=`<div class="preview"><div class="a4"><h1>PLANO DE ESTUDOS</h1><p>${stWeek.value||""}</p><table class="lines"><tr><th>Dia</th><th>Matéria / tarefa</th><th>Feito</th></tr>${rows}</table></div></div><div class="actions"><button class="btn" onclick="window.print()">🖨️ Imprimir</button></div>`}
-
-function weekly(){planner("📅 Planner Semanal","Segunda\nTerça\nQuarta\nQuinta\nSexta\nSábado\nDomingo")}
-function tasks(){planner("☑️ Lista de Tarefas","Tarefa 1\nTarefa 2\nTarefa 3\nTarefa 4\nTarefa 5\nTarefa 6\nTarefa 7\nTarefa 8")}
-function planner(t,title){let rows=title.split("\n").map(x=>`<tr><th>${x}</th><td style="height:70px"></td><td style="width:50px">☐</td></tr>`).join("");openModal(`<h2>${t}</h2><div class="preview"><div class="a4"><h1 style="text-align:center">${t}</h1><table class="lines"><tr><th>Período</th><th>Notas / tarefas</th><th>OK</th></tr>${rows}</table></div></div><div class="actions"><button class="btn" onclick="window.print()">🖨️ Imprimir</button></div>`)}
-
-function monthly(){let now=new Date(),y=now.getFullYear(),m=now.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),cells=Array(first).fill("").concat(Array.from({length:days},(_,i)=>i+1));while(cells.length%7)cells.push("");let rows="";for(let i=0;i<cells.length;i+=7)rows+=`<tr>${cells.slice(i,i+7).map(d=>`<td style="height:100px;vertical-align:top">${d}</td>`).join("")}</tr>`;openModal(`<h2>🗓️ Planner Mensal</h2><div class="preview"><div class="a4"><h1 style="text-align:center">${now.toLocaleString("pt-BR",{month:"long",year:"numeric"})}</h1><table class="lines"><tr>${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"].map(x=>`<th>${x}</th>`).join("")}</tr>${rows}</table></div></div><div class="actions"><button class="btn" onclick="window.print()">🖨️ Imprimir</button></div>`)}
-
-function habits(){let cols=Array.from({length:31},(_,i)=>`<th>${i+1}</th>`).join(""),rows=["Hábito 1","Hábito 2","Hábito 3","Hábito 4","Hábito 5"].map(h=>`<tr><th>${h}</th>${Array.from({length:31},()=>`<td style="width:24px;height:28px"></td>`).join("")}</tr>`).join("");openModal(`<h2>📈 Controle de Hábitos</h2><div class="preview" style="overflow:auto"><div class="a4"><h1>CONTROLE DE HÁBITOS</h1><table class="lines" style="font-size:10px"><tr><th>Hábito</th>${cols}</tr>${rows}</table></div></div><div class="actions"><button class="btn" onclick="window.print()">🖨️ Imprimir</button></div>`)}
-
-/* Carrossel */
-let adIndex=0;const track=document.getElementById("adtrack"),dots=document.getElementById("dots");for(let i=0;i<4;i++){let d=document.createElement("i");if(!i)d.className="on";dots.appendChild(d)}setInterval(()=>{adIndex=(adIndex+1)%4;track.style.transform=`translateX(-${adIndex*100}%)`;[...dots.children].forEach((d,i)=>d.className=i===adIndex?"on":"")},4500);
-
-/* Se Firebase ainda não foi configurado, o site continua visualmente funcional,
-   mas exige login para consumir créditos. */
-updateCredits();
-</script>
+      window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+    }
+  </script>
 </body>
 </html>
