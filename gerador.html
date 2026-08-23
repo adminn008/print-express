@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Utilitários Express Pro – Suíte Digital Completa</title>
 
-    <!-- Design System: Google Fonts -->
+    <!-- Design System: Google Fonts & Lucide Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     
     <!-- Firebase SDK (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -24,189 +25,228 @@
 
     <style>
         :root {
-            --bg-body: #090d16;
-            --panel-bg: #111827;
-            --card-bg: #1f2937;
+            --bg-body: #07090e;
+            --panel-bg: rgba(18, 24, 38, 0.75);
+            --card-bg: rgba(25, 34, 53, 0.6);
+            --card-hover: rgba(35, 48, 74, 0.8);
             --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.35);
             --primary-hover: #4f46e5;
             --accent-gold: #f59e0b;
-            --text-main: #f9fafb;
-            --text-muted: #9ca3af;
+            --accent-gold-glow: rgba(245, 158, 11, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
             --border-line: rgba(255, 255, 255, 0.08);
-            --border-glow: rgba(99, 102, 241, 0.3);
-            --input-bg: #1f2937;
+            --border-glow: rgba(99, 102, 241, 0.4);
+            --input-bg: rgba(11, 15, 25, 0.8);
             --input-border: rgba(255, 255, 255, 0.12);
-            --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-            --ad-bg: linear-gradient(135deg, #1e1b4b 0%, #311b92 100%);
+            --shadow-card: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+            --glass-blur: blur(16px);
         }
 
         [data-theme="light"] {
-            --bg-body: #f3f4f6;
-            --panel-bg: #ffffff;
-            --card-bg: #f9fafb;
+            --bg-body: #f8fafc;
+            --panel-bg: rgba(255, 255, 255, 0.85);
+            --card-bg: #ffffff;
+            --card-hover: #f1f5f9;
             --primary: #4f46e5;
+            --primary-glow: rgba(79, 70, 229, 0.15);
             --primary-hover: #4338ca;
             --accent-gold: #d97706;
-            --text-main: #111827;
-            --text-muted: #6b7280;
+            --accent-gold-glow: rgba(217, 119, 6, 0.15);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
             --border-line: rgba(0, 0, 0, 0.08);
             --border-glow: rgba(79, 70, 229, 0.25);
             --input-bg: #ffffff;
-            --input-border: #d1d5db;
-            --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-            --ad-bg: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            --input-border: #cbd5e1;
+            --shadow-card: 0 20px 35px -10px rgba(0, 0, 0, 0.05);
+            --glass-blur: blur(12px);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.2s, border-color 0.2s; }
-        body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding-bottom: 60px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding-bottom: 60px; overflow-x: hidden; }
+
+        /* Background Glow FX */
+        body::before {
+            content: ''; position: fixed; top: -10%; left: 20%; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1; pointer-events: none;
+        }
 
         .top-nav {
             position: sticky; top: 0; z-index: 100; background: var(--panel-bg);
-            border-bottom: 1px solid var(--border-line); padding: 14px 24px;
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--border-line); padding: 14px 32px;
             display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-card);
         }
 
-        .brand { font-weight: 800; font-size: 1.25rem; color: var(--text-main); }
+        .brand { font-weight: 800; font-size: 1.35rem; color: var(--text-main); letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
         .brand span { color: var(--primary); }
-        .nav-actions { display: flex; align-items: center; gap: 12px; }
+        .nav-actions { display: flex; align-items: center; gap: 14px; }
 
         .credit-widget {
-            background: rgba(99, 102, 241, 0.12); border: 1px solid var(--border-glow);
-            padding: 7px 16px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; color: var(--primary);
-            cursor: pointer;
+            background: rgba(99, 102, 241, 0.1); border: 1px solid var(--border-glow);
+            padding: 8px 18px; border-radius: 40px; font-size: 0.85rem; font-weight: 700; color: var(--primary);
+            cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 0 15px var(--primary-glow);
         }
-        .credit-widget.unlimited { background: rgba(245, 158, 11, 0.15); border-color: var(--accent-gold); color: var(--accent-gold); }
+        .credit-widget.unlimited { background: rgba(245, 158, 11, 0.12); border-color: var(--accent-gold); color: var(--accent-gold); box-shadow: 0 0 15px var(--accent-gold-glow); }
 
         .btn {
-            background: var(--primary); color: #fff; border: none; padding: 10px 20px;
+            background: var(--primary); color: #fff; border: none; padding: 10px 22px;
             border-radius: 12px; font-weight: 600; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 4px 14px var(--primary-glow);
         }
-        .btn:hover { background: var(--primary-hover); }
-        .btn-gold { background: var(--accent-gold); color: #fff; font-weight: 700; }
-        .btn-gold:hover { background: #d97706; }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .btn-gold { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #fff; font-weight: 700; box-shadow: 0 4px 14px var(--accent-gold-glow); }
+        .btn-gold:hover { filter: brightness(1.1); transform: translateY(-2px); }
         .btn-outline { background: transparent; border: 1px solid var(--border-line); color: var(--text-main); }
+        .btn-outline:hover { background: var(--card-hover); border-color: var(--text-muted); }
 
         .theme-toggle {
             background: var(--card-bg); border: 1px solid var(--border-line);
-            border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.1rem; color: var(--text-main);
+            border-radius: 12px; width: 42px; height: 42px; cursor: pointer; font-size: 1.1rem; color: var(--text-main);
+            display: flex; align-items: center; justify-content: center;
         }
 
-        .main-layout { max-width: 1320px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 280px 1fr; gap: 30px; }
-        @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
+        .main-layout { max-width: 1440px; margin: 30px auto; padding: 0 24px; display: grid; grid-template-columns: 300px 1fr; gap: 32px; }
+        @media (max-width: 1024px) { .main-layout { grid-template-columns: 1fr; } }
 
         .carousel-ad {
-            background: var(--ad-bg); border: 1px solid var(--border-glow);
-            border-radius: 20px; padding: 24px; margin-bottom: 25px; position: relative; overflow: hidden;
+            background: linear-gradient(135deg, rgba(30, 27, 75, 0.6) 0%, rgba(49, 27, 146, 0.6) 100%);
+            border: 1px solid var(--border-glow); backdrop-filter: var(--glass-blur);
+            border-radius: 24px; padding: 28px; margin-bottom: 32px; position: relative; overflow: hidden;
+            box-shadow: var(--shadow-card);
         }
-        .carousel-slides { display: flex; transition: transform 0.5s ease-in-out; }
+        .carousel-slides { display: flex; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         .carousel-slide { min-width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-        .slide-content h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; }
-        .slide-content p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px; }
-        .carousel-dots { display: flex; justify-content: center; gap: 8px; margin-top: 15px; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border-line); cursor: pointer; }
+        .slide-content h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.5px; }
+        .slide-content p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; }
+        .carousel-dots { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-line); cursor: pointer; }
         .dot.active { background: var(--primary); width: 24px; border-radius: 10px; }
 
         .sidebar-card {
-            background: var(--panel-bg); border: 1px solid var(--border-line); border-radius: 20px;
-            padding: 24px; position: sticky; top: 90px; height: fit-content; display: flex; flex-direction: column; gap: 20px;
+            background: var(--panel-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-line); border-radius: 24px;
+            padding: 28px; position: sticky; top: 100px; height: fit-content; display: flex; flex-direction: column; gap: 24px;
+            box-shadow: var(--shadow-card);
         }
 
-        .user-box { display: flex; align-items: center; gap: 14px; }
+        .user-box { display: flex; align-items: center; gap: 16px; }
         .avatar-large {
-            width: 52px; height: 52px; border-radius: 50%; background: var(--primary);
-            display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; color: #fff;
+            width: 56px; height: 56px; border-radius: 18px; background: linear-gradient(135deg, #6366f1, #4f46e5);
+            display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 800; color: #fff;
+            box-shadow: 0 8px 20px var(--primary-glow);
         }
 
-        .progress-bar-bg { width: 100%; background: var(--card-bg); height: 10px; border-radius: 10px; overflow: hidden; margin-top: 8px; border: 1px solid var(--border-line); }
-        .progress-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease; }
+        .progress-bar-bg { width: 100%; background: var(--input-bg); height: 10px; border-radius: 10px; overflow: hidden; margin-top: 10px; border: 1px solid var(--border-line); }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #818cf8); width: 0%; transition: width 0.4s ease; }
 
-        .history-list { list-style: none; font-size: 0.82rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .history-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-line); padding-bottom: 6px; }
+        .history-list { list-style: none; font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .history-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-line); padding-bottom: 8px; }
 
-        .tools-header { margin-bottom: 25px; }
-        .tools-header h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; }
-        .tools-header p { color: var(--text-muted); font-size: 0.95rem; }
+        .tools-header { margin-bottom: 28px; display: flex; flex-direction: column; gap: 16px; }
+        .tools-header-top { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; }
+        .tools-header h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.8px; }
+        .tools-header p { color: var(--text-muted); font-size: 1rem; }
 
-        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        /* Categorias em Tabs */
+        .category-tabs { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+        .category-tabs::-webkit-scrollbar { display: none; }
+        .cat-tab {
+            background: var(--card-bg); border: 1px solid var(--border-line); color: var(--text-muted);
+            padding: 8px 18px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap;
+        }
+        .cat-tab.active, .cat-tab:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; }
 
         .tool-card {
-            background: var(--panel-bg); border: 1px solid var(--border-line); border-radius: 20px; padding: 22px;
-            display: flex; flex-direction: column; gap: 10px; transition: all 0.2s ease; cursor: pointer;
+            background: var(--card-bg); backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-line); border-radius: 20px; padding: 22px;
+            display: flex; flex-direction: column; gap: 12px; transition: all 0.25s ease; cursor: pointer; position: relative; overflow: hidden;
         }
-        .tool-card:hover { border-color: var(--border-glow); transform: translateY(-4px); }
-
-        .tool-title { font-size: 0.95rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
-        .tool-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; background: rgba(99, 102, 241, 0.12); color: var(--primary); font-weight: 700; }
-        .tool-desc { font-size: 0.82rem; color: var(--text-muted); }
+        .tool-card:hover { border-color: var(--border-glow); transform: translateY(-4px); background: var(--card-hover); box-shadow: var(--shadow-card); }
+        .tool-icon-wrapper {
+            width: 44px; height: 44px; border-radius: 14px; background: rgba(99, 102, 241, 0.1);
+            display: flex; align-items: center; justify-content: center; color: var(--primary); margin-bottom: 4px;
+        }
+        .tool-title { font-size: 1rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .tool-badge { font-size: 0.7rem; padding: 4px 10px; border-radius: 20px; background: rgba(99, 102, 241, 0.12); color: var(--primary); font-weight: 700; }
+        .tool-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
 
         .input-box {
             width: 100%; background: var(--input-bg); border: 1px solid var(--input-border);
-            color: var(--text-main); padding: 12px 14px; border-radius: 12px; font-size: 0.88rem; outline: none; margin-bottom: 10px;
+            color: var(--text-main); padding: 14px 16px; border-radius: 14px; font-size: 0.9rem; outline: none; margin-bottom: 12px;
         }
-        .input-box:focus { border-color: var(--primary); }
-        textarea.input-box { resize: vertical; min-height: 90px; }
+        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+        textarea.input-box { resize: vertical; min-height: 100px; }
 
-        /* FULLSCREEN MODAL */
+        /* FULLSCREEN MODAL - ESTILO A4 PROFISSIONAL */
         .fullscreen-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: var(--bg-body); z-index: 2000; flex-direction: column; overflow-y: auto;
         }
         .fullscreen-header {
-            background: var(--panel-bg); border-bottom: 1px solid var(--border-line);
-            padding: 16px 30px; display: flex; justify-content: space-between; align-items: center;
+            background: var(--panel-bg); backdrop-filter: var(--glass-blur); border-bottom: 1px solid var(--border-line);
+            padding: 18px 36px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10;
         }
-        .close-fullscreen { background: none; border: none; color: var(--text-muted); font-size: 1.8rem; cursor: pointer; }
+        .close-fullscreen { background: var(--card-bg); border: 1px solid var(--border-line); color: var(--text-muted); width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .close-fullscreen:hover { color: var(--text-main); border-color: var(--text-muted); }
 
         .fullscreen-body {
-            flex: 1; max-width: 1400px; width: 100%; margin: 0 auto; padding: 30px;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+            flex: 1; max-width: 1500px; width: 100%; margin: 0 auto; padding: 36px;
+            display: grid; grid-template-columns: 460px 1fr; gap: 36px;
         }
-        @media (max-width: 850px) { .fullscreen-body { grid-template-columns: 1fr; } }
+        @media (max-width: 1100px) { .fullscreen-body { grid-template-columns: 1fr; } }
 
-        .form-pane { background: var(--panel-bg); border: 1px solid var(--border-line); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 10px; }
+        .form-pane { background: var(--panel-bg); border: 1px solid var(--border-line); border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 14px; height: fit-content; }
         .preview-pane {
-            background: var(--panel-bg); border: 1px solid var(--border-line);
-            border-radius: 20px; padding: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-line);
+            border-radius: 24px; padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 700px;
         }
 
+        /* SIMULAÇÃO DE FOLHA A4 EDITÁVEL */
         .preview-paper {
-            background: #ffffff; color: #111827; width: 100%; max-width: 420px; min-height: 500px;
-            border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; word-break: break-word;
+            background: #ffffff; color: #0f172a; width: 100%; max-width: 595px; min-height: 842px; /* Proporção A4 */
+            border-radius: 4px; padding: 48px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex; flex-direction: column; justify-content: space-between; position: relative; font-size: 0.9rem;
         }
-        .preview-paper h3 { color: #1e1b4b; margin-bottom: 10px; font-size: 1.1rem; text-transform: uppercase; border-bottom: 2px solid #6366f1; padding-bottom: 5px; width: 100%; }
-        .preview-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; gap: 12px; font-size: 0.85rem; color: #374151; text-align: left; }
+        .preview-paper-header { border-bottom: 2px solid #6366f1; padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+        .preview-paper-header h3 { color: #1e1b4b; font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; }
+        .preview-content { flex: 1; display: flex; flex-direction: column; gap: 16px; color: #334155; line-height: 1.6; }
 
-        /* MODAIS MENORES */
+        /* MODAIS SECUNDÁRIOS */
         .modal-bg {
             display: none; position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); z-index: 3000;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(12px); z-index: 3000;
             justify-content: center; align-items: center; padding: 20px;
         }
         .modal-card {
-            background: var(--panel-bg); border: 1px solid var(--border-glow); border-radius: 24px;
-            width: 100%; max-width: 440px; padding: 32px; position: relative; color: var(--text-main);
+            background: var(--panel-bg); border: 1px solid var(--border-glow); border-radius: 28px;
+            width: 100%; max-width: 460px; padding: 36px; position: relative; color: var(--text-main); box-shadow: var(--shadow-card);
         }
-        .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer; }
-        .tab-group { display: flex; border-bottom: 1px solid var(--border-line); margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 10px; background: none; border: none; color: var(--text-muted); font-weight: 600; cursor: pointer; }
+        .modal-close { position: absolute; top: 22px; right: 22px; background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; }
+        .tab-group { display: flex; border-bottom: 1px solid var(--border-line); margin-bottom: 24px; }
+        .tab-btn { flex: 1; padding: 12px; background: none; border: none; color: var(--text-muted); font-weight: 600; cursor: pointer; }
         .tab-btn.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
-        .pix-container { background: var(--card-bg); border: 1px dashed var(--accent-gold); border-radius: 16px; padding: 18px; text-align: center; margin: 15px 0; }
-        .pix-container img { width: 120px; height: 120px; border-radius: 8px; background: #fff; padding: 4px; margin: 8px 0; }
+        .pix-container { background: var(--input-bg); border: 1px dashed var(--accent-gold); border-radius: 20px; padding: 22px; text-align: center; margin: 18px 0; }
+        .pix-container img { width: 140px; height: 140px; border-radius: 12px; background: #fff; padding: 6px; margin: 12px 0; }
     </style>
 </head>
 <body>
 
     <!-- TOP NAVIGATION -->
     <nav class="top-nav">
-        <div class="brand">⚡ Utilitários<span>Express</span></div>
+        <div class="brand"><i data-lucide="zap"></i> Utilitários<span>Express Pro</span></div>
         <div class="nav-actions">
-            <button class="theme-toggle" onclick="toggleTheme()" id="btnTheme">🌙</button>
+            <button class="theme-toggle" onclick="toggleTheme()" id="btnTheme"><i data-lucide="moon"></i></button>
             <div class="credit-widget" onclick="abrirModalRecarga()" id="navCreditBox" style="display: none;">
-                ⚡ <span id="navCreditVal">0</span>/3 Créditos
+                <i data-lucide="zap"></i> <span id="navCreditVal">0</span>/3 Créditos
             </div>
-            <button id="btnAuthNav" class="btn" onclick="abrirModalAuth()">Entrar / Cadastrar</button>
-            <button id="btnLogoutNav" class="btn btn-outline" onclick="fazerLogout()" style="display: none;">Sair</button>
+            <button id="btnAuthNav" class="btn" onclick="abrirModalAuth()"><i data-lucide="log-in"></i> Entrar / Cadastrar</button>
+            <button id="btnLogoutNav" class="btn btn-outline" onclick="fazerLogout()" style="display: none;"><i data-lucide="log-out"></i> Sair</button>
         </div>
     </nav>
 
@@ -216,26 +256,26 @@
             <div class="user-box">
                 <div class="avatar-large" id="userAvatar">?</div>
                 <div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">Conta Ativa</div>
-                    <div style="font-weight: 700; font-size: 0.95rem;" id="userName">Visitante</div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Conta Ativa</div>
+                    <div style="font-weight: 800; font-size: 1rem;" id="userName">Visitante</div>
                 </div>
             </div>
 
             <div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 700;">
                     <span>Créditos Diários</span>
                     <span id="sideCreditText">0 / 3</span>
                 </div>
                 <div class="progress-bar-bg">
                     <div class="progress-bar-fill" id="sideCreditBar"></div>
                 </div>
-                <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">Renovação automática a cada 24 horas.</p>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Renovação automática em 24h.</p>
             </div>
 
-            <button class="btn btn-gold" style="width: 100%;" onclick="abrirModalRecarga()">⚡ Créditos Ilimitados</button>
+            <button class="btn btn-gold" style="width: 100%;" onclick="abrirModalRecarga()"><i data-lucide="crown"></i> Acesso Ilimitado VIP</button>
 
             <div>
-                <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 8px;">Histórico Recente</div>
+                <div style="font-size: 0.9rem; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;"><i data-lucide="history" style="width: 16px;"></i> Histórico Recente</div>
                 <ul class="history-list" id="historyList">
                     <li class="history-item"><span>Nenhum uso registrado</span></li>
                 </ul>
@@ -248,23 +288,23 @@
                 <div class="carousel-slides" id="carouselSlides">
                     <div class="carousel-slide">
                         <div class="slide-content">
-                            <h3>🖨️ Print-Express Gráfica</h3>
-                            <p>Impressões expressas de alta qualidade, panfletos e cartões.</p>
-                            <a href="https://wa.me/558598530135?text=Ol%C3%A1,%20gostaria%20de%20um%20or%C3%A7amento" target="_blank" class="btn btn-gold">Pedir Impressão</a>
+                            <h3>🖨️ Print-Express Gráfica Pro</h3>
+                            <p>Impressões expressas de altíssima qualidade, panfletos e cartões corporativos.</p>
+                            <a href="https://wa.me/558598530135?text=Ol%C3%A1,%20gostaria%20de%20um%20or%C3%A7amento" target="_blank" class="btn btn-gold"><i data-lucide="printer"></i> Pedir Impressão</a>
                         </div>
                     </div>
                     <div class="carousel-slide">
                         <div class="slide-content">
                             <h3>📄 Encadernação & Plastificação</h3>
-                            <p>Proteja seus documentos e apostilas com acabamento rápido.</p>
-                            <a href="https://wa.me/558598530135?text=Ol%C3%A1,%20saber%20sobre%20encaderna%C3%A7%C3%A3o" target="_blank" class="btn btn-gold">Consultar Preços</a>
+                            <p>Proteja seus documentos oficiais e apostilas com acabamento premium.</p>
+                            <a href="https://wa.me/558598530135?text=Ol%C3%A1,%20saber%20sobre%20encaderna%C3%A7%C3%A3o" target="_blank" class="btn btn-gold"><i data-lucide="file-text"></i> Consultar Preços</a>
                         </div>
                     </div>
                     <div class="carousel-slide">
                         <div class="slide-content">
                             <h3>🎁 Brindes Personalizados</h3>
-                            <p>Canecas, adesivos e fardamentos para sua marca.</p>
-                            <a href="https://wa.me/558598530135?text=Ol%C3%A1,%20orcamento%20brindes" target="_blank" class="btn btn-gold">Solicitar Catálogo</a>
+                            <p>Canecas, adesivos vinílicos e fardamentos para consolidar sua marca.</p>
+                            <a href="https://wa.me/558598530135?text=Ol%C3%A1,%20orcamento%20brindes" target="_blank" class="btn btn-gold"><i data-lucide="gift"></i> Solicitar Catálogo</a>
                         </div>
                     </div>
                 </div>
@@ -276,77 +316,46 @@
             </div>
 
             <div class="tools-header">
-                <h1>Suíte de Produtividade Digital (12 Ferramentas)</h1>
-                <p>Acesse e utilize todas as ferramentas com visualização em tempo real.</p>
+                <div class="tools-header-top">
+                    <div>
+                        <h1>Suíte de Produtividade (33 Geradores)</h1>
+                        <p>Ferramentas profissionais para documentos, negócios e utilitários digitais.</p>
+                    </div>
+                </div>
+
+                <!-- CATEGORIAS -->
+                <div class="category-tabs">
+                    <button class="cat-tab active" onclick="filtrarCategoria('todas')">Todas (33)</button>
+                    <button class="cat-tab" onclick="filtrarCategoria('financeiro')">Financeiro (8)</button>
+                    <button class="cat-tab" onclick="filtrarCategoria('documentos')">Documentos & Jurídico (10)</button>
+                    <button class="cat-tab" onclick="filtrarCategoria('vendas')">Vendas & Marketing (8)</button>
+                    <button class="cat-tab" onclick="filtrarCategoria('pdf')">PDF & Imagens (7)</button>
+                </div>
             </div>
 
-            <!-- GRADE DAS 12 FERRAMENTAS -->
-            <div class="tools-grid">
-                <div class="tool-card" onclick="abrirFerramenta('qr')">
-                    <div class="tool-title">1. QR Code com Título <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Gere QR Code com título personalizado.</div>
-                </div>
-                <div class="tool-card" onclick="abrirFerramenta('recibo')">
-                    <div class="tool-title">2. Gerador de Recibo <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Emita recibos comerciais rapidamente.</div>
-                </div>
-                <div class="tool-card" onclick="abrirFerramenta('barcode')">
-                    <div class="tool-title">3. Código de Barras <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Gere códigos de barras nos formatos padrão.</div>
-                </div>
-                <div class="tool-card" onclick="abrirFerramenta('ocr')">
-                    <div class="tool-title">4. Extrator de Texto OCR <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Extraia texto de fotos e digitalizações.</div>
-                </div>
-                <div class="tool-card" onclick="abrirFerramenta('imgs2pdf')">
-                    <div class="tool-title">5. Imagens para PDF <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Junte várias fotos num único PDF.</div>
-                </div>
-                <div class="tool-card" onclick="abrirFerramenta('promissoria')">
-                    <div class="tool-title">6. Nota Promissória <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Crie promissórias válidas para impressão.</div>
-                </div>
-                <div class="tool-card" onclick="abrirFerramenta('orçamento')">
-                    <div class="tool-title">7. Gerador de Orçamento <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Monte propostas comerciais para clientes.</div>
-                </div>
-                <div class="tool-card" onclick="abrirFerramenta('contrato')">
-                    <div class="tool-title">8. Contrato Simples <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Elabore contratos básicos de prestação de serviço.</div>
-                </div>
-                <div class="tool-card" onclick="abrirFerramenta('declaracao')">
-                    <div class="tool-title">9. Declaração de Residência <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Gere comprovantes de residência simples.</div>
-                </div>
-                <div class="tool-card" onclick="abrirFerramenta('curriculo')">
-                    <div class="tool-title">10. Gerador de Currículo <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Crie currículos formatados em PDF.</div>
-                </div>
-                <div class="tool-card" onclick="abrirFerramenta('etiqueta')">
-                    <div class="tool-title">11. Etiqueta de Envio <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Gere etiquetas de remetente e destinatário.</div>
-                </div>
-                <div class="tool-card" onclick="abrirFerramenta('mesclar')">
-                    <div class="tool-title">12. Mesclar PDFs <span class="tool-badge">-1 Crédito</span></div>
-                    <div class="tool-desc">Junte múltiplos arquivos PDF em um só.</div>
-                </div>
-            </div>
+            <!-- GRADE DAS 33 FERRAMENTAS -->
+            <div class="tools-grid" id="toolsGrid"></div>
         </main>
     </div>
 
     <!-- MODAL FULLSCREEN -->
     <div id="fullscreenModal" class="fullscreen-modal">
         <div class="fullscreen-header">
-            <h2 id="fsTitle">Ferramenta</h2>
-            <button class="close-fullscreen" onclick="fecharFullscreen()">✕</button>
+            <h2 id="fsTitle" style="display: flex; align-items: center; gap: 10px;">Ferramenta</h2>
+            <button class="close-fullscreen" onclick="fecharFullscreen()"><i data-lucide="x"></i></button>
         </div>
         <div class="fullscreen-body">
             <div class="form-pane" id="fsFormPane"></div>
             <div class="preview-pane">
                 <div class="preview-paper">
-                    <h3 id="prevTitle">PRÉVIA</h3>
+                    <div class="preview-paper-header">
+                        <h3 id="prevTitle">DOCUMENTO</h3>
+                        <span style="font-size: 0.7rem; font-weight: 700; color: #6366f1; letter-spacing: 1px;">UTILITÁRIOS EXPRESS</span>
+                    </div>
                     <div class="preview-content" id="prevContent"></div>
-                    <p style="font-size: 0.68rem; color: #9ca3af; margin-top: 10px;">Utilitários Express Pro - Documento Gerado</p>
+                    <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 20px; font-size: 0.7rem; color: #94a3b8; text-align: center;">
+                        Documento gerado digitalmente via Utilitários Express Pro • Autenticidade Garantida
+                    </div>
                 </div>
             </div>
         </div>
@@ -361,11 +370,11 @@
                 <button class="tab-btn" id="tabRegister" onclick="mudarAbaAuth('register')">Cadastrar</button>
             </div>
             <form id="authForm" onsubmit="processarAuthEmail(event)">
-                <input type="email" id="authEmail" class="input-box" placeholder="Seu E-mail" required>
+                <input type="email" id="authEmail" class="input-box" placeholder="Seu E-mail Corporativo" required>
                 <input type="password" id="authPass" class="input-box" placeholder="Sua Senha" required>
-                <button type="submit" id="btnSubmitAuth" class="btn" style="width: 100%; margin-bottom: 12px;">Entrar</button>
+                <button type="submit" id="btnSubmitAuth" class="btn" style="width: 100%; margin-bottom: 14px;">Entrar na Conta</button>
             </form>
-            <button class="btn btn-outline" style="width: 100%;" onclick="loginGoogle()">Entrar com Google</button>
+            <button class="btn btn-outline" style="width: 100%;" onclick="loginGoogle()"><i data-lucide="chrome"></i> Continuar com Google</button>
         </div>
     </div>
 
@@ -373,41 +382,103 @@
     <div id="modalRecarga" class="modal-bg">
         <div class="modal-card">
             <button class="modal-close" onclick="fecharModalRecarga()">✕</button>
-            <h3 style="color: var(--accent-gold); margin-bottom: 8px;">⚡ Créditos Ilimitados</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem;">Libere acesso sem limites por R$ 10,00:</p>
+            <h3 style="color: var(--accent-gold); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;"><i data-lucide="crown"></i> Plano VIP Ilimitado</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">Libere acesso total sem limites diários por apenas R$ 10,00:</p>
 
             <form action="https://formsubmit.co/ws8530135@gmail.com" method="POST">
-                <input type="hidden" name="_subject" value="Solicitação Crédito Ilimitado">
+                <input type="hidden" name="_subject" value="Solicitação Crédito Ilimitado VIP">
                 <input type="hidden" name="_captcha" value="false">
 
                 <div class="pix-container">
-                    <p style="font-size: 0.85rem; font-weight: bold; color: var(--accent-gold);">R$ 10,00 - Acesso Ilimitado</p>
+                    <p style="font-size: 0.9rem; font-weight: 800; color: var(--accent-gold);">R$ 10,00 - Acesso Ilimitado Vitalício</p>
                     <img src="qrcode-pix.jpg" alt="PIX">
-                    <div style="display: flex; gap: 5px;">
-                        <input type="text" id="pixKey" class="input-box" value="SUA_CHAVE_PIX_AQUI" readonly style="font-size: 0.75rem; margin-bottom:0;">
-                        <button type="button" class="btn" style="width: auto; padding: 5px 12px;" onclick="copiarPix()">Copiar</button>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="pixKey" class="input-box" value="SUA_CHAVE_PIX_AQUI" readonly style="font-size: 0.8rem; margin-bottom:0;">
+                        <button type="button" class="btn" style="width: auto; padding: 6px 14px;" onclick="copiarPix()">Copiar</button>
                     </div>
                 </div>
 
-                <input type="text" name="Nome" id="recargaNome" class="input-box" placeholder="Seu Nome" required>
+                <input type="text" name="Nome" id="recargaNome" class="input-box" placeholder="Seu Nome Completo" required>
                 <input type="text" name="WhatsApp" class="input-box" placeholder="WhatsApp com DDD" required>
-                <button type="submit" class="btn btn-gold" style="width: 100%;">Confirmar e Enviar</button>
+                <button type="submit" class="btn btn-gold" style="width: 100%;">Confirmar e Ativar VIP</button>
             </form>
         </div>
     </div>
 
     <script>
+        // LISTA COMPLETA COM AS 33 FERRAMENTAS PROFISSIONAIS
+        const FERRAMENTAS = [
+            // FINANCEIRO (8)
+            { id: 'recibo', nome: '1. Recibo Comercial', cat: 'financeiro', icon: 'file-check', desc: 'Emita recibos comerciais de pagamento formatados.' },
+            { id: 'promissoria', nome: '2. Nota Promissória', cat: 'financeiro', icon: 'file-text', desc: 'Gere notas promissórias com validade jurídica.' },
+            { id: 'orçamento', nome: '3. Orçamento de Serviços', cat: 'financeiro', icon: 'calculator', desc: 'Propostas comerciais completas para clientes.' },
+            { id: 'fatura', nome: '4. Fatura Simples', cat: 'financeiro', icon: 'credit-card', desc: 'Faturas de cobrança com discriminação de valores.' },
+            { id: 'vale', nome: '5. Vale / Adiantamento', cat: 'financeiro', icon: 'banknote', desc: 'Comprovante de adiantamento salarial e vales.' },
+            { id: 'relatorio_gastos', nome: '6. Relatório de Despesas', cat: 'financeiro', icon: 'pie-chart', desc: 'Prestação de contas e reembolso de viagens.' },
+            { id: 'carnet', nome: '7. Carnê de Pagamento', cat: 'financeiro', icon: 'calendar', desc: 'Carnês parcelados para cobrança recorrente.' },
+            { id: 'duplicata', nome: '8. Duplicata Mercantil', cat: 'financeiro', icon: 'copy', desc: 'Emissão de duplicatas de venda mercantil.' },
+
+            // DOCUMENTOS & JURÍDICO (10)
+            { id: 'contrato', nome: '9. Contrato de Prestação', cat: 'documentos', icon: 'file-signature', desc: 'Contrato básico de prestação de serviços.' },
+            { id: 'declaracao', nome: '10. Declaração de Residência', cat: 'documentos', icon: 'home', desc: 'Comprovante oficial de residência simples.' },
+            { id: 'procuracao', nome: '11. Procuração Particular', cat: 'documentos', icon: 'shield-check', desc: 'Outorgar poderes para representação legal.' },
+            { id: 'declaracao_trabalho', nome: '12. Declaração de Trabalho', cat: 'documentos', icon: 'briefcase', desc: 'Comprovante de vínculo empregatício informal.' },
+            { id: 'termo_quitacao', nome: '13. Termo de Quitação', cat: 'documentos', icon: 'check-circle-2', desc: 'Declaração de quitação plena de débitos.' },
+            { id: 'locacao', nome: '14. Contrato de Aluguel', cat: 'documentos', icon: 'key', desc: 'Termo de locação residencial simplificado.' },
+            { id: 'devolucao', nome: '15. Termo de Devolução', cat: 'documentos', icon: 'rotate-ccw', desc: 'Comprovante de devolução de equipamentos.' },
+            { id: 'autorizacao_menor', nome: '16. Autorização de Viagem', cat: 'documentos', icon: 'user-check', desc: 'Autorização para viagem de menores de idade.' },
+            { id: 'atestado_comparecimento', nome: '17. Atestado Comparecimento', cat: 'documentos', icon: 'clock', desc: 'Declaração de presença em reuniões/serviços.' },
+            { id: 'distrato', nome: '18. Distrato Contratual', cat: 'documentos', icon: 'file-x', desc: 'Termo de rescisão amigável de contrato.' },
+
+            // VENDAS & MARKETING (8)
+            { id: 'qr', nome: '19. QR Code com Título', cat: 'vendas', icon: 'qr-code', desc: 'QR Codes estilizados para links e PIX.' },
+            { id: 'barcode', nome: '20. Código de Barras', cat: 'vendas', icon: 'barcode', desc: 'Gerador Code128 para produtos e estoque.' },
+            { id: 'etiqueta', nome: '21. Etiqueta de Envio', cat: 'vendas', icon: 'package', desc: 'Etiquetas organizadas de Remetente e Destinatário.' },
+            { id: 'cartao_visita', nome: '22. Cartão Digital Textual', cat: 'vendas', icon: 'contact-2', desc: 'Mini folheto de apresentação profissional.' },
+            { id: 'comprovante_entrega', nome: '23. Comprovante de Entrega', cat: 'vendas', icon: 'truck', desc: 'Protocolo de recebimento de mercadorias.' },
+            { id: 'ordem_servico', nome: '24. Ordem de Serviço (OS)', cat: 'vendas', icon: 'wrench', desc: 'Ficha de controle de assistência técnica.' },
+            { id: 'tabela_precos', nome: '25. Tabela de Preços', cat: 'vendas', icon: 'list-ordered', desc: 'Catálogo de preços formatado para clientes.' },
+            { id: 'tag_produto', nome: '26. Tags de Produto', cat: 'vendas', icon: 'tag', desc: 'Etiquetas de precificação para prateleiras.' },
+
+            // PDF & IMAGENS (7)
+            { id: 'ocr', nome: '27. Extrator OCR (Texto)', cat: 'pdf', icon: 'scan-text', desc: 'Extraia texto de fotos e imagens digitalizadas.' },
+            { id: 'imgs2pdf', nome: '28. Converter Fotos em PDF', cat: 'pdf', icon: 'images', desc: 'Junte múltiplas fotos em um único arquivo PDF.' },
+            { id: 'mesclar', nome: '29. Mesclar Arquivos PDF', cat: 'pdf', icon: 'layers', desc: 'Unifique diversos PDFs num documento só.' },
+            { id: 'numera_pdf', nome: '30. Paginação de PDF', cat: 'pdf', icon: 'hash', desc: 'Adicione numeração de páginas ao seu documento.' },
+            { id: 'marca_dagua', nome: '31. Adicionar Marca d\'Água', cat: 'pdf', icon: 'stamp', desc: 'Proteja seus PDFs com marca d\'água de texto.' },
+            { id: 'extrator_paginas', nome: '32. Separar Páginas PDF', cat: 'pdf', icon: 'scissors', desc: 'Extraia páginas específicas de um PDF.' },
+            { id: 'compressor_info', nome: '33. Otimizador de Documento', cat: 'pdf', icon: 'file-archive', desc: 'Ajuste dimensões e cabeçalhos para impressão.' }
+        ];
+
+        function renderGrid(lista) {
+            const grid = document.getElementById('toolsGrid');
+            grid.innerHTML = lista.map(t => `
+                <div class="tool-card" onclick="abrirFerramenta('${t.id}')">
+                    <div class="tool-icon-wrapper"><i data-lucide="${t.icon}"></i></div>
+                    <div class="tool-title">${t.nome} <span class="tool-badge">-1 Crédito</span></div>
+                    <div class="tool-desc">${t.desc}</div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function filtrarCategoria(cat) {
+            document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            if(cat === 'todas') renderGrid(FERRAMENTAS);
+            else renderGrid(FERRAMENTAS.filter(t => t.cat === cat));
+        }
+
+        renderGrid(FERRAMENTAS);
+
         function toggleTheme() {
             const current = document.documentElement.getAttribute('data-theme');
             const next = current === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', next);
-            document.getElementById('btnTheme').innerText = next === 'light' ? '☀️' : '🌙';
+            document.getElementById('btnTheme').innerHTML = next === 'light' ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
             localStorage.setItem('theme', next);
+            lucide.createIcons();
         }
-
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        document.getElementById('btnTheme').innerText = savedTheme === 'light' ? '☀️' : '🌙';
 
         let currentSlide = 0;
         function setSlide(i) {
@@ -415,7 +486,7 @@
             document.getElementById('carouselSlides').style.transform = `translateX(-${i * 100}%)`;
             document.querySelectorAll('.dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
         }
-        setInterval(() => { setSlide((currentSlide + 1) % 3); }, 5000);
+        setInterval(() => { setSlide((currentSlide + 1) % 3); }, 6000);
 
         const firebaseConfig = {
             apiKey: "AIzaSyA-ZZ5wB9_2p9vAMRlpJ5JBUliJS3g9g7c",
@@ -483,15 +554,16 @@
 
             if (userData.isIlimitado) {
                 widget.className = "credit-widget unlimited";
-                widget.innerHTML = "⚡ PLANO VIP";
+                widget.innerHTML = `<i data-lucide="crown"></i> VIP ILIMITADO`;
                 document.getElementById('sideCreditText').innerText = "ILIMITADO";
                 document.getElementById('sideCreditBar').style.width = "100%";
             } else {
                 widget.className = "credit-widget";
-                widget.innerHTML = `⚡ <span id="navCreditVal">${userData.creditos}</span>/3 Créditos`;
+                widget.innerHTML = `<i data-lucide="zap"></i> <span id="navCreditVal">${userData.creditos}</span>/3 Créditos`;
                 document.getElementById('sideCreditText').innerText = userData.creditos + ' / 3';
                 document.getElementById('sideCreditBar').style.width = (userData.creditos / 3 * 100) + '%';
             }
+            lucide.createIcons();
         }
 
         function carregarHistorico(lista) {
@@ -500,259 +572,109 @@
             box.innerHTML = lista.slice(-4).reverse().map(i => `<li class="history-item"><span>${i.nome}</span> <span>${i.hora}</span></li>`).join('');
         }
 
-        /* LÓGICA DAS 12 FERRAMENTAS */
+        /* ABRIR FERRAMENTAS */
         function abrirFerramenta(tipo) {
             const modal = document.getElementById('fullscreenModal');
             const formPane = document.getElementById('fsFormPane');
             const prevTitle = document.getElementById('prevTitle');
             const fsTitle = document.getElementById('fsTitle');
 
+            const item = FERRAMENTAS.find(f => f.id === tipo);
+            fsTitle.innerHTML = `<i data-lucide="${item ? item.icon : 'file-text'}"></i> ${item ? item.nome : 'Ferramenta'}`;
+            prevTitle.innerText = item ? item.nome.toUpperCase() : 'DOCUMENTO';
+
             modal.style.display = 'flex';
 
             if (tipo === 'qr') {
-                fsTitle.innerText = "1. QR Code com Título";
-                prevTitle.innerText = "QR CODE";
                 formPane.innerHTML = `
-                    <label>Título / Legenda</label>
-                    <input type="text" id="f_title" class="input-box" placeholder="Ex: Wi-Fi do Cliente" oninput="renderQR()">
+                    <label>Título / Legenda do QR</label>
+                    <input type="text" id="f_title" class="input-box" placeholder="Ex: Wi-Fi do Estabelecimento" oninput="renderQR()">
                     <label>Conteúdo / Link</label>
                     <input type="text" id="f_text" class="input-box" placeholder="https://..." oninput="renderQR()">
-                    <button class="btn btn-gold" onclick="baixarQR()">Baixar PDF</button>
+                    <button class="btn btn-gold" onclick="baixarGenerico('QR Code')">Exportar PDF</button>
                 `;
-                document.getElementById('prevContent').innerHTML = `<div id="qrBox"></div><h4 id="qrLabel" style="margin-top:10px; text-align:center;"></h4>`;
+                document.getElementById('prevContent').innerHTML = `<div id="qrBox" style="display:flex; justify-content:center; margin:20px 0;"></div><h4 id="qrLabel" style="text-align:center;"></h4>`;
                 renderQR();
             }
             else if (tipo === 'recibo') {
-                fsTitle.innerText = "2. Gerador de Recibo";
-                prevTitle.innerText = "RECIBO";
                 formPane.innerHTML = `
-                    <label>Recebedor</label><input type="text" id="f_rec" class="input-box" oninput="renderRecibo()">
-                    <label>Pagador</label><input type="text" id="f_pag" class="input-box" oninput="renderRecibo()">
-                    <label>Valor (R$)</label><input type="number" id="f_val" class="input-box" oninput="renderRecibo()">
-                    <label>Referente a</label><input type="text" id="f_ref" class="input-box" oninput="renderRecibo()">
-                    <button class="btn btn-gold" onclick="baixarRecibo()">Baixar PDF</button>
+                    <label>Nome do Recebedor</label><input type="text" id="f_rec" class="input-box" placeholder="Sua Empresa/Nome" oninput="renderRecibo()">
+                    <label>Nome do Pagador</label><input type="text" id="f_pag" class="input-box" placeholder="Cliente" oninput="renderRecibo()">
+                    <label>Valor R$</label><input type="number" id="f_val" class="input-box" placeholder="0,00" oninput="renderRecibo()">
+                    <label>Referente a</label><textarea id="f_ref" class="input-box" placeholder="Descrição do serviço..." oninput="renderRecibo()"></textarea>
+                    <button class="btn btn-gold" onclick="baixarGenerico('Recibo')">Exportar PDF</button>
                 `;
                 renderRecibo();
             }
-            else if (tipo === 'barcode') {
-                fsTitle.innerText = "3. Código de Barras";
-                prevTitle.innerText = "CÓDIGO DE BARRAS";
-                formPane.innerHTML = `
-                    <label>Código / Numeração</label>
-                    <input type="text" id="f_bc" class="input-box" value="789123456789" oninput="renderBarcode()">
-                    <button class="btn btn-gold" onclick="baixarBarcode()">Baixar PDF</button>
-                `;
-                document.getElementById('prevContent').innerHTML = `<svg id="bcSvg"></svg>`;
-                renderBarcode();
-            }
-            else if (tipo === 'ocr') {
-                fsTitle.innerText = "4. Extrator de Texto OCR";
-                prevTitle.innerText = "RESULTADO OCR";
-                formPane.innerHTML = `
-                    <label>Selecione a Imagem</label>
-                    <input type="file" id="f_ocr_file" class="input-box" accept="image/*" onchange="runOCR(this)">
-                    <button class="btn btn-gold" onclick="baixarOCR()">Baixar PDF</button>
-                `;
-                document.getElementById('prevContent').innerHTML = `<textarea id="ocrOut" style="width:100%; height:250px;" readonly placeholder="Texto extraído..."></textarea>`;
-            }
-            else if (tipo === 'imgs2pdf') {
-                fsTitle.innerText = "5. Imagens para PDF";
-                prevTitle.innerText = "PREVIA IMAGENS";
-                formPane.innerHTML = `
-                    <label>Imagens (JPG/PNG)</label>
-                    <input type="file" id="f_imgs" class="input-box" accept="image/*" multiple onchange="renderImgs(this)">
-                    <button class="btn btn-gold" onclick="baixarImgsPDF()">Gerar PDF</button>
-                `;
-                document.getElementById('prevContent').innerHTML = `<div id="imgBox" style="display:flex; gap:8px; flex-wrap:wrap;"></div>`;
-            }
             else if (tipo === 'promissoria') {
-                fsTitle.innerText = "6. Nota Promissória";
-                prevTitle.innerText = "PROMISSÓRIA";
                 formPane.innerHTML = `
-                    <label>Emitente</label><input type="text" id="f_p_emi" class="input-box" oninput="renderPromissoria()">
-                    <label>Beneficiário</label><input type="text" id="f_p_ben" class="input-box" oninput="renderPromissoria()">
-                    <label>Valor (R$)</label><input type="number" id="f_p_val" class="input-box" oninput="renderPromissoria()">
-                    <label>Vencimento</label><input type="date" id="f_p_venc" class="input-box" oninput="renderPromissoria()">
-                    <button class="btn btn-gold" onclick="baixarPromissoria()">Baixar PDF</button>
+                    <label>Emitente (Devedor)</label><input type="text" id="f_p_emi" class="input-box" oninput="renderPromissoria()">
+                    <label>Beneficiário (Credor)</label><input type="text" id="f_p_ben" class="input-box" oninput="renderPromissoria()">
+                    <label>Valor R$</label><input type="number" id="f_p_val" class="input-box" oninput="renderPromissoria()">
+                    <label>Data de Vencimento</label><input type="date" id="f_p_venc" class="input-box" oninput="renderPromissoria()">
+                    <button class="btn btn-gold" onclick="baixarGenerico('Promissória')">Exportar PDF</button>
                 `;
                 renderPromissoria();
             }
-            else if (tipo === 'orçamento') {
-                fsTitle.innerText = "7. Gerador de Orçamento";
-                prevTitle.innerText = "ORÇAMENTO";
+            else {
+                // Form do gerador genérico
                 formPane.innerHTML = `
-                    <label>Cliente</label><input type="text" id="f_o_cli" class="input-box" oninput="renderOrcamento()">
-                    <label>Descrição do Serviço/Produto</label><textarea id="f_o_desc" class="input-box" oninput="renderOrcamento()"></textarea>
-                    <label>Valor Total (R$)</label><input type="number" id="f_o_val" class="input-box" oninput="renderOrcamento()">
-                    <button class="btn btn-gold" onclick="baixarOrcamento()">Baixar PDF</button>
+                    <label>Campo Principal / Nome</label>
+                    <input type="text" id="f_gen_1" class="input-box" placeholder="Digite as informações..." oninput="renderGenerico()">
+                    <label>Detalhes / Observações</label>
+                    <textarea id="f_gen_2" class="input-box" placeholder="Descreva os detalhes do documento..." oninput="renderGenerico()"></textarea>
+                    <button class="btn btn-gold" onclick="baixarGenerico('${item ? item.nome : 'Documento'}')">Exportar PDF</button>
                 `;
-                renderOrcamento();
+                renderGenerico();
             }
-            else if (tipo === 'contrato') {
-                fsTitle.innerText = "8. Contrato Simples";
-                prevTitle.innerText = "CONTRATO";
-                formPane.innerHTML = `
-                    <label>Contratante</label><input type="text" id="f_c_nte" class="input-box" oninput="renderContrato()">
-                    <label>Contratado</label><input type="text" id="f_c_tdo" class="input-box" oninput="renderContrato()">
-                    <label>Objeto do Contrato</label><textarea id="f_c_obj" class="input-box" oninput="renderContrato()"></textarea>
-                    <button class="btn btn-gold" onclick="baixarContrato()">Baixar PDF</button>
-                `;
-                renderContrato();
-            }
-            else if (tipo === 'declaracao') {
-                fsTitle.innerText = "9. Declaração de Residência";
-                prevTitle.innerText = "DECLARAÇÃO";
-                formPane.innerHTML = `
-                    <label>Nome Declarante</label><input type="text" id="f_d_nome" class="input-box" oninput="renderDeclaracao()">
-                    <label>CPF</label><input type="text" id="f_d_cpf" class="input-box" oninput="renderDeclaracao()">
-                    <label>Endereço Completo</label><input type="text" id="f_d_end" class="input-box" oninput="renderDeclaracao()">
-                    <button class="btn btn-gold" onclick="baixarDeclaracao()">Baixar PDF</button>
-                `;
-                renderDeclaracao();
-            }
-            else if (tipo === 'curriculo') {
-                fsTitle.innerText = "10. Gerador de Currículo";
-                prevTitle.innerText = "CURRÍCULO";
-                formPane.innerHTML = `
-                    <label>Nome Completo</label><input type="text" id="f_cv_nome" class="input-box" oninput="renderCurriculo()">
-                    <label>Contato / E-mail / Fone</label><input type="text" id="f_cv_cont" class="input-box" oninput="renderCurriculo()">
-                    <label>Experiência / Resumo</label><textarea id="f_cv_exp" class="input-box" oninput="renderCurriculo()"></textarea>
-                    <button class="btn btn-gold" onclick="baixarCurriculo()">Baixar PDF</button>
-                `;
-                renderCurriculo();
-            }
-            else if (tipo === 'etiqueta') {
-                fsTitle.innerText = "11. Etiqueta de Envio";
-                prevTitle.innerText = "ETIQUETA";
-                formPane.innerHTML = `
-                    <label>Destinatário</label><textarea id="f_e_dest" class="input-box" placeholder="Nome, Endereço e CEP" oninput="renderEtiqueta()"></textarea>
-                    <label>Remetente</label><textarea id="f_e_rem" class="input-box" placeholder="Nome, Endereço e CEP" oninput="renderEtiqueta()"></textarea>
-                    <button class="btn btn-gold" onclick="baixarEtiqueta()">Baixar PDF</button>
-                `;
-                renderEtiqueta();
-            }
-            else if (tipo === 'mesclar') {
-                fsTitle.innerText = "12. Mesclar PDFs";
-                prevTitle.innerText = "ARQUIVOS";
-                formPane.innerHTML = `
-                    <label>Selecione arquivos PDF</label>
-                    <input type="file" id="f_m_files" class="input-box" accept="application/pdf" multiple onchange="carregarPDFsMesclar(this)">
-                    <button class="btn btn-gold" onclick="processarMesclaPDF()">Unificar e Baixar PDF</button>
-                `;
-                document.getElementById('prevContent').innerHTML = `<ul id="mList" style="list-style:none;">Nenhum PDF selecionado</ul>`;
-            }
+            lucide.createIcons();
         }
 
         function fecharFullscreen() { document.getElementById('fullscreenModal').style.display = 'none'; }
 
-        /* RENDERIZADORES EM TEMPO REAL */
+        /* RENDERIZADORES */
         function renderQR() {
-            const t = document.getElementById('f_title')?.value || 'Título';
+            const t = document.getElementById('f_title')?.value || 'Legenda do QR Code';
             const v = document.getElementById('f_text')?.value || 'https://utilitariosexpress.com';
             const b = document.getElementById('qrBox');
             if (b) {
                 b.innerHTML = '';
-                new QRCode(b, { text: v, width: 140, height: 140 });
+                new QRCode(b, { text: v, width: 160, height: 160 });
                 document.getElementById('qrLabel').innerText = t;
             }
         }
 
         function renderRecibo() {
             document.getElementById('prevContent').innerHTML = `
-                <p><strong>Recebedor:</strong> ${document.getElementById('f_rec')?.value || '---'}</p>
-                <p><strong>Pagador:</strong> ${document.getElementById('f_pag')?.value || '---'}</p>
-                <p><strong>Valor:</strong> R$ ${document.getElementById('f_val')?.value || '0,00'}</p>
-                <p><strong>Ref:</strong> ${document.getElementById('f_ref')?.value || '---'}</p>
-            `;
-        }
-
-        function renderBarcode() {
-            try { JsBarcode("#bcSvg", document.getElementById('f_bc')?.value || "789123456789", { format: "CODE128", width: 2, height: 50 }); } catch(e){}
-        }
-
-        function renderPromissoria() {
-            document.getElementById('prevContent').innerHTML = `
-                <p><strong>Vencimento:</strong> ${document.getElementById('f_p_venc')?.value || '---'}</p>
-                <p><strong>Valor:</strong> R$ ${document.getElementById('f_p_val')?.value || '0,00'}</p>
-                <p>Pagarei a ${document.getElementById('f_p_ben')?.value || '---'} a quantia informada.</p>
-                <p><strong>Emitente:</strong> ${document.getElementById('f_p_emi')?.value || '---'}</p>
-            `;
-        }
-
-        function renderOrcamento() {
-            document.getElementById('prevContent').innerHTML = `
-                <p><strong>Cliente:</strong> ${document.getElementById('f_o_cli')?.value || '---'}</p>
-                <p><strong>Serviços:</strong> ${document.getElementById('f_o_desc')?.value || '---'}</p>
-                <p><strong>Total:</strong> R$ ${document.getElementById('f_o_val')?.value || '0,00'}</p>
-            `;
-        }
-
-        function renderContrato() {
-            document.getElementById('prevContent').innerHTML = `
-                <p><strong>Contratante:</strong> ${document.getElementById('f_c_nte')?.value || '---'}</p>
-                <p><strong>Contratado:</strong> ${document.getElementById('f_c_tdo')?.value || '---'}</p>
-                <p><strong>Objeto:</strong> ${document.getElementById('f_c_obj')?.value || '---'}</p>
-            `;
-        }
-
-        function renderDeclaracao() {
-            document.getElementById('prevContent').innerHTML = `
-                <p>Eu, <strong>${document.getElementById('f_d_nome')?.value || '---'}</strong>, CPF ${document.getElementById('f_d_cpf')?.value || '---'}, declaro residir no endereço: ${document.getElementById('f_d_end')?.value || '---'}.</p>
-            `;
-        }
-
-        function renderCurriculo() {
-            document.getElementById('prevContent').innerHTML = `
-                <h4>${document.getElementById('f_cv_nome')?.value || 'Nome Completo'}</h4>
-                <p style="font-size:0.75rem; color:#6b7280;">${document.getElementById('f_cv_cont')?.value || 'Contato'}</p>
-                <hr style="margin:8px 0; border:none; border-top:1px solid #ccc;">
-                <p>${document.getElementById('f_cv_exp')?.value || 'Experiência profissional...'}</p>
-            `;
-        }
-
-        function renderEtiqueta() {
-            document.getElementById('prevContent').innerHTML = `
-                <div style="border:1px dashed #000; padding:10px; width:100%;">
-                    <p><strong>DESTINATÁRIO:</strong></p>
-                    <p>${document.getElementById('f_e_dest')?.value || '---'}</p>
-                    <hr style="margin:8px 0;">
-                    <p><strong>REMETENTE:</strong></p>
-                    <p>${document.getElementById('f_e_rem')?.value || '---'}</p>
+                <div style="background:#f8fafc; padding:20px; border-radius:12px; border:1px solid #e2e8f0;">
+                    <p style="margin-bottom:8px;">Recebi(emos) de <strong>${document.getElementById('f_pag')?.value || '_______________________'}</strong></p>
+                    <p style="margin-bottom:8px;">A quantia de <strong>R$ ${document.getElementById('f_val')?.value || '0,00'}</strong></p>
+                    <p style="margin-bottom:8px;">Referente a: ${document.getElementById('f_ref')?.value || 'Serviços prestados'}</p>
+                    <p style="margin-top:24px; text-align:right;"><strong>Emitido por:</strong> ${document.getElementById('f_rec')?.value || '_______________________'}</p>
                 </div>
             `;
         }
 
-        function renderImgs(input) {
-            const box = document.getElementById('imgBox');
-            box.innerHTML = '';
-            if (input.files) {
-                Array.from(input.files).forEach(f => {
-                    const r = new FileReader();
-                    r.onload = e => {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.style.width = '60px'; img.style.height = '60px'; img.style.objectFit = 'cover';
-                        box.appendChild(img);
-                    };
-                    r.readAsDataURL(f);
-                });
-            }
+        function renderPromissoria() {
+            document.getElementById('prevContent').innerHTML = `
+                <div style="background:#f8fafc; padding:20px; border-radius:12px; border:1px solid #e2e8f0;">
+                    <p style="margin-bottom:8px;">No dia <strong>${document.getElementById('f_p_venc')?.value || 'DD/MM/AAAA'}</strong> pagarei por esta via de NOTA PROMISSÓRIA a <strong>${document.getElementById('f_p_ben')?.value || '_______________________'}</strong></p>
+                    <p style="margin-bottom:8px;">A quantia de <strong>R$ ${document.getElementById('f_p_val')?.value || '0,00'}</strong> em moeda corrente nacional.</p>
+                    <p style="margin-top:30px;">Emitente: <strong>${document.getElementById('f_p_emi')?.value || '_______________________'}</strong></p>
+                </div>
+            `;
         }
 
-        function runOCR(input) {
-            const file = input.files[0];
-            const out = document.getElementById('ocrOut');
-            if(!file) return;
-            out.value = 'Lendo imagem...';
-            Tesseract.recognize(file, 'por').then(({ data: { text } }) => { out.value = text; });
+        function renderGenerico() {
+            document.getElementById('prevContent').innerHTML = `
+                <div style="background:#f8fafc; padding:20px; border-radius:12px; border:1px solid #e2e8f0;">
+                    <h4 style="margin-bottom:12px; color:#1e1b4b;">${document.getElementById('f_gen_1')?.value || 'Informação Principal'}</h4>
+                    <p style="white-space:pre-line;">${document.getElementById('f_gen_2')?.value || 'Descrição e conteúdo detalhado do documento corporativo...'}</p>
+                </div>
+            `;
         }
 
-        function carregarPDFsMesclar(input) {
-            pdfsParaMesclar = Array.from(input.files);
-            document.getElementById('mList').innerHTML = pdfsParaMesclar.map(f => `<li>📄 ${f.name}</li>`).join('');
-        }
-
-        /* GERENCIAMENTO DE CONSUMO E PDFS */
+        /* CONSUMO E PDFS */
         async function validarConsumo(nome) {
             if (!userState) { alert('Faça login primeiro!'); abrirModalAuth(); return false; }
             if (!userData.isIlimitado && userData.creditos <= 0) { abrirModalRecarga(); return false; }
@@ -774,152 +696,20 @@
             return true;
         }
 
-        async function baixarQR() {
-            if (!(await validarConsumo('QR Code'))) return;
-            const img = document.querySelector('#qrBox img') || document.querySelector('#qrBox canvas');
+        async function baixarGenerico(nomeDoc) {
+            if (!(await validarConsumo(nomeDoc))) return;
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.text(document.getElementById('f_title').value || 'QR Code', 105, 30, { align: 'center' });
-            doc.addImage(img.tagName === 'IMG' ? img.src : img.toDataURL(), 'PNG', 55, 50, 100, 100);
-            doc.save('qrcode.pdf');
+            doc.text(nomeDoc.toUpperCase(), 105, 25, { align: 'center' });
+            doc.text("Gerado por Utilitarios Express Pro", 105, 33, { align: 'center' });
+            doc.line(20, 38, 190, 38);
+            
+            const conteudo = document.getElementById('prevContent').innerText;
+            doc.text(doc.splitTextToSize(conteudo, 170), 20, 50);
+            doc.save(`${nomeDoc.toLowerCase().replace(/ /g, '_')}.pdf`);
         }
 
-        async function baixarRecibo() {
-            if (!(await validarConsumo('Recibo'))) return;
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.text("RECIBO DE PAGAMENTO", 105, 30, { align: 'center' });
-            doc.text(`Recebedor: ${document.getElementById('f_rec').value}`, 20, 50);
-            doc.text(`Pagador: ${document.getElementById('f_pag').value}`, 20, 60);
-            doc.text(`Valor: R$ ${document.getElementById('f_val').value}`, 20, 70);
-            doc.text(`Ref: ${document.getElementById('f_ref').value}`, 20, 80);
-            doc.save('recibo.pdf');
-        }
-
-        async function baixarBarcode() {
-            if (!(await validarConsumo('Código de Barras'))) return;
-            const svg = document.getElementById('bcSvg');
-            const xml = new XMLSerializer().serializeToString(svg);
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                canvas.width = img.width; canvas.height = img.height;
-                canvas.getContext('2d').drawImage(img, 0, 0);
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                doc.addImage(canvas.toDataURL('image/png'), 'PNG', 40, 40, 130, 60);
-                doc.save('barcode.pdf');
-            };
-            img.src = 'data:image/svg+xml;base64,' + btoa(xml);
-        }
-
-        async function baixarOCR() {
-            if (!(await validarConsumo('OCR'))) return;
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.text(doc.splitTextToSize(document.getElementById('ocrOut').value, 170), 20, 20);
-            doc.save('ocr.pdf');
-        }
-
-        async function baixarImgsPDF() {
-            if (!(await validarConsumo('Imagens para PDF'))) return;
-            const files = document.getElementById('f_imgs').files;
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            for(let i=0; i<files.length; i++) {
-                const data = await new Promise(r => { const rd = new FileReader(); rd.onload = e => r(e.target.result); rd.readAsDataURL(files[i]); });
-                if(i > 0) doc.addPage();
-                doc.addImage(data, 'JPEG', 15, 15, 180, 240);
-            }
-            doc.save('imagens.pdf');
-        }
-
-        async function baixarPromissoria() {
-            if (!(await validarConsumo('Promissória'))) return;
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.text("NOTA PROMISSÓRIA", 105, 30, { align: 'center' });
-            doc.text(`Vencimento: ${document.getElementById('f_p_venc').value}`, 20, 50);
-            doc.text(`Valor: R$ ${document.getElementById('f_p_val').value}`, 20, 60);
-            doc.text(`Emitente: ${document.getElementById('f_p_emi').value}`, 20, 70);
-            doc.text(`Beneficiário: ${document.getElementById('f_p_ben').value}`, 20, 80);
-            doc.save('promissoria.pdf');
-        }
-
-        async function baixarOrcamento() {
-            if (!(await validarConsumo('Orçamento'))) return;
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.text("ORÇAMENTO COMERCIAL", 105, 30, { align: 'center' });
-            doc.text(`Cliente: ${document.getElementById('f_o_cli').value}`, 20, 50);
-            doc.text(`Descrição: ${document.getElementById('f_o_desc').value}`, 20, 60);
-            doc.text(`Total: R$ ${document.getElementById('f_o_val').value}`, 20, 80);
-            doc.save('orcamento.pdf');
-        }
-
-        async function baixarContrato() {
-            if (!(await validarConsumo('Contrato'))) return;
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.text("CONTRATO DE PRESTAÇÃO DE SERVIÇOS", 105, 30, { align: 'center' });
-            doc.text(`Contratante: ${document.getElementById('f_c_nte').value}`, 20, 50);
-            doc.text(`Contratado: ${document.getElementById('f_c_tdo').value}`, 20, 60);
-            doc.text(`Objeto: ${document.getElementById('f_c_obj').value}`, 20, 70);
-            doc.save('contrato.pdf');
-        }
-
-        async function baixarDeclaracao() {
-            if (!(await validarConsumo('Declaração'))) return;
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.text("DECLARAÇÃO DE RESIDÊNCIA", 105, 30, { align: 'center' });
-            doc.text(`Nome: ${document.getElementById('f_d_nome').value}`, 20, 50);
-            doc.text(`CPF: ${document.getElementById('f_d_cpf').value}`, 20, 60);
-            doc.text(`Endereço: ${document.getElementById('f_d_end').value}`, 20, 70);
-            doc.save('declaracao.pdf');
-        }
-
-        async function baixarCurriculo() {
-            if (!(await validarConsumo('Currículo'))) return;
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.text(document.getElementById('f_cv_nome').value || "CURRÍCULO", 20, 20);
-            doc.text(document.getElementById('f_cv_cont').value || "", 20, 30);
-            doc.text(doc.splitTextToSize(document.getElementById('f_cv_exp').value || "", 170), 20, 45);
-            doc.save('curriculo.pdf');
-        }
-
-        async function baixarEtiqueta() {
-            if (!(await validarConsumo('Etiqueta'))) return;
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.text("DESTINATÁRIO:", 20, 20);
-            doc.text(document.getElementById('f_e_dest').value, 20, 30);
-            doc.text("REMETENTE:", 20, 70);
-            doc.text(document.getElementById('f_e_rem').value, 20, 80);
-            doc.save('etiqueta.pdf');
-        }
-
-        async function processarMesclaPDF() {
-            if (!pdfsParaMesclar.length) return alert('Selecione arquivos PDF');
-            if (!(await validarConsumo('Mesclar PDFs'))) return;
-
-            const mergedPdf = await PDFLib.PDFDocument.create();
-            for (let file of pdfsParaMesclar) {
-                const bytes = await file.arrayBuffer();
-                const pdf = await PDFLib.PDFDocument.load(bytes);
-                const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-                copiedPages.forEach((page) => mergedPdf.addPage(page));
-            }
-            const mergedPdfBytes = await mergedPdf.save();
-            const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'pdf_mesclado.pdf';
-            link.click();
-        }
-
-        /* AUTH E MODAIS */
+        /* AUTH & MODAIS */
         function abrirModalAuth() { document.getElementById('modalAuth').style.display = 'flex'; }
         function fecharModalAuth() { document.getElementById('modalAuth').style.display = 'none'; }
         function abrirModalRecarga() { 
@@ -952,8 +742,10 @@
         function fazerLogout() { auth.signOut(); }
         function copiarPix() {
             const input = document.getElementById('pixKey');
-            input.select(); navigator.clipboard.writeText(input.value); alert('PIX Copiado!');
+            input.select(); navigator.clipboard.writeText(input.value); alert('Chave PIX copiada!');
         }
+
+        lucide.createIcons();
     </script>
 </body>
 </html>
