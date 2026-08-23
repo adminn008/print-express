@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso – Utilitários Express</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <style>
+        :root { --bg: #090d16; --panel: #111827; --primary: #6366f1; --primary-hover: #4f46e5; --text: #f9fafb; --muted: #9ca3af; --border: rgba(255,255,255,0.08); }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height:100vh; display:flex; justify-content:center; align-items:center; padding:20px; }
+        .auth-card { background: var(--panel); border:1px solid var(--border); border-radius:20px; width:100%; max-width:400px; padding:32px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.7); }
+        .tabs { display:flex; border-bottom:1px solid var(--border); margin-bottom:24px; }
+        .tab { flex:1; padding:10px; background:none; border:none; color:var(--muted); font-weight:600; cursor:pointer; border-bottom:2px solid transparent; }
+        .tab.active { color:var(--primary); border-color:var(--primary); }
+        .input { width:100%; background:#1f2937; border:1px solid var(--border); color:#fff; padding:12px; border-radius:10px; margin-bottom:12px; font-size:0.9rem; outline:none; }
+        .input:focus { border-color:var(--primary); }
+        .btn { width:100%; background:var(--primary); color:#fff; border:none; padding:12px; border-radius:10px; font-weight:700; cursor:pointer; transition:0.2s; }
+        .btn:hover { background:var(--primary-hover); }
+        .btn-google { background:transparent; border:1px solid var(--border); margin-top:12px; display:flex; align-items:center; justify-content:center; gap:10px; }
+        .btn-google:hover { background:#1f2937; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <h2 style="text-align:center; margin-bottom:20px; font-weight:800;">⚡ Utilitários<span style="color:var(--primary)">Express</span></h2>
+        <div class="tabs">
+            <button class="tab active" id="tabLogin" onclick="setMode('login')">Entrar</button>
+            <button class="tab" id="tabReg" onclick="setMode('reg')">Cadastrar</button>
+        </div>
+        <form onsubmit="handleAuth(event)">
+            <input type="email" id="email" class="input" placeholder="Seu E-mail" required>
+            <input type="password" id="pass" class="input" placeholder="Sua Senha (mín. 6 caracteres)" required>
+            <button type="submit" id="btnSubmit" class="btn">Entrar na Conta</button>
+        </form>
+        <div style="text-align:center; color:var(--muted); font-size:0.8rem; margin:14px 0;">OU</div>
+        <button class="btn btn-google" onclick="loginGoogle()">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3h3.88c2.28-2.1 3.665-5.2 3.665-9.12z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3c-1.08.72-2.45 1.16-4.05 1.16-3.1 0-5.73-2.1-6.67-4.93H1.27v3.08C3.26 21.3 7.31 24 12 24z"/><path fill="#FBBC05" d="M5.33 14.32c-.24-.72-.38-1.49-.38-2.32s.14-1.6.38-2.32V6.6H1.27C.46 8.23 0 10.06 0 12s.46 3.77 1.27 5.4l4.06-3.08z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.27 6.6l4.06 3.08c.94-2.83 3.57-4.93 6.67-4.93z"/></svg>
+            Entrar com Google
+        </button>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+    apiKey: "AIzaSyA-ZZ5wB9_2p9vAMRlpJ5JBUliJS3g9g7c",
+    authDomain: "utilitarios-express.firebaseapp.com",
+    databaseURL: "https://utilitarios-express-default-rtdb.firebaseio.com",
+    projectId: "utilitarios-express",
+    storageBucket: "utilitarios-express.firebasestorage.app",
+    messagingSenderId: "421983822616",
+    appId: "1:421983822616:web:bca6f2ebc1b6990871b46d"
+  };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        let mode = 'login';
+
+        function setMode(m) {
+            mode = m;
+            document.getElementById('tabLogin').classList.toggle('active', m==='login');
+            document.getElementById('tabReg').classList.toggle('active', m==='reg');
+            document.getElementById('btnSubmit').innerText = m==='login' ? 'Entrar na Conta' : 'Criar Minha Conta';
+        }
+
+        async function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+            try {
+                if(mode==='login') await auth.signInWithEmailAndPassword(email, pass);
+                else await auth.createUserWithEmailAndPassword(email, pass);
+                window.location.href = 'index.html';
+            } catch(err) { alert('Erro: ' + err.message); }
+        }
+
+        function loginGoogle() {
+            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+                .then(() => window.location.href = 'index.html')
+                .catch(err => alert('Erro: ' + err.message));
+        }
+
+        auth.onAuthStateChanged(user => { if(user) window.location.href = 'index.html'; });
+    </script>
+</body>
+</html>
