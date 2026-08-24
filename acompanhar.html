@@ -59,7 +59,6 @@
                     </div>
                 </div>
 
-                <!-- Nova opção visível para o cliente -->
                 <div class="mb-4 pb-3 border-b border-gray-100">
                     <span class="text-gray-400 block text-xs">Cliente</span>
                     <span id="view-cliente" class="font-bold text-gray-800 text-sm">-</span>
@@ -189,6 +188,7 @@
             atualizarBadgeStatus(pedido.status);
             
             if (!primeiraCarga && ultimoStatusConhecido && ultimoStatusConhecido !== pedido.status) {
+                tocarAlertaSonoroEVibracao();
                 mostrarNotificacao(pedido.status);
             }
             
@@ -206,6 +206,36 @@
 
             const msgWp = encodeURIComponent(`Olá! Gostaria de informações sobre meu pedido ${pedido.codigo}.`);
             document.getElementById('btn-whatsapp').href = `https://wa.me/${WHATSAPP_NUMERO}?text=${msgWp}`;
+        }
+
+        // Função para emitir som de bip e vibração no celular
+        function tocarAlertaSonoroEVibracao() {
+            try {
+                // Vibração no celular (padrão: vibra 200ms, pausa 100ms, vibra 200ms)
+                if (navigator.vibrate) {
+                    navigator.vibrate([200, 100, 200]);
+                }
+
+                // Som de bipe usando a Web Audio API do navegador
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    const ctx = new AudioContext();
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = "sine";
+                    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // Nota D5 (aguda e audível)
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.25); // Duração de 0.25 segundos
+                }
+            } catch (e) {
+                console.log("Áudio ou vibração bloqueados pelo navegador.", e);
+            }
         }
 
         function atualizarBadgeStatus(status) {
