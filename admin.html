@@ -9,7 +9,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans antialiased min-h-screen flex flex-col">
 
-    <!-- Tela de Login (Proteção Firebase Auth) -->
+    <!-- Tela de Login Simplificada -->
     <div id="login-screen" class="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center px-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
             <div class="text-center mb-6">
@@ -19,17 +19,13 @@
             </div>
             <form id="form-login" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">E-mail</label>
-                    <input type="email" id="login-email" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Senha</label>
-                    <input type="password" id="login-senha" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 text-sm">
+                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Senha de Acesso</label>
+                    <input type="password" id="login-senha" required placeholder="Digite a senha do admin" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 text-sm">
                 </div>
                 <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl text-sm transition duration-200">
                     Entrar
                 </button>
-                <p id="login-erro" class="text-red-500 text-xs text-center hidden"></p>
+                <p id="login-erro" class="text-red-500 text-xs text-center hidden">Senha incorreta. Tente novamente.</p>
             </form>
         </div>
     </div>
@@ -199,48 +195,51 @@
         </div>
     </div>
 
-    <!-- Firebase Scripts -->
+    <!-- Firebase Scripts e Lógica Admin -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { firebaseConfig } from "./firebase-config.js";
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
+
+        const SENHA_ADMIN = "print123"; // 🔑 Altere aqui a senha de acesso do painel se desejar
 
         let pedidoAtualId = null;
         let codigoAtualPedido = null;
 
-        // Autenticação Admin
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('admin-content').classList.remove('hidden');
-                iniciarListenersAdmin();
-            } else {
-                document.getElementById('login-screen').classList.remove('hidden');
-                document.getElementById('admin-content').classList.add('hidden');
-            }
-        });
+        // Verificar se já está logado na sessão atual do navegador
+        if (sessionStorage.getItem("printexpress_logado") === "true") {
+            liberarPainel();
+        }
 
-        document.getElementById('form-login').addEventListener('submit', async (e) => {
+        // Login Simples
+        document.getElementById('form-login').addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const senha = document.getElementById('login-senha').value;
-            try {
-                await signInWithEmailAndPassword(auth, email, senha);
-            } catch (error) {
-                const erroEl = document.getElementById('login-erro');
-                erroEl.innerText = "Falha no login: " + error.message;
-                erroEl.classList.remove('hidden');
+            const senhaDigitada = document.getElementById('login-senha').value;
+            
+            if (senhaDigitada === SENHA_ADMIN) {
+                sessionStorage.setItem("printexpress_logado", "true");
+                liberarPainel();
+            } else {
+                document.getElementById('login-erro').classList.remove('hidden');
             }
         });
 
-        document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
+        // Logout
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            sessionStorage.removeItem("printexpress_logado");
+            location.reload();
+        });
 
-        // Inicializar dados em tempo real
+        function liberarPainel() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('admin-content').classList.remove('hidden');
+            iniciarListenersAdmin();
+        }
+
+        // Inicializar dados em tempo real do Firestore
         function iniciarListenersAdmin() {
             // Escutar Codigos
             onSnapshot(collection(db, "codigos"), (snapshot) => {
@@ -308,7 +307,6 @@
             const mensagem = document.getElementById('novo-mensagem').value;
 
             try {
-                // Criar pedido
                 const novoPedidoRef = doc(collection(db, "pedidos"));
                 await setDoc(novoPedidoRef, {
                     codigo,
@@ -323,7 +321,6 @@
                     atualizadoEm: serverTimestamp()
                 });
 
-                // Marcar código como em uso
                 await updateDoc(doc(db, "codigos", codigo), {
                     status: "Em uso",
                     pedidoId: novoPedidoRef.id
@@ -336,7 +333,7 @@
             }
         });
 
-        // Funções de Modal
+        // Funções de Modal e Ações
         window.abrirModalNovoPedido = () => document.getElementById('modal-novo').classList.remove('hidden');
         window.fecharModalNovoPedido = () => document.getElementById('modal-novo').classList.add('hidden');
 
@@ -406,13 +403,11 @@
         window.excluirPedido = async () => {
             if (!confirm("Tem certeza que deseja excluir este pedido? O código associado voltará a ficar disponível.")) return;
             
-            // Liberar código
             await updateDoc(doc(db, "codigos", codigoAtualPedido), {
                 status: "Disponível",
                 pedidoId: null
             });
 
-            // Excluir pedido
             await deleteDoc(doc(db, "pedidos", pedidoAtualId));
 
             alert("Pedido excluído!");
