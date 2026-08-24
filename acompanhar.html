@@ -40,9 +40,9 @@
             <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
-            <h2 class="text-xl font-bold text-gray-900 mb-1">Código não encontrado</h2>
-            <p class="text-gray-500 text-sm mb-6">Confira o código informado e tente novamente.</p>
-            <a href="index.html" class="inline-block bg-gray-900 text-white font-medium px-6 py-2.5 rounded-xl text-sm">Tentar outro código</a>
+            <h2 id="error-titulo" class="text-xl font-bold text-gray-900 mb-1">Código não encontrado</h2>
+            <p id="error-texto" class="text-gray-500 text-sm mb-6">Confira o código informado e tente novamente.</p>
+            <a href="index.html" class="inline-block bg-gray-900 text-white font-medium px-6 py-2.5 rounded-xl text-sm">Voltar ao início</a>
         </div>
 
         <div id="content-state" class="hidden space-y-6">
@@ -59,13 +59,19 @@
                     </div>
                 </div>
 
-                <div class="border-t border-gray-100 pt-4 grid grid-cols-2 gap-4 text-sm">
+                <!-- Nova opção visível para o cliente -->
+                <div class="mb-4 pb-3 border-b border-gray-100">
+                    <span class="text-gray-400 block text-xs">Cliente</span>
+                    <span id="view-cliente" class="font-bold text-gray-800 text-sm">-</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 text-sm">
                     <div>
                         <span class="text-gray-400 block text-xs">Quantidade</span>
                         <span id="view-quantidade" class="font-medium text-gray-800">-</span>
                     </div>
                     <div>
-                        <span class="text-gray-400 block text-xs">Valor</span>
+                        <span class="text-gray-400 block text-xs">Valor Total</span>
                         <span id="view-valor" class="font-medium text-gray-800">-</span>
                     </div>
                 </div>
@@ -111,16 +117,15 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // CONFIGURAÇÃO DO FIREBASE DIRETO NO ARQUIVO
         const firebaseConfig = {
-  apiKey: "AIzaSyA0FHIsmPmOCGKz9laF838ABvwbLQjkuGo",
-  authDomain: "pedidos-17465.firebaseapp.com",
-  projectId: "pedidos-17465",
-  storageBucket: "pedidos-17465.firebasestorage.app",
-  messagingSenderId: "1024812539553",
-  appId: "1:1024812539553:web:e9cd48a2ed83dad6965ae0",
-  measurementId: "G-J42HZNG46Z"
-};
+            apiKey: "AIzaSyA0FHIsmPmOCGKz9laF838ABvwbLQjkuGo",
+            authDomain: "pedidos-17465.firebaseapp.com",
+            projectId: "pedidos-17465",
+            storageBucket: "pedidos-17465.firebasestorage.app",
+            messagingSenderId: "1024812539553",
+            appId: "1:1024812539553:web:e9cd48a2ed83dad6965ae0",
+            measurementId: "G-J42HZNG46Z"
+        };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -128,10 +133,10 @@
         const urlParams = new URLSearchParams(window.location.search);
         const codigoBusca = urlParams.get('codigo')?.trim().toUpperCase();
 
-        const WHATSAPP_NUMERO = "5541999682836"; // Altere para o seu número se necessário
+        const WHATSAPP_NUMERO = "5541999682836";
 
         if (!codigoBusca) {
-            mostrarErro();
+            mostrarErro("Código não encontrado", "Confira o código informado e tente novamente.");
         } else {
             document.getElementById('badge-codigo').innerText = codigoBusca;
             buscarPedidoTempoReal(codigoBusca);
@@ -142,7 +147,7 @@
             
             onSnapshot(q, (snapshot) => {
                 if (snapshot.empty) {
-                    mostrarErro();
+                    mostrarErro("Pedido Encerrado ou Inválido", "Este pedido foi finalizado, removido ou o código foi liberado para outro atendimento.");
                     return;
                 }
 
@@ -151,7 +156,7 @@
                 renderizarPedido(pedido);
             }, (error) => {
                 console.error("Erro no listener:", error);
-                mostrarErro();
+                mostrarErro("Erro de conexão", "Não foi possível carregar os dados.");
             });
         }
 
@@ -164,17 +169,16 @@
             document.getElementById('content-state').classList.remove('hidden');
 
             document.getElementById('view-codigo-titulo').innerText = pedido.codigo;
+            document.getElementById('view-cliente').innerText = pedido.cliente || 'Cliente';
             document.getElementById('view-servico').innerText = pedido.servico || 'Serviço Gráfico';
             document.getElementById('view-quantidade').innerText = pedido.quantidade || '-';
             document.getElementById('view-valor').innerText = pedido.valor ? `R$ ${pedido.valor}` : '-';
 
-            // Descrição
             if (pedido.descricao) {
                 document.getElementById('view-descricao-box').classList.remove('hidden');
                 document.getElementById('view-descricao').innerText = pedido.descricao;
             }
 
-            // Mensagem Admin
             if (pedido.mensagem) {
                 document.getElementById('view-mensagem-admin').classList.remove('hidden');
                 document.getElementById('view-mensagem-texto').innerText = pedido.mensagem;
@@ -182,7 +186,6 @@
                 document.getElementById('view-mensagem-admin').classList.add('hidden');
             }
 
-            // Status Badge & Notificação
             atualizarBadgeStatus(pedido.status);
             
             if (!primeiraCarga && ultimoStatusConhecido && ultimoStatusConhecido !== pedido.status) {
@@ -192,7 +195,6 @@
             ultimoStatusConhecido = pedido.status;
             primeiraCarga = false;
 
-            // Datas
             if (pedido.criadoEm) {
                 document.getElementById('view-criado').innerText = `Criado em: ${formatarData(pedido.criadoEm.toDate())}`;
             }
@@ -200,10 +202,8 @@
                 document.getElementById('view-atualizado').innerText = `Atualizado em: ${formatarData(pedido.atualizadoEm.toDate())}`;
             }
 
-            // Timeline
             renderizarTimeline(pedido.status);
 
-            // WhatsApp link
             const msgWp = encodeURIComponent(`Olá! Gostaria de informações sobre meu pedido ${pedido.codigo}.`);
             document.getElementById('btn-whatsapp').href = `https://wa.me/${WHATSAPP_NUMERO}?text=${msgWp}`;
         }
@@ -238,7 +238,6 @@
             container.innerHTML = "";
 
             let atingido = true;
-            etapas.framework = true;
             etapas.forEach((etapa) => {
                 const isAtual = etapa === statusAtual;
                 const iconeClass = isAtual ? "fa-solid fa-circle-dot text-indigo-600 scale-125" : (atingido ? "fa-solid fa-check text-emerald-600" : "fa-regular fa-circle text-gray-300");
@@ -266,8 +265,11 @@
             }, 6000);
         }
 
-        function mostrarErro() {
+        function mostrarErro(titulo, texto) {
             document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('content-state').classList.add('hidden');
+            document.getElementById('error-titulo').innerText = titulo;
+            document.getElementById('error-texto').innerText = texto;
             document.getElementById('error-state').classList.remove('hidden');
         }
 
