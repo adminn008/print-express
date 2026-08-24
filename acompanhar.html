@@ -106,11 +106,21 @@
 
     </main>
 
-    <!-- Firebase Scripts -->
+    <!-- Firebase Scripts e Lógica Integrada -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { firebaseConfig } from "./firebase-config.js";
+        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // CONFIGURAÇÃO DO FIREBASE DIRETO NO ARQUIVO
+        const firebaseConfig = {
+  apiKey: "AIzaSyA0FHIsmPmOCGKz9laF838ABvwbLQjkuGo",
+  authDomain: "pedidos-17465.firebaseapp.com",
+  projectId: "pedidos-17465",
+  storageBucket: "pedidos-17465.firebasestorage.app",
+  messagingSenderId: "1024812539553",
+  appId: "1:1024812539553:web:e9cd48a2ed83dad6965ae0",
+  measurementId: "G-J42HZNG46Z"
+};
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -118,7 +128,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const codigoBusca = urlParams.get('codigo')?.trim().toUpperCase();
 
-        const WHATSAPP_NUMERO = "5541999682836"; // Altere para o seu número
+        const WHATSAPP_NUMERO = "5541999682836"; // Altere para o seu número se necessário
 
         if (!codigoBusca) {
             mostrarErro();
@@ -146,6 +156,7 @@
         }
 
         let ultimoStatusConhecido = null;
+        let primeiraCarga = true;
 
         function renderizarPedido(pedido) {
             document.getElementById('loading-state').classList.add('hidden');
@@ -173,10 +184,13 @@
 
             // Status Badge & Notificação
             atualizarBadgeStatus(pedido.status);
-            if (ultimoStatusConhecido && ultimoStatusConhecido !== pedido.status) {
+            
+            if (!primeiraCarga && ultimoStatusConhecido && ultimoStatusConhecido !== pedido.status) {
                 mostrarNotificacao(pedido.status);
             }
+            
             ultimoStatusConhecido = pedido.status;
+            primeiraCarga = false;
 
             // Datas
             if (pedido.criadoEm) {
@@ -224,6 +238,7 @@
             container.innerHTML = "";
 
             let atingido = true;
+            etapas.framework = true;
             etapas.forEach((etapa) => {
                 const isAtual = etapa === statusAtual;
                 const iconeClass = isAtual ? "fa-solid fa-circle-dot text-indigo-600 scale-125" : (atingido ? "fa-solid fa-check text-emerald-600" : "fa-regular fa-circle text-gray-300");
@@ -248,7 +263,7 @@
             toast.classList.remove('translate-x-full');
             setTimeout(() => {
                 toast.classList.add('translate-x-full');
-            }, 5000);
+            }, 6000);
         }
 
         function mostrarErro() {
