@@ -11,7 +11,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
+    
+<!-- Campo de texto -->
+<textarea id="meuTexto" placeholder="Digite seu texto aqui..." rows="10" cols="50"></textarea>
+<br>
+<!-- Botão para apagar -->
+<button id="btnLimpar">Apagar Tudo</button>
 
+<script>
+  const campoTexto = document.getElementById('meuTexto');
+  const btnLimpar = document.getElementById('btnLimpar');
+
+  // 1. Recarrega o texto salvo assim que a página é carregada
+  const textoSalvo = localStorage.getItem('textoRascunho');
+  if (textoSalvo) {
+    campoTexto.value = textoSalvo;
+  }
+
+  // 2. Salva no localStorage a cada letra digitada
+  campoTexto.addEventListener('input', () => {
+    localStorage.setItem('textoRascunho', campoTexto.value);
+  });
+
+  // 3. Limpa o texto e remove a chave do localStorage ao clicar no botão
+  btnLimpar.addEventListener('click', () => {
+    campoTexto.value = '';
+    localStorage.removeItem('textoRascunho');
+  });
+</script>
+
+    
     <!-- Header PrintExpress -->
     <header class="app-header">
         <div class="header-container">
