@@ -26,6 +26,7 @@ let state = {
 document.addEventListener('DOMContentLoaded', () => {
     initDefaultValues();
     initEventListeners();
+    initMasks();
     addServiceItem(); // Adiciona o primeiro item de serviço por padrão
     loadDraft();
     updateReceiptView();
@@ -42,8 +43,54 @@ function initDefaultValues() {
     document.getElementById('modal-price-display').innerText = CONFIG.PRECO;
 }
 
+// MÁSCARAS AUTOMÁTICAS (CPF, CNPJ, CEP, TELEFONE)
+function initMasks() {
+    document.addEventListener('input', (e) => {
+        const target = e.target;
+        
+        if (target.classList.contains('mask-cpf')) {
+            let v = target.value.replace(/\D/g, '');
+            v = v.replace(/(\d{3})(\d)/, '$1.$2');
+            v = v.replace(/(\d{3})(\d)/, '$1.$2');
+            v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            target.value = v;
+        }
+        
+        if (target.classList.contains('mask-cnpj')) {
+            let v = target.value.replace(/\D/g, '');
+            v = v.replace(/^(\d{2})(\d)/, '$1.$2');
+            v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+            v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
+            v = v.replace(/(\d{4})(\d)/, '$1-$2');
+            target.value = v;
+        }
+
+        if (target.classList.contains('mask-cep')) {
+            let v = target.value.replace(/\D/g, '');
+            v = v.replace(/^(\d{5})(\d)/, '$1-$2');
+            target.value = v;
+        }
+
+        if (target.classList.contains('mask-phone')) {
+            let v = target.value.replace(/\D/g, '');
+            v = v.replace(/^(\d{2})(\d)/, '($1) $2');
+            v = v.replace(/(\d{5})(\d)/, '$1-$2');
+            target.value = v;
+        }
+    });
+}
+
 // CONFIGURAÇÃO DOS EVENT LISTENERS DA INTERFACE
 function initEventListeners() {
+    // Modo Escuro
+    document.getElementById('btn-toggle-dark').addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        document.getElementById('btn-toggle-dark').innerHTML = isDark 
+            ? '<i class="fa-solid fa-sun"></i> Modo Claro' 
+            : '<i class="fa-solid fa-moon"></i> Modo Escuro';
+    });
+
     // Navegação do Stepper
     document.querySelectorAll('.step-item').forEach(item => {
         item.addEventListener('click', () => {
@@ -89,7 +136,7 @@ function initEventListeners() {
 
     // Seleção de Cores Visual
     document.querySelectorAll('.color-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', () => {
             document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             state.themeColor = btn.getAttribute('data-color');
@@ -162,9 +209,7 @@ function goToStep(stepNumber) {
 }
 
 // VALIDAÇÃO BÁSICA DE ETAPA
-function validateStep(step) {
-    // Pode ser expandido com validações rígidas se necessário.
-    // Atualmente mantido fluido para não bloquear a usabilidade mobile.
+function validateStep() {
     return true;
 }
 
@@ -195,11 +240,11 @@ function addServiceItem(data = null) {
     const container = document.getElementById('services-container');
 
     const itemHTML = `
-        <div class="service-item-card margin-top-15" id="service-item-${id}" style="border:1px solid #cbd5e1; padding:12px; border-radius:6px; background:#fff;">
+        <div class="service-item-card margin-top-15" id="service-item-${id}" style="border:1px solid var(--border-color); padding:12px; border-radius:6px; background:var(--bg-card);">
             <div class="grid-container">
                 <div class="form-group col-6">
                     <label>Descrição do Serviço *</label>
-                    <input type="text" class="form-control s-desc" value="${data ? data.desc : ''}" placeholder="Ex: Manutenção de Ar Condicionado" required>
+                    <input type="text" class="form-control s-desc" value="${data ? data.desc : ''}" placeholder="Ex: Manutenção de Ar-Condicionado" required>
                 </div>
                 <div class="form-group col-3">
                     <label>Unidade</label>
@@ -258,7 +303,7 @@ function removeServiceItem(id) {
     }
 }
 
-// CÁLCULOS AUTOMÁTICOS DE SUBATOTAIS E TOTAL FINAL
+// CÁLCULOS AUTOMÁTICOS DE SUBTOTAL E TOTAL FINAL
 function calculateTotals() {
     let subtotalGeral = 0;
 
@@ -541,7 +586,7 @@ function handlePrint() {
     window.print();
 }
 
-// GERAÇÃO REAL DE PDF COM HTML2PDF.JS
+// GERAÇÃO REAL DE PDF COM HTML2PDF.JS (AJUSTADO PARA A4 COMPLETO)
 function handlePDFDownload() {
     if (CONFIG.GERADOR_PREMIUM) {
         document.getElementById('premium-modal').classList.remove('hidden');
@@ -587,7 +632,6 @@ function setMode(mode) {
     document.getElementById('btn-mode-quick').classList.toggle('active', mode === 'quick');
     document.getElementById('btn-mode-complete').classList.toggle('active', mode === 'complete');
     
-    // Pode ocultar/exibir seções para agilizar no celular
     alert(`Modo ${mode === 'quick' ? 'Rápido (campos essenciais)' : 'Completo (todos os campos)'} ativado.`);
 }
 
