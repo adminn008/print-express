@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Recibo de Prestação de Serviços - PrintExpress</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf.js para geração real de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+    <!-- Header PrintExpress -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <i class="fa-solid fa-print logo-icon"></i>
+                <span class="brand-name">PrintExpress</span>
+            </div>
+            <div class="header-actions">
+                <button type="button" class="btn btn-outline" id="btn-mode-quick"><i class="fa-solid fa-bolt"></i> Rápido</button>
+                <button type="button" class="btn btn-outline active" id="btn-mode-complete"><i class="fa-solid fa-sliders"></i> Completo</button>
+                <button type="button" class="btn btn-danger-ghost" id="btn-clear-form" title="Limpar Formulário"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Indicador de Progresso / Etapas no Mobile -->
+    <nav class="stepper-nav">
+        <div class="stepper-container">
+            <div class="step-item active" data-step="1"><span>1</span> Identificação</div>
+            <div class="step-item" data-step="2"><span>2</span> Prestador</div>
+            <div class="step-item" data-step="3"><span>3</span> Cliente</div>
+            <div class="step-item" data-step="4"><span>4</span> Serviços</div>
+            <div class="step-item" data-step="5"><span>5</span> Pagamento</div>
+            <div class="step-item" data-step="6"><span>6</span> Adicionais</div>
+            <div class="step-item" data-step="7"><span>7</span> Personalizar</div>
+            <div class="step-item" data-step="8"><span>8</span> Prévia</div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="main-container">
+
+        <!-- LADO ESQUERDO: FORMULÁRIO MULTI-ETAPAS -->
+        <section class="form-section">
+            <form id="receipt-form" onsubmit="return false;">
+
+                <!-- ETAPA 1: IDENTIFICAÇÃO DO RECIBO -->
+                <div class="form-step active" id="step-1">
+                    <h2 class="step-title"><i class="fa-solid fa-file-invoice"></i> Identificação do Recibo</h2>
+                    <div class="grid-container">
+                        <div class="form-group col-4">
+                            <label for="receipt_number">Nº do Recibo <span class="required">*</span></label>
+                            <input type="text" id="receipt_number" class="form-control" placeholder="Ex: 001/2026" required>
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="receipt_serie">Série</label>
+                            <input type="text" id="receipt_serie" class="form-control" placeholder="Ex: A1">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="receipt_type">Tipo de Recibo <span class="required">*</span></label>
+                            <select id="receipt_type" class="form-control">
+                                <option value="Prestação de serviço">Prestação de serviço</option>
+                                <option value="Pagamento recebido">Pagamento recebido</option>
+                                <option value="Pagamento parcial">Pagamento parcial</option>
+                                <option value="Sinal/adiantamento">Sinal/adiantamento</option>
+                                <option value="Parcela">Parcela</option>
+                                <option value="Quitação de serviço">Quitação de serviço</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-12 hidden" id="group_receipt_type_other">
+                            <label for="receipt_type_other">Especifique o Tipo</label>
+                            <input type="text" id="receipt_type_other" class="form-control" placeholder="Digite o tipo de recibo">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="issue_date">Data de Emissão <span class="required">*</span></label>
+                            <input type="date" id="issue_date" class="form-control" required>
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="issue_time">Hora de Emissão</label>
+                            <input type="time" id="issue_time" class="form-control">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="issue_city">Cidade de Emissão <span class="required">*</span></label>
+                            <input type="text" id="issue_city" class="form-control" placeholder="Ex: São Paulo" required>
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="issue_uf">Estado/UF <span class="required">*</span></label>
+                            <input type="text" id="issue_uf" class="form-control" placeholder="Ex: SP" maxlength="2" required>
+                        </div>
+                        <div class="form-group col-8">
+                            <label for="ref_period">Período de Referência</label>
+                            <input type="text" id="ref_period" class="form-control" placeholder="Ex: Mês de Agosto/2026">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="ref_code">Código Interno/Ref.</label>
+                            <input type="text" id="ref_code" class="form-control" placeholder="Ex: REF-994">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="order_number">Nº do Pedido</label>
+                            <input type="text" id="order_number" class="form-control" placeholder="Ex: PED-1020">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="quote_number">Nº do Orçamento</label>
+                            <input type="text" id="quote_number" class="form-control" placeholder="Ex: ORÇ-504">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ETAPA 2: DADOS DO PRESTADOR -->
+                <div class="form-step" id="step-2">
+                    <h2 class="step-title"><i class="fa-solid fa-user-gear"></i> Dados do Prestador / Recebedor</h2>
+                    
+                    <div class="type-selector">
+                        <label class="radio-label">
+                            <input type="radio" name="provider_type" value="PF" checked> Pessoa Física (PF)
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="provider_type" value="PJ"> Pessoa Jurídica (PJ)
+                        </label>
+                    </div>
+
+                    <div class="grid-container">
+                        <div class="form-group col-6" id="group_provider_name">
+                            <label for="provider_name">Nome Completo <span class="required">*</span></label>
+                            <input type="text" id="provider_name" class="form-control" placeholder="Nome do prestador">
+                        </div>
+                        <div class="form-group col-6 hidden" id="group_provider_rs">
+                            <label for="provider_rs">Razão Social <span class="required">*</span></label>
+                            <input type="text" id="provider_rs" class="form-control" placeholder="Razão Social da empresa">
+                        </div>
+                        <div class="form-group col-6 hidden" id="group_provider_nf">
+                            <label for="provider_nf">Nome Fantasia</label>
+                            <input type="text" id="provider_nf" class="form-control" placeholder="Nome comercial">
+                        </div>
+                        <div class="form-group col-6" id="group_provider_cpf">
+                            <label for="provider_cpf">CPF <span class="required">*</span></label>
+                            <input type="text" id="provider_cpf" class="form-control" placeholder="000.000.000-00">
+                        </div>
+                        <div class="form-group col-6 hidden" id="group_provider_cnpj">
+                            <label for="provider_cnpj">CNPJ <span class="required">*</span></label>
+                            <input type="text" id="provider_cnpj" class="form-control" placeholder="00.000.000/0001-00">
+                        </div>
+                        <div class="form-group col-6 hidden" id="group_provider_im">
+                            <label for="provider_im">Inscrição Municipal</label>
+                            <input type="text" id="provider_im" class="form-control" placeholder="Opcional">
+                        </div>
+                        <div class="form-group col-6 hidden" id="group_provider_ie">
+                            <label for="provider_ie">Inscrição Estadual</label>
+                            <input type="text" id="provider_ie" class="form-control" placeholder="Opcional">
+                        </div>
+                        
+                        <!-- Endereço -->
+                        <div class="form-group col-3">
+                            <label for="provider_cep">CEP</label>
+                            <input type="text" id="provider_cep" class="form-control" placeholder="00000-000">
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="provider_address">Logradouro / Endereço</label>
+                            <input type="text" id="provider_address" class="form-control" placeholder="Rua, Av, etc.">
+                        </div>
+                        <div class="form-group col-3">
+                            <label for="provider_number">Número</label>
+                            <input type="text" id="provider_number" class="form-control" placeholder="Nº">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="provider_comp">Complemento</label>
+                            <input type="text" id="provider_comp" class="form-control" placeholder="Sala, Apto">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="provider_neighborhood">Bairro</label>
+                            <input type="text" id="provider_neighborhood" class="form-control" placeholder="Bairro">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="provider_city">Cidade</label>
+                            <input type="text" id="provider_city" class="form-control" placeholder="Cidade">
+                        </div>
+                        <div class="form-group col-3">
+                            <label for="provider_uf">UF</label>
+                            <input type="text" id="provider_uf" class="form-control" placeholder="UF" maxlength="2">
+                        </div>
+                        
+                        <!-- Contato -->
+                        <div class="form-group col-4">
+                            <label for="provider_phone">Telefone / Celular</label>
+                            <input type="text" id="provider_phone" class="form-control" placeholder="(00) 00000-0000">
+                        </div>
+                        <div class="form-group col-5">
+                            <label for="provider_email">E-mail</label>
+                            <input type="email" id="provider_email" class="form-control" placeholder="email@dominio.com">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="provider_role">Profissão / Cargo</label>
+                            <input type="text" id="provider_role" class="form-control" placeholder="Ex: T.I. / Eletricista">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="provider_site">Website</label>
+                            <input type="text" id="provider_site" class="form-control" placeholder="www.site.com.br">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="provider_insta">Instagram</label>
+                            <input type="text" id="provider_insta" class="form-control" placeholder="@suaempresa">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ETAPA 3: DADOS DO CLIENTE -->
+                <div class="form-step" id="step-3">
+                    <h2 class="step-title"><i class="fa-solid fa-users"></i> Dados do Cliente / Contratante</h2>
+                    
+                    <div class="type-selector">
+                        <label class="radio-label">
+                            <input type="radio" name="customer_type" value="PF" checked> Pessoa Física (PF)
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="customer_type" value="PJ"> Pessoa Jurídica (PJ)
+                        </label>
+                    </div>
+
+                    <div class="grid-container">
+                        <div class="form-group col-6" id="group_customer_name">
+                            <label for="customer_name">Nome do Cliente <span class="required">*</span></label>
+                            <input type="text" id="customer_name" class="form-control" placeholder="Nome completo">
+                        </div>
+                        <div class="form-group col-6 hidden" id="group_customer_rs">
+                            <label for="customer_rs">Razão Social <span class="required">*</span></label>
+                            <input type="text" id="customer_rs" class="form-control" placeholder="Razão Social">
+                        </div>
+                        <div class="form-group col-6" id="group_customer_cpf">
+                            <label for="customer_cpf">CPF</label>
+                            <input type="text" id="customer_cpf" class="form-control" placeholder="000.000.000-00">
+                        </div>
+                        <div class="form-group col-6 hidden" id="group_customer_cnpj">
+                            <label for="customer_cnpj">CNPJ</label>
+                            <input type="text" id="customer_cnpj" class="form-control" placeholder="00.000.000/0001-00">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="customer_rg">RG (Opcional)</label>
+                            <input type="text" id="customer_rg" class="form-control" placeholder="Número do RG">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="customer_phone">Telefone / WhatsApp</label>
+                            <input type="text" id="customer_phone" class="form-control" placeholder="(00) 00000-0000">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="customer_email">E-mail</label>
+                            <input type="email" id="customer_email" class="form-control" placeholder="cliente@email.com">
+                        </div>
+                        <div class="form-group col-8">
+                            <label for="customer_address">Endereço Completo</label>
+                            <input type="text" id="customer_address" class="form-control" placeholder="Rua, Número, Bairro, Cidade - UF">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="customer_resp">Responsável pelo Pgto.</label>
+                            <input type="text" id="customer_resp" class="form-control" placeholder="Nome do responsável">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ETAPA 4: SERVIÇOS PRESTADOS -->
+                <div class="form-step" id="step-4">
+                    <h2 class="step-title"><i class="fa-solid fa-list-check"></i> Serviços Prestados (Tabela Dinâmica)</h2>
+                    
+                    <div id="services-container">
+                        <!-- Itens dos serviços renderizados via JS -->
+                    </div>
+
+                    <button type="button" class="btn btn-secondary btn-block" id="btn-add-service">
+                        <i class="fa-solid fa-plus"></i> Adicionar Outro Serviço
+                    </button>
+
+                    <div class="divider"></div>
+
+                    <div class="form-group">
+                        <label for="general_description">📝 Descrição Geral / Detalhada dos Serviços</label>
+                        <textarea id="general_description" class="form-control" rows="3" placeholder="Serviço de manutenção, instalação, configuração, consultoria ou atividade realizada conforme combinado entre as partes."></textarea>
+                    </div>
+
+                    <!-- Dados da Execução -->
+                    <h3 class="subsection-title"><i class="fa-solid fa-location-dot"></i> Dados da Execução do Serviço</h3>
+                    <div class="grid-container">
+                        <div class="form-group col-6">
+                            <label for="exec_location">Local do Serviço</label>
+                            <input type="text" id="exec_location" class="form-control" placeholder="Ex: Sede do cliente / Remoto">
+                        </div>
+                        <div class="form-group col-3">
+                            <label for="exec_start">Data Início</label>
+                            <input type="date" id="exec_start" class="form-control">
+                        </div>
+                        <div class="form-group col-3">
+                            <label for="exec_end">Data Conclusão</label>
+                            <input type="date" id="exec_end" class="form-control">
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="exec_tech">Profissional / Equipe Responsável</label>
+                            <input type="text" id="exec_tech" class="form-control" placeholder="Ex: João Silva (Técnico N2)">
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="exec_project">Projeto / OS Relacionada</label>
+                            <input type="text" id="exec_project" class="form-control" placeholder="Ex: OS-2026-88">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ETAPA 5: DADOS DE PAGAMENTO -->
+                <div class="form-step" id="step-5">
+                    <h2 class="step-title"><i class="fa-solid fa-credit-card"></i> Pagamento & Valores</h2>
+                    
+                    <div class="grid-container">
+                        <div class="form-group col-4">
+                            <label for="pay_method">Forma de Pagamento <span class="required">*</span></label>
+                            <select id="pay_method" class="form-control">
+                                <option value="Pix">Pix</option>
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                <option value="Cartão de Débito">Cartão de Débito</option>
+                                <option value="Transferência Bancária">Transferência Bancária</option>
+                                <option value="Boleto">Boleto</option>
+                                <option value="Cheque">Cheque</option>
+                                <option value="Parcelado">Parcelado</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="pay_status">Status do Pagamento <span class="required">*</span></label>
+                            <select id="pay_status" class="form-control">
+                                <option value="Pago">Pago</option>
+                                <option value="Parcialmente Pago">Parcialmente Pago</option>
+                                <option value="Pendente">Pendente</option>
+                                <option value="Aguardando Pagamento">Aguardando Pagamento</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="pay_date">Data do Pagamento</label>
+                            <input type="date" id="pay_date" class="form-control">
+                        </div>
+
+                        <!-- Cálculos Monetários -->
+                        <div class="form-group col-4">
+                            <label for="calc_subtotal">Subtotal dos Serviços (R$)</label>
+                            <input type="text" id="calc_subtotal" class="form-control readonly" readonly value="0,00">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="calc_discount">Desconto Geral (R$)</label>
+                            <input type="number" id="calc_discount" class="form-control" step="0.01" value="0.00">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="calc_addition">Acréscimo Geral (R$)</label>
+                            <input type="number" id="calc_addition" class="form-control" step="0.01" value="0.00">
+                        </div>
+
+                        <div class="form-group col-4">
+                            <label for="calc_total"><strong>VALOR TOTAL (R$)</strong></label>
+                            <input type="text" id="calc_total" class="form-control total-field" readonly value="0,00">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="calc_received">Valor Recebido (R$)</label>
+                            <input type="number" id="calc_received" class="form-control" step="0.01" value="0.00">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="calc_pending">Valor Pendente (R$)</label>
+                            <input type="text" id="calc_pending" class="form-control readonly" readonly value="0,00">
+                        </div>
+
+                        <div class="form-group col-12">
+                            <label for="amount_in_words">Valor por Extenso (Gerado Automaticamente)</label>
+                            <input type="text" id="amount_in_words" class="form-control" placeholder="Zero reais">
+                        </div>
+                    </div>
+
+                    <!-- Dados Pix (Opcional) -->
+                    <h3 class="subsection-title"><i class="fa-brands fa-pix"></i> Dados Pix (Opcional)</h3>
+                    <div class="grid-container">
+                        <div class="form-group col-4">
+                            <label for="pix_type">Tipo de Chave</label>
+                            <select id="pix_type" class="form-control">
+                                <option value="">Nenhum / Não exibir</option>
+                                <option value="CPF/CNPJ">CPF/CNPJ</option>
+                                <option value="E-mail">E-mail</option>
+                                <option value="Telefone">Telefone</option>
+                                <option value="Chave Aleatória">Chave Aleatória</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-8">
+                            <label for="pix_key">Chave Pix</label>
+                            <input type="text" id="pix_key" class="form-control" placeholder="Informe a chave Pix">
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="pix_receiver">Nome do Recebedor</label>
+                            <input type="text" id="pix_receiver" class="form-control" placeholder="Titular da conta Pix">
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="pix_bank">Instituição / Banco</label>
+                            <input type="text" id="pix_bank" class="form-control" placeholder="Ex: Banco do Brasil, Nubank">
+                        </div>
+                    </div>
+
+                    <!-- Dados Bancários e Tributários Opcionais -->
+                    <h3 class="subsection-title"><i class="fa-solid fa-building-columns"></i> Dados Bancários & Observação Tributária</h3>
+                    <div class="grid-container">
+                        <div class="form-group col-12">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="show_bank_details"> Mostrar dados bancários tradicionais no recibo
+                            </label>
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="bank_name">Banco</label>
+                            <input type="text" id="bank_name" class="form-control" placeholder="Nome do Banco">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="bank_agency">Agência</label>
+                            <input type="text" id="bank_agency" class="form-control" placeholder="0000">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="bank_account">Conta / Tipo</label>
+                            <input type="text" id="bank_account" class="form-control" placeholder="00000-0 (Corrente)">
+                        </div>
+                        <div class="form-group col-12">
+                            <div class="info-alert">
+                                <i class="fa-solid fa-circle-info"></i> Os campos tributários são informativos e não transformam este recibo em documento fiscal (NFS-e).
+                            </div>
+                        </div>
+                        <div class="form-group col-12">
+                            <label for="tax_obs">Observação Tributária / Retenções na Fonte</label>
+                            <input type="text" id="tax_obs" class="form-control" placeholder="Ex: Retenções de ISS/INSS conforme contrato (se houver)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ETAPA 6: INFORMAÇÕES ADICIONAIS & TEXTO AUTOMÁTICO -->
+                <div class="form-step" id="step-6">
+                    <h2 class="step-title"><i class="fa-solid fa-note-sticky"></i> Textos, Garantia & Assinaturas</h2>
+                    
+                    <div class="form-group">
+                        <label for="auto_receipt_text">
+                            Texto Principal do Recibo (Gerado Dinamicamente - Editável)
+                        </label>
+                        <textarea id="auto_receipt_text" class="form-control" rows="4"></textarea>
+                    </div>
+
+                    <div class="grid-container">
+                        <div class="form-group col-6">
+                            <label for="obs_terms">Condições / Garantia / Prazo</label>
+                            <textarea id="obs_terms" class="form-control" rows="2" placeholder="Ex: Garantia de 90 dias sobre o serviço prestado."></textarea>
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="custom_message">Mensagem Personalizada de Agradecimento</label>
+                            <textarea id="custom_message" class="form-control" rows="2" placeholder="Obrigado pela preferência!"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Assinaturas -->
+                    <h3 class="subsection-title"><i class="fa-solid fa-file-signature"></i> Assinaturas das Partes</h3>
+                    <div class="grid-container">
+                        <div class="form-group col-6">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="show_provider_sig" checked> Mostrar campo de assinatura do Prestador
+                            </label>
+                            <input type="text" id="sig_provider_role" class="form-control margin-top-5" placeholder="Cargo/Função do Prestador">
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="show_customer_sig" checked> Mostrar campo de assinatura do Cliente
+                            </label>
+                            <input type="text" id="sig_customer_role" class="form-control margin-top-5" placeholder="Cargo/Função do Cliente">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ETAPA 7: PERSONALIZAÇÃO VISUAL -->
+                <div class="form-step" id="step-7">
+                    <h2 class="step-title"><i class="fa-solid fa-palette"></i> Modelos & Cores</h2>
+                    
+                    <h3>Escolha o Modelo Visual</h3>
+                    <div class="template-selector">
+                        <label class="template-card active">
+                            <input type="radio" name="selected_template" value="classic" checked>
+                            <div class="template-info">
+                                <strong>Clássico</strong>
+                                <small>Formal, limpo, linhas finas e tradicionais</small>
+                            </div>
+                        </label>
+                        <label class="template-card">
+                            <input type="radio" name="selected_template" value="modern">
+                            <div class="template-info">
+                                <strong>Moderno</strong>
+                                <small>Cards visuais, destaques em blocos e tipografia atual</small>
+                            </div>
+                        </label>
+                        <label class="template-card">
+                            <input type="radio" name="selected_template" value="corporate">
+                            <div class="template-info">
+                                <strong>Empresarial</strong>
+                                <small>Estruturado, foco corporativo e cabeçalho forte</small>
+                            </div>
+                        </label>
+                    </div>
+
+                    <h3 class="margin-top-15">Cor do Documento</h3>
+                    <div class="color-picker-grid">
+                        <button type="button" class="color-btn active" data-color="#1e3a8a" style="background-color: #1e3a8a;" title="Azul"></button>
+                        <button type="button" class="color-btn" data-color="#111827" style="background-color: #111827;" title="Preto"></button>
+                        <button type="button" class="color-btn" data-color="#065f46" style="background-color: #065f46;" title="Verde"></button>
+                        <button type="button" class="color-btn" data-color="#991b1b" style="background-color: #991b1b;" title="Vermelho"></button>
+                        <button type="button" class="color-btn" data-color="#581c87" style="background-color: #581c87;" title="Roxo"></button>
+                        <button type="button" class="color-btn" data-color="#c2410c" style="background-color: #c2410c;" title="Laranja"></button>
+                        <button type="button" class="color-btn" data-color="#374151" style="background-color: #374151;" title="Cinza"></button>
+                    </div>
+
+                    <h3 class="margin-top-15">Logotipo da Empresa</h3>
+                    <div class="grid-container">
+                        <div class="form-group col-12">
+                            <input type="file" id="logo_input" accept="image/png, image/jpeg, image/webp" class="form-control">
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="logo_size">Tamanho da Logo</label>
+                            <select id="logo_size" class="form-control">
+                                <option value="80px">Pequena</option>
+                                <option value="110px" selected>Média</option>
+                                <option value="150px">Grande</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="logo_align">Alinhamento</label>
+                            <select id="logo_align" class="form-control">
+                                <option value="left" selected>Esquerda</option>
+                                <option value="center">Centro</option>
+                                <option value="right">Direita</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-4">
+                            <button type="button" class="btn btn-danger-ghost margin-top-20" id="btn-remove-logo"><i class="fa-solid fa-trash"></i> Remover Logo</button>
+                        </div>
+                    </div>
+
+                    <h3 class="margin-top-15">Exibição de Seções Opcionais</h3>
+                    <div class="grid-container">
+                        <div class="form-group col-6">
+                            <label class="checkbox-label"><input type="checkbox" id="opt_show_num" checked> Mostrar Nº Recibo</label>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="checkbox-label"><input type="checkbox" id="opt_show_words" checked> Mostrar Valor por Extenso</label>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="checkbox-label"><input type="checkbox" id="opt_show_exec" checked> Mostrar Dados de Execução</label>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="checkbox-label"><input type="checkbox" id="opt_show_nfse_warning" checked> Mostrar Aviso Legal de Recibo</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTROLES DE NAVEGAÇÃO -->
+                <div class="form-navigation">
+                    <button type="button" class="btn btn-secondary" id="btn-prev"><i class="fa-solid fa-arrow-left"></i> Anterior</button>
+                    <button type="button" class="btn btn-primary" id="btn-next">Próximo <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+
+            </form>
+        </section>
+
+        <!-- LADO DIREITO: PRÉ-VISUALIZAÇÃO A4 E AÇÕES DE GERAÇÃO -->
+        <section class="preview-section">
+            <div class="preview-header">
+                <h3><i class="fa-solid fa-eye"></i> Pré-visualização A4</h3>
+                <div class="zoom-controls">
+                    <button type="button" id="btn-zoom-out" title="Reduzir Zoom"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                    <span id="zoom-level">100%</span>
+                    <button type="button" id="btn-zoom-in" title="Aumentar Zoom"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                </div>
+            </div>
+
+            <!-- CONTAINER DA FOLHA A4 -->
+            <div class="preview-viewport">
+                <div id="receipt-document" class="a4-page template-classic">
+                    <!-- O conteúdo do documento é renderizado dinamicamente via JS -->
+                </div>
+            </div>
+
+            <!-- BOTÕES DE AÇÃO FINAL -->
+            <div class="action-bar">
+                <button type="button" class="btn btn-success" id="btn-print"><i class="fa-solid fa-print"></i> Imprimir</button>
+                <button type="button" class="btn btn-primary" id="btn-pdf"><i class="fa-solid fa-file-pdf"></i> Baixar PDF</button>
+                <button type="button" class="btn btn-outline" id="btn-share"><i class="fa-solid fa-share-nodes"></i> Compartilhar</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL PREMIUM / FORMSUBMIT (PREPARADO PARA INTEGRAÇÃO) -->
+    <div class="modal-overlay hidden" id="premium-modal">
+        <div class="modal-content">
+            <button type="button" class="modal-close" id="btn-close-modal">&times;</button>
+            <div class="modal-body">
+                <i class="fa-solid fa-crown modal-icon"></i>
+                <h2>Recibo Premium - PrintExpress</h2>
+                <p>Para desbloquear o download em alta definição sem marca d'água, solicite seu recibo oficial por apenas <strong id="modal-price-display">R$ 4,90</strong>.</p>
+                
+                <form id="premium-form">
+                    <div class="form-group">
+                        <label>Seu Nome</label>
+                        <input type="text" id="premium_user_name" class="form-control" required placeholder="Digite seu nome">
+                    </div>
+                    <div class="form-group">
+                        <label>Seu WhatsApp</label>
+                        <input type="text" id="premium_user_phone" class="form-control" required placeholder="(00) 00000-0000">
+                    </div>
+                    <div class="form-group">
+                        <label>Seu E-mail</label>
+                        <input type="email" id="premium_user_email" class="form-control" required placeholder="email@dominio.com">
+                    </div>
+                    <button type="submit" class="btn btn-success btn-block margin-top-15">
+                        <i class="fa-solid fa-paper-plane"></i> Solicitar Recibo Premium
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
