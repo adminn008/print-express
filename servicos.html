@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrintExpress — Serviços Digitais e Organização de Arquivos</title>
+    <meta name="description" content="Organize, transfira, converta e prepare seus arquivos de forma prática e segura com o PrintExpress.">
+    <meta property="og:title" content="PrintExpress — Serviços Digitais">
+    <meta property="og:description" content="Central de Serviços Digitais e Organização de Arquivos.">
+    <meta property="og:type" content="website">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* --- CSS RESET & VARIABLES --- */
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --accent: #0284c7;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+            --primary-light: #1e3a8a;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        button, input, select, textarea { font: inherit; color: inherit; border: none; outline: none; }
+        button { cursor: pointer; }
+
+        /* --- CONTAINER --- */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.25rem;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover { color: var(--primary); }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .theme-toggle, .hamburger {
+            background: var(--bg-primary);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .hamburger { display: none; }
+
+        /* --- HERO --- */
+        .hero {
+            padding: 4rem 0 3rem;
+            text-align: center;
+            position: relative;
+            background: radial-gradient(circle at 50% 0%, var(--primary-light) 0%, transparent 70%);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn-outline:hover { background: var(--bg-surface); }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
+
+        /* --- CAROUSEL (NOTICES) --- */
+        .notices-section { padding: 2rem 0; }
+        .carousel-container { position: relative; overflow: hidden; padding: 0.5rem 0; }
+        .carousel-track {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            padding-bottom: 1rem;
+        }
+        .carousel-track::-webkit-scrollbar { display: none; }
+
+        .notice-card {
+            flex: 0 0 280px;
+            scroll-snap-align: start;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .notice-card i { color: var(--primary); margin-bottom: 0.75rem; }
+        .notice-card h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+        .notice-card p { font-size: 0.875rem; color: var(--text-muted); }
+
+        /* --- SEARCH & FILTERS --- */
+        .controls-section { padding: 1.5rem 0; }
+        .search-box {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto 1.5rem;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 0.85rem 1rem 0.85rem 2.75rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+        .search-box i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .filter-chip {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+        .filter-chip.active, .filter-chip:hover {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* --- SERVICES GRID --- */
+        .services-section { padding: 2rem 0; }
+        .section-title { text-align: center; font-size: 1.75rem; margin-bottom: 2rem; }
+
+        .grid-services {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .service-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+
+        .service-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+
+        .badge {
+            position: absolute;
+            top: 1rem; right: 1rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            background: var(--primary-light);
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .service-icon {
+            width: 48px; height: 48px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .service-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .service-card p { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem; flex-grow: 1; }
+
+        .service-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .service-price { font-size: 0.85rem; color: var(--text-muted); }
+        .service-price span { font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: block; }
+
+        .fav-btn {
+            position: absolute; top: 1rem; left: 1rem;
+            background: transparent; color: var(--text-muted);
+        }
+        .fav-btn.active { color: #ef4444; }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden;
+            transition: var(--transition);
+            padding: 1rem;
+        }
+
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .modal {
+            background: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            width: 100%; max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active .modal { transform: translateY(0); }
+
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; background: var(--bg-surface); z-index: 10;
+        }
+
+        .modal-body { padding: 1.5rem; }
+
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.4rem; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+        }
+
+        /* --- CALCULATOR & TABLES --- */
+        .calc-section, .prices-section, .info-section { padding: 3rem 0; }
+        .calc-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .table-wrapper { overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+
+        /* --- FAQ (ACCORDION) --- */
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.5rem;
+        }
+        .faq-title {
+            padding: 1rem 1.25rem;
+            font-weight: 600;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer;
+        }
+        .faq-content { padding: 0 1.25rem 1rem; display: none; color: var(--text-muted); font-size: 0.95rem; }
+        .faq-item.active .faq-content { display: block; }
+
+        /* --- FOOTER --- */
+        footer {
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0 1.5rem;
+            margin-top: 4rem;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* --- TOAST & UTILS --- */
+        .toast {
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--text-main); color: var(--bg-primary);
+            padding: 0.75rem 1.5rem; border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg); z-index: 200;
+            transform: translateY(100px); opacity: 0; transition: var(--transition);
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed; top: 70px; left: -100%; width: 100%; height: calc(100vh - 70px);
+                background: var(--bg-surface); flex-direction: column; padding: 2rem;
+                transition: var(--transition);
+            }
+            .nav-menu.active { left: 0; }
+            .hamburger { display: flex; }
+            .hero h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container nav-wrapper">
+            <a href="#" class="logo">
+                <i data-lucide="folder-archive"></i> PrintExpress
+            </a>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#inicio" class="nav-link">Início</a></li>
+                <li><a href="#servicos" class="nav-link">Serviços</a></li>
+                <li><a href="#precos" class="nav-link">Preços</a></li>
+                <li><a href="#como-funciona" class="nav-link">Como Funciona</a></li>
+                <li><a href="#faq" class="nav-link">FAQ</a></li>
+            </ul>
+            <div class="header-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Alternar Tema">
+                    <i data-lucide="sun" id="themeIcon"></i>
+                </button>
+                <button class="hamburger" id="hamburger" aria-label="Abrir Menu">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="inicio">
+        <div class="container">
+            <h1>Seus arquivos, organizados e prontos.</h1>
+            <p class="hero-subtitle">Serviços digitais para transferência, organização, conversão e preparação dos seus arquivos.</p>
+            <div class="hero-actions">
+                <a href="#servicos" class="btn btn-primary"><i data-lucide="grid"></i> Ver Serviços</a>
+                <a href="#precos" class="btn btn-outline"><i data-lucide="tag"></i> Consultar Preços</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CARROSSEL DE AVISOS -->
+    <section class="notices-section">
+        <div class="container">
+            <div class="carousel-container">
+                <div class="carousel-track" id="noticesTrack">
+                    <div class="notice-card">
+                        <i data-lucide="hard-drive"></i>
+                        <h3>Transferência de Arquivos</h3>
+                        <p>Passe seus arquivos para pendrive de forma organizada.</p>
+                    </div>
+                    <div class="notice-card">
+                        <i data-lucide="folder-tree"></i>
+                        <h3>Organização Completa</h3>
+                        <p>Seus arquivos separados em pastas e categorias claras.</p>
+                    </div>
+                    <div class="notice-card">
+                        <i data-lucide="shield-check"></i>
+                        <h3>Privacidade Total</h3>
+                        <p>Arquivos tratados exclusivamente para o serviço solicitado.</p>
+                    </div>
+                    <div class="notice-card">
+                        <i data-lucide="alert-circle"></i>
+                        <h3>Importante</h3>
+                        <p>Não fornecemos músicas, filmes, jogos ou programas protegidos.</p>
+                    </div>
+                    <div class="notice-card">
+                        <i data-lucide="smartphone"></i>
+                        <h3>100% Prático</h3>
+                        <p>Solicite e acompanhe tudo diretamente pelo celular.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BUSCA & FILTROS -->
+    <section class="controls-section">
+        <div class="container">
+            <div class="search-box">
+                <i data-lucide="search"></i>
+                <input type="text" id="searchInput" placeholder="Digite um serviço (ex: pendrive, PDF, foto)...">
+            </div>
+            <div class="filters" id="filterChips">
+                <button class="filter-chip active" data-filter="all">Todos</button>
+                <button class="filter-chip" data-filter="pendrive">Pendrive</button>
+                <button class="filter-chip" data-filter="documentos">Documentos</button>
+                <button class="filter-chip" data-filter="fotos">Fotos</button>
+                <button class="filter-chip" data-filter="audio">Áudio</button>
+                <button class="filter-chip" data-filter="pdf">PDF</button>
+                <button class="filter-chip" data-filter="favs">⭐ Favoritos</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAVORITOS & RECENTES -->
+    <section class="container" id="recentSection" style="display:none; margin-bottom: 1rem;">
+        <h4 style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">🕐 Vistos recentemente</h4>
+        <div id="recentContainer" style="display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
+    </section>
+
+    <!-- SERVIÇOS GRID -->
+    <section class="services-section" id="servicos">
+        <div class="container">
+            <h2 class="section-title">Nossos Serviços</h2>
+            <div class="grid-services" id="servicesGrid"></div>
+        </div>
+    </section>
+
+    <!-- CALCULADORA DE ORÇAMENTO -->
+    <section class="calc-section">
+        <div class="container">
+            <div class="calc-box">
+                <h2 style="text-align: center; margin-bottom: 1rem;"><i data-lucide="calculator"></i> Calcule seu orçamento</h2>
+                <div class="form-group">
+                    <label>Selecione o Serviço</label>
+                    <select id="calcService"></select>
+                </div>
+                <div class="form-group">
+                    <label>Quantidade aproximada de arquivos</label>
+                    <input type="number" id="calcQty" value="10" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Nível de Organização</label>
+                    <select id="calcLevel">
+                        <option value="1">Básica (Pastas padrão)</option>
+                        <option value="1.3">Detalhada (Datas / Categorias)</option>
+                    </select>
+                </div>
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Estimativa:</p>
+                    <p style="font-size: 2rem; font-weight: 800; color: var(--primary);" id="calcResult">R$ 0,00</p>
+                    <small style="color: var(--text-muted);">*Valor final poderá variar conforme tamanho e complexidade.</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TABELA DE PREÇOS -->
+    <section class="prices-section" id="precos">
+        <div class="container">
+            <h2 class="section-title">💰 Tabela de Preços</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Serviço</th>
+                            <th>A partir de</th>
+                        </tr>
+                    </thead>
+                    <tbody id="priceTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- COMO FUNCIONA -->
+    <section class="info-section" id="como-funciona">
+        <div class="container">
+            <h2 class="section-title">Como Funciona?</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; text-align: center;">
+                <div style="padding: 1rem;"><h3>1️⃣ Escolha</h3><p>Selecione o serviço desejado.</p></div>
+                <div style="padding: 1rem;"><h3>2️⃣ Informe</h3><p>Preencha os detalhes do seu pedido.</p></div>
+                <div style="padding: 1rem;"><h3>3️⃣ Orçamento</h3><p>Receba a confirmação dos valores.</p></div>
+                <div style="padding: 1rem;"><h3>4️⃣ Envie</h3><p>Instruções para entrega dos arquivos.</p></div>
+                <div style="padding: 1rem;"><h3>5️⃣ Execução</h3><p>Realizamos o serviço solicitado.</p></div>
+                <div style="padding: 1rem;"><h3>6️⃣ Retirada</h3><p>Receba seus arquivos prontos.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="info-section" id="faq">
+        <div class="container" style="max-width: 800px;">
+            <h2 class="section-title">Perguntas Frequentes</h2>
+            <div id="faqAccordion"></div>
+        </div>
+    </section>
+
+    <!-- DIREITOS & PRIVACIDADE -->
+    <section class="info-section">
+        <div class="container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <div class="notice-card">
+                <h3>⚠️ Sobre os Arquivos & Direitos</h3>
+                <p>O PrintExpress realiza serviços de transferência, organização e conversão de arquivos fornecidos pelo próprio cliente. O cliente é responsável por possuir autorização ou direitos necessários sobre os arquivos enviados.</p>
+                <br>
+                <p><strong>Não disponibilizamos, baixamos ou comercializamos conteúdos protegidos por direitos autorais para terceiros.</strong></p>
+            </div>
+            <div class="notice-card">
+                <h3>🔒 Privacidade</h3>
+                <p>Seus dados e arquivos são utilizados estritamente para a realização do serviço contratado. Recomendamos nunca enviar dados bancários ou senhas nos arquivos encaminhados.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h3>PrintExpress</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Serviços digitais, organização e preparação de arquivos.</p>
+                </div>
+                <div>
+                    <h4>Links Rápidos</h4>
+                    <p><a href="#servicos">Serviços</a></p>
+                    <p><a href="#precos">Preços</a></p>
+                    <p><a href="#faq">FAQ</a></p>
+                </div>
+                <div>
+                    <h4>Atendimento</h4>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Pagamentos e envio combinados durante a solicitação.</p>
+                </div>
+            </div>
+            <div style="text-align: center; border-top: 1px solid var(--border-color); padding-top: 1.5rem; color: var(--text-muted); font-size: 0.85rem;">
+                <p>© 2026 PrintExpress. Todos os direitos reservados.</p>
+                <p>Os serviços e preços podem variar conforme quantidade, tamanho e complexidade dos arquivos.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL DINÂMICO DE SERVIÇOS -->
+    <div class="modal-overlay" id="serviceModal">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="btn btn-outline btn-sm" id="closeModal"><i data-lucide="arrow-left"></i> Voltar</button>
+                <h3 id="modalTitle" style="font-size: 1.1rem;">Detalhes do Serviço</h3>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast" id="toast">Ação realizada com sucesso!</div>
+
+    <script>
+        /* --- CONFIGURAÇÕES GERAIS DA APLICAÇÃO --- */
+        const CONFIG = {
+            WHATSAPP_NUMBER: "5541999999999", // Altere para seu WhatsApp real (com DDD)
+            FORM_ENDPOINT: "SEU_ENDPOINT_FORMSUBMIT_AQUI", // Insira sua URL FormSubmit
+            CURRENCY: "BRL"
+        };
+
+        /* --- PREÇOS CENTRALIZADOS (FACILMENTE EDITÁVEIS) --- */
+        const PRECOS = {
+            transferencia: 5.00,
+            organizacao: 7.00,
+            backup: 7.00,
+            fotosPdf: 3.00,
+            documentosPdf: 3.00,
+            organizacaoFotos: 7.00,
+            audios: 5.00,
+            organizacaoDocumentos: 7.00,
+            juntarArquivos: 3.00,
+            separarDocumentos: 3.00,
+            conversao: 3.00,
+            pendriveOrganizado: 10.00
+        };
+
+        /* --- LISTA E MAPEAMENTO DOS SERVIÇOS --- */
+        const SERVICOS = [
+            { id: 'transferencia', name: '💾 Transferência de Arquivos', tag: 'pendrive', icon: 'hard-drive', badge: 'Popular', desc: 'Transfira seus arquivos para um pendrive de forma prática e organizada.', price: PRECOS.transferencia },
+            { id: 'organizacao', name: '📁 Organização de Arquivos', tag: 'organizacao', icon: 'folder-tree', badge: 'Recomendado', desc: 'Organizamos seus arquivos em pastas estruturadas para facilitar a localização.', price: PRECOS.organizacao },
+            { id: 'backup', name: '🗂️ Backup de Arquivos', tag: 'pendrive', icon: 'shield-check', badge: 'Segurança', desc: 'Faça uma cópia de segurança organizada dos seus arquivos importantes.', price: PRECOS.backup },
+            { id: 'fotosPdf', name: '🖼️ Fotos → PDF', tag: 'pdf', icon: 'file-image', badge: 'Novo', desc: 'Converta sequências de imagens e fotos para documento PDF único.', price: PRECOS.fotosPdf },
+            { id: 'documentosPdf', name: '📄 Documentos → PDF', tag: 'pdf', icon: 'file-text', badge: 'Essencial', desc: 'Transforme múltiplos documentos fornecidos em um arquivo PDF organizado.', price: PRECOS.documentosPdf },
+            { id: 'organizacaoFotos', name: '📸 Organização de Fotos', tag: 'fotos', icon: 'camera', badge: 'Destaque', desc: 'Classificação de fotos por ano, mês, evento ou pessoas.', price: PRECOS.organizacaoFotos },
+            { id: 'audios', name: '🎧 Transferência de Áudios', tag: 'audio', icon: 'music', badge: 'Prático', desc: 'Transferência e organização de arquivos de áudio fornecidos pelo cliente.', price: PRECOS.audios },
+            { id: 'organizacaoDocumentos', name: '📑 Organização de Documentos', tag: 'documentos', icon: 'files', badge: 'Organização', desc: 'Separação de comprovantes, recibos, contratos e documentos pessoais.', price: PRECOS.organizacaoDocumentos },
+            { id: 'juntarArquivos', name: '📚 Juntar Arquivos', tag: 'pdf', icon: 'layers', badge: 'Utilidade', desc: 'Combine diversos documentos e PDFs compatíveis em um só arquivo.', price: PRECOS.juntarArquivos },
+            { id: 'separarDocumentos', name: '✂️ Separar Documento', tag: 'pdf', icon: 'scissors', badge: 'Utilidade', desc: 'Extraia páginas específicas ou divida PDFs grandes em partes.', price: PRECOS.separarDocumentos },
+            { id: 'conversao', name: '🔄 Conversão de Arquivos', tag: 'documentos', icon: 'refresh-cw', badge: 'Rápido', desc: 'Conversões rápidas entre formatos suportados (Imagens, PDF, Docs).', price: PRECOS.conversao },
+            { id: 'pendriveOrganizado', name: '💾 Pendrive Organizado', tag: 'pendrive', icon: 'disc', badge: 'Completo', desc: 'O cliente entrega os arquivos e montamos uma estrutura limpa no pendrive.', price: PRECOS.pendriveOrganizado }
+        ];
+
+        /* --- FAQ DATABASE --- */
+        const FAQS = [
+            { q: 'Quais arquivos posso enviar?', a: 'Você pode enviar fotos, documentos, vídeos, áudios pessoais e arquivos de trabalho ou estudo.' },
+            { q: 'Vocês fornecem músicas ou filmes?', a: 'Não. Não disponibilizamos ou comercializamos conteúdos protegidos por direitos autorais.' },
+            { q: 'Posso usar meu próprio pendrive?', a: 'Sim! Você pode trazer seu pendrive físico ou solicitar orientações durante o atendimento.' },
+            { q: 'Vocês guardam meus arquivos?', a: 'Não. Os arquivos são mantidos temporariamente apenas para execução do serviço e removidos em seguida.' },
+            { q: 'O preço pode mudar?', a: 'Os valores iniciam no preço da tabela. Se a quantidade ou complexidade for muito alta, ajustaremos o orçamento prévio.' }
+        ];
+
+        /* --- STATE MANAGEMENT --- */
+        let favorites = JSON.parse(localStorage.getItem('pe_favorites')) || [];
+        let recents = JSON.parse(localStorage.getItem('pe_recents')) || [];
+
+        /* --- DOM ELEMENTS --- */
+        const servicesGrid = document.getElementById('servicesGrid');
+        const priceTableBody = document.getElementById('priceTableBody');
+        const searchInput = document.getElementById('searchInput');
+        const filterChips = document.getElementById('filterChips');
+        const modalOverlay = document.getElementById('serviceModal');
+        const modalBody = document.getElementById('modalBody');
+        const modalTitle = document.getElementById('modalTitle');
+        const closeModal = document.getElementById('closeModal');
+        const toast = document.getElementById('toast');
+        const calcServiceSelect = document.getElementById('calcService');
+        const calcQtyInput = document.getElementById('calcQty');
+        const calcLevelSelect = document.getElementById('calcLevel');
+        const calcResult = document.getElementById('calcResult');
+
+        /* --- INIT APP --- */
+        document.addEventListener('DOMContentLoaded', () => {
+            renderServices(SERVICOS);
+            renderPriceTable();
+            renderFAQ();
+            initCalculator();
+            renderRecents();
+            setupTheme();
+            setupNavigation();
+            lucide.createIcons();
+        });
+
+        /* --- RENDER SERVICES --- */
+        function renderServices(items) {
+            servicesGrid.innerHTML = '';
+            if (items.length === 0) {
+                servicesGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Nenhum serviço encontrado.</p>`;
+                return;
+            }
+
+            items.forEach(s => {
+                const isFav = favorites.includes(s.id);
+                const card = document.createElement('div');
+                card.className = 'service-card';
+                card.innerHTML = `
+                    <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFav('${s.id}', event)">
+                        <i data-lucide="heart"></i>
+                    </button>
+                    <span class="badge">${s.badge}</span>
+                    <div class="service-icon"><i data-lucide="${s.icon}"></i></div>
+                    <h3>${s.name}</h3>
+                    <p>${s.desc}</p>
+                    <div class="service-footer">
+                        <div class="service-price">A partir de<span>R$ ${s.price.toFixed(2).replace('.', ',')}</span></div>
+                        <button class="btn btn-primary btn-sm" onclick="openServiceModal('${s.id}')">Ver detalhes</button>
+                    </div>
+                `;
+                servicesGrid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        /* --- RENDER PRICE TABLE --- */
+        function renderPriceTable() {
+            priceTableBody.innerHTML = SERVICOS.map(s => `
+                <tr>
+                    <td><strong>${s.name}</strong></td>
+                    <td>R$ ${s.price.toFixed(2).replace('.', ',')}</td>
+                </tr>
+            `).join('');
+        }
+
+        /* --- RENDER FAQ --- */
+        function renderFAQ() {
+            const container = document.getElementById('faqAccordion');
+            container.innerHTML = FAQS.map((f, i) => `
+                <div class="faq-item">
+                    <div class="faq-title" onclick="toggleFaq(${i})">
+                        <span>${f.q}</span>
+                        <i data-lucide="chevron-down"></i>
+                    </div>
+                    <div class="faq-content" id="faq-${i}">${f.a}</div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function toggleFaq(index) {
+            const items = document.querySelectorAll('.faq-item');
+            items[index].classList.toggle('active');
+        }
+
+        /* --- MODAL BUILDER & FORMS --- */
+        function openServiceModal(id) {
+            const s = SERVICOS.find(item => item.id === id);
+            if (!s) return;
+
+            addRecent(s.id);
+            modalTitle.innerText = s.name;
+            
+            // Render specific inputs based on service requested
+            modalBody.innerHTML = `
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">${s.desc}</p>
+                <form id="serviceForm" onsubmit="handleFormSubmit(event, '${s.name}')">
+                    <div class="form-group">
+                        <label>Nome Completo *</label>
+                        <input type="text" name="nome" required placeholder="Seu nome">
+                    </div>
+                    <div class="form-group">
+                        <label>WhatsApp (com DDD) *</label>
+                        <input type="tel" name="whatsapp" id="modalPhone" required placeholder="(00) 00000-0000">
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail (opcional)</label>
+                        <input type="email" name="email" placeholder="seu@email.com">
+                    </div>
+
+                    ${getCustomFields(id)}
+
+                    <div class="form-group">
+                        <label>Observações Adicionais</label>
+                        <textarea name="observacoes" rows="2" placeholder="Ex: Detalhes específicos de pastas, organização esperada..."></textarea>
+                    </div>
+                    
+                    <div style="background: var(--primary-light); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--primary); margin-bottom: 1rem;">
+                        <i data-lucide="info"></i> Após enviar a solicitação, você receberá orientações sobre a entrega dos arquivos.
+                    </div>
+
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button type="submit" class="btn btn-primary" style="flex:1;"><i data-lucide="send"></i> Enviar Solicitação</button>
+                        <button type="button" class="btn btn-outline" style="flex:1;" onclick="sendWhatsAppDirect('${s.name}')"><i data-lucide="message-square"></i> WhatsApp</button>
+                    </div>
+                </form>
+            `;
+
+            modalOverlay.classList.add('active');
+            lucide.createIcons();
+        }
+
+        function getCustomFields(id) {
+            switch(id) {
+                case 'transferencia':
+                case 'backup':
+                    return `
+                        <div class="form-group">
+                            <label>Tipo de Arquivo</label>
+                            <select name="tipo_arquivo">
+                                <option>Fotos</option><option>Vídeos</option><option>Documentos</option><option>Áudios</option><option>Trabalho/Escola</option><option>Outros</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>O pendrive é do cliente?</label>
+                            <select name="pendrive_proprio"><option>Sim</option><option>Não (Solicitar um)</option></select>
+                        </div>
+                    `;
+                case 'fotosPdf':
+                    return `
+                        <div class="form-group">
+                            <label>Orientação da Página</label>
+                            <select name="orientacao"><option>A4 Retrato</option><option>A4 Paisagem</option><option>Carta</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Disposição</label>
+                            <select name="disposicao"><option>Uma imagem por página</option><option>Várias imagens por página</option></select>
+                        </div>
+                    `;
+                default:
+                    return `
+                        <div class="form-group">
+                            <label>Quantidade aproximada de arquivos</label>
+                            <input type="text" name="quantidade" placeholder="Ex: 50 fotos, 10 PDFs">
+                        </div>
+                    `;
+            }
+        }
+
+        closeModal.addEventListener('click', () => modalOverlay.classList.remove('active'));
+        modalOverlay.addEventListener('click', (e) => { if(e.target === modalOverlay) modalOverlay.classList.remove('active'); });
+
+        /* --- FORM SUBMISSION & WHATSAPP INTEGRATION --- */
+        function handleFormSubmit(e, serviceName) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            showToast("Processando solicitação...");
+
+            // Integração FormSubmit via Fetch API
+            if(CONFIG.FORM_ENDPOINT && CONFIG.FORM_ENDPOINT !== "SEU_ENDPOINT_FORMSUBMIT_AQUI") {
+                fetch(CONFIG.FORM_ENDPOINT, {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ servico: serviceName, ...data })
+                }).then(() => {
+                    showToast("Solicitação enviada com sucesso!");
+                    modalOverlay.classList.remove('active');
+                }).catch(() => {
+                    showToast("Erro ao enviar. Tente pelo WhatsApp.");
+                });
+            } else {
+                showToast("Solicitação registrada (Modo Demonstração)!");
+                modalOverlay.classList.remove('active');
+            }
+        }
+
+        function sendWhatsAppDirect(serviceName) {
+            const phoneInput = document.getElementById('modalPhone');
+            const phone = phoneInput ? phoneInput.value : '';
+            const msg = encodeURIComponent(`Olá! Quero solicitar o serviço: ${serviceName}. MEU CONTATO: ${phone}`);
+            window.open(`https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+        }
+
+        /* --- CALCULATOR LOGIC --- */
+        function initCalculator() {
+            calcServiceSelect.innerHTML = SERVICOS.map(s => `<option value="${s.price}">${s.name}</option>`).join('');
+            
+            function updateCalc() {
+                const base = parseFloat(calcServiceSelect.value) || 0;
+                const qty = parseInt(calcQtyInput.value) || 1;
+                const level = parseFloat(calcLevelSelect.value) || 1;
+                
+                let total = (base + (qty * 0.10)) * level;
+                calcResult.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            }
+
+            calcServiceSelect.addEventListener('change', updateCalc);
+            calcQtyInput.addEventListener('input', updateCalc);
+            calcLevelSelect.addEventListener('change', updateCalc);
+            updateCalc();
+        }
+
+        /* --- SEARCH & FILTERS ENGINE --- */
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            const filtered = SERVICOS.filter(s => s.name.toLowerCase().includes(val) || s.desc.toLowerCase().includes(val));
+            renderServices(filtered);
+        });
+
+        filterChips.addEventListener('click', (e) => {
+            if(!e.target.classList.contains('filter-chip')) return;
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            e.target.classList.add('active');
+
+            const filter = e.target.getAttribute('data-filter');
+            if (filter === 'all') renderServices(SERVICOS);
+            else if (filter === 'favs') renderServices(SERVICOS.filter(s => favorites.includes(s.id)));
+            else renderServices(SERVICOS.filter(s => s.tag === filter));
+        });
+
+        /* --- FAVORITES & RECENTS SYSTEM --- */
+        function toggleFav(id, event) {
+            event.stopPropagation();
+            if(favorites.includes(id)) {
+                favorites = favorites.filter(favId => favId !== id);
+                showToast("Removido dos favoritos.");
+            } else {
+                favorites.push(id);
+                showToast("Adicionado aos favoritos!");
+            }
+            localStorage.setItem('pe_favorites', JSON.stringify(favorites));
+            renderServices(SERVICOS);
+        }
+
+        function addRecent(id) {
+            recents = recents.filter(rId => rId !== id);
+            recents.unshift(id);
+            if(recents.length > 4) recents.pop();
+            localStorage.setItem('pe_recents', JSON.stringify(recents));
+            renderRecents();
+        }
+
+        function renderRecents() {
+            const container = document.getElementById('recentContainer');
+            const section = document.getElementById('recentSection');
+            if(recents.length === 0) { section.style.display = 'none'; return; }
+            
+            section.style.display = 'block';
+            container.innerHTML = recents.map(rId => {
+                const s = SERVICOS.find(item => item.id === rId);
+                return s ? `<button class="btn btn-outline btn-sm" onclick="openServiceModal('${s.id}')">${s.name}</button>` : '';
+            }).join('');
+        }
+
+        /* --- THEME TOGGLE (DARK MODE) --- */
+        function setupTheme() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const currentTheme = localStorage.getItem('pe_theme') || 'light';
+
+            if(currentTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeIcon.setAttribute('data-lucide', 'sun');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeIcon.setAttribute('data-lucide', 'moon');
+            }
+
+            themeToggle.addEventListener('click', () => {
+                let theme = document.documentElement.getAttribute('data-theme');
+                if(theme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('pe_theme', 'light');
+                    themeIcon.setAttribute('data-lucide', 'moon');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('pe_theme', 'dark');
+                    themeIcon.setAttribute('data-lucide', 'sun');
+                }
+                lucide.createIcons();
+            });
+        }
+
+        /* --- NAVIGATION & TOAST UTILS --- */
+        function setupNavigation() {
+            const hamburger = document.getElementById('hamburger');
+            const navMenu = document.getElementById('navMenu');
+            hamburger.addEventListener('click', () => navMenu.classList.toggle('active'));
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => navMenu.classList.remove('active'));
+            });
+        }
+
+        function showToast(msg) {
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>
