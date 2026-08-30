@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digitalização Express - Escaneamento & PDF Profissional</title>
+    <link rel="icon" type="image/png" href="sua-logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+    :root {
+        --bg-body: #f8fafc;
+        --bg-card: #ffffff;
+        --bg-input: #f1f5f9;
+        --border-color: #e2e8f0;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --primary: #0284c7;
+        --primary-hover: #0369a1;
+        --accent: #38bdf8;
+        --accent-light: rgba(2, 132, 199, 0.08);
+        --green: #10b981;
+        --danger: #ef4444;
+        --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        --font-scale: 1rem;
+    }
+
+    [data-theme="dark"] {
+        --bg-body: #0f172a;
+        --bg-card: #1e293b;
+        --bg-input: #0f172a;
+        --border-color: #334155;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --accent-light: rgba(56, 189, 248, 0.12);
+        --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    * { 
+        box-sizing: border-box; 
+        margin: 0; 
+        padding: 0; 
+        font-family: 'Plus Jakarta Sans', sans-serif; 
+        transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease; 
+    }
+        
+    html {
+        font-size: var(--font-scale);
+    }
+
+    body { 
+        background-color: var(--bg-body); 
+        color: var(--text-main); 
+        padding: 32px 16px 80px 16px; 
+        line-height: 1.6;
+    }
+
+    /* ACESSIBILIDADE */
+    .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 10px;
+        background: var(--primary);
+        color: white;
+        padding: 8px 16px;
+        z-index: 10000;
+        border-radius: 8px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: top 0.2s ease;
+    }
+    .skip-link:focus {
+        top: 10px;
+    }
+
+    .container { 
+        max-width: 680px; 
+        margin: 0 auto; 
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    header { text-align: center; position: relative; }
+    .header-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
+
+    .theme-toggle, .access-btn {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        padding: 8px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: var(--shadow);
+    }
+
+    .theme-toggle:hover, .access-btn:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary);
+    }
+
+    h1 { color: var(--primary); font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+    header p { color: var(--text-muted); font-size: 15px; font-weight: 500; }
+
+    .banner-imagem-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: transform 0.2s ease;
+    }
+
+    .banner-imagem-container:hover {
+        transform: scale(1.01);
+    }
+
+    .banner-imagem {
+        width: 100%;
+        max-width: 450px;
+        height: auto;
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow);
+        object-fit: cover;
+        display: block;
+    }
+
+    .step-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        box-shadow: var(--shadow);
+    }
+
+    .step-card h2 { 
+        font-size: 20px; 
+        font-weight: 700;
+        color: var(--text-main); 
+        border-bottom: 1px solid var(--border-color); 
+        padding-bottom: 12px;
+    }
+
+    .alerta-desconsiderar {
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .tabela-desconto {
+        background: var(--accent-light);
+        border: 1px solid var(--accent);
+        border-radius: 14px;
+        padding: 14px 16px;
+        font-size: 13px;
+    }
+
+    .tabela-desconto h4 {
+        color: var(--primary);
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .tabela-desconto ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    input[type="text"], input[type="tel"], input[type="number"], input[type="file"], select, textarea {
+        width: 100%;
+        padding: 12px 16px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        color: var(--text-main);
+        font-size: 15px;
+    }
+
+    input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { 
+        border-color: var(--primary); 
+        outline: 2px solid var(--primary); 
+        outline-offset: 1px;
+        box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    .modalidade-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+    .modalidade-card {
+        background: var(--bg-input);
+        border: 2px solid var(--border-color);
+        border-radius: 14px;
+        padding: 16px 12px;
+        text-align: center;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .modalidade-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary);
+    }
+
+    .modalidade-card.selected { border-color: var(--primary); background: var(--accent-light); }
+
+    .checkbox-card {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        padding: 14px 16px;
+        border-radius: 12px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .checkbox-card:hover { border-color: var(--primary); transform: translateX(2px); }
+    .checkbox-card input[type="checkbox"] { margin-top: 3px; width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
+
+    .price-box {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        padding: 20px; border-radius: 14px;
+        display: flex; 
+        flex-direction: column;
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--text-muted);
+    }
+
+    .price-row.total {
+        border-top: 1px dashed var(--border-color);
+        padding-top: 10px;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    .price-row.total strong { color: var(--green); font-size: 24px; font-weight: 800; }
+
+    .btn-primary {
+        background: var(--primary);
+        color: white; border: none;
+        padding: 16px; font-size: 16px;
+        border-radius: 12px; cursor: pointer;
+        font-weight: 700; width: 100%;
+        display: flex; justify-content: center; align-items: center; gap: 8px;
+        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+    }
+    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+    .btn-whatsapp {
+        background: #25D366;
+        color: white;
+        text-decoration: none;
+        padding: 16px;
+        border-radius: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 12px;
+        font-size: 16px;
+        box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
+    }
+    .btn-whatsapp:hover { transform: translateY(-2px); }
+
+    .sucesso-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 28px;
+        text-align: center;
+        box-shadow: var(--shadow);
+    }
+
+    .pix-box-novo {
+        background: var(--bg-input);
+        border: 2px dashed var(--primary);
+        padding: 24px;
+        border-radius: 16px;
+        margin-top: 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .valor-destaque {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--green);
+    }
+
+    .btn-copiar-pix {
+        background: var(--primary);
+        color: white; border: none;
+        padding: 14px 20px; font-weight: 700;
+        border-radius: 12px; cursor: pointer;
+        width: 100%;
+        font-size: 15px;
+    }
+
+    .dinheiro-box-novo {
+        background: var(--bg-input);
+        border: 2px solid var(--border-color);
+        padding: 24px;
+        border-radius: 16px;
+        margin-top: 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .card-chamativo {
+        background: linear-gradient(135deg, rgba(2, 132, 199, 0.1) 0%, rgba(56, 189, 248, 0.15) 100%);
+        border: 1px solid var(--accent);
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        box-shadow: var(--shadow);
+    }
+
+    .status-fila {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 10px 14px;
+        font-size: 13px;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 6px;
+        font-weight: 600;
+    }
+
+    .radio-group { display: flex; gap: 20px; margin-top: 4px; }
+    .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px; font-weight: 500; }
+    .hidden { display: none !important; }
+
+    .btn-flutuante {
+        position: fixed;
+        bottom: 20px; right: 20px;
+        background: #25D366; color: white;
+        border-radius: 50px; padding: 12px 20px;
+        font-weight: 700; font-size: 14px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        text-decoration: none;
+        display: flex; align-items: center; gap: 8px;
+        z-index: 999;
+    }
+    .btn-flutuante:hover { transform: scale(1.05); }
+
+    .alerta-pagamento-pendente {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        margin-top: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    @media (max-width: 500px) {
+        body { padding: 16px 10px 80px 10px; }
+        .modalidade-grid { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+<a href="#formDigitalizacao" class="skip-link">Pular para o Formulário</a>
+
+<div class="container">
+    <header>
+        <div class="header-controls">
+            <button class="access-btn" id="btnFonte" type="button" onclick="alternarTamanhoFonte()" aria-label="Aumentar Tamanho da Fonte">
+                <span>♿ Acessibilidade</span>
+            </button>
+            <button class="theme-toggle" id="themeToggleBtn" type="button" aria-label="Alternar Tema Claro/Escuro">
+                <span id="themeIcon">🌙</span> <span id="themeText">Escuro</span>
+            </button>
+        </div>
+        <h1>Digitalização Express</h1>
+        <p>Converta seus documentos e fotos em PDFs profissionais em alta qualidade</p>
+    </header>
+
+    <div id="secaoBanner" class="banner-imagem-container" onclick="abrirImagem()" style="cursor: pointer;">
+        <img id="imgBanner" src="https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcTXWMRjNXjOyL-lgPs0CamGzUtiaXfyYrsfWq9vqjgIkd0qADzs-tTtO3P3WXsCBKcpIimVfcgQ7wJFKiU" alt="Equipamento de Digitalização de Documentos" class="banner-imagem">
+    </div>
+
+    <div id="modalImagem" onclick="fecharImagem()" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px);">
+        <span style="position: absolute; top: 15px; right: 25px; color: #fff; font-size: 35px; font-weight: bold; cursor: pointer;">&times;</span>
+        <img id="imgModal" alt="Visualização ampliada" style="max-width: 90%; max-height: 90%; border-radius: 12px;">
+    </div>
+
+    <script>
+        function abrirImagem() {
+            document.getElementById("imgModal").src = document.getElementById("imgBanner").src;
+            document.getElementById("modalImagem").style.display = "flex";
+        }
+        function fecharImagem() {
+            document.getElementById("modalImagem").style.display = "none";
+        }
+    </script>
+
+    <form id="formDigitalizacao" class="step-card" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data" target="hidden_iframe">
+
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" id="hidden_modalidade" name="Modalidade de Entrega" value="Entregar Papel no Balcao">
+        <input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">
+
+        <div class="alerta-desconsiderar">
+            ⚠️ ATENÇÃO: Pedidos sem pagamento confirmado serão desconsiderados e cancelados automaticamente.
+        </div>
+
+        <div class="tabela-desconto">
+            <h4>📉 Tabela de Desconto Progressivo por Páginas:</h4>
+            <ul>
+                <li>• <strong>1 a 4 páginas:</strong> R$ 2,00 / página</li>
+                <li>• <strong>5 a 9 páginas:</strong> R$ 1,50 / página (Economia!)</li>
+                <li>• <strong>10 ou mais páginas:</strong> R$ 1,00 / página (Melhor Valor 🔥)</li>
+            </ul>
+        </div>
+
+        <h2>Monte seu Pedido de Digitalização</h2>
+
+        <div class="form-group">
+            <label for="nome">Seu Nome Completo:</label>
+            <input type="text" id="nome" name="Nome do Cliente" placeholder="EX: JOÃO DA SILVA" required>
+        </div>
+
+        <div class="form-group">
+            <label for="telefone">WhatsApp para Contato:</label>
+            <input type="tel" id="telefone" name="WhatsApp" placeholder="(41) 99999-9999" maxlength="15" required>
+        </div>
+
+        <div class="form-group">
+            <label>Como você irá enviar os documentos?</label>
+            <div class="modalidade-grid">
+                <div id="cardBalcao" class="modalidade-card selected" onclick="selecionarModalidade('balcao')">
+                    <span style="font-size: 24px;">🏢</span>
+                    <strong>Vou Levar no Balcão</strong>
+                    <span style="font-size: 12px; color: var(--text-muted);">Entregar papéis físicos</span>
+                </div>
+                <div id="cardOnline" class="modalidade-card" onclick="selecionarModalidade('online')">
+                    <span style="font-size: 24px;">📱</span>
+                    <strong>Enviar Foto/Arquivo</strong>
+                    <span style="font-size: 12px; color: var(--text-muted);">Converter imagens em PDF</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="blocoHorario" class="form-group">
+            <label for="horario">Horário Estimado de Chegada no Balcão:</label>
+            <input type="text" id="horario" name="Horario Estimado Balcao" placeholder="Ex: Hoje às 14:30">
+        </div>
+
+        <div id="blocoUpload" class="form-group hidden">
+            <label for="arquivo_imagem">Anexar Fotos / Arquivos para Converter (Máx. 10MB):</label>
+            <input type="file" id="arquivo_imagem" name="attachment_fotos" accept=".png,.jpg,.jpeg,.pdf" multiple>
+        </div>
+
+        <div class="form-group">
+            <label for="qtd_paginas">Quantidade de Páginas/Folhas:</label>
+            <input type="number" id="qtd_paginas" name="Quantidade de Paginas" value="1" min="1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="formato_saida">Formato Digital Desejado:</label>
+            <select id="formato_saida" name="Formato de Saida">
+                <option value="pdf_unico">PDF Único (Todos os documentos em 1 arquivo)</option>
+                <option value="pdf_separados">PDFs Separados (1 arquivo por página/documento)</option>
+                <option value="imagem">Imagens em Alta Resolução (PNG / JPG)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Serviços Adicionais:</label>
+
+            <label class="checkbox-card">
+                <input type="checkbox" id="opt_ocr" name="OCR - PDF Pesquisavel" value="Sim">
+                <span>🔍 <strong>PDF Pesquisável / OCR (+ R$ 0,30 por página):</strong> Permite pesquisar, copiar e colar textos dentro do PDF gerado.</span>
+            </label>
+
+            <label class="checkbox-card">
+                <input type="checkbox" id="opt_armazenamento" name="Armazenamento Seguro 24h" value="Sim (Gratis)">
+                <span>💾 <strong>Armazenamento Seguro por 24h (Grátis):</strong> Eliminação dos arquivos do nosso sistema após a entrega do serviço.</span>
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label>Forma de Envio do Arquivo Digital:</label>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="Envio do PDF" value="WhatsApp" checked> WhatsApp
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="Envio do PDF" value="E-mail"> E-mail
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="email_cliente">Seu E-mail (Opcional se escolhido envio por e-mail):</label>
+            <input type="text" id="email_cliente" name="Email do Cliente" placeholder="seuemail@exemplo.com">
+        </div>
+
+        <div class="form-group">
+            <label>Forma de Pagamento:</label>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="Forma de Pagamento" value="PIX" checked> PIX
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="Forma de Pagamento" value="Dinheiro"> Dinheiro (Na Entrega/Retirada)
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="observacoes">Observações (Opcional):</label>
+            <textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex: Nomear arquivos de forma específica, ajustar contraste de documento antigo..."></textarea>
+        </div>
+
+        <div class="price-box">
+            <div class="price-row">
+                <span>Subtotal (Valor Base R$ 2,00/pág):</span>
+                <span id="subtotalExibicao">R$ 2,00</span>
+            </div>
+            <div class="price-row" id="rowDesconto" style="color: var(--green); display: none;">
+                <span>Desconto Progressivo Aplicado:</span>
+                <span id="descontoExibicao">- R$ 0,00</span>
+            </div>
+            <div class="price-row" id="rowExtra" style="display: none; color: var(--primary);">
+                <span>Adicional OCR (Pesquisável):</span>
+                <span id="extraExibicao">+ R$ 0,00</span>
+            </div>
+            <div class="price-row total">
+                <span>Valor Total Estimado:</span>
+                <strong id="valorTotalExibicao">R$ 2,00</strong>
+            </div>
+        </div>
+
+        <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido de Digitalização 🚀</button>
+    </form>
+
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
+    <div id="secaoCardChamativo" class="card-chamativo">
+        <h3 style="font-size: 18px; color: var(--primary);">✨ Digitalização Rápida e com Nitidez!</h3>
+        <p style="font-size: 14px; color: var(--text-muted);">
+            Escaneamos documentos oficiais, contratos, livros, receitas e fotos com ajuste de brilho e remoção de sombras.
+        </p>
+        <div class="status-fila">
+            ⚡ <strong>Tempo Médio de Envio:</strong> 5 a 15 minutos após a confirmação do pedido.
+        </div>
+    </div>
+
+    <div id="telaSucesso" class="sucesso-card hidden">
+        <div style="font-size: 60px; margin-bottom: 8px;">🎉</div>
+        <h2 style="font-size: 24px; color: var(--primary);">Pedido Confirmado!</h2>
+        <p style="color: var(--text-muted); font-size: 15px; margin-top: 4px;">Recebemos a sua solicitação de digitalização.</p>
+
+        <div id="boxDetalhesPagamento"></div>
+
+        <a id="btnNotificarWhats" href="#" target="_blank" class="btn-whatsapp">
+            💬 Confirmar Pedido no WhatsApp
+        </a>
+
+        <div class="alerta-pagamento-pendente">
+            ⚠️ Não feche esta página antes de realizar o pagamento do pedido!
+        </div>
+
+        <button class="btn-primary" onclick="permitirSaida = true; window.onbeforeunload = null; location.reload();" style="margin-top: 18px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">
+            🔄 Fazer Novo Pedido
+        </button>
+    </div>
+</div>
+
+<footer style="text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 13px;">
+    <p>© 2026 Digitalização Express. Todos os direitos reservados.</p>
+</footer>
+
+<a href="https://wa.me/5541999682836?text=Olá,%20preciso%20de%20ajuda%20com%20digitalização!" target="_blank" class="btn-flutuante" aria-label="Suporte via WhatsApp">
+    💬 Dúvidas?
+</a>
+
+<script>
+    const CHAVE_PIX_TEXTO = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
+
+    let modalidadeAtiva = 'balcao';
+    let permitirSaida = false;
+    let cliquesNavegacao = 0;
+    let naAbaPagamento = false;
+
+    // ACESSIBILIDADE - MUDAR TAMANHO DA FONTE
+    let fonteAmpliada = false;
+    function alternarTamanhoFonte() {
+        fonteAmpliada = !fonteAmpliada;
+        document.documentElement.style.setProperty('--font-scale', fonteAmpliada ? '1.12rem' : '1rem');
+    }
+
+    // VERIFICA SE HÁ CAMPOS PREENCHIDOS
+    function temCamposPreenchidos() {
+        const nome = document.getElementById("nome").value.trim();
+        const tel = document.getElementById("telefone").value.trim();
+        const obs = document.getElementById("observacoes").value.trim();
+        const arq = document.getElementById("arquivo_imagem").files.length;
+        return (nome.length > 0 || tel.length > 0 || obs.length > 0 || arq > 0);
+    }
+
+    // CONFIRMAÇÃO ANTES DE FECHAR A ABA
+    window.addEventListener("beforeunload", function (e) {
+        if (!permitirSaida && (temCamposPreenchidos() || naAbaPagamento)) {
+            e.preventDefault();
+            e.returnValue = naAbaPagamento 
+                ? "Atenção! Você possui um pagamento pendente. Deseja realmente fechar?" 
+                : "Você iniciou um preenchimento! Deseja realmente sair sem concluir?";
+            return e.returnValue;
+        }
+    });
+
+    // TECLA ESC COM LOGICA DE CONFIRMAÇÃO
+    let escCount = 0;
+    window.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") {
+            const precisaConfirmar = temCamposPreenchidos() || naAbaPagamento;
+            if (!precisaConfirmar) {
+                permitirSaida = true;
+                history.back();
+                return;
+            }
+            escCount++;
+            if (escCount === 1) {
+                alert("⚠️ Pressione ESC novamente para confirmar a saída do site.");
+                setTimeout(() => escCount = 0, 3000);
+            } else if (escCount >= 2) {
+                permitirSaida = true;
+                history.back();
+            }
+        }
+    });
+
+    // TEMA ESCURO / CLARO
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeText = document.getElementById('themeText');
+
+    function aplicarTema(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        if (theme === 'dark') {
+            themeIcon.innerText = '☀️';
+            themeText.innerText = 'Claro';
+        } else {
+            themeIcon.innerText = '🌙';
+            themeText.innerText = 'Escuro';
+        }
+        localStorage.setItem('theme', theme);
+    }
+
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    aplicarTema(savedTheme);
+
+    themeToggleBtn.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        aplicarTema(currentTheme === 'dark' ? 'light' : 'dark');
+    });
+
+    // SELEÇÃO DE MODALIDADE
+    function selecionarModalidade(modalidade) {
+        modalidadeAtiva = modalidade;
+        const cardBalcao = document.getElementById("cardBalcao");
+        const cardOnline = document.getElementById("cardOnline");
+        const blocoHorario = document.getElementById("blocoHorario");
+        const blocoUpload = document.getElementById("blocoUpload");
+        const hiddenModalidade = document.getElementById("hidden_modalidade");
+
+        if (modalidade === 'balcao') {
+            cardBalcao.classList.add("selected");
+            cardOnline.classList.remove("selected");
+            blocoHorario.classList.remove("hidden");
+            blocoUpload.classList.add("hidden");
+            hiddenModalidade.value = "Entregar Papel no Balcao";
+        } else {
+            cardOnline.classList.add("selected");
+            cardBalcao.classList.remove("selected");
+            blocoUpload.classList.remove("hidden");
+            blocoHorario.classList.add("hidden");
+            hiddenModalidade.value = "Enviar Imagem/Foto para Converter";
+        }
+    }
+
+    // CÁLCULO DE VALORES EM TEMPO REAL
+    const inputQtd = document.getElementById("qtd_paginas");
+    const optOcr = document.getElementById("opt_ocr");
+    const subtotalExibicao = document.getElementById("subtotalExibicao");
+    const descontoExibicao = document.getElementById("descontoExibicao");
+    const extraExibicao = document.getElementById("extraExibicao");
+    const valorExibicao = document.getElementById("valorTotalExibicao");
+    const rowDesconto = document.getElementById("rowDesconto");
+    const rowExtra = document.getElementById("rowExtra");
+
+    function calcularValor() {
+        const qtd = parseInt(inputQtd.value) || 1;
+        const subtotal = 2.00 * qtd;
+        
+        let precoEfetivo = 2.00;
+        if (qtd >= 10) precoEfetivo = 1.00;
+        else if (qtd >= 5) precoEfetivo = 1.50;
+
+        const totalComDesconto = precoEfetivo * qtd;
+        const desconto = subtotal - totalComDesconto;
+
+        let extras = 0;
+        if (optOcr.checked) {
+            extras = 0.30 * qtd;
+        }
+
+        const totalFinal = totalComDesconto + extras;
+
+        subtotalExibicao.innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+
+        if (desconto > 0) {
+            rowDesconto.style.display = "flex";
+            descontoExibicao.innerText = `- R$ ${desconto.toFixed(2).replace('.', ',')}`;
+        } else {
+            rowDesconto.style.display = "none";
+        }
+
+        if (extras > 0) {
+            rowExtra.style.display = "flex";
+            extraExibicao.innerText = `+ R$ ${extras.toFixed(2).replace('.', ',')}`;
+        } else {
+            rowExtra.style.display = "none";
+        }
+
+        valorExibicao.innerText = `R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
+        return totalFinal;
+    }
+
+    inputQtd.addEventListener("input", calcularValor);
+    optOcr.addEventListener("change", calcularValor);
+
+    // SUBMISSÃO DO FORMULÁRIO E TELA DE PIX
+    const form = document.getElementById("formDigitalizacao");
+    const btnSubmit = document.getElementById("btnSubmit");
+    const telaSucesso = document.getElementById("telaSucesso");
+    const boxDetalhes = document.getElementById("boxDetalhesPagamento");
+
+    form.addEventListener("submit", function (e) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerText = "Enviando Pedido... ⏳";
+
+        const totalCalculado = calcularValor().toFixed(2).replace('.', ',');
+        document.getElementById("hidden_total").value = `R$ ${totalCalculado}`;
+
+        const formaPagamento = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
+        const nomeCliente = document.getElementById("nome").value.trim();
+
+        setTimeout(() => {
+            naAbaPagamento = true;
+            form.style.display = "none";
+            document.getElementById("secaoCardChamativo").style.display = "none";
+            document.getElementById("secaoBanner").style.display = "none";
+            telaSucesso.classList.remove("hidden");
+
+            if (formaPagamento === "PIX") {
+                boxDetalhes.innerHTML = `
+                    <div class="pix-box-novo">
+                        <span style="font-weight: 700; color: var(--text-main);">Chave PIX (Copia e Cola):</span>
+                        <div class="valor-destaque">R$ ${totalCalculado}</div>
+                        <input type="text" id="pixCopiaCola" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-size:12px;">
+                        <button class="btn-copiar-pix" onclick="copiarPix()">📋 Copiar Chave PIX</button>
+                    </div>
+                `;
+            } else {
+                boxDetalhes.innerHTML = `
+                    <div class="dinheiro-box-novo">
+                        <span style="font-weight: 700; color: var(--text-main);">Pagamento em Dinheiro</span>
+                        <div class="valor-destaque">R$ ${totalCalculado}</div>
+                        <p style="font-size:13px; color:var(--text-muted);">Você optou por pagar ao entregar/receber os documentos.</p>
+                    </div>
+                `;
+            }
+
+            const msgWhats = encodeURIComponent(`Olá! Fiz um pedido de digitalização no site.\nNome: ${nomeCliente}\nPáginas: ${inputQtd.value}\nValor Total: R$ ${totalCalculado}\nForma de Pagamento: ${formaPagamento}`);
+            document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;
+
+            window.scrollTo({ top: telaSucesso.offsetTop - 20, behavior: 'smooth' });
+        }, 1200);
+    });
+
+    function copiarPix() {
+        const copyText = document.getElementById("pixCopiaCola");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value);
+        alert("Chave PIX copiada para a área de transferência!");
+    }
+</script>
+</body>
+</html>
