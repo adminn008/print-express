@@ -167,7 +167,7 @@
             document.getElementById('error-state').classList.add('hidden');
             document.getElementById('content-state').classList.remove('hidden');
 
-            document.getElementById('view-codigo-titulo').innerText = pedido.codigo || '-';
+            document.getElementById('view-codigo-titulo').innerText = pedido.codigo;
             document.getElementById('view-cliente').innerText = pedido.cliente || 'Cliente';
             document.getElementById('view-servico').innerText = pedido.servico || 'Serviço Gráfico';
             document.getElementById('view-quantidade').innerText = pedido.quantidade || '-';
@@ -176,8 +176,6 @@
             if (pedido.descricao) {
                 document.getElementById('view-descricao-box').classList.remove('hidden');
                 document.getElementById('view-descricao').innerText = pedido.descricao;
-            } else {
-                document.getElementById('view-descricao-box').classList.add('hidden');
             }
 
             if (pedido.mensagem) {
@@ -197,8 +195,12 @@
             ultimoStatusConhecido = pedido.status;
             primeiraCarga = false;
 
-            document.getElementById('view-criado').innerText = `Criado em: ${formatarData(pedido.criadoEm)}`;
-            document.getElementById('view-atualizado').innerText = `Atualizado em: ${formatarData(pedido.atualizadoEm)}`;
+            if (pedido.criadoEm) {
+                document.getElementById('view-criado').innerText = `Criado em: ${formatarData(pedido.criadoEm.toDate())}`;
+            }
+            if (pedido.atualizadoEm) {
+                document.getElementById('view-atualizado').innerText = `Atualizado em: ${formatarData(pedido.atualizadoEm.toDate())}`;
+            }
 
             renderizarTimeline(pedido.status);
 
@@ -206,12 +208,15 @@
             document.getElementById('btn-whatsapp').href = `https://wa.me/${WHATSAPP_NUMERO}?text=${msgWp}`;
         }
 
+        // Função para emitir som de bip e vibração no celular
         function tocarAlertaSonoroEVibracao() {
             try {
+                // Vibração no celular (padrão: vibra 200ms, pausa 100ms, vibra 200ms)
                 if (navigator.vibrate) {
                     navigator.vibrate([200, 100, 200]);
                 }
 
+                // Som de bipe usando a Web Audio API do navegador
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 if (AudioContext) {
                     const ctx = new AudioContext();
@@ -219,14 +224,14 @@
                     const gain = ctx.createGain();
 
                     osc.type = "sine";
-                    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // Nota D5 (aguda e audível)
                     gain.gain.setValueAtTime(0.15, ctx.currentTime);
 
                     osc.connect(gain);
                     gain.connect(ctx.destination);
 
                     osc.start();
-                    osc.stop(ctx.currentTime + 0.25);
+                    osc.stop(ctx.currentTime + 0.25); // Duração de 0.25 segundos
                 }
             } catch (e) {
                 console.log("Áudio ou vibração bloqueados pelo navegador.", e);
@@ -246,7 +251,7 @@
             else if (status === "Finalizado") { cor = "bg-gray-100 text-gray-600"; icone = "fa-flag-checkered"; }
 
             badge.className = `px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1.5 ${cor}`;
-            badge.innerHTML = `<i class="fa-solid ${icone}"></i><span>${status || 'Pendente'}</span>`;
+            badge.innerHTML = `<i class="fa-solid ${icone}"></i><span>${status}</span>`;
         }
 
         function renderizarTimeline(statusAtual) {
@@ -298,22 +303,8 @@
             document.getElementById('error-state').classList.remove('hidden');
         }
 
-        function formatarData(dataVal) {
-            if (!dataVal) return '--';
-            try {
-                let dateObj;
-                if (typeof dataVal.toDate === 'function') {
-                    dateObj = dataVal.toDate();
-                } else if (dataVal instanceof Date) {
-                    dateObj = dataVal;
-                } else {
-                    dateObj = new Date(dataVal);
-                }
-                if (isNaN(dateObj.getTime())) return '--';
-                return dateObj.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
-            } catch (e) {
-                return '--';
-            }
+        function formatarData(date) {
+            return date.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
         }
     </script>
 </body>
