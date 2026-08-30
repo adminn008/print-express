@@ -15,7 +15,7 @@
             <i class="fa-solid fa-print text-indigo-600 text-xl"></i>
             <span class="text-lg font-bold tracking-tight text-gray-900">Print<span class="text-indigo-600">Express</span></span>
         </a>
-        <span id="badge-codigo" class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-bold uppercase tracking-wider">Carregando...</span>
+        <span id="badge-codigo" class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-bold uppercase tracking-wider">Acompanhamento</span>
     </header>
 
     <!-- Alerta Flutuante de Atualização -->
@@ -30,19 +30,36 @@
     <!-- Container Principal -->
     <main class="flex-grow max-w-lg w-full mx-auto px-4 py-8">
         
-        <!-- Estado: Carregando / Erro / Conteúdo -->
+        <!-- Estado: Carregando / Erro ou Busca / Conteúdo -->
         <div id="loading-state" class="text-center py-12">
             <i class="fa-solid fa-spinner fa-spin text-3xl text-indigo-600 mb-4"></i>
             <p class="text-gray-500">Buscando informações do pedido...</p>
         </div>
 
-        <div id="error-state" class="hidden bg-white rounded-2xl shadow-sm border border-red-100 p-8 text-center">
-            <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                <i class="fa-solid fa-triangle-exclamation"></i>
+        <!-- Tela de Busca / Código não encontrado -->
+        <div id="error-state" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center space-y-6">
+            <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-magnifying-glass"></i>
             </div>
-            <h2 id="error-titulo" class="text-xl font-bold text-gray-900 mb-1">Código não encontrado</h2>
-            <p id="error-texto" class="text-gray-500 text-sm mb-6">Confira o código informado e tente novamente.</p>
-            <a href="index.html" class="inline-block bg-gray-900 text-white font-medium px-6 py-2.5 rounded-xl text-sm">Voltar ao início</a>
+            
+            <div>
+                <h2 id="error-titulo" class="text-xl font-bold text-gray-900 mb-1">Consultar Pedido</h2>
+                <p id="error-texto" class="text-gray-500 text-sm">Digite abaixo o código do seu pedido para acompanhar o status em tempo real.</p>
+            </div>
+
+            <!-- Formulário de Busca Direta -->
+            <form id="form-busca-direta" class="flex flex-col gap-3">
+                <div class="relative">
+                    <input type="text" id="input-codigo-manual" placeholder="Ex: PX1001" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-center font-bold tracking-wider text-gray-800 uppercase focus:outline-none focus:border-indigo-600 focus:bg-white transition" required>
+                    <i class="fa-solid fa-hashtag absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl transition duration-200 shadow-sm flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>Buscar Pedido</span>
+                </button>
+            </form>
+
+            <a href="index.html" class="inline-block text-xs text-gray-400 hover:text-gray-600 transition pt-2">Voltar ao início</a>
         </div>
 
         <div id="content-state" class="hidden space-y-6">
@@ -105,6 +122,8 @@
                     <i class="fa-brands fa-whatsapp text-lg"></i>
                     <span>Falar com a PrintExpress</span>
                 </a>
+                
+                <button onclick="window.location.href='acompanhar.html'" class="w-full text-xs text-gray-400 hover:text-indigo-600 py-2">Consultar outro pedido</button>
             </div>
 
         </div>
@@ -130,23 +149,36 @@
         const db = getFirestore(app);
 
         const urlParams = new URLSearchParams(window.location.search);
-        const codigoBusca = urlParams.get('codigo')?.trim().toUpperCase();
+        let codigoBusca = urlParams.get('codigo')?.trim().toUpperCase();
 
         const WHATSAPP_NUMERO = "5541999682836";
 
+        // Escuta a busca manual por formulário
+        document.getElementById('form-busca-direta').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const inputVal = document.getElementById('input-codigo-manual').value.trim().toUpperCase();
+            if (inputVal) {
+                window.location.href = `acompanhar.html?codigo=${encodeURIComponent(inputVal)}`;
+            }
+        });
+
         if (!codigoBusca) {
-            mostrarErro("Código não encontrado", "Confira o código informado e tente novamente.");
+            mostrarErro("Consultar Pedido", "Digite abaixo o código do seu pedido para acompanhar o status em tempo real.");
         } else {
             document.getElementById('badge-codigo').innerText = codigoBusca;
             buscarPedidoTempoReal(codigoBusca);
         }
 
+        let unsubscribeAtual = null;
+
         function buscarPedidoTempoReal(codigo) {
+            if (unsubscribeAtual) unsubscribeAtual();
+
             const q = query(collection(db, "pedidos"), where("codigo", "==", codigo));
             
-            onSnapshot(q, (snapshot) => {
+            unsubscribeAtual = onSnapshot(q, (snapshot) => {
                 if (snapshot.empty) {
-                    mostrarErro("Pedido Encerrado ou Inválido", "Este pedido foi finalizado, removido ou o código foi liberado para outro atendimento.");
+                    mostrarErro("Código não encontrado", `Não encontramos nenhum pedido ativo com o código "${codigo}". Verifique se digitou corretamente.`);
                     return;
                 }
 
@@ -155,7 +187,7 @@
                 renderizarPedido(pedido);
             }, (error) => {
                 console.error("Erro no listener:", error);
-                mostrarErro("Erro de conexão", "Não foi possível carregar os dados.");
+                mostrarErro("Erro de conexão", "Não foi possível carregar os dados. Verifique sua conexão.");
             });
         }
 
