@@ -9,7 +9,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans antialiased min-h-screen flex flex-col">
 
-    <!-- Tela de Login (Firebase Auth) -->
+    <!-- Tela de Login (Firebase Auth Original) -->
     <div id="login-screen" class="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center px-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
             <div class="text-center mb-6">
@@ -48,9 +48,9 @@
             </button>
         </header>
 
-        <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-8 space-y-6">
+        <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-8 space-y-8">
             
-            <!-- Dashboard Cards -->
+            <!-- Dashboard Cards Originais -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                     <span class="text-xs font-medium text-gray-400 block mb-1">Pedidos Ativos</span>
@@ -70,38 +70,180 @@
                 </div>
             </div>
 
-            <!-- Ações Principais -->
-            <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                <h2 class="font-bold text-gray-900 text-sm">Gerenciamento de Pedidos</h2>
-                <button onclick="abrirModalNovoPedido()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition">
-                    <i class="fa-solid fa-plus"></i> <span>Novo Pedido</span>
-                </button>
+            <!-- Gerenciamento de Pedidos (Original) -->
+            <div class="space-y-4">
+                <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                    <h2 class="font-bold text-gray-900 text-sm">Gerenciamento de Pedidos</h2>
+                    <button onclick="abrirModalNovoPedido()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-xl text-xs flex items-center space-x-1.5 transition">
+                        <i class="fa-solid fa-plus"></i> <span>Novo Pedido</span>
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gray-50 text-gray-400 text-xs uppercase border-b border-gray-100">
+                                <tr>
+                                    <th class="p-4">Código</th>
+                                    <th class="p-4">Cliente</th>
+                                    <th class="p-4">Serviço</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-pedidos" class="divide-y divide-gray-100">
+                                <!-- Gerado via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <!-- Lista de Pedidos -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-50 text-gray-400 text-xs uppercase border-b border-gray-100">
-                            <tr>
-                                <th class="p-4">Código</th>
-                                <th class="p-4">Cliente</th>
-                                <th class="p-4">Serviço</th>
-                                <th class="p-4">Status</th>
-                                <th class="p-4 text-right">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabela-pedidos" class="divide-y divide-gray-100">
+            <!-- 🔥 GERENCIAMENTO DA CENTRAL EM TEMPO REAL 🔥 -->
+            <div class="pt-6 border-t border-gray-200 space-y-6">
+                <h2 class="text-lg font-bold text-gray-900 flex items-center space-x-2">
+                    <i class="fa-solid fa-bolt text-amber-500"></i>
+                    <span>Painel da Central em Tempo Real</span>
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- 1. Status Geral & Vagas -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-6">
+                        <div>
+                            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">🟢 Status Geral do PrintExpress</h3>
+                            <div class="flex space-x-2">
+                                <select id="adm-status-geral" class="flex-grow px-3 py-2 rounded-xl border border-gray-300 text-xs bg-white font-bold">
+                                    <option value="Funcionando normalmente">🟢 Funcionando normalmente</option>
+                                    <option value="Funcionamento limitado">🟡 Funcionamento limitado</option>
+                                    <option value="Atendimento temporariamente suspenso">🔴 Atendimento temporariamente suspenso</option>
+                                    <option value="Manutenção">🔧 Manutenção</option>
+                                </select>
+                                <button onclick="salvarStatusGeral()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-semibold">Salvar</button>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-100">
+                            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">🟠 Contador de Vagas</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center space-x-2">
+                                    <label class="text-xs text-gray-500">Vagas Atuais:</label>
+                                    <input type="number" id="adm-vagas-qtd" value="0" class="w-20 px-3 py-1.5 rounded-xl border border-gray-300 text-xs font-bold">
+                                    <button onclick="alterarVagas(1)" class="bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-xl text-xs font-bold">+1</button>
+                                    <button onclick="alterarVagas(-1)" class="bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-xl text-xs font-bold">-1</button>
+                                    <button onclick="zerarVagas()" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-xl text-xs font-bold">Zerar</button>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="adm-vagas-ativo" class="rounded text-indigo-600">
+                                    <label for="adm-vagas-ativo" class="text-xs text-gray-700 font-medium">Contador visível para clientes</label>
+                                    <button onclick="salvarVagasConfig()" class="ml-auto bg-indigo-600 text-white px-3 py-1 rounded-xl text-xs font-semibold">Salvar Vagas</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Enviar Notificação Push -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center space-x-1.5">
+                            <i class="fa-solid fa-paper-plane text-indigo-600"></i>
+                            <span>🔔 Enviar Notificação Push</span>
+                        </h3>
+                        <form id="form-enviar-notificacao" class="space-y-3">
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" id="notif-titulo" placeholder="Título..." required class="px-3 py-2 rounded-xl border border-gray-300 text-xs">
+                                <select id="notif-tipo" class="px-3 py-2 rounded-xl border border-gray-300 text-xs bg-white">
+                                    <option value="Aviso">📢 Aviso</option>
+                                    <option value="Promoção">🔥 Promoção</option>
+                                    <option value="Serviço">🟢 Serviço</option>
+                                    <option value="Urgente">🔴 Urgente</option>
+                                </select>
+                            </div>
+                            <textarea id="notif-mensagem" rows="2" placeholder="Mensagem da notificação..." required class="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs"></textarea>
+                            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl text-xs font-bold transition">
+                                Enviar Notificação
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- 3. Gerenciamento de Serviços -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">🛠️ Status dos Serviços</h3>
+                        <form id="form-add-servico" class="flex space-x-2">
+                            <input type="text" id="serv-nome" placeholder="Ex: Impressão A4" required class="flex-grow px-3 py-1.5 rounded-xl border border-gray-300 text-xs">
+                            <select id="serv-estado" class="px-2 py-1.5 rounded-xl border border-gray-300 text-xs bg-white">
+                                <option value="Disponível">🟢 Disponível</option>
+                                <option value="Disponibilidade limitada">🟡 Limitada</option>
+                                <option value="Indisponível">🔴 Indisponível</option>
+                                <option value="Temporariamente suspenso">⚪ Suspenso</option>
+                            </select>
+                            <button type="submit" class="bg-gray-900 text-white px-3 py-1.5 rounded-xl text-xs font-bold">+</button>
+                        </form>
+                        <div id="adm-lista-servicos" class="space-y-2 max-h-48 overflow-y-auto">
                             <!-- Gerado via JS -->
-                        </tbody>
-                    </table>
+                        </div>
+                    </div>
+
+                    <!-- 4. Mural de Avisos -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">📢 Mural de Avisos</h3>
+                        <form id="form-add-aviso" class="space-y-2">
+                            <input type="text" id="aviso-titulo" placeholder="Título do aviso" required class="w-full px-3 py-1.5 rounded-xl border border-gray-300 text-xs">
+                            <textarea id="aviso-mensagem" rows="2" placeholder="Mensagem..." required class="w-full px-3 py-1.5 rounded-xl border border-gray-300 text-xs"></textarea>
+                            <div class="flex space-x-2">
+                                <select id="aviso-tipo" class="flex-grow px-3 py-1.5 rounded-xl border border-gray-300 text-xs bg-white">
+                                    <option value="Informação">🔵 Informação</option>
+                                    <option value="Normal">🟢 Normal</option>
+                                    <option value="Atenção">🟡 Atenção</option>
+                                    <option value="Urgente">🔴 Urgente</option>
+                                </select>
+                                <button type="submit" class="bg-indigo-600 text-white px-4 py-1.5 rounded-xl text-xs font-bold">Publicar</button>
+                            </div>
+                        </form>
+                        <div id="adm-lista-avisos" class="space-y-2 max-h-48 overflow-y-auto">
+                            <!-- Gerado via JS -->
+                        </div>
+                    </div>
+
+                    <!-- 5. Horários -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">📅 Horários</h3>
+                        <form id="form-add-horario" class="flex space-x-2">
+                            <input type="text" id="horario-hora" placeholder="Ex: 14:00" required class="w-full px-3 py-1.5 rounded-xl border border-gray-300 text-xs">
+                            <select id="horario-status" class="px-3 py-1.5 rounded-xl border border-gray-300 text-xs bg-white">
+                                <option value="Disponível">🟢 Disponível</option>
+                                <option value="Ocupado">🔴 Ocupado</option>
+                            </select>
+                            <button type="submit" class="bg-gray-900 text-white px-3 py-1.5 rounded-xl text-xs font-bold">+</button>
+                        </form>
+                        <div id="adm-lista-horarios" class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
+                            <!-- Gerado via JS -->
+                        </div>
+                    </div>
+
+                    <!-- 6. Promoções -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">🔥 Promoções</h3>
+                        <form id="form-add-promocao" class="space-y-2">
+                            <input type="text" id="promo-titulo" placeholder="Título da Promoção" required class="w-full px-3 py-1.5 rounded-xl border border-gray-300 text-xs">
+                            <input type="text" id="promo-descricao" placeholder="Descrição" required class="w-full px-3 py-1.5 rounded-xl border border-gray-300 text-xs">
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" id="promo-preco" placeholder="Preço (ex: R$ 15,00)" class="px-3 py-1.5 rounded-xl border border-gray-300 text-xs">
+                                <input type="text" id="promo-etiqueta" placeholder="Etiqueta (ex: 20% OFF)" class="px-3 py-1.5 rounded-xl border border-gray-300 text-xs">
+                            </div>
+                            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 rounded-xl text-xs transition">Criar Promoção</button>
+                        </form>
+                        <div id="adm-lista-promocoes" class="space-y-2 max-h-44 overflow-y-auto">
+                            <!-- Gerado via JS -->
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
         </main>
     </div>
 
-    <!-- Modal Novo Pedido -->
+    <!-- Modais Originais de Pedidos Mantidos na Íntegra -->
     <div id="modal-novo" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl my-8">
             <div class="flex justify-between items-center mb-4">
@@ -150,7 +292,6 @@
         </div>
     </div>
 
-    <!-- Modal Gerenciar Pedido -->
     <div id="modal-gerenciar" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl my-8 space-y-4">
             <div class="flex justify-between items-center">
@@ -167,7 +308,6 @@
                 <p id="adm-view-desc-p"><strong>Obs:</strong> <span id="adm-view-desc">-</span></p>
             </div>
 
-            <!-- Alterar Status -->
             <div class="space-y-1">
                 <label class="block text-xs font-semibold text-gray-700 uppercase">Alterar Status</label>
                 <div class="flex space-x-2">
@@ -183,7 +323,6 @@
                 </div>
             </div>
 
-            <!-- Enviar Mensagem com Atalhos Rápidos -->
             <div class="space-y-2">
                 <label class="block text-xs font-semibold text-gray-700 uppercase">Enviar Mensagem ao Cliente</label>
                 <div class="flex flex-wrap gap-1.5">
@@ -196,7 +335,6 @@
                 <button onclick="enviarMensagemPedido()" class="w-full bg-gray-900 hover:bg-black text-white py-2 rounded-xl text-xs font-semibold transition">Enviar Atualização</button>
             </div>
 
-            <!-- Botões de Finalização e Exclusão -->
             <div class="pt-4 border-t border-gray-100 flex flex-col space-y-2">
                 <button id="btn-finalizar-pedido" onclick="finalizarPedido()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-xl text-xs font-semibold transition">Finalizar Pedido</button>
                 <button id="btn-liberar-codigo" onclick="liberarCodigoPedido()" class="w-full bg-amber-500 hover:bg-amber-600 text-white py-2 rounded-xl text-xs font-semibold transition hidden">Liberar Código (Retornar ao Estoque)</button>
@@ -205,7 +343,7 @@
         </div>
     </div>
 
-    <!-- Script com Firebase integrado -->
+    <!-- Script Firebase com Reutilização de Auth e Listeners -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -237,6 +375,7 @@
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('admin-content').classList.remove('hidden');
                 iniciarListenersAdmin();
+                iniciarListenersCentralAdmin();
             } else {
                 document.getElementById('login-screen').classList.remove('hidden');
                 document.getElementById('admin-content').classList.add('hidden');
@@ -260,6 +399,7 @@
 
         document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
 
+        // Listeners Originais de Pedidos
         function iniciarListenersAdmin() {
             onSnapshot(collection(db, "codigos"), (snapshot) => {
                 let disponiveis = 0;
@@ -313,6 +453,231 @@
             });
         }
 
+        // --- LISTENERS E AÇÕES DA CENTRAL EM TEMPO REAL ---
+        let vagasQuantidadeGlobal = 0;
+
+        function iniciarListenersCentralAdmin() {
+            // Status Geral
+            onSnapshot(doc(db, "central", "status_geral"), (docSnap) => {
+                if (docSnap.exists()) {
+                    document.getElementById('adm-status-geral').value = docSnap.data().estado || "Funcionando normalmente";
+                }
+            });
+
+            // Vagas
+            onSnapshot(doc(db, "central", "vagas"), (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    vagasQuantidadeGlobal = data.quantidade || 0;
+                    document.getElementById('adm-vagas-qtd').value = vagasQuantidadeGlobal;
+                    document.getElementById('adm-vagas-ativo').checked = data.ativo !== false;
+                }
+            });
+
+            // Serviços
+            onSnapshot(collection(db, "central_servicos"), (snapshot) => {
+                const container = document.getElementById('adm-lista-servicos');
+                container.innerHTML = "";
+                snapshot.forEach((docSnap) => {
+                    const s = { id: docSnap.id, ...docSnap.data() };
+                    const div = document.createElement('div');
+                    div.className = "flex items-center justify-between bg-gray-50 p-2 rounded-xl text-xs";
+                    div.innerHTML = `
+                        <span class="font-bold">${s.nome}</span>
+                        <div class="flex items-center space-x-1">
+                            <select onchange="atualizarServico('${s.id}', this.value)" class="bg-white border rounded px-1 py-0.5 text-[11px]">
+                                <option value="Disponível" ${s.estado === 'Disponível' ? 'selected' : ''}>🟢 Disponível</option>
+                                <option value="Disponibilidade limitada" ${s.estado === 'Disponibilidade limitada' ? 'selected' : ''}>🟡 Limitada</option>
+                                <option value="Indisponível" ${s.estado === 'Indisponível' ? 'selected' : ''}>🔴 Indisponível</option>
+                                <option value="Temporariamente suspenso" ${s.estado === 'Temporariamente suspenso' ? 'selected' : ''}>⚪ Suspenso</option>
+                            </select>
+                            <button onclick="excluirServico('${s.id}')" class="text-red-500 hover:text-red-700 px-1"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            });
+
+            // Mural Avisos
+            onSnapshot(collection(db, "central_avisos"), (snapshot) => {
+                const container = document.getElementById('adm-lista-avisos');
+                container.innerHTML = "";
+                snapshot.forEach((docSnap) => {
+                    const a = { id: docSnap.id, ...docSnap.data() };
+                    const div = document.createElement('div');
+                    div.className = "flex items-center justify-between bg-gray-50 p-2 rounded-xl text-xs";
+                    div.innerHTML = `
+                        <div class="truncate max-w-[200px]">
+                            <strong class="block truncate">${a.titulo}</strong>
+                            <span class="text-[10px] text-gray-500">${a.tipo} - ${a.ativo ? 'Ativo' : 'Inativo'}</span>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="toggleAviso('${a.id}', ${!a.ativo})" class="px-2 py-0.5 rounded text-[10px] font-bold ${a.ativo ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-gray-700'}">${a.ativo ? 'Desativar' : 'Ativar'}</button>
+                            <button onclick="excluirAviso('${a.id}')" class="text-red-500 px-1"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            });
+
+            // Horários
+            onSnapshot(collection(db, "central_horarios"), (snapshot) => {
+                const container = document.getElementById('adm-lista-horarios');
+                container.innerHTML = "";
+                snapshot.forEach((docSnap) => {
+                    const h = { id: docSnap.id, ...docSnap.data() };
+                    const div = document.createElement('div');
+                    div.className = "flex items-center justify-between bg-gray-50 p-2 rounded-xl text-xs";
+                    div.innerHTML = `
+                        <span class="font-bold">${h.hora}</span>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="toggleHorario('${h.id}', '${h.status === 'Disponível' ? 'Ocupado' : 'Disponível'}')" class="text-[10px] font-bold ${h.status === 'Disponível' ? 'text-emerald-600' : 'text-red-600'}">${h.status}</button>
+                            <button onclick="excluirHorario('${h.id}')" class="text-gray-400 hover:text-red-500 px-1"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            });
+
+            // Promoções
+            onSnapshot(collection(db, "central_promocoes"), (snapshot) => {
+                const container = document.getElementById('adm-lista-promocoes');
+                container.innerHTML = "";
+                snapshot.forEach((docSnap) => {
+                    const p = { id: docSnap.id, ...docSnap.data() };
+                    const div = document.createElement('div');
+                    div.className = "flex items-center justify-between bg-gray-50 p-2 rounded-xl text-xs";
+                    div.innerHTML = `
+                        <div class="truncate max-w-[180px]">
+                            <strong class="block truncate">${p.titulo}</strong>
+                            <span class="text-[10px] text-gray-500">${p.status}</span>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="togglePromocao('${p.id}', '${p.status === 'Ativa' ? 'Inativa' : 'Ativa'}')" class="px-2 py-0.5 rounded text-[10px] font-bold ${p.status === 'Ativa' ? 'bg-amber-100 text-amber-800' : 'bg-gray-200 text-gray-700'}">${p.status === 'Ativa' ? 'Desativar' : 'Ativar'}</button>
+                            <button onclick="excluirPromocao('${p.id}')" class="text-red-500 px-1"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            });
+        }
+
+        // Funções Globais Admin Central em Tempo Real
+        window.salvarStatusGeral = async () => {
+            const estado = document.getElementById('adm-status-geral').value;
+            await setDoc(doc(db, "central", "status_geral"), { estado, atualizadoEm: serverTimestamp() });
+            alert("Status Geral atualizado!");
+        };
+
+        window.alterarVagas = async (delta) => {
+            const novaQtd = Math.max(0, vagasQuantidadeGlobal + delta);
+            const ativo = document.getElementById('adm-vagas-ativo').checked;
+            await setDoc(doc(db, "central", "vagas"), { quantidade: novaQtd, ativo, atualizadoEm: serverTimestamp() });
+        };
+
+        window.zerarVagas = async () => {
+            const ativo = document.getElementById('adm-vagas-ativo').checked;
+            await setDoc(doc(db, "central", "vagas"), { quantidade: 0, ativo, atualizadoEm: serverTimestamp() });
+        };
+
+        window.salvarVagasConfig = async () => {
+            const qtd = parseInt(document.getElementById('adm-vagas-qtd').value) || 0;
+            const ativo = document.getElementById('adm-vagas-ativo').checked;
+            await setDoc(doc(db, "central", "vagas"), { quantidade: qtd, ativo, atualizadoEm: serverTimestamp() });
+            alert("Configuração de vagas salva!");
+        };
+
+        document.getElementById('form-add-servico').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nome = document.getElementById('serv-nome').value;
+            const estado = document.getElementById('serv-estado').value;
+            await setDoc(doc(collection(db, "central_servicos")), { nome, estado, icone: "🖨️" });
+            document.getElementById('form-add-servico').reset();
+        });
+
+        window.atualizarServico = async (id, novoEstado) => {
+            await updateDoc(doc(db, "central_servicos", id), { estado: novoEstado });
+        };
+
+        window.excluirServico = async (id) => {
+            await deleteDoc(doc(db, "central_servicos", id));
+        };
+
+        document.getElementById('form-add-aviso').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const titulo = document.getElementById('aviso-titulo').value;
+            const mensagem = document.getElementById('aviso-mensagem').value;
+            const tipo = document.getElementById('aviso-tipo').value;
+            const agora = new Date();
+            const dataStr = agora.toLocaleDateString('pt-BR');
+            const horaStr = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            await setDoc(doc(collection(db, "central_avisos")), {
+                titulo, mensagem, tipo, data: dataStr, horario: horaStr, ativo: true
+            });
+            document.getElementById('form-add-aviso').reset();
+        });
+
+        window.toggleAviso = async (id, novoEstado) => {
+            await updateDoc(doc(db, "central_avisos", id), { ativo: novoEstado });
+        };
+
+        window.excluirAviso = async (id) => {
+            await deleteDoc(doc(db, "central_avisos", id));
+        };
+
+        document.getElementById('form-add-horario').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const hora = document.getElementById('horario-hora').value;
+            const status = document.getElementById('horario-status').value;
+            await setDoc(doc(collection(db, "central_horarios")), { hora, status });
+            document.getElementById('form-add-horario').reset();
+        });
+
+        window.toggleHorario = async (id, novoStatus) => {
+            await updateDoc(doc(db, "central_horarios", id), { status: novoStatus });
+        };
+
+        window.excluirHorario = async (id) => {
+            await deleteDoc(doc(db, "central_horarios", id));
+        };
+
+        document.getElementById('form-add-promocao').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const titulo = document.getElementById('promo-titulo').value;
+            const descricao = document.getElementById('promo-descricao').value;
+            const preco = document.getElementById('promo-preco').value;
+            const etiqueta = document.getElementById('promo-etiqueta').value;
+
+            await setDoc(doc(collection(db, "central_promocoes")), {
+                titulo, descricao, preco, etiqueta, status: "Ativa", criadoEm: serverTimestamp()
+            });
+            document.getElementById('form-add-promocao').reset();
+        });
+
+        window.togglePromocao = async (id, novoStatus) => {
+            await updateDoc(doc(db, "central_promocoes", id), { status: novoStatus });
+        };
+
+        window.excluirPromocao = async (id) => {
+            await deleteDoc(doc(db, "central_promocoes", id));
+        };
+
+        document.getElementById('form-enviar-notificacao').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const titulo = document.getElementById('notif-titulo').value;
+            const mensagem = document.getElementById('notif-mensagem').value;
+            const tipo = document.getElementById('notif-tipo').value;
+
+            await setDoc(doc(collection(db, "central_notificacoes")), {
+                titulo, mensagem, tipo, enviadoEm: serverTimestamp()
+            });
+
+            alert("Notificação registrada na fila do Firebase com sucesso!");
+            document.getElementById('form-enviar-notificacao').reset();
+        });
+
+        // Operações Originais de Pedidos
         document.getElementById('form-novo-pedido').addEventListener('submit', async (e) => {
             e.preventDefault();
             const codigo = document.getElementById('novo-codigo').value;
@@ -326,21 +691,13 @@
             try {
                 const novoPedidoRef = doc(collection(db, "pedidos"));
                 await setDoc(novoPedidoRef, {
-                    codigo,
-                    cliente,
-                    servico,
-                    descricao,
-                    quantidade,
-                    valor,
-                    status: "Pedido recebido",
-                    mensagem,
-                    criadoEm: serverTimestamp(),
-                    atualizadoEm: serverTimestamp()
+                    codigo, cliente, servico, descricao, quantidade, valor,
+                    status: "Pedido recebido", mensagem,
+                    criadoEm: serverTimestamp(), atualizadoEm: serverTimestamp()
                 });
 
                 await updateDoc(doc(db, "codigos", codigo), {
-                    status: "Em uso",
-                    pedidoId: novoPedidoRef.id
+                    status: "Em uso", pedidoId: novoPedidoRef.id
                 });
 
                 fecharModalNovoPedido();
@@ -380,8 +737,7 @@
         window.atualizarStatusPedido = async () => {
             const novoStatus = document.getElementById('adm-select-status').value;
             await updateDoc(doc(db, "pedidos", pedidoAtualId), {
-                status: novoStatus,
-                atualizadoEm: serverTimestamp()
+                status: novoStatus, atualizadoEm: serverTimestamp()
             });
             alert("Status atualizado com sucesso!");
             fecharModalGerenciar();
@@ -390,8 +746,7 @@
         window.enviarMensagemPedido = async () => {
             const mensagem = document.getElementById('adm-input-mensagem').value;
             await updateDoc(doc(db, "pedidos", pedidoAtualId), {
-                mensagem,
-                atualizadoEm: serverTimestamp()
+                mensagem, atualizadoEm: serverTimestamp()
             });
             alert("Mensagem enviada ao cliente!");
             fecharModalGerenciar();
@@ -399,8 +754,7 @@
 
         window.finalizarPedido = async () => {
             await updateDoc(doc(db, "pedidos", pedidoAtualId), {
-                status: "Finalizado",
-                atualizadoEm: serverTimestamp()
+                status: "Finalizado", atualizadoEm: serverTimestamp()
             });
             alert("Pedido finalizado!");
             fecharModalGerenciar();
@@ -409,8 +763,7 @@
         window.liberarCodigoPedido = async () => {
             if (!confirm(`Deseja liberar o código ${codigoAtualPedido} para reutilização?`)) return;
             await updateDoc(doc(db, "codigos", codigoAtualPedido), {
-                status: "Disponível",
-                pedidoId: null
+                status: "Disponível", pedidoId: null
             });
             alert("Código liberado para estoque!");
             fecharModalGerenciar();
@@ -418,14 +771,10 @@
 
         window.excluirPedido = async () => {
             if (!confirm("Tem certeza que deseja excluir este pedido? O código associado voltará a ficar disponível.")) return;
-            
             await updateDoc(doc(db, "codigos", codigoAtualPedido), {
-                status: "Disponível",
-                pedidoId: null
+                status: "Disponível", pedidoId: null
             });
-
             await deleteDoc(doc(db, "pedidos", pedidoAtualId));
-
             alert("Pedido excluído!");
             fecharModalGerenciar();
         };
