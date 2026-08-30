@@ -18,6 +18,7 @@
             --accent-gradient: linear-gradient(135deg, #00c4cc 0%, #7d2ae8 100%);
             --green: #10b981;
             --green-hover: #059669;
+            --red: #ef4444;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
@@ -47,6 +48,51 @@
             -webkit-text-fill-color: transparent;
         }
         .header-box p { color: var(--text-muted); font-size: 14px; margin-top: 6px; }
+
+        /* BANNER DE INFORMAÇÕES E STATUS DE FUNCIONAMENTO */
+        .operating-hours-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .status-badge-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .status-pill.active { background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid var(--green); }
+        .status-pill.inactive { background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid var(--red); }
+        .status-pill.always { background: rgba(0, 196, 204, 0.15); color: var(--canva-cyan); border: 1px solid var(--canva-cyan); }
+
+        .hours-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            font-size: 13px;
+            background: #0f172a;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .hours-item strong { color: #fff; display: block; margin-bottom: 2px; }
+        .hours-item span { color: var(--text-muted); }
 
         /* AVISO DO SITE */
         .notice-banner {
@@ -78,7 +124,17 @@
             margin-bottom: 12px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 8px;
+        }
+
+        .save-indicator {
+            font-size: 12px;
+            color: var(--green);
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: normal;
+            display: none;
         }
         
         .price-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -86,12 +142,53 @@
         .price-table th { color: var(--text-muted); font-weight: 600; font-size: 12px; }
         .price-table td strong { color: var(--green); font-size: 14px; }
 
-        /* LISTA ORGANIZADA DE OPÇÕES (UM EM BAIXO DO OUTRO) */
+        /* PROGRESSO DAS ETAPAS */
+        .stepper-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px 20px;
+        }
+        .stepper-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--canva-cyan);
+        }
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: #0f172a;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .progress-bar-fill {
+            height: 100%;
+            width: 16.66%;
+            background: var(--accent-gradient);
+            transition: width 0.3s ease;
+        }
+
+        /* PAINEL DE ETAPAS */
         .step-box {
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 20px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .step-box.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .options-list {
@@ -134,6 +231,7 @@
             border: 2px solid var(--text-muted);
             margin-right: 4px;
             display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
         }
         .option-card.selected .radio-dot {
             border-color: var(--canva-cyan);
@@ -155,9 +253,115 @@
             color: #fff;
             font-size: 14px;
         }
-        input:focus, textarea:focus { border-color: var(--canva-cyan); outline: none; }
+        input:focus, textarea:focus, select:focus { border-color: var(--canva-cyan); outline: none; }
 
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* CONTROLE DE QUANTIDADE */
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 8px;
+            width: fit-content;
+        }
+        .btn-qty {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .btn-qty:hover { background: var(--card-hover); border-color: var(--canva-cyan); }
+        .qty-val { font-size: 16px; font-weight: 700; min-width: 24px; text-align: center; color: #fff; }
+
+        /* GRID DE ESTILOS DA ARTE */
+        .style-options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+            margin-top: 6px;
+        }
+        .style-chip {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .style-chip:hover { border-color: var(--canva-cyan); }
+        .style-chip.selected {
+            border-color: var(--canva-cyan);
+            background: rgba(0, 196, 204, 0.15);
+            color: var(--canva-cyan);
+            font-weight: 600;
+        }
+
+        /* UPLOAD / ANEXO DE REFERÊNCIAS */
+        .file-upload-box {
+            background: #0f172a;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            margin-top: 6px;
+        }
+        .btn-upload {
+            background: var(--card-bg);
+            border: 1px solid var(--canva-cyan);
+            color: var(--canva-cyan);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .btn-upload:hover { background: rgba(0, 196, 204, 0.1); }
+        .file-list-preview {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: left;
+        }
+
+        /* RESUMO DA REVISÃO DO PEDIDO (ETAPA 5) */
+        .review-card {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 13px;
+        }
+        .review-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed var(--border);
+            padding-bottom: 8px;
+        }
+        .review-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .review-label { color: var(--text-muted); font-weight: 500; }
+        .review-val { color: #fff; font-weight: 600; text-align: right; max-width: 60%; word-break: break-word; }
 
         /* RESUMO E BOTÃO FINAL */
         .summary-card {
@@ -171,6 +375,40 @@
             margin-top: 10px;
         }
         .summary-total { font-size: 20px; font-weight: 800; color: var(--green); }
+
+        /* CONTROLES DE NAVEGAÇÃO DAS ETAPAS */
+        .step-nav-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .btn-prev {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            flex: 1;
+        }
+        .btn-prev:hover { background: var(--card-hover); }
+
+        .btn-next {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            flex: 2;
+            box-shadow: 0 4px 15px rgba(0, 196, 204, 0.3);
+            transition: transform 0.2s;
+        }
+        .btn-next:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
         .btn-enviar {
             background: var(--accent-gradient);
@@ -210,10 +448,170 @@
             margin-top: 14px; cursor: pointer; width: 100%;
         }
 
+        /* SEÇÃO PORTFÓLIO / GALERIA DE MODELOS */
+        .portfolio-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px 20px;
+            margin-top: 10px;
+        }
+        .portfolio-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .portfolio-category-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            margin: 16px 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px;
+        }
+
+        .portfolio-card {
+            position: relative;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .portfolio-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--canva-cyan);
+        }
+
+        .portfolio-img-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 100%; /* Proporção 1:1 */
+            background: #1e293b;
+            overflow: hidden;
+        }
+        .portfolio-img-wrapper img {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            pointer-events: none; /* Dificulta drag/save direct */
+        }
+
+        /* MARCA D'ÁGUA VISÍVEL */
+        .watermark-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.03),
+                rgba(255, 255, 255, 0.03) 15px,
+                transparent 15px,
+                transparent 30px
+            );
+        }
+        .watermark-text {
+            font-size: 20px;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.28);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transform: rotate(-25deg);
+            white-space: nowrap;
+            text-shadow: 0 0 4px rgba(0,0,0,0.6);
+        }
+
+        .portfolio-info {
+            padding: 10px 12px;
+            font-size: 12px;
+        }
+        .portfolio-item-title {
+            font-weight: 600;
+            color: #fff;
+        }
+        .portfolio-item-desc {
+            color: var(--text-muted);
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        /* MODAL LIGHTBOX DO PORTFÓLIO (SEM DOWNLOAD) */
+        .lightbox-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; z-index: 10000;
+            opacity: 0; pointer-events: none; transition: opacity 0.25 ease;
+        }
+        .lightbox-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lightbox-img-wrapper {
+            position: relative;
+            max-width: 100%;
+            max-height: 75vh;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+        }
+
+        .lightbox-img-wrapper img {
+            max-width: 100%;
+            max-height: 75vh;
+            display: block;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
+        .lightbox-caption {
+            margin-top: 12px;
+            text-align: center;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
         @media (max-width: 600px) {
             .grid-2 { grid-template-columns: 1fr; }
             .option-card { padding: 12px; }
             .option-title { font-size: 13px; }
+            .hours-grid { grid-template-columns: 1fr; }
+            .portfolio-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+            .watermark-text { font-size: 14px; }
         }
     </style>
 </head>
@@ -224,7 +622,34 @@
         <!-- HEADER -->
         <div class="header-box">
             <h1>🎨 Canva Design Sob Encomenda</h1>
-            <p>Monte seu arte profissional rápida, personalizada e pronta para uso!</p>
+            <p>Monte sua arte profissional rápida, personalizada e pronta para uso!</p>
+        </div>
+
+        <!-- BANNER DE HORÁRIO & STATUS DINÂMICO DE ATENDIMENTO -->
+        <div class="operating-hours-box">
+            <div class="status-badge-container">
+                <div class="status-pill always">
+                    <span>📥</span> Recebimento: 24h/dia
+                </div>
+                <div class="status-pill" id="dynamicStatusPill">
+                    <span id="statusIcon">🟢</span> <span id="statusText">Verificando atendimento...</span>
+                </div>
+            </div>
+
+            <div class="hours-grid">
+                <div class="hours-item">
+                    <strong>📥 RECEBIMENTO DE PEDIDOS</strong>
+                    <span>24 horas por dia, 7 dias por semana</span>
+                </div>
+                <div class="hours-item">
+                    <strong>🎨 PRODUÇÃO & EDIÇÃO DE ARTES</strong>
+                    <span>Sábado e Domingo: 06:30 às 21:30</span>
+                </div>
+            </div>
+            
+            <div id="nextSessionNotice" style="font-size: 12px; color: var(--canva-cyan); font-weight: 600; text-align: center;">
+                <!-- Preenchido via JS -->
+            </div>
         </div>
 
         <!-- AVISO DO SITE -->
@@ -237,7 +662,10 @@
 
         <!-- TABELA DE PREÇOS -->
         <div class="price-section">
-            <div class="section-title">🏷️ Tabela de Valores Rápidos</div>
+            <div class="section-title">
+                <span>🏷️ Tabela de Valores Rápidos</span>
+                <span class="save-indicator" id="autoSaveIndicator">💾 Salvo automaticamente</span>
+            </div>
             <table class="price-table">
                 <thead>
                     <tr>
@@ -249,166 +677,355 @@
                 <tbody>
                     <tr>
                         <td>Arte Única (Feed / Story / Banner)</td>
-                        <td>Até 24h</td>
+                        <td>Até 3 dias</td>
                         <td><strong>R$ 15,00</strong></td>
                     </tr>
                     <tr>
-                        <td>Carrossel do Instagram (3 a 5 telas)</td>
-                        <td>24h a 48h</td>
-                        <td><strong>R$ 35,00</strong></td>
-                    </tr>
-                    <tr>
-                        <td>Cartão Virtual / Panfleto Digital</td>
-                        <td>Até 24h</td>
-                        <td><strong>R$ 25,00</strong></td>
-                    </tr>
-                    <tr>
                         <td>Logotipo / Identidade Básica</td>
-                        <td>48h</td>
+                        <td>Até 3 dias</td>
                         <td><strong>R$ 50,00</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Edição de Link / Template Existente</td>
+                        <td>Até 3 dias</td>
+                        <td><strong>R$ 10,00</strong></td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- PASSO 1: SELEÇÃO DE TIPO (UM EM BAIXO DO OUTRO) -->
-        <div class="step-box">
-            <div class="section-title">1. O que você precisa? (Selecione um)</div>
-            
-            <div class="options-list" id="listaTipos">
+        <!-- INDICADOR DE PROGRESSO DAS ETAPAS -->
+        <div class="stepper-box">
+            <div class="stepper-header">
+                <span id="stepTitleDisplay">Etapa 1 de 6 — Serviço</span>
+                <span id="stepNumberDisplay">1/6</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBarFill"></div>
+            </div>
+        </div>
+
+        <!-- CONTAINER DO FORMULÁRIO MULTI-ETAPAS -->
+        <form id="canvaForm" onsubmit="return false;">
+
+            <!-- ETAPA 1: SELEÇÃO DE SERVIÇO -->
+            <div class="step-box active" id="step1">
+                <div class="section-title">1. O que você precisa? (Selecione um)</div>
                 
-                <div class="option-card selected" onclick="selecionarTipo(this, 'Arte p/ Redes Sociais (Feed/Story)', 15.00)">
-                    <div class="option-left">
-                        <div class="radio-dot"></div>
-                        <span class="option-icon">📱</span>
-                        <div>
-                            <div class="option-title">Arte Única p/ Redes Sociais</div>
-                            <div class="option-desc">Feed do Instagram, Story, Status ou Banner promocional</div>
+                <div class="options-list" id="listaTipos">
+                    
+                    <div class="option-card selected" onclick="selecionarTipo(this, 'Arte p/ Redes Sociais (Feed/Story)', 15.00)">
+                        <div class="option-left">
+                            <div class="radio-dot"></div>
+                            <span class="option-icon">📱</span>
+                            <div>
+                                <div class="option-title">Arte Única p/ Redes Sociais</div>
+                                <div class="option-desc">Feed do Instagram, Story, Status ou Banner promocional</div>
+                            </div>
                         </div>
+                        <div class="option-price">R$ 15,00</div>
                     </div>
-                    <div class="option-price">R$ 15,00</div>
+
+                    <div class="option-card" onclick="selecionarTipo(this, 'Logotipo / Marca Básica', 50.00)">
+                        <div class="option-left">
+                            <div class="radio-dot"></div>
+                            <span class="option-icon">✨</span>
+                            <div>
+                                <div class="option-title">Logotipo / Marca Profissional</div>
+                                <div class="option-desc">Criação de Logo + Paleta de Cores + Tipografia no Canva</div>
+                            </div>
+                        </div>
+                        <div class="option-price">R$ 50,00</div>
+                    </div>
+
+                    <div class="option-card" onclick="selecionarTipo(this, 'Edição de Link / Template Existente', 10.00)">
+                        <div class="option-left">
+                            <div class="radio-dot"></div>
+                            <span class="option-icon">✏️</span>
+                            <div>
+                                <div class="option-title">Edição de Arte / Template que Já Tenho</div>
+                                <div class="option-desc">Você envia o link do Canva e ajustamos para você</div>
+                            </div>
+                        </div>
+                        <div class="option-price">R$ 10,00</div>
+                    </div>
+
                 </div>
 
-                <div class="option-card" onclick="selecionarTipo(this, 'Carrossel do Instagram (Até 5 Telas)', 35.00)">
-                    <div class="option-left">
-                        <div class="radio-dot"></div>
-                        <span class="option-icon">🖼️</span>
-                        <div>
-                            <div class="option-title">Carrossel p/ Instagram</div>
-                            <div class="option-desc">Sequência explicativa/de vendas de 3 a 5 posts continuos</div>
-                        </div>
+                <!-- CAMPO DE QUANTIDADE -->
+                <div class="input-group" style="margin-top: 16px;">
+                    <label>Quantidade de artes:</label>
+                    <div class="quantity-control">
+                        <button type="button" class="btn-qty" onclick="alterarQuantidade(-1)">-</button>
+                        <span class="qty-val" id="qtyDisplay">1</span>
+                        <button type="button" class="btn-qty" onclick="alterarQuantidade(1)">+</button>
                     </div>
-                    <div class="option-price">R$ 35,00</div>
                 </div>
 
-                <div class="option-card" onclick="selecionarTipo(this, 'Cartão Interativo / Panfleto Digital', 25.00)">
-                    <div class="option-left">
-                        <div class="radio-dot"></div>
-                        <span class="option-icon">📄</span>
-                        <div>
-                            <div class="option-title">Cartão Interativo / Panfleto Digital</div>
-                            <div class="option-desc">PDF com botões clicáveis de WhatsApp, Localização e Redes</div>
-                        </div>
-                    </div>
-                    <div class="option-price">R$ 25,00</div>
+                <div class="step-nav-buttons">
+                    <button type="button" class="btn-next" onclick="proximaEtapa(2)">Continuar →</button>
                 </div>
-
-                <div class="option-card" onclick="selecionarTipo(this, 'Logotipo / Marca Básica', 50.00)">
-                    <div class="option-left">
-                        <div class="radio-dot"></div>
-                        <span class="option-icon">✨</span>
-                        <div>
-                            <div class="option-title">Logotipo / Marca Profissional</div>
-                            <div class="option-desc">Criação de Logo + Paleta de Cores + Tipografia no Canva</div>
-                        </div>
-                    </div>
-                    <div class="option-price">R$ 50,00</div>
-                </div>
-
-                <div class="option-card" onclick="selecionarTipo(this, 'Edição de Link / Template Existente', 10.00)">
-                    <div class="option-left">
-                        <div class="radio-dot"></div>
-                        <span class="option-icon">✏️</span>
-                        <div>
-                            <div class="option-title">Edição de Arte / Template que Já Tenho</div>
-                            <div class="option-desc">Você envia o link do Canva e ajustamos para você</div>
-                        </div>
-                    </div>
-                    <div class="option-price">R$ 10,00</div>
-                </div>
-
             </div>
-        </div>
 
-        <!-- PASSO 2: FORMATO / ESTILO -->
-        <div class="step-box">
-            <div class="section-title">2. Formato do Arquivo Final</div>
-            <div class="options-list" id="listaFormatos">
-                
-                <div class="option-card selected" onclick="selecionarFormato(this, 'Acesso ao Link Editável do Canva + Arquivo Final')">
-                    <div class="option-left">
-                        <div class="radio-dot"></div>
-                        <span class="option-icon">🔗</span>
-                        <div>
-                            <div class="option-title">Link do Canva Editável + PNG/JPG</div>
-                            <div class="option-desc">Receba o link no seu Canva para alterar quando quiser</div>
-                        </div>
-                    </div>
-                </div>
+            <!-- ETAPA 2: DETALHES DA ARTE & ESTILO -->
+            <div class="step-box" id="step2">
+                <div class="section-title">2. Detalhes & Estilo da Arte</div>
 
-                <div class="option-card" onclick="selecionarFormato(this, 'Apenas Arquivo Pronto (PNG / JPG / PDF)')">
-                    <div class="option-left">
-                        <div class="radio-dot"></div>
-                        <span class="option-icon">📁</span>
-                        <div>
-                            <div class="option-title">Apenas Arquivo Pronto (PNG, JPG ou PDF)</div>
-                            <div class="option-desc">Arte finalizada pronta para postar ou enviar</div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- PASSO 3: INFORMAÇÕES DO PEDIDO -->
-        <div class="step-box">
-            <div class="section-title">3. Detalhes & Contato</div>
-            
-            <div class="grid-2">
                 <div class="input-group">
-                    <label>Seu Nome / Empresa *</label>
-                    <input type="text" id="nome" placeholder="Ex: João Silva ou Barbaria VIP">
+                    <label>Texto que deve aparecer na arte *</label>
+                    <textarea id="textoArte" rows="3" placeholder="Ex: Promoção de Inauguração - 20% OFF em todos os serviços neste Sábado!"></textarea>
                 </div>
+
                 <div class="input-group">
-                    <label>WhatsApp para Contato *</label>
-                    <input type="text" id="telefone" placeholder="(41) 99999-9999" oninput="mascaraTelefone(this)">
+                    <label>Informações importantes (Contato, Endereço, Regras)</label>
+                    <textarea id="infoImportantes" rows="2" placeholder="Ex: WhatsApp: (41) 99999-9999 | Instagram: @minhaloja | Válido apenas para compras no PIX."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>Cores desejadas</label>
+                    <input type="text" id="coresDesejadas" placeholder="Ex.: azul, branco e dourado">
+                </div>
+
+                <div class="input-group">
+                    <label>Estilo desejado:</label>
+                    <div class="style-options-grid">
+                        <div class="style-chip selected" onclick="selecionarEstilo(this, 'Moderno')">Moderno</div>
+                        <div class="style-chip" onclick="selecionarEstilo(this, 'Minimalista')">Minimalista</div>
+                        <div class="style-chip" onclick="selecionarEstilo(this, 'Elegante')">Elegante</div>
+                        <div class="style-chip" onclick="selecionarEstilo(this, 'Colorido')">Colorido</div>
+                        <div class="style-chip" onclick="selecionarEstilo(this, 'Profissional')">Profissional</div>
+                        <div class="style-chip" onclick="selecionarEstilo(this, 'Não sei / Escolha por mim')">Escolha por mim</div>
+                    </div>
+                </div>
+
+                <div class="step-nav-buttons">
+                    <button type="button" class="btn-prev" onclick="etapaAnterior(1)">← Voltar</button>
+                    <button type="button" class="btn-next" onclick="proximaEtapa(3)">Continuar →</button>
                 </div>
             </div>
 
-            <div class="input-group">
-                <label>O que deve constar na arte? (Textos, Cores, Fotos, Ideias) *</label>
-                <textarea id="detalhes" rows="4" placeholder="Ex: Preciso de uma arte avisando sobre a promoção de 20% no sábado. Cores da marca: Azul e Preto. WhatsApp: (00) 0000-0000."></textarea>
+            <!-- ETAPA 3: REFERÊNCIAS E FORMATO -->
+            <div class="step-box" id="step3">
+                <div class="section-title">3. Referências & Formato de Entrega</div>
+
+                <div class="input-group">
+                    <label>Formato do Arquivo Final</label>
+                    <div class="options-list" id="listaFormatos">
+                        <div class="option-card selected" onclick="selecionarFormato(this, 'Acesso ao Link Editável do Canva + Arquivo Final')">
+                            <div class="option-left">
+                                <div class="radio-dot"></div>
+                                <span class="option-icon">🔗</span>
+                                <div>
+                                    <div class="option-title">Link do Canva Editável + PNG/JPG</div>
+                                    <div class="option-desc">Receba o link no seu Canva para alterar quando quiser</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="option-card" onclick="selecionarFormato(this, 'Apenas Arquivo Pronto (PNG / JPG / PDF)')">
+                            <div class="option-left">
+                                <div class="radio-dot"></div>
+                                <span class="option-icon">📁</span>
+                                <div>
+                                    <div class="option-title">Apenas Arquivo Pronto (PNG, JPG ou PDF)</div>
+                                    <div class="option-desc">Arte finalizada pronta para postar ou enviar</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group" style="margin-top: 14px;">
+                    <label>Você possui alguma referência?</label>
+                    <p style="font-size: 12px; color: var(--text-muted);">Envie imagens, logos ou links de exemplos que ajudem a explicar como deseja sua arte.</p>
+                    
+                    <div class="file-upload-box">
+                        <span style="font-size: 24px;">📎</span>
+                        <div style="font-size: 13px; color: #fff; margin-top: 4px;">Anexar Imagens / Exemplos</div>
+                        <input type="file" id="inputReferenciasFiles" multiple accept="image/*,.pdf" style="display: none;" onchange="atualizarListaArquivos(this)">
+                        <button type="button" class="btn-upload" onclick="document.getElementById('inputReferenciasFiles').click()">
+                            📎 Adicionar arquivo
+                        </button>
+                        <div class="file-list-preview" id="fileListPreview">Nenhum arquivo selecionado.</div>
+                    </div>
+                </div>
+
+                <div class="input-group" style="margin-top: 12px;">
+                    <label>Link de Referência / Canva existente (Opcional)</label>
+                    <input type="text" id="linkReferencia" placeholder="Ex: https://canva.com/... ou link do Pinterest/Instagram">
+                </div>
+
+                <div class="step-nav-buttons">
+                    <button type="button" class="btn-prev" onclick="etapaAnterior(2)">← Voltar</button>
+                    <button type="button" class="btn-next" onclick="proximaEtapa(4)">Continuar →</button>
+                </div>
             </div>
 
-            <div class="summary-card">
-                <div>
-                    <span style="font-size: 12px; color: var(--text-muted);">VALOR ESTIMADO DO PEDIDO:</span>
-                    <div class="summary-total" id="valorTotalDisplay">R$ 15,00</div>
+            <!-- ETAPA 4: DADOS DO CLIENTE -->
+            <div class="step-box" id="step4">
+                <div class="section-title">4. Dados do Cliente</div>
+
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>Seu Nome / Empresa *</label>
+                        <input type="text" id="nome" placeholder="Ex: João Silva ou Barbearia VIP">
+                    </div>
+                    <div class="input-group">
+                        <label>WhatsApp para Contato *</label>
+                        <input type="text" id="telefone" placeholder="(41) 99999-9999" oninput="mascaraTelefone(this)">
+                    </div>
                 </div>
-                <div style="font-size: 12px; color: var(--text-muted); text-align: right;">
-                    Pagamento via Pix na entrega
+
+                <div class="input-group">
+                    <label>Observações adicionais para a PrintExpress (Opcional)</label>
+                    <textarea id="detalhes" rows="3" placeholder="Ex: Dar preferência ao envio até sábado à tarde."></textarea>
+                </div>
+
+                <div class="step-nav-buttons">
+                    <button type="button" class="btn-prev" onclick="etapaAnterior(3)">← Voltar</button>
+                    <button type="button" class="btn-next" onclick="proximaEtapa(5)">Ir para Revisão →</button>
                 </div>
             </div>
+
+            <!-- ETAPA 5: REVISÃO DO PEDIDO -->
+            <div class="step-box" id="step5">
+                <div class="section-title">5. 📋 Revisar Pedido</div>
+
+                <div class="review-card">
+                    <div class="review-row">
+                        <span class="review-label">Serviço:</span>
+                        <span class="review-val" id="revServico">---</span>
+                    </div>
+                    <div class="review-row">
+                        <span class="review-label">Quantidade:</span>
+                        <span class="review-val" id="revQtd">1</span>
+                    </div>
+                    <div class="review-row">
+                        <span class="review-label">Formato Entrega:</span>
+                        <span class="review-val" id="revFormato">---</span>
+                    </div>
+                    <div class="review-row">
+                        <span class="review-label">Estilo / Cores:</span>
+                        <span class="review-val" id="revEstiloCores">---</span>
+                    </div>
+                    <div class="review-row">
+                        <span class="review-label">Texto da Arte:</span>
+                        <span class="review-val" id="revTexto">---</span>
+                    </div>
+                    <div class="review-row">
+                        <span class="review-label">Anexos / Links:</span>
+                        <span class="review-val" id="revAnexos">Nenhum</span>
+                    </div>
+                    <div class="review-row">
+                        <span class="review-label">Cliente / WhatsApp:</span>
+                        <span class="review-val" id="revCliente">---</span>
+                    </div>
+                    <div class="review-row">
+                        <span class="review-label">⏱️ Prazo Estimado:</span>
+                        <span class="review-val" style="color: var(--canva-cyan);">Até 3 dias</span>
+                    </div>
+                </div>
+
+                <!-- PRAZO E ATENDIMENTO ORGANIZADOS -->
+                <div style="background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-top: 12px; font-size: 12px;">
+                    <div style="color: var(--canva-cyan); font-weight: 700; margin-bottom: 4px;">📌 Informações do Pedido:</div>
+                    <div style="color: var(--text-muted);">
+                        📥 <strong>Pedidos:</strong> Recebidos 24h por dia.<br>
+                        🎨 <strong>Produção/Edição:</strong> Sábado e Domingo, 06:30 — 21:30.<br>
+                        ⏱️ <strong>Prazo:</strong> Até 3 dias.
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div>
+                        <span style="font-size: 12px; color: var(--text-muted);">VALOR ESTIMADO DO PEDIDO:</span>
+                        <div class="summary-total" id="valorTotalDisplay">R$ 15,00</div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted); text-align: right;">
+                        Pagamento via Pix na entrega
+                    </div>
+                </div>
+
+                <div class="step-nav-buttons">
+                    <button type="button" class="btn-prev" onclick="etapaAnterior(4)">← Editar Pedido</button>
+                    <button type="button" class="btn-next" onclick="proximaEtapa(6)">Avançar para Envio 🚀</button>
+                </div>
+            </div>
+
+            <!-- ETAPA 6: ENVIO -->
+            <div class="step-box" id="step6">
+                <div class="section-title">6. Confirmar & Enviar Pedido</div>
+
+                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">
+                    Tudo certo! Clique no botão abaixo para registrar sua encomenda. Nossa equipe analisará as informações imediatamente.
+                </p>
+
+                <!-- BOTÃO ENVIAR (MANTENDO MÉTODO ORIGINAL E FUNCIONAMENTO INTEGRO) -->
+                <button class="btn-enviar" id="btnEnviar" onclick="enviarEncomendaFirebase()">
+                    🚀 Enviar Encomenda & Ir para o Painel
+                </button>
+
+                <div class="step-nav-buttons" style="margin-top: 12px;">
+                    <button type="button" class="btn-prev" onclick="etapaAnterior(5)">← Voltar para Revisão</button>
+                </div>
+            </div>
+
+        </form>
+
+        <!-- SEÇÃO PORTFÓLIO DE TRABALHOS DA PRINTESTRESS -->
+        <div class="portfolio-section">
+            <div class="section-title" style="margin-bottom: 4px;">🎨 Alguns trabalhos da PrintExpress</div>
+            <div class="portfolio-desc">Confira alguns exemplos de artes que já podemos criar e personalizar para você.</div>
+
+            <!-- CATEGORIA: REDES SOCIAIS -->
+            <div class="portfolio-category-title">📱 Artes para redes sociais</div>
+            <div class="portfolio-grid">
+                <!-- MODELO 1 -->
+                <div class="portfolio-card" onclick="abrirLightbox('Artes para Redes Sociais - Modelo 1', 'Exemplo de post para feed e stories', 'https://via.placeholder.com/600x600/1e293b/00c4cc?text=Modelo+1+Redes+Sociais')">
+                    <div class="portfolio-img-wrapper">
+                        <!-- Imagem Substituível -->
+                        <img src="https://via.placeholder.com/400x400/1e293b/00c4cc?text=Redes+Social+1" alt="Modelo Redes Sociais 1">
+                        <div class="watermark-overlay"><span class="watermark-text">PrintExpress</span></div>
+                    </div>
+                    <div class="portfolio-info">
+                        <div class="portfolio-item-title">Arte Promocional Feed</div>
+                        <div class="portfolio-item-desc">Modelo 1 - Redes Sociais</div>
+                    </div>
+                </div>
+                <!-- MODELO 2 -->
+                <div class="portfolio-card" onclick="abrirLightbox('Artes para Redes Sociais - Modelo 2', 'Exemplo de banner divulgacional', 'https://via.placeholder.com/600x600/1e293b/7d2ae8?text=Modelo+2+Redes+Sociais')">
+                    <div class="portfolio-img-wrapper">
+                        <img src="https://via.placeholder.com/400x400/1e293b/7d2ae8?text=Redes+Social+2" alt="Modelo Redes Sociais 2">
+                        <div class="watermark-overlay"><span class="watermark-text">PrintExpress</span></div>
+                    </div>
+                    <div class="portfolio-info">
+                        <div class="portfolio-item-title">Banner de Oferta / Story</div>
+                        <div class="portfolio-item-desc">Modelo 2 - Redes Sociais</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CATEGORIA: LOGOTIPOS -->
+            <div class="portfolio-category-title">🎨 Logotipos</div>
+            <div class="portfolio-grid">
+                <!-- MODELO 1 -->
+                <div class="portfolio-card" onclick="abrirLightbox('Logotipo Profissional - Modelo 1', 'Identidade visual moderna com paleta de cores', 'https://via.placeholder.com/600x600/1e293b/10b981?text=Modelo+1+Logotipo')">
+                    <div class="portfolio-img-wrapper">
+                        <img src="https://via.placeholder.com/400x400/1e293b/10b981?text=Logo+Modelo+1" alt="Modelo Logo 1">
+                        <div class="watermark-overlay"><span class="watermark-text">PrintExpress</span></div>
+                    </div>
+                    <div class="portfolio-info">
+                        <div class="portfolio-item-title">Logo Minimalista & Marca</div>
+                        <div class="portfolio-item-desc">Modelo 1 - Logotipo</div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-
-        <!-- BOTÃO ENVIAR -->
-        <button class="btn-enviar" id="btnEnviar" onclick="enviarEncomendaFirebase()">
-            🚀 Enviar Encomenda & Ir para o Painel
-        </button>
 
     </div>
 
-    <!-- TOAST -->
+    <!-- TOAST DE ALERTA/NOTIFICAÇÃO ORIGINAL -->
     <div class="toast-overlay" id="customToast">
         <div class="toast-card">
             <div style="font-size: 36px; margin-bottom: 8px;" id="toastIcon">⚠️</div>
@@ -418,7 +1035,22 @@
         </div>
     </div>
 
-    <!-- FIREBASE & LOGICA -->
+    <!-- LIGHTBOX / MODAL DE VISUALIZAÇÃO DO PORTFÓLIO (SEM DOWNLOAD) -->
+    <div class="lightbox-overlay" id="portfolioLightbox" onclick="fecharLightbox(event)">
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <button class="lightbox-close" onclick="fecharLightbox()">&times;</button>
+            <div class="lightbox-img-wrapper">
+                <img id="lightboxImg" src="" alt="Visualização">
+                <div class="watermark-overlay"><span class="watermark-text" style="font-size: 28px;">PrintExpress</span></div>
+            </div>
+            <div class="lightbox-caption">
+                <strong id="lightboxTitle">Título</strong>
+                <div id="lightboxDesc" style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Descrição</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE & LOGICA COMPLETA PRESERVADA -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
@@ -438,23 +1070,238 @@
 
         // Estado do Formulário
         let servicoSelecionado = "Arte p/ Redes Sociais (Feed/Story)";
-        let valorServico = 15.00;
+        let valorServicoBase = 15.00;
+        let quantidadeArtes = 1;
         let formatoSelecionado = "Acesso ao Link Editável do Canva + Arquivo Final";
+        let estiloSelecionado = "Moderno";
+        let etapaAtual = 1;
+        let nomesArquivosAnexados = [];
 
+        // Nomes das etapas para display
+        const nomesEtapas = [
+            "Etapa 1 de 6 — Serviço",
+            "Etapa 2 de 6 — Detalhes da Arte",
+            "Etapa 3 de 6 — Referências",
+            "Etapa 4 de 6 — Dados do Cliente",
+            "Etapa 5 de 6 — Revisão",
+            "Etapa 6 de 6 — Envio"
+        ];
+
+        // --- SISTEMA DE FUNCIONAMENTO & HORÁRIOS DA PRINTESTRESS ---
+        function atualizarStatusAtendimento() {
+            const agora = new Date();
+            const diaSemana = agora.getDay(); // 0 = Domingo, 6 = Sábado
+            const hora = agora.getHours();
+            const minutos = agora.getMinutes();
+            const tempoEmMinutos = hora * 60 + minutos;
+
+            const inicioExpediente = 6 * 60 + 30; // 06:30 = 390 min
+            const fimExpediente = 21 * 60 + 30;  // 21:30 = 1290 min
+
+            const pill = document.getElementById('dynamicStatusPill');
+            const icon = document.getElementById('statusIcon');
+            const text = document.getElementById('statusText');
+            const notice = document.getElementById('nextSessionNotice');
+
+            const ehFimDeSemana = (diaSemana === 0 || diaSemana === 6);
+            const dentroDoHorario = ehFimDeSemana && (tempoEmMinutos >= inicioExpediente && tempoEmMinutos <= fimExpediente);
+
+            if (dentroDoHorario) {
+                pill.className = "status-pill active";
+                icon.innerText = "🟢";
+                text.innerText = "Edições ativas — Estamos realizando edições agora.";
+                notice.innerText = "⚡ Seu pedido está no horário de atendimento de edições!";
+            } else {
+                pill.className = "status-pill inactive";
+                icon.innerText = "🔴";
+                text.innerText = "Edições inativas — Pedidos disponíveis 24h.";
+
+                let proximaSessao = "";
+                if (diaSemana === 6 && tempoEmMinutos < inicioExpediente) {
+                    proximaSessao = "Próximo período de edição: Hoje (Sábado) às 06:30";
+                } else if (diaSemana === 6 && tempoEmMinutos > fimExpediente) {
+                    proximaSessao = "Próximo período de edição: Amanhã (Domingo) às 06:30";
+                } else if (diaSemana === 0 && tempoEmMinutos < inicioExpediente) {
+                    proximaSessao = "Próximo período de edição: Hoje (Domingo) às 06:30";
+                } else {
+                    proximaSessao = "Próximo período de edição: Sábado às 06:30";
+                }
+                notice.innerText = proximaSessao;
+            }
+        }
+
+        // --- SISTEMA DE ETAPAS DO FORMULÁRIO ---
+        window.proximaEtapa = function(n) {
+            if (n === 5) {
+                // Montar revisão
+                const nome = document.getElementById('nome').value.trim();
+                const tel = document.getElementById('telefone').value.trim();
+                const texto = document.getElementById('textoArte').value.trim();
+
+                if (!texto && etapaAtual === 2) {
+                    mostrarToast("Campo Obrigatório", "Por favor, informe o texto que deve constar na arte.");
+                    return;
+                }
+            }
+            irParaEtapa(n);
+        };
+
+        window.etapaAnterior = function(n) {
+            irParaEtapa(n);
+        };
+
+        function irParaEtapa(n) {
+            document.querySelectorAll('.step-box').forEach(box => box.classList.remove('active'));
+            const targetStep = document.getElementById(`step${n}`);
+            if (targetStep) {
+                targetStep.classList.add('active');
+                etapaAtual = n;
+                
+                // Atualizar Stepper UI
+                document.getElementById('stepTitleDisplay').innerText = nomesEtapas[n - 1];
+                document.getElementById('stepNumberDisplay').innerText = `${n}/6`;
+                document.getElementById('progressBarFill').style.width = `${(n / 6) * 100}%`;
+                
+                if (n === 5) atualizarRevisaoUI();
+                window.scrollTo({ top: 180, behavior: 'smooth' });
+            }
+        }
+
+        // --- SELEÇÃO DE OPÇÕES & VALORES ---
         window.selecionarTipo = function(element, titulo, valor) {
             document.querySelectorAll('#listaTipos .option-card').forEach(el => el.classList.remove('selected'));
             element.classList.add('selected');
             servicoSelecionado = titulo;
-            valorServico = valor;
-            document.getElementById('valorTotalDisplay').innerText = `R$ ${valor.toFixed(2).replace('.', ',')}`;
+            valorServicoBase = valor;
+            atualizarCalculoTotal();
+            salvarDadosLocais();
+        };
+
+        window.alterarQuantidade = function(delta) {
+            quantidadeArtes += delta;
+            if (quantidadeArtes < 1) quantidadeArtes = 1;
+            document.getElementById('qtyDisplay').innerText = quantidadeArtes;
+            atualizarCalculoTotal();
+            salvarDadosLocais();
+        };
+
+        function atualizarCalculoTotal() {
+            const total = valorServicoBase * quantidadeArtes;
+            document.getElementById('valorTotalDisplay').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+
+        window.selecionarEstilo = function(element, estilo) {
+            document.querySelectorAll('.style-chip').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            estiloSelecionado = estilo;
+            salvarDadosLocais();
         };
 
         window.selecionarFormato = function(element, formato) {
             document.querySelectorAll('#listaFormatos .option-card').forEach(el => el.classList.remove('selected'));
             element.classList.add('selected');
             formatoSelecionado = formato;
+            salvarDadosLocais();
         };
 
+        window.atualizarListaArquivos = function(input) {
+            const preview = document.getElementById('fileListPreview');
+            nomesArquivosAnexados = [];
+            if (input.files && input.files.length > 0) {
+                let html = '<strong>Arquivos anexados:</strong><br>';
+                for (let i = 0; i < input.files.length; i++) {
+                    const fname = input.files[i].name;
+                    nomesArquivosAnexados.push(fname);
+                    html += `• ${fname}<br>`;
+                }
+                preview.innerHTML = html;
+            } else {
+                preview.innerText = 'Nenhum arquivo selecionado.';
+            }
+            salvarDadosLocais();
+        };
+
+        function atualizarRevisaoUI() {
+            document.getElementById('revServico').innerText = servicoSelecionado;
+            document.getElementById('revQtd').innerText = `${quantidadeArtes}x`;
+            document.getElementById('revFormato').innerText = formatoSelecionado;
+            
+            const cores = document.getElementById('coresDesejadas').value.trim();
+            document.getElementById('revEstiloCores').innerText = `${estiloSelecionado}${cores ? ' (' + cores + ')' : ''}`;
+
+            const texto = document.getElementById('textoArte').value.trim();
+            document.getElementById('revTexto').innerText = texto || 'Não informado';
+
+            const link = document.getElementById('linkReferencia').value.trim();
+            let anexosText = [];
+            if (nomesArquivosAnexados.length > 0) anexosText.push(`${nomesArquivosAnexados.length} arquivo(s)`);
+            if (link) anexosText.push('Link enviado');
+            document.getElementById('revAnexos').innerText = anexosText.join(' + ') || 'Nenhum';
+
+            const nome = document.getElementById('nome').value.trim();
+            const tel = document.getElementById('telefone').value.trim();
+            document.getElementById('revCliente').innerText = `${nome || 'Não informado'} - ${tel || 'Sem fone'}`;
+
+            atualizarCalculoTotal();
+        }
+
+        // --- SALVAMENTO AUTOMÁTICO (LOCALSTORAGE) ---
+        function salvarDadosLocais() {
+            const dados = {
+                servicoSelecionado,
+                valorServicoBase,
+                quantidadeArtes,
+                formatoSelecionado,
+                estiloSelecionado,
+                textoArte: document.getElementById('textoArte').value,
+                infoImportantes: document.getElementById('infoImportantes').value,
+                coresDesejadas: document.getElementById('coresDesejadas').value,
+                linkReferencia: document.getElementById('linkReferencia').value,
+                nome: document.getElementById('nome').value,
+                telefone: document.getElementById('telefone').value,
+                detalhes: document.getElementById('detalhes').value
+            };
+            localStorage.setItem('pe_canva_draft', JSON.stringify(dados));
+            
+            const ind = document.getElementById('autoSaveIndicator');
+            if (ind) {
+                ind.style.display = 'inline';
+                setTimeout(() => { ind.style.display = 'none'; }, 2000);
+            }
+        }
+
+        function carregarDadosSalvos() {
+            const saved = localStorage.getItem('pe_canva_draft');
+            if (saved) {
+                try {
+                    const d = JSON.parse(saved);
+                    if (d.servicoSelecionado) servicoSelecionado = d.servicoSelecionado;
+                    if (d.valorServicoBase) valorServicoBase = d.valorServicoBase;
+                    if (d.quantidadeArtes) quantidadeArtes = d.quantidadeArtes;
+                    if (d.formatoSelecionado) formatoSelecionado = d.formatoSelecionado;
+                    if (d.estiloSelecionado) estiloSelecionado = d.estiloSelecionado;
+
+                    if (d.textoArte) document.getElementById('textoArte').value = d.textoArte;
+                    if (d.infoImportantes) document.getElementById('infoImportantes').value = d.infoImportantes;
+                    if (d.coresDesejadas) document.getElementById('coresDesejadas').value = d.coresDesejadas;
+                    if (d.linkReferencia) document.getElementById('linkReferencia').value = d.linkReferencia;
+                    if (d.nome) document.getElementById('nome').value = d.nome;
+                    if (d.telefone) document.getElementById('telefone').value = d.telefone;
+                    if (d.detalhes) document.getElementById('detalhes').value = d.detalhes;
+
+                    document.getElementById('qtyDisplay').innerText = quantidadeArtes;
+                    atualizarCalculoTotal();
+                } catch(e) { console.error(e); }
+            }
+        }
+
+        // Monitorar inputs para AutoSave
+        ['textoArte', 'infoImportantes', 'coresDesejadas', 'linkReferencia', 'nome', 'telefone', 'detalhes'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', salvarDadosLocais);
+        });
+
+        // --- MÁSCARA & TOASTS ---
         window.mascaraTelefone = function(input) {
             let v = input.value.replace(/\D/g, '');
             if (v.length > 11) v = v.substring(0, 11);
@@ -479,13 +1326,31 @@
             document.getElementById('customToast').classList.remove('active');
         };
 
+        // --- LIGHTBOX PORTFÓLIO ---
+        window.abrirLightbox = function(titulo, desc, urlImg) {
+            document.getElementById('lightboxTitle').innerText = titulo;
+            document.getElementById('lightboxDesc').innerText = desc;
+            document.getElementById('lightboxImg').src = urlImg;
+            document.getElementById('portfolioLightbox').classList.add('active');
+        };
+
+        window.fecharLightbox = function(e) {
+            document.getElementById('portfolioLightbox').classList.remove('active');
+        };
+
+        // --- ENVIO FIREBASE (100% PRESERVADO E INTEGRADO) ---
         window.enviarEncomendaFirebase = async function() {
             const nome = document.getElementById('nome').value.trim();
             const telefone = document.getElementById('telefone').value.trim();
-            const detalhes = document.getElementById('detalhes').value.trim();
+            const textoArte = document.getElementById('textoArte').value.trim();
+            const infoImportantes = document.getElementById('infoImportantes').value.trim();
+            const coresDesejadas = document.getElementById('coresDesejadas').value.trim();
+            const linkReferencia = document.getElementById('linkReferencia').value.trim();
+            const observacoes = document.getElementById('detalhes').value.trim();
 
-            if (!nome || !telefone || !detalhes) {
-                mostrarToast("Campos Incompletos", "Preencha seu nome, WhatsApp e os detalhes do que precisa na arte.");
+            if (!nome || !telefone || !textoArte) {
+                mostrarToast("Campos Incompletos", "Preencha seu nome, WhatsApp e o texto que deve constar na arte.");
+                irParaEtapa(4);
                 return;
             }
 
@@ -493,24 +1358,40 @@
             btn.disabled = true;
             btn.innerText = "Cadastrando Pedido... ⏳";
 
+            const valorTotalCalculado = valorServicoBase * quantidadeArtes;
+
+            // Compilação detalhada mantendo a estrutura original
+            const detalhesCompletos = `
+[TEXTO DA ARTE]: ${textoArte}
+[QUANTIDADE]: ${quantidadeArtes} arte(s)
+[ESTILO DESEJADO]: ${estiloSelecionado}
+[CORES DESEJADAS]: ${coresDesejadas || 'Não especificadas'}
+[INFOS IMPORTANTES]: ${infoImportantes || 'Nenhuma'}
+[LINK REFERÊNCIA]: ${linkReferencia || 'Nenhum'}
+[ARQUIVOS ANEXADOS]: ${nomesArquivosAnexados.join(', ') || 'Nenhum'}
+[OBSERVAÇÕES ADICIONAIS]: ${observacoes || 'Nenhuma'}
+            `.trim();
+
             const pedidoData = {
                 cliente: nome,
                 telefone: telefone,
-                servico: `Canva: ${servicoSelecionado}`,
+                servico: `Canva: ${servicoSelecionado} (${quantidadeArtes}x)`,
                 formatoEntrega: formatoSelecionado,
-                detalhes: detalhes,
-                total: valorServico,
+                detalhes: detalhesCompletos,
+                total: valorTotalCalculado,
                 status: "Pendente",
                 categoria: "Canva Sob Encomenda",
+                prazoProducao: "Até 3 dias",
                 dataEnvio: serverTimestamp()
             };
 
             try {
                 await addDoc(collection(db, "pedidos"), pedidoData);
-                mostrarToast("Pedido Enviado!", "Sua encomenda do Canva foi registrada com sucesso. Redirecionando...", "🚀");
+                localStorage.removeItem('pe_canva_draft'); // Limpa o rascunho após envio com sucesso
+                mostrarToast("Pedido Enviado!", "✅ Recebemos sua solicitação! A PrintExpress analisará as informações e dará continuidade ao atendimento. Redirecionando...", "🚀");
                 setTimeout(() => {
                     window.location.href = "painel.html";
-                }, 1500);
+                }, 2000);
             } catch (err) {
                 console.error(err);
                 mostrarToast("Erro", "Falha ao registrar pedido no Firebase. Tente novamente.");
@@ -518,7 +1399,14 @@
                 btn.innerText = "🚀 Enviar Encomenda & Ir para o Painel";
             }
         };
+
+        // Inicializações ao carregar
+        window.addEventListener('load', () => {
+            atualizarStatusAtendimento();
+            setInterval(atualizarStatusAtendimento, 60000); // Atualiza a cada minuto
+            carregarDadosSalvos();
+        });
+
     </script>
 </body>
 </html>
-
