@@ -4,465 +4,1534 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SOS Documento — PrintExpress</title>
-  <meta name="description" content="Seu arquivo está com problema? O PrintExpress ajusta, converte, junta e prepara seus documentos para impressão com total agilidade.">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/responsive.css">
+  <meta name="description" content="Seu arquivo está com problema? Envie para o PrintExpress e preparamos tudo para você. Conversão, junção, edição, ajuste de margens e impressão.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
-    /* Estilos Específicos para a Página SOS Documento mantendo rigorosamente o Design System do PrintExpress */
-    .badge-sos {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
-      border: 1px solid rgba(239, 68, 68, 0.2);
-      padding: 0.4rem 0.85rem;
-      border-radius: 50px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
+    /* ==========================================================================
+       1. VARIÁVEIS DE DESIGN SYSTEM & TEMAS
+       ========================================================================== */
+    :root {
+      /* Cores do Brand PrintExpress */
+      --brand-primary: #2563eb;
+      --brand-primary-hover: #1d4ed8;
+      --brand-primary-light: rgba(37, 99, 235, 0.1);
+      --brand-accent: #0f172a;
+      
+      /* Cores Específicas SOS (Aviso / Destaque) */
+      --sos-red: #ef4444;
+      --sos-red-light: rgba(239, 68, 68, 0.08);
+      --sos-red-border: rgba(239, 68, 68, 0.25);
+      --sos-amber: #f59e0b;
+      --sos-amber-light: rgba(245, 158, 11, 0.1);
+      --sos-emerald: #10b981;
+      --sos-emerald-light: rgba(16, 185, 129, 0.1);
+
+      /* Escala Neutra Dark / Premium */
+      --bg-dark: #090d16;
+      --bg-card: #111827;
+      --bg-card-hover: #1f2937;
+      --bg-elevated: #1e293b;
+      
+      /* Textos */
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      /* Bordas e Divisores */
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-color-hover: rgba(255, 255, 255, 0.18);
+      
+      /* Sombras e Efeitos */
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --shadow-glow: 0 0 30px rgba(37, 99, 235, 0.2);
+      --shadow-sos-glow: 0 0 30px rgba(239, 68, 68, 0.15);
+      --glass-bg: rgba(17, 24, 39, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      
+      /* Geometria e Transições */
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .hero-sos {
-      padding: 3rem 0;
-      text-align: center;
+    /* ==========================================================================
+       2. RESET & BASE
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    .steps-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem;
-      margin-top: 2rem;
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
     }
 
-    .step-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.75rem;
-      position: relative;
-      box-shadow: var(--shadow-sm);
+    body {
+      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Layout Container Global */
+    .container {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    /* ==========================================================================
+       3. CABEÇALHO / NAVBAR (FIXO COM GLASSMORPHISM)
+       ========================================================================== */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
       transition: var(--transition);
     }
 
-    .step-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--primary);
+    .header-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
     }
 
-    .step-number {
-      font-size: 2.25rem;
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 1.25rem;
       font-weight: 800;
-      color: var(--primary);
-      opacity: 0.85;
-      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-logo span.highlight {
+      color: var(--brand-primary);
+    }
+
+    .sos-badge-header {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: var(--sos-red-light);
+      color: var(--sos-red);
+      border: 1px solid var(--sos-red-border);
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-full);
+      color: var(--text-main);
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .btn-back:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--border-color-hover);
+      transform: translateX(-2px);
+    }
+
+    /* ==========================================================================
+       4. COMPONENTES REUTILIZÁVEIS
+       ========================================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 0.85rem 1.75rem;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      outline: none;
+      text-align: center;
+      user-select: none;
+    }
+
+    .btn-primary {
+      background: var(--brand-primary);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: var(--brand-primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+    }
+
+    .btn-sos {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 18px rgba(239, 68, 68, 0.35);
+    }
+
+    .btn-sos:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+    }
+
+    .btn-whatsapp {
+      background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 18px rgba(37, 211, 102, 0.3);
+      font-size: 1.1rem;
+      padding: 1rem 2rem;
+    }
+
+    .btn-whatsapp:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(37, 211, 102, 0.45);
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 3rem auto;
+    }
+
+    .section-tag {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--brand-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
       margin-bottom: 0.75rem;
+      color: var(--text-main);
     }
 
-    .price-table-wrapper {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+    .section-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       5. HERO SECTION
+       ========================================================================== */
+    .hero-section {
+      padding: 4.5rem 0 3.5rem 0;
+      position: relative;
       overflow: hidden;
-      box-shadow: var(--shadow-sm);
-      margin-top: 1.5rem;
     }
 
-    .price-table {
+    /* Background Orbs Glow Decorative */
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: -10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(239, 68, 68, 0.12) 0%, rgba(37, 99, 235, 0.08) 50%, transparent 70%);
+      filter: blur(60px);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--sos-red-light);
+      border: 1px solid var(--sos-red-border);
+      color: var(--sos-red);
+      padding: 0.4rem 0.9rem;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-title {
+      font-size: 2.85rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+      color: #ffffff;
+    }
+
+    .hero-description {
+      font-size: 1.125rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    /* Hero Visual Card (Ilustração Interativa com CSS) */
+    .hero-visual-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      position: relative;
+      box-shadow: var(--shadow-md), var(--shadow-sos-glow);
+    }
+
+    .doc-preview-box {
+      background: var(--bg-dark);
+      border: 2px dashed var(--sos-amber);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .doc-icon-badge {
+      width: 56px;
+      height: 56px;
+      background: var(--sos-amber-light);
+      color: var(--sos-amber);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin: 0 auto 1rem auto;
+    }
+
+    .doc-status-tag {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--sos-red-light);
+      color: var(--sos-red);
+      border: 1px solid var(--sos-red-border);
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .doc-fix-animation {
+      margin-top: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.75rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      font-size: 0.8rem;
+    }
+
+    /* ==========================================================================
+       6. SEÇÃO "O QUE PODEMOS RESOLVER" (CARDS DIVERSOS)
+       ========================================================================== */
+    .services-section {
+      padding: 4rem 0;
+      background: rgba(255, 255, 255, 0.01);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .service-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: transparent;
+      transition: var(--transition);
+    }
+
+    .service-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-color-hover);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .service-card:hover::before {
+      background: var(--brand-primary);
+    }
+
+    .service-card.special-card {
+      border-color: var(--sos-red-border);
+      background: linear-gradient(180deg, var(--bg-card) 0%, rgba(239, 68, 68, 0.05) 100%);
+    }
+
+    .service-card.special-card:hover::before {
+      background: var(--sos-red);
+    }
+
+    .card-header-area {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .card-icon {
+      font-size: 1.75rem;
+      width: 46px;
+      height: 46px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ==========================================================================
+       7. COMO FUNCIONA (ETAPAS CONECTADAS)
+       ========================================================================== */
+    .how-it-works-section {
+      padding: 4.5rem 0;
+    }
+
+    .steps-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      position: relative;
+    }
+
+    .step-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      position: relative;
+      transition: var(--transition);
+      z-index: 2;
+    }
+
+    .step-box:hover {
+      border-color: var(--brand-primary);
+      transform: translateY(-3px);
+    }
+
+    .step-number-badge {
+      width: 48px;
+      height: 48px;
+      background: var(--brand-primary-light);
+      color: var(--brand-primary);
+      border: 1px solid rgba(37, 99, 235, 0.3);
+      font-size: 1.25rem;
+      font-weight: 800;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem auto;
+    }
+
+    .step-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #ffffff;
+    }
+
+    .step-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       8. TABELA DE PREÇOS (TOTALMENTE RESPONSIVA)
+       ========================================================================== */
+    .pricing-section {
+      padding: 4rem 0;
+    }
+
+    .pricing-table-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 1.5rem;
+    }
+
+    .desktop-price-table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
     }
 
-    .price-table th, .price-table td {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .price-table th {
-      background: var(--bg-primary);
+    .desktop-price-table th {
+      background: var(--bg-elevated);
+      padding: 1.2rem 1.5rem;
+      font-size: 0.85rem;
       font-weight: 700;
-      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-color);
     }
 
-    .price-table tr:last-child td {
+    .desktop-price-table td {
+      padding: 1.1rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.95rem;
+    }
+
+    .desktop-price-table tr:last-child td {
       border-bottom: none;
     }
 
-    /* Seção Especial de Apresentação Pessoal */
-    .profile-section {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 2.5rem;
-      margin: 3rem 0;
-      box-shadow: var(--shadow-md);
-      display: grid;
-      grid-template-columns: 200px 1fr;
-      gap: 2.5rem;
+    .price-value {
+      font-weight: 800;
+      color: var(--brand-primary);
+      font-size: 1.05rem;
+      text-align: right;
+    }
+
+    /* Versão Mobile da Tabela (Cards de Preço) */
+    .mobile-price-list {
+      display: none;
+      flex-direction: column;
+      gap: 0.85rem;
+      padding: 1rem;
+    }
+
+    .mobile-price-item {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
     }
 
-    .profile-avatar-container {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      border: 4px solid var(--primary);
-      box-shadow: var(--shadow-md);
-      overflow: hidden;
-      background: var(--bg-primary);
-      display: flex;
+    .pricing-disclaimer {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed var(--border-color-hover);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      text-align: center;
+    }
+
+    .pricing-disclaimer h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+
+    .pricing-disclaimer p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       9. SEÇÃO QUEM ESTÁ POR TRÁS (APRESENTAÇÃO PESSOAL PROFISSIONAL)
+       ========================================================================== */
+    .profile-section-wrapper {
+      padding: 2rem 0 4.5rem 0;
+    }
+
+    .profile-card {
+      background: linear-gradient(135deg, var(--bg-card) 0%, rgba(30, 41, 59, 0.5) 100%);
+      border: 1px solid var(--border-color-hover);
+      border-radius: var(--radius-lg);
+      padding: 3rem;
+      box-shadow: var(--shadow-md), var(--shadow-glow);
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 3rem;
       align-items: center;
-      justify-content: center;
       position: relative;
+      overflow: hidden;
+    }
+
+    .profile-photo-container {
+      position: relative;
+      width: 210px;
+      height: 210px;
       margin: 0 auto;
     }
 
-    .profile-avatar-img {
+    .profile-photo-frame {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-lg);
+      border: 3px solid var(--brand-primary);
+      overflow: hidden;
+      background: var(--bg-dark);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .profile-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
-    .profile-avatar-placeholder {
-      font-size: 3.5rem;
-      color: var(--text-secondary);
-      user-select: none;
+    .profile-placeholder-fallback {
+      display: none;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: var(--text-muted);
+      font-size: 3rem;
     }
 
-    .profile-trust-badge {
+    .profile-trust-tag {
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--brand-accent);
+      border: 1px solid var(--border-color-hover);
+      padding: 0.3rem 0.8rem;
+      border-radius: var(--radius-full);
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      color: #ffffff;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .profile-info h3 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.85rem;
+      color: #ffffff;
+    }
+
+    .profile-info p {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+
+    .trust-indicator-box {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      margin-top: 1rem;
+      gap: 0.6rem;
+      background: var(--sos-emerald-light);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: var(--sos-emerald);
+      padding: 0.6rem 1rem;
+      border-radius: var(--radius-md);
       font-size: 0.875rem;
-      color: var(--accent);
-      font-weight: 600;
+      font-weight: 700;
     }
 
-    .notice-box {
-      background: var(--bg-surface);
-      border-left: 4px solid var(--warning);
-      border-top: 1px solid var(--border);
-      border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      margin-top: 2rem;
+    /* ==========================================================================
+       10. CALL TO ACTION (CTA)
+       ========================================================================== */
+    .cta-section {
+      padding: 3rem 0 4rem 0;
     }
 
-    .notice-box ul {
-      margin-top: 0.5rem;
-      padding-left: 1.25rem;
-      color: var(--text-secondary);
-      font-size: 0.9rem;
+    .cta-box {
+      background: linear-gradient(135deg, #1e293b 0%, #090d16 100%);
+      border: 1px solid var(--brand-primary);
+      border-radius: var(--radius-lg);
+      padding: 3.5rem 2rem;
+      text-align: center;
+      box-shadow: var(--shadow-glow);
+      position: relative;
     }
 
-    .notice-box li {
+    .cta-title {
+      font-size: 2.25rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      color: #ffffff;
+    }
+
+    .cta-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 580px;
+      margin: 0 auto 2rem auto;
+    }
+
+    /* ==========================================================================
+       11. HORÁRIOS & STATUS EM TEMPO REAL
+       ========================================================================== */
+    .hours-section {
+      padding: 2rem 0 4rem 0;
+    }
+
+    .hours-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 2rem;
+    }
+
+    .hours-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .hours-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .status-badge.open {
+      background: var(--sos-emerald-light);
+      color: var(--sos-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-badge.closed {
+      background: var(--sos-red-light);
+      color: var(--sos-red);
+      border: 1px solid var(--sos-red-border);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .status-badge.open .status-dot {
+      background: var(--sos-emerald);
+      box-shadow: 0 0 8px var(--sos-emerald);
+    }
+
+    .status-badge.closed .status-dot {
+      background: var(--sos-red);
+    }
+
+    .hours-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .hours-item h5 {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       margin-bottom: 0.35rem;
     }
 
-    @media (max-width: 768px) {
-      .profile-section {
+    .hours-item p {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .hours-footer-note {
+      font-size: 0.825rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.02);
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    /* ==========================================================================
+       12. AVISO LEGAL E SEGURANÇA
+       ========================================================================== */
+    .notice-section {
+      padding: 0 0 4rem 0;
+    }
+
+    .notice-card {
+      background: rgba(245, 158, 11, 0.04);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+    }
+
+    .notice-card h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--sos-amber);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .notice-card ul {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 0.6rem;
+    }
+
+    .notice-card li {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .notice-card li::before {
+      content: '•';
+      color: var(--sos-amber);
+      font-weight: bold;
+    }
+
+    /* ==========================================================================
+       13. RODAPÉ (FOOTER)
+       ========================================================================== */
+    .site-footer {
+      background: #05080e;
+      border-top: 1px solid var(--border-color);
+      padding: 3.5rem 0 2rem 0;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 3rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .footer-brand p {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      margin-top: 0.75rem;
+      max-width: 400px;
+    }
+
+    .footer-links h5 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      color: var(--text-main);
+    }
+
+    .footer-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .footer-nav a:hover {
+      color: var(--brand-primary);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border-color);
+      padding-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    /* Botão Flutuante Voltar ao Topo */
+    .btn-scroll-top {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color-hover);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+      z-index: 99;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-scroll-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .btn-scroll-top:hover {
+      background: var(--brand-primary);
+      border-color: var(--brand-primary);
+    }
+
+    /* ==========================================================================
+       14. RESPONSIVIDADE AVANÇADA (MOBILE-FIRST TUNING)
+       ========================================================================== */
+    @media (max-width: 992px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        text-align: center;
+      }
+
+      .hero-cta-group {
+        justify-content: center;
+      }
+
+      .steps-container {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-card {
         grid-template-columns: 1fr;
         text-align: center;
-        padding: 1.5rem;
-        gap: 1.5rem;
+        padding: 2rem 1.5rem;
       }
 
-      .profile-avatar-container {
-        width: 140px;
-        height: 140px;
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2.1rem;
       }
 
-      .price-table th, .price-table td {
-        padding: 0.75rem 0.85rem;
-        font-size: 0.875rem;
+      .section-title {
+        font-size: 1.6rem;
+      }
+
+      .desktop-price-table {
+        display: none;
+      }
+
+      .mobile-price-list {
+        display: flex;
+      }
+
+      .cta-title {
+        font-size: 1.6rem;
+      }
+
+      .cta-box {
+        padding: 2.5rem 1.25rem;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- CABEÇALHO -->
-  <header class="navbar">
-    <div class="container nav-container">
-      <a href="index.html" class="brand">
-        <span class="logo-icon">🖨️</span>
-        <span class="logo-text">Print<strong>Express</strong></span>
+  <!-- ==========================================================================
+       HEADER / CABEÇALHO
+       ========================================================================== -->
+  <header class="site-header">
+    <div class="container header-wrapper">
+      <a href="index.html" class="brand-logo" aria-label="PrintExpress Página Inicial">
+        <span>🖨️ Print<span class="highlight">Express</span></span>
+        <span class="sos-badge-header">⚠️ SOS</span>
       </a>
 
-      <nav class="nav-links" id="navLinks">
-        <a href="index.html" class="nav-btn">Início</a>
-        <a href="index.html#servicos" class="nav-btn">Serviços</a>
-        <a href="sos-documento.html" class="nav-btn active" style="color: var(--primary); font-weight: 700;">⚠️ SOS Documento</a>
-        <a href="index.html#contato" class="nav-btn">Contato</a>
-      </nav>
-
       <div class="nav-actions">
-        <a href="index.html" class="btn btn-secondary btn-sm">← Voltar ao Início</a>
-        <button class="hamburger" id="hamburgerBtn" aria-label="Abrir Menu">☰</button>
+        <a href="index.html" class="btn-back">
+          <span>←</span> Voltar ao Início
+        </a>
       </div>
     </div>
   </header>
 
-  <!-- ÁREA PRINCIPAL -->
-  <main class="container main-content">
-
-    <!-- HERO / DESTAQUE PRINCIPAL -->
-    <section class="hero-sos">
-      <div class="badge-sos">
-        <span>⚠️</span> Serviço de Suporte Técnico em Arquivos
-      </div>
-      <h1 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.75rem;">Seu arquivo não está pronto?</h1>
-      <p style="color: var(--text-secondary); font-size: 1.1rem; max-width: 680px; margin: 0 auto 1.75rem auto;">
-        Não perca tempo tentando descobrir o que está errado. Envie seu arquivo, explique o problema e o PrintExpress prepara tudo para você.
-      </p>
-      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-        <a href="#solicitar" class="btn btn-primary" style="padding: 0.85rem 1.75rem; font-size: 1rem;">⚠️ Resolver meu arquivo</a>
-      </div>
-    </section>
-
-    <!-- COMO FUNCIONA -->
-    <section style="margin: 3.5rem 0;">
-      <div style="text-align: center; margin-bottom: 2rem;">
-        <h2 style="font-size: 1.75rem; font-weight: 700;">Como funciona</h2>
-        <p style="color: var(--text-secondary); font-size: 0.95rem;">Processo simples, transparente e sem complicações.</p>
-      </div>
-
-      <div class="steps-grid">
-        <div class="step-card">
-          <div class="step-number">01</div>
-          <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Envie o arquivo</h3>
-          <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
-            Envie seu documento pelo WhatsApp e explique o que precisa ser ajustado.
-          </p>
-        </div>
-
-        <div class="step-card">
-          <div class="step-number">02</div>
-          <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Nós verificamos</h3>
-          <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
-            Analisamos o arquivo e informamos o que pode ser feito e o valor do serviço.
-          </p>
-        </div>
-
-        <div class="step-card">
-          <div class="step-number">03</div>
-          <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Receba pronto</h3>
-          <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">
-            Após a sua confirmação, preparamos o arquivo e enviamos o resultado final.
-          </p>
-        </div>
-      </div>
-      
-      <p style="text-align: center; font-size: 0.85rem; color: var(--text-secondary); margin-top: 1.25rem;">
-        🔒 O serviço é realizado estritamente após a sua aprovação prévia do orçamento.
-      </p>
-    </section>
-
-    <!-- O QUE PODEMOS RESOLVER -->
-    <section style="margin: 3.5rem 0;">
-      <div style="text-align: center; margin-bottom: 2.25rem;">
-        <h2 style="font-size: 1.75rem; font-weight: 700;">O que podemos resolver</h2>
-        <p style="color: var(--text-secondary); font-size: 0.95rem;">Soluções rápidas para as falhas e dúvidas mais frequentes em documentos.</p>
-      </div>
-
-      <div class="grid">
-        <div class="card">
-          <div class="card-title">📄 Converter para PDF</div>
-          <div class="card-desc">Transformamos arquivos e imagens em PDF.</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">📑 Juntar ou separar PDFs</div>
-          <div class="card-desc">Organizamos várias páginas ou arquivos em um único documento.</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">🖨️ Preparar para impressão</div>
-          <div class="card-desc">Ajustamos o arquivo para impressão corretamente.</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">📐 Ajustar tamanho e margens</div>
-          <div class="card-desc">Corrigimos problemas de tamanho, orientação e margens.</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">↔️ Preparar frente e verso</div>
-          <div class="card-desc">Organizamos o documento para impressão frente e verso.</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">🔢 Várias páginas por folha</div>
-          <div class="card-desc">Configuramos 2, 4 ou mais páginas por folha quando necessário.</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">🔄 Girar e organizar páginas</div>
-          <div class="card-desc">Corrigimos páginas invertidas, deitadas ou fora de ordem.</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">📦 Reduzir tamanho do arquivo</div>
-          <div class="card-desc">Diminuímos o tamanho do arquivo quando possível para facilitar o envio.</div>
-        </div>
-
-        <div class="card" style="border-color: var(--primary);">
-          <div class="card-title">🆘 Não sabe o que fazer?</div>
-          <div class="card-desc">Explique o problema e verificamos a melhor forma de resolver.</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TABELA DE PREÇOS -->
-    <section style="margin: 3.5rem 0;">
-      <div style="text-align: center; margin-bottom: 1.5rem;">
-        <h2 style="font-size: 1.75rem; font-weight: 700;">💰 Tabela de preços</h2>
-        <p style="color: var(--text-secondary); font-size: 0.95rem;">Valores transparentes baseados no nível de complexidade do ajuste.</p>
-      </div>
-
-      <div class="price-table-wrapper">
-        <table class="price-table">
-          <thead>
-            <tr>
-              <th>Serviço</th>
-              <th style="width: 180px; text-align: right;">Valor</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Ajuste simples de arquivo</td>
-              <td style="text-align: right; font-weight: 700; color: var(--primary);">R$ 5,00</td>
-            </tr>
-            <tr>
-              <td>Até 3 ajustes no mesmo arquivo</td>
-              <td style="text-align: right; font-weight: 700; color: var(--primary);">R$ 10,00</td>
-            </tr>
-            <tr>
-              <td>Serviço mais trabalhoso</td>
-              <td style="text-align: right; font-weight: 700; color: var(--primary);">R$ 8,00 a R$ 15,00</td>
-            </tr>
-            <tr>
-              <td>Problema complexo</td>
-              <td style="text-align: right; font-weight: 700; color: var(--primary);">A partir de R$ 15,00</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-top: 1.25rem; text-align: center;">
-        <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.35rem;">Não encontrou seu problema?</h4>
-        <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">
-          Envie o arquivo e explique o que está acontecendo. Analisaremos a solicitação e informaremos o valor antes de realizar o serviço.
-        </p>
-      </div>
-    </section>
-
-    <!-- ÁREA DE FOTO / APRESENTAÇÃO PESSOAL -->
-    <section class="profile-section">
-      <div class="profile-avatar-container">
-        <!-- Tenta carregar a foto do perfil local. Caso não exista, renderiza um placeholder visual e limpo -->
-        <img src="assets/perfil.jpg" alt="Responsável pelo PrintExpress" class="profile-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-        <div class="profile-avatar-placeholder" style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; background: var(--bg-primary);">
-          👤
-        </div>
-      </div>
-
-      <div>
-        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Por trás do PrintExpress</h2>
-        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-bottom: 0.75rem;">
-          Atendimento realizado diretamente pelo responsável pelo PrintExpress, com foco em organização, praticidade e preparação correta dos arquivos.
-        </p>
-        <div class="profile-trust-badge">
-          <span>✓</span> Seu arquivo é analisado antes da realização do serviço.
-        </div>
-      </div>
-    </section>
-
-    <!-- CHAMADA PARA AÇÃO -->
-    <section id="solicitar" style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; text-align: center; box-shadow: var(--shadow-md); margin: 3.5rem 0;">
-      <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.75rem;">Precisa resolver seu arquivo?</h2>
-      <p style="color: var(--text-secondary); font-size: 1rem; max-width: 600px; margin: 0 auto 1.5rem auto;">
-        Envie o arquivo pelo WhatsApp, explique o problema e nós verificaremos a melhor solução.
-      </p>
-      <!-- Link mantido idêntico ao padrão oficial da marca -->
-      <a href="https://wa.me/5541999999999?text=Ol%C3%A1!%20Estou%20com%20um%20problema%20no%20meu%20arquivo%20e%20gostaria%20do%20suporte%20do%20SOS%20Documento." target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="background: #25d366; border-color: #25d366; padding: 0.85rem 2rem; font-size: 1.05rem;">
-        📲 Falar pelo WhatsApp
-      </a>
-    </section>
-
-    <!-- AVISO IMPORTANTE -->
-    <section class="notice-box">
-      <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
-        <span>ℹ️</span> Antes do serviço
-      </h3>
-      <ul>
-        <li>O arquivo será analisado antes da execução.</li>
-        <li>O valor será informado antes de realizar o serviço.</li>
-        <li>O serviço é destinado à preparação, organização, conversão e ajustes de arquivos.</li>
-        <li>Não realizamos alterações fraudulentas ou falsificação de documentos oficiais.</li>
-      </ul>
-    </section>
-
-    <!-- HORÁRIOS -->
-    <section style="margin: 3.5rem 0;">
-      <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.75rem; box-shadow: var(--shadow-sm);">
-        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-          <span>🕒</span> Horário de Atendimento
-        </h3>
-        
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
-          <div>
-            <strong style="display: block; font-size: 0.9rem; color: var(--text-primary);">Envio de Pedidos:</strong>
-            <span style="font-size: 0.95rem; color: var(--text-secondary);">24 horas por dia</span>
+  <main>
+    <!-- ==========================================================================
+         HERO SECTION
+         ========================================================================== -->
+    <section class="hero-section">
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span>⚠️</span> Suporte Especializado em Documentos
           </div>
-          <div>
-            <strong style="display: block; font-size: 0.9rem; color: var(--text-primary);">Atendimento e Realização dos Serviços:</strong>
-            <span style="font-size: 0.9rem; color: var(--text-secondary); display: block;">Segunda a sexta: 17:00 às 21:00</span>
-            <span style="font-size: 0.9rem; color: var(--text-secondary); display: block;">Sábado e domingo: 06:30 às 21:30</span>
+          <h1 class="hero-title">Seu arquivo não está pronto?</h1>
+          <p class="hero-description">
+            Não perca tempo tentando descobrir o que está errado. Envie seu arquivo, explique o problema e o PrintExpress prepara tudo para você.
+          </p>
+          <div class="hero-cta-group">
+            <a href="#solicitar-orcamento" class="btn btn-sos">
+              <span>⚠️</span> Resolver meu arquivo
+            </a>
           </div>
         </div>
 
-        <div style="border-top: 1px solid var(--border); padding-top: 0.85rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
-          <span>⚠️ <em>Edições não são impressões.</em></span>
-          <span>Solicitações enviadas fora do horário serão analisadas no próximo período de atendimento.</span>
+        <!-- Visualização Gráfica Interativa -->
+        <div class="hero-visual-card">
+          <div class="doc-preview-box">
+            <span class="doc-status-tag">Requer Ajuste</span>
+            <div class="doc-icon-badge">📄</div>
+            <h4 style="font-size: 1rem; color: #ffffff; margin-bottom: 0.25rem;">documento_com_erro.pdf</h4>
+            <p style="font-size: 0.8rem; color: var(--text-dim);">Margens fora do padrão • Páginas invertidas</p>
+          </div>
+
+          <div class="doc-fix-animation">
+            <span style="color: var(--sos-amber);">⚠️ Erro Detectado</span>
+            <span style="color: var(--brand-primary); font-weight: 700;">➔ Correção PrintExpress</span>
+            <span style="color: var(--sos-emerald); font-weight: 700;">✓ Pronto p/ Imprimir</span>
+          </div>
         </div>
       </div>
     </section>
 
+    <!-- ==========================================================================
+         O QUE PODEMOS RESOLVER (CARDS DE SERVIÇO)
+         ========================================================================== -->
+    <section class="services-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Soluções Rápidas</span>
+          <h2 class="section-title">O que podemos resolver</h2>
+          <p class="section-subtitle">Ajustamos seu documento para que ele fique perfeito para uso digital ou impressão.</p>
+        </div>
+
+        <div class="cards-grid">
+          <div class="service-card">
+            <div class="card-header-area">
+              <div class="card-icon">📄</div>
+              <h3 class="card-title">Converter para PDF</h3>
+            </div>
+            <p class="card-desc">Transformamos arquivos do Word, imagens e outros formatos para o padrão PDF.</p>
+          </div>
+
+          <div class="service-card">
+            <div class="card-header-area">
+              <div class="card-icon">📑</div>
+              <h3 class="card-title">Juntar ou separar PDFs</h3>
+            </div>
+            <p class="card-desc">Organizamos várias páginas ou arquivos dispersos em um único documento padronizado.</p>
+          </div>
+
+          <div class="service-card">
+            <div class="card-header-area">
+              <div class="card-icon">🖨️</div>
+              <h3 class="card-title">Preparar para impressão</h3>
+            </div>
+            <p class="card-desc">Ajustamos as configurações do arquivo para garantir a melhor qualidade gráfica final.</p>
+          </div>
+
+          <div class="service-card">
+            <div class="card-header-area">
+              <div class="card-icon">📐</div>
+              <h3 class="card-title">Ajustar tamanho e margens</h3>
+            </div>
+            <p class="card-desc">Corrigimos cortes indesejados, orientação de página e proporções incorretas.</p>
+          </div>
+
+          <div class="service-card">
+            <div class="card-header-area">
+              <div class="card-icon">↔️</div>
+              <h3 class="card-title">Preparar frente e verso</h3>
+            </div>
+            <p class="card-desc">Organizamos a ordem lógica e espaçamentos para impressão em formato frente e verso.</p>
+          </div>
+
+          <div class="service-card">
+            <div class="card-header-area">
+              <div class="card-icon">🔢</div>
+              <h3 class="card-title">Várias páginas por folha</h3>
+            </div>
+            <p class="card-desc">Configuramos layouts com 2, 4 ou mais páginas por folha para economizar papel.</p>
+          </div>
+
+          <div class="service-card">
+            <div class="card-header-area">
+              <div class="card-icon">🔄</div>
+              <h3 class="card-title">Girar e organizar páginas</h3>
+            </div>
+            <p class="card-desc">Corrigimos páginas viradas, deitadas ou fora da sequência correta de leitura.</p>
+          </div>
+
+          <div class="service-card">
+            <div class="card-header-area">
+              <div class="card-icon">📦</div>
+              <h3 class="card-title">Reduzir tamanho do arquivo</h3>
+            </div>
+            <p class="card-desc">Comprimimos arquivos pesados para facilitar o envio por e-mail e sistemas formais.</p>
+          </div>
+
+          <div class="service-card special-card">
+            <div class="card-header-area">
+              <div class="card-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--sos-red);">🆘</div>
+              <h3 class="card-title">Não sabe o que fazer?</h3>
+            </div>
+            <p class="card-desc">Explique o problema do seu documento e nós verificamos a melhor forma de resolver.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         COMO FUNCIONA
+         ========================================================================== -->
+    <section class="how-it-works-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Passo a Passo</span>
+          <h2 class="section-title">Como funciona</h2>
+          <p class="section-subtitle">Sem burocracia. Você envia e nós tratamos de tudo.</p>
+        </div>
+
+        <div class="steps-container">
+          <div class="step-box">
+            <div class="step-number-badge">01</div>
+            <h3 class="step-title">Envie o arquivo</h3>
+            <p class="step-desc">Envie seu documento pelo WhatsApp e explique qual ajuste você precisa.</p>
+          </div>
+
+          <div class="step-box">
+            <div class="step-number-badge">02</div>
+            <h3 class="step-title">Nós verificamos</h3>
+            <p class="step-desc">Analisamos a viabilidade técnica e informamos exatamente o valor antes da execução.</p>
+          </div>
+
+          <div class="step-box">
+            <div class="step-number-badge">03</div>
+            <h3 class="step-title">Receba pronto</h3>
+            <p class="step-desc">Após a sua confirmação, realizamos a correção e enviamos o arquivo perfeito.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         TABELA DE PREÇOS
+         ========================================================================== -->
+    <section class="pricing-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Investimento</span>
+          <h2 class="section-title">💰 Tabela de preços</h2>
+          <p class="section-subtitle">Valores transparentes de acordo com a complexidade do ajuste.</p>
+        </div>
+
+        <div class="pricing-table-card">
+          <!-- Tabela Desktop -->
+          <table class="desktop-price-table">
+            <thead>
+              <tr>
+                <th>Tipo de Serviço</th>
+                <th style="text-align: right;">Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Ajuste simples de arquivo</td>
+                <td class="price-value">R$ 5,00</td>
+              </tr>
+              <tr>
+                <td>Até 3 ajustes no mesmo arquivo</td>
+                <td class="price-value">R$ 10,00</td>
+              </tr>
+              <tr>
+                <td>Serviço mais trabalhoso</td>
+                <td class="price-value">R$ 8,00 a R$ 15,00</td>
+              </tr>
+              <tr>
+                <td>Problema complexo</td>
+                <td class="price-value">A partir de R$ 15,00</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Tabela Mobile (Lista de Cards) -->
+          <div class="mobile-price-list">
+            <div class="mobile-price-item">
+              <span style="font-size: 0.9rem; font-weight: 600;">Ajuste simples de arquivo</span>
+              <span class="price-value">R$ 5,00</span>
+            </div>
+            <div class="mobile-price-item">
+              <span style="font-size: 0.9rem; font-weight: 600;">Até 3 ajustes no mesmo arquivo</span>
+              <span class="price-value">R$ 10,00</span>
+            </div>
+            <div class="mobile-price-item">
+              <span style="font-size: 0.9rem; font-weight: 600;">Serviço mais trabalhoso</span>
+              <span class="price-value">R$ 8,00 a R$ 15,00</span>
+            </div>
+            <div class="mobile-price-item">
+              <span style="font-size: 0.9rem; font-weight: 600;">Problema complexo</span>
+              <span class="price-value">A partir de R$ 15,00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pricing-disclaimer">
+          <h4>Não encontrou seu problema?</h4>
+          <p>Envie o arquivo e explique o que está acontecendo. Analisaremos a solicitação e informaremos o valor antes de realizar o serviço.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SEÇÃO ESPECIAL — QUEM ESTÁ POR TRÁS
+         ========================================================================== -->
+    <section class="profile-section-wrapper">
+      <div class="container">
+        <div class="profile-card">
+          <div class="profile-photo-container">
+            <div class="profile-photo-frame">
+              <img src="assets/perfil.jpg" alt="Responsável pelo PrintExpress" class="profile-img" id="profileImage" onerror="handleImageError()">
+              <div class="profile-placeholder-fallback" id="profileFallback">
+                <span>👤</span>
+              </div>
+            </div>
+            <div class="profile-trust-tag">Atendimento Direto</div>
+          </div>
+
+          <div class="profile-info">
+            <h3>Por trás do PrintExpress</h3>
+            <p>
+              Atendimento realizado diretamente pelo responsável pelo PrintExpress, com foco em organização, praticidade e preparação correta dos arquivos.
+            </p>
+            <div class="trust-indicator-box">
+              <span>✓</span> Seu arquivo é analisado antes da realização do serviço.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         CALL TO ACTION (SOLICITAÇÃO)
+         ========================================================================== -->
+    <section id="solicitar-orcamento" class="cta-section">
+      <div class="container">
+        <div class="cta-box">
+          <h2 class="cta-title">Precisa resolver seu arquivo?</h2>
+          <p class="cta-subtitle">Envie o arquivo pelo WhatsApp, explique o problema e nós verificaremos a melhor solução.</p>
+          <a href="https://wa.me/5541999999999?text=Ol%C3%A1!%20Estou%20com%20um%20problema%20no%20meu%20arquivo%20e%20gostaria%20da%20ajuda%20do%20SOS%20Documento." target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp">
+            📲 Falar pelo WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         HORÁRIOS DE ATENDIMENTO
+         ========================================================================== -->
+    <section class="hours-section">
+      <div class="container">
+        <div class="hours-card">
+          <div class="hours-header">
+            <div class="hours-title">
+              <span>🕒</span> Horário de Atendimento
+            </div>
+            <div id="statusBadge" class="status-badge closed">
+              <span class="status-dot"></span>
+              <span id="statusText">Verificando...</span>
+            </div>
+          </div>
+
+          <div class="hours-grid">
+            <div class="hours-item">
+              <h5>Envio de Pedidos</h5>
+              <p>24 horas por dia</p>
+            </div>
+            <div class="hours-item">
+              <h5>Segunda a Sexta</h5>
+              <p>17:00 às 21:00</p>
+            </div>
+            <div class="hours-item">
+              <h5>Sábado e Domingo</h5>
+              <p>06:30 às 21:30</p>
+            </div>
+          </div>
+
+          <div class="hours-footer-note">
+            <span><strong>Aviso:</strong> Edições não são impressões.</span>
+            <span>Solicitações enviadas fora do horário serão analisadas no próximo período de atendimento.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         AVISO DE SEGURANÇA E TERMOS
+         ========================================================================== -->
+    <section class="notice-section">
+      <div class="container">
+        <div class="notice-card">
+          <h4><span>🛡️</span> Antes do serviço</h4>
+          <ul>
+            <li>O arquivo será analisado antes da execução.</li>
+            <li>O valor será informado antes de realizar o serviço.</li>
+            <li>O serviço é destinado à preparação, organização, conversão e ajustes de arquivos.</li>
+            <li>Não realizamos alterações fraudulentas ou falsificação de documentos oficiais.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <!-- RODAPÉ -->
-  <footer class="footer">
-    <div class="container footer-content">
-      <div class="footer-brand">
-        <span class="logo-text">Print<strong>Express</strong></span>
-        <p>Soluções rápidas e práticas para suas impressões e preparação de documentos.</p>
+  <!-- ==========================================================================
+       RODAPÉ (FOOTER)
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand-logo">
+            <span>🖨️ Print<span class="highlight">Express</span></span>
+          </div>
+          <p>Preparação, ajuste e formatação rápida de documentos para você não perder tempo.</p>
+        </div>
+
+        <div class="footer-links">
+          <h5>Navegação</h5>
+          <div class="footer-nav">
+            <a href="index.html">Início</a>
+            <a href="index.html#servicos">Serviços</a>
+            <a href="sos-documento.html">SOS Documento</a>
+          </div>
+        </div>
       </div>
-      <div class="footer-links">
-        <a href="index.html">Início</a>
-        <a href="index.html#servicos">Serviços</a>
-        <a href="sos-documento.html">SOS Documento</a>
-        <a href="index.html#contato">Contato</a>
+
+      <div class="footer-bottom">
+        <p>&copy; PrintExpress. Todos os direitos reservados.</p>
+        <p>Serviço restrito à preparação técnica e formatação de arquivos.</p>
       </div>
-      <p class="footer-disclaimer">
-        ⚠️ O serviço SOS Documento destina-se exclusivamente ao suporte técnico de formatação, layout, conversão e preparação de arquivos para impressão.
-      </p>
-      <p class="footer-copy">&copy; PrintExpress. Todos os direitos reservados.</p>
     </div>
   </footer>
 
-  <script>
-    // Menu responsivo mantendo o comportamento das demais páginas do projeto
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const navLinks = document.getElementById('navLinks');
+  <!-- Botão Flutuante Voltar ao Topo -->
+  <button class="btn-scroll-top" id="scrollTopBtn" aria-label="Voltar ao topo da página">↑</button>
 
-    if (hamburgerBtn && navLinks) {
-      hamburgerBtn.addEventListener('click', () => {
-        navLinks.classList.toggle('open');
+  <!-- ==========================================================================
+       JAVASCRIPT DEDICADO
+       ========================================================================== -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initRealtimeStatus();
+      initScrollTop();
+      initSmoothScroll();
+    });
+
+    /* 1. Tratamento da Foto de Perfil (Inexistência do arquivo local) */
+    function handleImageError() {
+      const img = document.getElementById('profileImage');
+      const fallback = document.getElementById('profileFallback');
+      if (img) img.style.display = 'none';
+      if (fallback) fallback.style.display = 'flex';
+    }
+
+    /* 2. Verificação de Horário em Tempo Real */
+    function initRealtimeStatus() {
+      const statusBadge = document.getElementById('statusBadge');
+      const statusText = document.getElementById('statusText');
+      if (!statusBadge || !statusText) return;
+
+      const now = new Date();
+      const day = now.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+      const hour = now.getHours();
+      const minute = now.getMinutes();
+      const currentTimeInMinutes = hour * 60 + minute;
+
+      let isOpen = false;
+
+      // Segunda a Sexta: 17:00 (1020m) às 21:00 (1260m)
+      if (day >= 1 && day <= 5) {
+        const openTime = 17 * 60;
+        const closeTime = 21 * 60;
+        if (currentTimeInMinutes >= openTime && currentTimeInMinutes < closeTime) {
+          isOpen = true;
+        }
+      } 
+      // Sábado e Domingo: 06:30 (390m) às 21:30 (1290m)
+      else if (day === 0 || day === 6) {
+        const openTime = 6 * 60 + 30;
+        const closeTime = 21 * 60 + 30;
+        if (currentTimeInMinutes >= openTime && currentTimeInMinutes < closeTime) {
+          isOpen = true;
+        }
+      }
+
+      if (isOpen) {
+        statusBadge.className = 'status-badge open';
+        statusText.textContent = 'Atendimento disponível';
+      } else {
+        statusBadge.className = 'status-badge closed';
+        statusText.textContent = 'Atendimento encerrado';
+      }
+    }
+
+    /* 3. Botão Voltar ao Topo */
+    function initScrollTop() {
+      const btn = document.getElementById('scrollTopBtn');
+      if (!btn) return;
+
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) {
+          btn.classList.add('visible');
+        } else {
+          btn.classList.remove('visible');
+        }
+      });
+
+      btn.addEventListener('click', () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    }
+
+    /* 4. Navegação Suave */
+    function initSmoothScroll() {
+      const links = document.querySelectorAll('a[href^="#"]');
+      links.forEach(link => {
+        link.addEventListener('click', (e) => {
+          const targetId = link.getAttribute('href');
+          if (targetId === '#') return;
+          const targetEl = document.querySelector(targetId);
+          if (targetEl) {
+            e.preventDefault();
+            targetEl.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
       });
     }
   </script>
