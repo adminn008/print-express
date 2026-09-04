@@ -32,16 +32,12 @@ function initDefaultValues() {
     const today = new Date().toISOString().split('T')[0];
     const now = new Date().toTimeString().split(' ')[0].substring(0, 5);
 
-    const elDate = document.getElementById('issue_date');
-    const elTime = document.getElementById('issue_time');
-    const elNum = document.getElementById('receipt_number');
-    const elPrice = document.getElementById('modal-price-display');
+    document.getElementById('issue_date').value = today;
+    document.getElementById('issue_time').value = now;
+    document.getElementById('receipt_number').value = '001/' + new Date().getFullYear();
+    document.getElementById('modal-price-display').innerText = CONFIG.PRECO;
 
-    if (elDate) elDate.value = today;
-    if (elTime) elTime.value = now;
-    if (elNum && !elNum.value) elNum.value = '001/' + new Date().getFullYear();
-    if (elPrice) elPrice.innerText = CONFIG.PRECO;
-
+    // Verificar preferência do Dark Mode
     if (localStorage.getItem('printExpress_darkMode') === 'true') {
         document.body.classList.add('dark-mode');
         updateDarkModeButton(true);
@@ -57,19 +53,18 @@ function updateDarkModeButton(isDark) {
     }
 }
 
+/* CARROSSEL DO SITE */
 function initCarousel() {
     const slides = document.querySelectorAll('.carousel-slide');
     const dots = document.querySelectorAll('.carousel-dots .dot');
-    if (!slides.length) return;
-
     let currentSlide = 0;
 
     function showSlide(index) {
         slides.forEach(s => s.classList.remove('active'));
         dots.forEach(d => d.classList.remove('active'));
 
-        if (slides[index]) slides[index].classList.add('active');
-        if (dots[index]) dots[index].classList.add('active');
+        slides[index].classList.add('active');
+        dots[index].classList.add('active');
         currentSlide = index;
     }
 
@@ -86,17 +81,15 @@ function initCarousel() {
 function initMasks() {
     document.addEventListener('input', (e) => {
         const target = e.target;
-        if (!target) return;
-
         if (target.classList.contains('mask-cpf')) {
-            let v = target.value.replace(/\D/g, '').slice(0, 11);
+            let v = target.value.replace(/\D/g, '');
             v = v.replace(/(\d{3})(\d)/, '$1.$2');
             v = v.replace(/(\d{3})(\d)/, '$1.$2');
             v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
             target.value = v;
         }
         if (target.classList.contains('mask-cnpj')) {
-            let v = target.value.replace(/\D/g, '').slice(0, 14);
+            let v = target.value.replace(/\D/g, '');
             v = v.replace(/^(\d{2})(\d)/, '$1.$2');
             v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
             v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
@@ -104,44 +97,29 @@ function initMasks() {
             target.value = v;
         }
         if (target.classList.contains('mask-cep')) {
-            let v = target.value.replace(/\D/g, '').slice(0, 8);
+            let v = target.value.replace(/\D/g, '');
             v = v.replace(/^(\d{5})(\d)/, '$1-$2');
             target.value = v;
         }
         if (target.classList.contains('mask-phone')) {
-            let v = target.value.replace(/\D/g, '').slice(0, 11);
+            let v = target.value.replace(/\D/g, '');
             v = v.replace(/^(\d{2})(\d)/, '($1) $2');
-            if (v.length > 13) {
-                v = v.replace(/(\d{5})(\d{4})$/, '$1-$2');
-            } else {
-                v = v.replace(/(\d{4})(\d{4})$/, '$1-$2');
-            }
+            v = v.replace(/(\d{5})(\d)/, '$1-$2');
             target.value = v;
         }
     });
 }
 
-function getValue(id) {
-    const el = document.getElementById(id);
-    return el ? el.value : '';
-}
-
-function isChecked(id) {
-    const el = document.getElementById(id);
-    return el ? el.checked : false;
-}
-
 function initEventListeners() {
-    const btnDark = document.getElementById('btn-toggle-dark');
-    if (btnDark) {
-        btnDark.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('printExpress_darkMode', isDark);
-            updateDarkModeButton(isDark);
-        });
-    }
+    // Alternar Dark Mode
+    document.getElementById('btn-toggle-dark').addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('printExpress_darkMode', isDark);
+        updateDarkModeButton(isDark);
+    });
 
+    // Stepper
     document.querySelectorAll('.step-item').forEach(item => {
         item.addEventListener('click', () => {
             const step = parseInt(item.getAttribute('data-step'));
@@ -149,20 +127,15 @@ function initEventListeners() {
         });
     });
 
-    const btnNext = document.getElementById('btn-next');
-    if (btnNext) {
-        btnNext.addEventListener('click', () => {
-            if (state.currentStep < 8) goToStep(state.currentStep + 1);
-        });
-    }
+    document.getElementById('btn-next').addEventListener('click', () => {
+        if (state.currentStep < 8) goToStep(state.currentStep + 1);
+    });
 
-    const btnPrev = document.getElementById('btn-prev');
-    if (btnPrev) {
-        btnPrev.addEventListener('click', () => {
-            if (state.currentStep > 1) goToStep(state.currentStep - 1);
-        });
-    }
+    document.getElementById('btn-prev').addEventListener('click', () => {
+        if (state.currentStep > 1) goToStep(state.currentStep - 1);
+    });
 
+    // Alternância PF / PJ
     document.querySelectorAll('input[name="provider_type"]').forEach(radio => {
         radio.addEventListener('change', (e) => togglePersonType('provider', e.target.value));
     });
@@ -171,18 +144,16 @@ function initEventListeners() {
         radio.addEventListener('change', (e) => togglePersonType('customer', e.target.value));
     });
 
-    const receiptType = document.getElementById('receipt_type');
-    if (receiptType) {
-        receiptType.addEventListener('change', (e) => {
-            const groupOther = document.getElementById('group_receipt_type_other');
-            if (groupOther) groupOther.classList.toggle('hidden', e.target.value !== 'Outro');
-            renderReceipt();
-        });
-    }
+    // Tipo 'Outro'
+    document.getElementById('receipt_type').addEventListener('change', (e) => {
+        const groupOther = document.getElementById('group_receipt_type_other');
+        groupOther.classList.toggle('hidden', e.target.value !== 'Outro');
+        renderReceipt();
+    });
 
-    const btnAddService = document.getElementById('btn-add-service');
-    if (btnAddService) btnAddService.addEventListener('click', () => addServiceItem());
+    document.getElementById('btn-add-service').addEventListener('click', () => addServiceItem());
 
+    // Seletor de Cores
     document.querySelectorAll('.color-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
@@ -193,91 +164,72 @@ function initEventListeners() {
         });
     });
 
+    // Templates
     document.querySelectorAll('input[name="selected_template"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
             document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
-            const card = e.target.closest('.template-card');
-            if (card) card.classList.add('active');
+            e.target.closest('.template-card').classList.add('active');
             state.template = e.target.value;
             renderReceipt();
         });
     });
 
-    const logoInput = document.getElementById('logo_input');
-    if (logoInput) logoInput.addEventListener('change', handleLogoUpload);
+    // Logo
+    document.getElementById('logo_input').addEventListener('change', handleLogoUpload);
+    document.getElementById('btn-remove-logo').addEventListener('click', removeLogo);
 
-    const btnRemoveLogo = document.getElementById('btn-remove-logo');
-    if (btnRemoveLogo) btnRemoveLogo.addEventListener('click', removeLogo);
+    // Zoom Controls
+    document.getElementById('btn-zoom-in').addEventListener('click', () => adjustZoom(10));
+    document.getElementById('btn-zoom-out').addEventListener('click', () => adjustZoom(-10));
 
-    const btnZoomIn = document.getElementById('btn-zoom-in');
-    if (btnZoomIn) btnZoomIn.addEventListener('click', () => adjustZoom(10));
+    // Ações de Saída
+    document.getElementById('btn-print').addEventListener('click', handlePrint);
+    document.getElementById('btn-pdf').addEventListener('click', handlePDFDownload);
+    document.getElementById('btn-share').addEventListener('click', handleShare);
 
-    const btnZoomOut = document.getElementById('btn-zoom-out');
-    if (btnZoomOut) btnZoomOut.addEventListener('click', () => adjustZoom(-10));
-
-    const btnPrint = document.getElementById('btn-print');
-    if (btnPrint) btnPrint.addEventListener('click', handlePrint);
-
-    const btnPdf = document.getElementById('btn-pdf');
-    if (btnPdf) btnPdf.addEventListener('click', handlePDFDownload);
-
-    const btnShare = document.getElementById('btn-share');
-    if (btnShare) btnShare.addEventListener('click', handleShare);
-
-    const btnClear = document.getElementById('btn-clear-form');
-    if (btnClear) btnClear.addEventListener('click', clearForm);
+    document.getElementById('btn-clear-form').addEventListener('click', clearForm);
 
     ['calc_discount', 'calc_addition', 'calc_received'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('input', calculateTotals);
+        document.getElementById(id).addEventListener('input', calculateTotals);
     });
 
-    const form = document.getElementById('receipt-form');
-    if (form) {
-        form.addEventListener('input', () => {
-            saveDraft();
-            renderReceipt();
-        });
-    }
+    document.getElementById('receipt-form').addEventListener('input', () => {
+        saveDraft();
+        renderReceipt();
+    });
 }
 
 function goToStep(stepNumber) {
     if (stepNumber < 1 || stepNumber > 8) return;
+    
     state.currentStep = stepNumber;
 
     document.querySelectorAll('.form-step').forEach(step => step.classList.remove('active'));
     document.querySelectorAll('.step-item').forEach(item => item.classList.remove('active'));
 
-    const currentFormStep = document.getElementById(`step-${stepNumber}`);
-    if (currentFormStep) currentFormStep.classList.add('active');
-
-    const currentNavStep = document.querySelector(`.step-item[data-step="${stepNumber}"]`);
-    if (currentNavStep) currentNavStep.classList.add('active');
+    document.getElementById(`step-${stepNumber}`).classList.add('active');
+    document.querySelector(`.step-item[data-step="${stepNumber}"]`).classList.add('active');
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function togglePersonType(target, type) {
     const isPJ = type === 'PJ';
-    const gName = document.getElementById(`group_${target}_name`);
-    const gCpf = document.getElementById(`group_${target}_cpf`);
-    const gRs = document.getElementById(`group_${target}_rs`);
-    const gCnpj = document.getElementById(`group_${target}_cnpj`);
-    const gNf = document.getElementById(`group_${target}_nf`);
+    document.getElementById(`group_${target}_name`).classList.toggle('hidden', isPJ);
+    document.getElementById(`group_${target}_cpf`).classList.toggle('hidden', isPJ);
+    document.getElementById(`group_${target}_rs`).classList.toggle('hidden', !isPJ);
+    document.getElementById(`group_${target}_cnpj`).classList.toggle('hidden', !isPJ);
 
-    if (gName) gName.classList.toggle('hidden', isPJ);
-    if (gCpf) gCpf.classList.toggle('hidden', isPJ);
-    if (gRs) gRs.classList.toggle('hidden', !isPJ);
-    if (gCnpj) gCnpj.classList.toggle('hidden', !isPJ);
-    if (gNf) gNf.classList.toggle('hidden', !isPJ);
-
+    const nfGroup = document.getElementById(`group_${target}_nf`);
+    if (nfGroup) {
+        nfGroup.classList.toggle('hidden', !isPJ);
+    }
     renderReceipt();
 }
 
 function addServiceItem(data = null) {
     const id = Date.now();
     const container = document.getElementById('services-container');
-    if (!container) return;
 
     const itemHTML = `
         <div class="service-item-card margin-top-15" id="service-item-${id}" style="border:1px solid var(--border-color); padding:12px; border-radius:6px; background:var(--bg-card);">
@@ -320,14 +272,12 @@ function addServiceItem(data = null) {
     container.insertAdjacentHTML('beforeend', itemHTML);
 
     const card = document.getElementById(`service-item-${id}`);
-    if (card) {
-        card.querySelectorAll('input, select').forEach(input => {
-            input.addEventListener('input', () => {
-                calculateTotals();
-                renderReceipt();
-            });
+    card.querySelectorAll('input, select').forEach(input => {
+        input.addEventListener('input', () => {
+            calculateTotals();
+            renderReceipt();
         });
-    }
+    });
 
     calculateTotals();
     renderReceipt();
@@ -350,27 +300,22 @@ function calculateTotals() {
         const price = parseFloat(card.querySelector('.s-price').value) || 0;
         const subtotal = qty * price;
 
-        const subtotalInput = card.querySelector('.s-subtotal');
-        if (subtotalInput) subtotalInput.value = formatCurrency(subtotal);
+        card.querySelector('.s-subtotal').value = formatCurrency(subtotal);
         subtotalGeral += subtotal;
     });
 
-    const discount = parseFloat(getValue('calc_discount')) || 0;
-    const addition = parseFloat(getValue('calc_addition')) || 0;
+    const discount = parseFloat(document.getElementById('calc_discount').value) || 0;
+    const addition = parseFloat(document.getElementById('calc_addition').value) || 0;
     const total = Math.max(0, subtotalGeral - discount + addition);
 
-    const received = parseFloat(getValue('calc_received')) || 0;
+    const received = parseFloat(document.getElementById('calc_received').value) || 0;
     const pending = Math.max(0, total - received);
 
-    const elSub = document.getElementById('calc_subtotal');
-    const elTot = document.getElementById('calc_total');
-    const elPen = document.getElementById('calc_pending');
-    const elWords = document.getElementById('amount_in_words');
+    document.getElementById('calc_subtotal').value = formatCurrency(subtotalGeral);
+    document.getElementById('calc_total').value = formatCurrency(total);
+    document.getElementById('calc_pending').value = formatCurrency(pending);
 
-    if (elSub) elSub.value = formatCurrency(subtotalGeral);
-    if (elTot) elTot.value = formatCurrency(total);
-    if (elPen) elPen.value = formatCurrency(pending);
-    if (elWords) elWords.value = numberToWordsBRL(total);
+    document.getElementById('amount_in_words').value = numberToWordsBRL(total);
 }
 
 function numberToWordsBRL(amount) {
@@ -400,6 +345,7 @@ function numberToWordsBRL(amount) {
 
     const integerPart = Math.floor(amount);
     const cents = Math.round((amount - integerPart) * 100);
+
     let result = "";
 
     if (integerPart > 0) {
@@ -440,49 +386,42 @@ function handleLogoUpload(e) {
 
 function removeLogo() {
     state.logoBase64 = null;
-    const input = document.getElementById('logo_input');
-    if (input) input.value = '';
+    document.getElementById('logo_input').value = '';
     renderReceipt();
 }
 
 function adjustZoom(delta) {
     state.zoomLevel = Math.min(Math.max(50, state.zoomLevel + delta), 150);
-    const elZoom = document.getElementById('zoom-level');
-    const elDoc = document.getElementById('receipt-document');
-    if (elZoom) elZoom.innerText = `${state.zoomLevel}%`;
-    if (elDoc) elDoc.style.transform = `scale(${state.zoomLevel / 100})`;
+    document.getElementById('zoom-level').innerText = `${state.zoomLevel}%`;
+    document.getElementById('receipt-document').style.transform = `scale(${state.zoomLevel / 100})`;
 }
 
 function generateAutoText() {
-    const customerName = getValue('customer_name') || getValue('customer_rs') || '[NOME DO CLIENTE]';
-    const customerDoc = getValue('customer_cpf') || getValue('customer_cnpj') || '[CPF/CNPJ]';
-    const totalVal = getValue('calc_total') || '0,00';
-    const wordsVal = getValue('amount_in_words') || 'zero reais';
+    const customerName = document.getElementById('customer_name').value || document.getElementById('customer_rs').value || '[NOME DO CLIENTE]';
+    const customerDoc = document.getElementById('customer_cpf').value || document.getElementById('customer_cnpj').value || '[CPF/CNPJ]';
+    const totalVal = document.getElementById('calc_total').value;
+    const wordsVal = document.getElementById('amount_in_words').value;
 
     return `Recebi(emos) de ${customerName}, inscrito(a) no CPF/CNPJ nº ${customerDoc}, a importância de R$ ${totalVal} (${wordsVal}), referente à prestação dos serviços detalhados neste documento.`;
 }
 
 function renderReceipt() {
     const doc = document.getElementById('receipt-document');
-    if (!doc) return;
-
     doc.className = `a4-page template-${state.template}`;
 
-    const radioProvider = document.querySelector('input[name="provider_type"]:checked');
-    const isProviderPJ = radioProvider ? radioProvider.value === 'PJ' : false;
-    const providerName = isProviderPJ ? getValue('provider_rs') : getValue('provider_name');
-    const providerDoc = isProviderPJ ? getValue('provider_cnpj') : getValue('provider_cpf');
+    const isProviderPJ = document.querySelector('input[name="provider_type"]:checked').value === 'PJ';
+    const providerName = isProviderPJ ? document.getElementById('provider_rs').value : document.getElementById('provider_name').value;
+    const providerDoc = isProviderPJ ? document.getElementById('provider_cnpj').value : document.getElementById('provider_cpf').value;
 
-    const radioCustomer = document.querySelector('input[name="customer_type"]:checked');
-    const isCustomerPJ = radioCustomer ? radioCustomer.value === 'PJ' : false;
-    const customerName = isCustomerPJ ? getValue('customer_rs') : getValue('customer_name');
-    const customerDoc = isCustomerPJ ? getValue('customer_cnpj') : getValue('customer_cpf');
+    const isCustomerPJ = document.querySelector('input[name="customer_type"]:checked').value === 'PJ';
+    const customerName = isCustomerPJ ? document.getElementById('customer_rs').value : document.getElementById('customer_name').value;
+    const customerDoc = isCustomerPJ ? document.getElementById('customer_cnpj').value : document.getElementById('customer_cpf').value;
 
-    const receiptNum = getValue('receipt_number');
-    const issueDate = getValue('issue_date');
+    const receiptNum = document.getElementById('receipt_number').value;
+    const issueDate = document.getElementById('issue_date').value;
 
     const autoTextElem = document.getElementById('auto_receipt_text');
-    if (autoTextElem && !autoTextElem.dataset.userEdited) {
+    if (!autoTextElem.dataset.userEdited) {
         autoTextElem.value = generateAutoText();
     }
 
@@ -506,17 +445,16 @@ function renderReceipt() {
         }
     });
 
-    const logoAlign = getValue('logo_align') || 'flex-start';
-    const logoSize = getValue('logo_size') || '70px';
-    const customMessage = getValue('custom_message');
-    const receiptTypeVal = getValue('receipt_type') || 'RECIBO DE PRESTAÇÃO DE SERVIÇOS';
+    const logoAlign = document.getElementById('logo_align').value;
+    const logoSize = document.getElementById('logo_size').value;
+    const customMessage = document.getElementById('custom_message').value;
 
     doc.innerHTML = `
         <div class="doc-header" style="justify-content:${state.logoBase64 ? 'space-between' : 'flex-end'};">
             ${state.logoBase64 ? `<img src="${state.logoBase64}" class="doc-logo" style="max-height:${logoSize}; align-self:${logoAlign};">` : ''}
             <div class="doc-title-block">
-                <div class="doc-title">${receiptTypeVal}</div>
-                ${isChecked('opt_show_num') ? `<div class="doc-number">Nº ${receiptNum}</div>` : ''}
+                <div class="doc-title">${document.getElementById('receipt_type').value}</div>
+                ${document.getElementById('opt_show_num').checked ? `<div class="doc-number">Nº ${receiptNum}</div>` : ''}
                 <div style="font-size:8.5pt; color:#64748b;">Emissão: ${issueDate}</div>
             </div>
         </div>
@@ -526,22 +464,22 @@ function renderReceipt() {
                 <div class="doc-card-title">PRESTADOR / RECEBEDOR</div>
                 <strong>${providerName || 'Nome do Prestador'}</strong><br>
                 ${providerDoc ? `CPF/CNPJ: ${providerDoc}<br>` : ''}
-                ${getValue('provider_address') ? `${getValue('provider_address')}, ${getValue('provider_number')}<br>` : ''}
-                ${getValue('provider_phone') ? `Tel/Whats: ${getValue('provider_phone')}<br>` : ''}
-                ${getValue('provider_email') ? `E-mail: ${getValue('provider_email')}` : ''}
+                ${document.getElementById('provider_address').value ? `${document.getElementById('provider_address').value}, ${document.getElementById('provider_number').value}<br>` : ''}
+                ${document.getElementById('provider_phone').value ? `Tel/Whats: ${document.getElementById('provider_phone').value}<br>` : ''}
+                ${document.getElementById('provider_email').value ? `E-mail: ${document.getElementById('provider_email').value}` : ''}
             </div>
 
             <div class="doc-card">
                 <div class="doc-card-title">CLIENTE / CONTRATANTE</div>
                 <strong>${customerName || 'Nome do Cliente'}</strong><br>
                 ${customerDoc ? `CPF/CNPJ: ${customerDoc}<br>` : ''}
-                ${getValue('customer_address') ? `Endereço: ${getValue('customer_address')}<br>` : ''}
-                ${getValue('customer_phone') ? `Contato: ${getValue('customer_phone')}` : ''}
+                ${document.getElementById('customer_address').value ? `Endereço: ${document.getElementById('customer_address').value}<br>` : ''}
+                ${document.getElementById('customer_phone').value ? `Contato: ${document.getElementById('customer_phone').value}` : ''}
             </div>
         </div>
 
         <div class="doc-main-text">
-            ${autoTextElem ? autoTextElem.value : ''}
+            ${autoTextElem.value}
         </div>
 
         ${servicesRowsHTML ? `
@@ -563,30 +501,30 @@ function renderReceipt() {
         <div class="doc-totals">
             <div class="doc-total-row">
                 <span>Subtotal Serviços:</span>
-                <span>R$ ${getValue('calc_subtotal') || '0,00'}</span>
+                <span>R$ ${document.getElementById('calc_subtotal').value}</span>
             </div>
-            ${parseFloat(getValue('calc_discount')) > 0 ? `
+            ${parseFloat(document.getElementById('calc_discount').value) > 0 ? `
             <div class="doc-total-row" style="color:var(--danger-color);">
                 <span>Desconto:</span>
-                <span>- R$ ${formatCurrency(parseFloat(getValue('calc_discount')))}</span>
+                <span>- R$ ${formatCurrency(parseFloat(document.getElementById('calc_discount').value))}</span>
             </div>` : ''}
             <div class="doc-total-row final">
                 <span>TOTAL RECIBO:</span>
-                <span>R$ ${getValue('calc_total') || '0,00'}</span>
+                <span>R$ ${document.getElementById('calc_total').value}</span>
             </div>
         </div>
 
-        ${getValue('pix_key') ? `
+        ${document.getElementById('pix_key').value ? `
         <div class="doc-card margin-top-15">
             <div class="doc-card-title">DADOS PARA PAGAMENTO VIA PIX</div>
-            <strong>Chave (${getValue('pix_type')}):</strong> ${getValue('pix_key')} | 
-            <strong>Recebedor:</strong> ${getValue('pix_receiver') || providerName}
+            <strong>Chave (${document.getElementById('pix_type').value}):</strong> ${document.getElementById('pix_key').value} | 
+            <strong>Recebedor:</strong> ${document.getElementById('pix_receiver').value || providerName}
         </div>
         ` : ''}
 
-        ${getValue('obs_terms') ? `
+        ${document.getElementById('obs_terms').value ? `
         <div style="font-size:8.5pt; margin-top:15px; color:#475569;">
-            <strong>Observações / Condições:</strong> ${getValue('obs_terms')}
+            <strong>Observações / Condições:</strong> ${document.getElementById('obs_terms').value}
         </div>
         ` : ''}
 
@@ -597,24 +535,24 @@ function renderReceipt() {
         ` : ''}
 
         <div class="doc-signatures">
-            ${isChecked('show_provider_sig') ? `
+            ${document.getElementById('show_provider_sig').checked ? `
             <div class="sig-box">
                 <div class="sig-line"></div>
                 <strong>${providerName || 'Prestador'}</strong><br>
-                <small>${getValue('sig_provider_role') || 'Emitente'}</small>
+                <small>${document.getElementById('sig_provider_role').value || 'Emitente'}</small>
             </div>
             ` : '<div></div>'}
 
-            ${isChecked('show_customer_sig') ? `
+            ${document.getElementById('show_customer_sig').checked ? `
             <div class="sig-box">
                 <div class="sig-line"></div>
                 <strong>${customerName || 'Cliente'}</strong><br>
-                <small>${getValue('sig_customer_role') || 'Pagador'}</small>
+                <small>${document.getElementById('sig_customer_role').value || 'Pagador'}</small>
             </div>
             ` : '<div></div>'}
         </div>
 
-        ${isChecked('opt_show_nfse_warning') ? `
+        ${document.getElementById('opt_show_nfse_warning').checked ? `
         <div class="doc-footer">
             Este documento é um recibo/comprovação de prestação ou recebimento de serviços e não substitui NFS-e ou outro documento fiscal quando sua emissão for obrigatória.
         </div>
@@ -626,37 +564,33 @@ function handlePrint() {
     window.print();
 }
 
+/* CORREÇÃO DO DOWNLOAD PDF PARA NÃO CORTAR */
 function handlePDFDownload() {
     const element = document.getElementById('receipt-document');
-    if (!element) return;
-
-    const receiptNum = getValue('receipt_number') || '001';
+    const receiptNum = document.getElementById('receipt_number').value || '001';
+    
+    // Reset da escala do zoom para renderização sem falhas
     const currentTransform = element.style.transform;
     element.style.transform = 'scale(1)';
 
     const opt = {
-        margin: [10, 10, 10, 10],
+        margin: [10, 10, 10, 10], // Margem ajustada em milímetros
         filename: `recibo-prestacao-servicos-${receiptNum}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, logging: false },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    if (typeof html2pdf !== 'undefined') {
-        html2pdf().set(opt).from(element).save().then(() => {
-            element.style.transform = currentTransform;
-        });
-    } else {
-        alert('A biblioteca html2pdf não foi carregada no documento.');
+    html2pdf().set(opt).from(element).save().then(() => {
         element.style.transform = currentTransform;
-    }
+    });
 }
 
 function handleShare() {
     if (navigator.share) {
         navigator.share({
             title: 'Recibo de Prestação de Serviços - PrintExpress',
-            text: `Recibo Nº ${getValue('receipt_number')} gerado pelo PrintExpress.`,
+            text: `Recibo Nº ${document.getElementById('receipt_number').value} gerado pelo PrintExpress.`,
             url: window.location.href
         }).catch(() => {});
     } else {
@@ -666,9 +600,9 @@ function handleShare() {
 
 function saveDraft() {
     const formData = {
-        receipt_number: getValue('receipt_number'),
-        provider_name: getValue('provider_name'),
-        customer_name: getValue('customer_name')
+        receipt_number: document.getElementById('receipt_number').value,
+        provider_name: document.getElementById('provider_name').value,
+        customer_name: document.getElementById('customer_name').value
     };
     localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(formData));
 }
@@ -678,9 +612,9 @@ function loadDraft() {
     if (saved) {
         try {
             const data = JSON.parse(saved);
-            if (data.receipt_number && document.getElementById('receipt_number')) document.getElementById('receipt_number').value = data.receipt_number;
-            if (data.provider_name && document.getElementById('provider_name')) document.getElementById('provider_name').value = data.provider_name;
-            if (data.customer_name && document.getElementById('customer_name')) document.getElementById('customer_name').value = data.customer_name;
+            if (data.receipt_number) document.getElementById('receipt_number').value = data.receipt_number;
+            if (data.provider_name) document.getElementById('provider_name').value = data.provider_name;
+            if (data.customer_name) document.getElementById('customer_name').value = data.customer_name;
         } catch(e) {}
     }
 }
@@ -688,8 +622,7 @@ function loadDraft() {
 function clearForm() {
     if (confirm('Tem certeza de que deseja limpar todos os campos?')) {
         localStorage.removeItem(CONFIG.STORAGE_KEY);
-        const form = document.getElementById('receipt-form');
-        if (form) form.reset();
+        document.getElementById('receipt-form').reset();
         location.reload();
     }
 }
