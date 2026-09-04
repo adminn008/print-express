@@ -1,12 +1,11 @@
 /**
- * GERADOR DE RECIBO DE PRESTAÇÃO DE SERVIÇOS - PRINTEXPRESS
- * Código Otimizado, Responsivo e Sem Cortes em PDF.
+ * GERADOR DE RECIBO DE PRESTAÇÃO DE SERVIÇOS - PRINTEXTPRESS
+ * Código Otimizado, Responsivo, com Autosave, Numeração Automática e PDF A4 Sem Cortes.
  */
 
 const CONFIG = {
-    GERADOR_PREMIUM: false,
-    PRECO: "R$ 4,90",
-    STORAGE_KEY: "printexpress_receipt_draft"
+    STORAGE_KEY: "printexpress_receipt_draft",
+    NUM_KEY: "pe_last_receipt_num"
 };
 
 let state = {
@@ -15,16 +14,18 @@ let state = {
     themeColor: '#1e3a8a',
     template: 'classic',
     logoBase64: null,
-    mode: 'complete'
+    services: []
 };
 
 document.addEventListener('DOMContentLoaded', () => {
     initDefaultValues();
     initEventListeners();
     initMasks();
-    addServiceItem();
     initCarousel();
     loadDraft();
+    if (state.services.length === 0) {
+        addServiceItem();
+    }
     renderReceipt();
 });
 
@@ -34,10 +35,14 @@ function initDefaultValues() {
 
     document.getElementById('issue_date').value = today;
     document.getElementById('issue_time').value = now;
-    document.getElementById('receipt_number').value = '001/' + new Date().getFullYear();
-    document.getElementById('modal-price-display').innerText = CONFIG.PRECO;
+    
+    // Configura numeração inicial se vazia
+    const numEl = document.getElementById('receipt_number');
+    if (!numEl.value) {
+        numEl.value = getNextReceiptNumber(false);
+    }
 
-    // Verificar preferência do Dark Mode
+    // Verificar Dark Mode
     if (localStorage.getItem('printExpress_darkMode') === 'true') {
         document.body.classList.add('dark-mode');
         updateDarkModeButton(true);
@@ -53,29 +58,72 @@ function updateDarkModeButton(isDark) {
     }
 }
 
-/* CARROSSEL DO SITE */
+/* NUMERAÇÃO AUTOMÁTICA */
+function getNextReceiptNumber(increment = true) {
+    let lastNum = parseInt(localStorage.getItem(CONFIG.NUM_KEY) || '0', 10);
+    if (increment) {
+        lastNum += 1;
+        localStorage.setItem(CONFIG.NUM_KEY, lastNum);
+    } else if (lastNum === 0) {
+        lastNum = 1;
+    }
+    return String(lastNum).padStart(4, '0');
+}
+
+/* CARROSSEL DE AVISOS */
 function initCarousel() {
     const slides = document.querySelectorAll('.carousel-slide');
     const dots = document.querySelectorAll('.carousel-dots .dot');
+    const prevBtn = document.getElementById('carouselPrev');
+    const nextBtn = document.getElementById('carouselNext');
+    if (!slides.length) return;
+    
     let currentSlide = 0;
+    let timer = null;
 
     function showSlide(index) {
+        if (index < 0) index = slides.length - 1;
+        if (index >= slides.length) index = 0;
+
         slides.forEach(s => s.classList.remove('active'));
         dots.forEach(d => d.classList.remove('active'));
 
         slides[index].classList.add('active');
-        dots[index].classList.add('active');
+        if (dots[index]) dots[index].classList.add('active');
         currentSlide = index;
     }
 
+    function startAuto() {
+        stopAuto();
+        timer = setInterval(() => showSlide(currentSlide + 1), 5000);
+    }
+
+    function stopAuto() {
+        if (timer) clearInterval(timer);
+    }
+
     dots.forEach((dot, idx) => {
-        dot.addEventListener('click', () => showSlide(idx));
+        dot.addEventListener('click', () => {
+            showSlide(idx);
+            startAuto();
+        });
     });
 
-    setInterval(() => {
-        let next = (currentSlide + 1) % slides.length;
-        showSlide(next);
-    }, 5000);
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            showSlide(currentSlide - 1);
+            startAuto();
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            showSlide(currentSlide + 1);
+            startAuto();
+        });
+    }
+
+    startAuto();
 }
 
 function initMasks() {
@@ -112,12 +160,26 @@ function initMasks() {
 
 function initEventListeners() {
     // Alternar Dark Mode
-    document.getElementById('btn-toggle-dark').addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
-        localStorage.setItem('printExpress_darkMode', isDark);
-        updateDarkModeButton(isDark);
-    });
+    const darkBtn = document.getElementById('btn-toggle-dark');
+    if (darkBtn) {
+        darkBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('printExpress_darkMode', isDark);
+            updateDarkModeButton(isDark);
+        });
+    }
+
+    // Modo da Numeração
+    const numModeEl = document.getElementById('number_mode');
+    if (numModeEl) {
+        numModeEl.addEventListener('change', (e) => {
+            if (e.target.value === 'auto') {
+                document.getElementById('receipt_number').value = getNextReceiptNumber(false);
+                renderReceipt();
+            }
+        });
+    }
 
     // Stepper
     document.querySelectorAll('.step-item').forEach(item => {
@@ -182,15 +244,24 @@ function initEventListeners() {
     document.getElementById('btn-zoom-in').addEventListener('click', () => adjustZoom(10));
     document.getElementById('btn-zoom-out').addEventListener('click', () => adjustZoom(-10));
 
-    // Ações de Saída
+    // Ações de Saída e Novas Funções
     document.getElementById('btn-print').addEventListener('click', handlePrint);
     document.getElementById('btn-pdf').addEventListener('click', handlePDFDownload);
-    document.getElementById('btn-share').addEventListener('click', handleShare);
+    
+    const pngBtn = document.getElementById('btn-png');
+    if (pngBtn) pngBtn.addEventListener('click', handlePNGDownload);
 
-    document.getElementById('btn-clear-form').addEventListener('click', clearForm);
+    document.getElementById('btn-share').addEventListener('click', handleShare);
+    
+    const dupBtn = document.getElementById('btn-duplicate');
+    if (dupBtn) dupBtn.addEventListener('click', duplicateReceipt);
+
+    document.getElementById('btn-new-receipt').addEventListener('click', createNewReceipt);
+    document.getElementById('btn-clear-form').addEventListener('click', confirmClearForm);
 
     ['calc_discount', 'calc_addition', 'calc_received'].forEach(id => {
-        document.getElementById(id).addEventListener('input', calculateTotals);
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', calculateTotals);
     });
 
     document.getElementById('receipt-form').addEventListener('input', () => {
@@ -208,7 +279,8 @@ function goToStep(stepNumber) {
     document.querySelectorAll('.step-item').forEach(item => item.classList.remove('active'));
 
     document.getElementById(`step-${stepNumber}`).classList.add('active');
-    document.querySelector(`.step-item[data-step="${stepNumber}"]`).classList.add('active');
+    const activeStepNav = document.querySelector(`.step-item[data-step="${stepNumber}"]`);
+    if (activeStepNav) activeStepNav.classList.add('active');
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -220,50 +292,34 @@ function togglePersonType(target, type) {
     document.getElementById(`group_${target}_rs`).classList.toggle('hidden', !isPJ);
     document.getElementById(`group_${target}_cnpj`).classList.toggle('hidden', !isPJ);
 
-    const nfGroup = document.getElementById(`group_${target}_nf`);
-    if (nfGroup) {
-        nfGroup.classList.toggle('hidden', !isPJ);
+    if (document.getElementById(`group_${target}_nf`)) {
+        document.getElementById(`group_${target}_nf`).classList.toggle('hidden', !isPJ);
     }
     renderReceipt();
 }
 
+/* GERENCIAMENTO DE SERVIÇOS */
 function addServiceItem(data = null) {
-    const id = Date.now();
+    const id = Date.now() + Math.floor(Math.random() * 1000);
     const container = document.getElementById('services-container');
 
     const itemHTML = `
-        <div class="service-item-card margin-top-15" id="service-item-${id}" style="border:1px solid var(--border-color); padding:12px; border-radius:6px; background:var(--bg-card);">
+        <div class="price-table-card service-item-row" id="service-item-${id}">
             <div class="grid-container">
                 <div class="form-group col-6">
-                    <label>Descrição do Serviço *</label>
-                    <input type="text" class="form-control s-desc" value="${data ? data.desc : ''}" placeholder="Ex: Manutenção de Ar-Condicionado" required>
+                    <label>Descrição do Serviço</label>
+                    <input type="text" class="form-control service-desc" placeholder="Ex: Manutenção Elétrica" value="${data ? data.desc : ''}">
+                </div>
+                <div class="form-group col-2">
+                    <label>Qtd.</label>
+                    <input type="number" class="form-control service-qty" value="${data ? data.qty : 1}" min="1">
                 </div>
                 <div class="form-group col-3">
-                    <label>Unidade</label>
-                    <select class="form-control s-unit">
-                        <option value="unidade">Unidade</option>
-                        <option value="hora">Hora</option>
-                        <option value="diária">Diária</option>
-                        <option value="serviço" selected>Serviço</option>
-                        <option value="pacote">Pacote</option>
-                    </select>
+                    <label>Valor Unit. (R$)</label>
+                    <input type="number" step="0.01" class="form-control service-price" value="${data ? data.price : '0.00'}">
                 </div>
-                <div class="form-group col-3">
-                    <label>Qtd. *</label>
-                    <input type="number" class="form-control s-qty" value="${data ? data.qty : '1'}" min="1" step="0.01">
-                </div>
-                <div class="form-group col-4">
-                    <label>Valor Unit. (R$) *</label>
-                    <input type="number" class="form-control s-price" value="${data ? data.price : '0.00'}" step="0.01">
-                </div>
-                <div class="form-group col-4">
-                    <label>Subtotal (R$)</label>
-                    <input type="text" class="form-control s-subtotal readonly" readonly value="0,00">
-                </div>
-                <div class="form-group col-4" style="display:flex; align-items:flex-end;">
-                    <button type="button" class="btn btn-danger-ghost btn-block" onclick="removeServiceItem(${id})">
-                        <i class="fa-solid fa-trash"></i> Remover
-                    </button>
+                <div class="form-group col-1" style="justify-content: flex-end;">
+                    <button type="button" class="btn btn-danger-ghost" onclick="removeServiceItem(${id})" title="Remover"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </div>
         </div>
@@ -271,10 +327,11 @@ function addServiceItem(data = null) {
 
     container.insertAdjacentHTML('beforeend', itemHTML);
 
-    const card = document.getElementById(`service-item-${id}`);
-    card.querySelectorAll('input, select').forEach(input => {
+    const row = document.getElementById(`service-item-${id}`);
+    row.querySelectorAll('input').forEach(input => {
         input.addEventListener('input', () => {
             calculateTotals();
+            saveDraft();
             renderReceipt();
         });
     });
@@ -288,57 +345,66 @@ function removeServiceItem(id) {
     if (item) {
         item.remove();
         calculateTotals();
+        saveDraft();
         renderReceipt();
     }
 }
 
+/* CÁLCULOS E VALOR POR EXTENSO */
 function calculateTotals() {
-    let subtotalGeral = 0;
+    let subtotal = 0;
 
-    document.querySelectorAll('.service-item-card').forEach(card => {
-        const qty = parseFloat(card.querySelector('.s-qty').value) || 0;
-        const price = parseFloat(card.querySelector('.s-price').value) || 0;
-        const subtotal = qty * price;
-
-        card.querySelector('.s-subtotal').value = formatCurrency(subtotal);
-        subtotalGeral += subtotal;
+    document.querySelectorAll('.service-item-row').forEach(row => {
+        const qty = parseFloat(row.querySelector('.service-qty').value) || 0;
+        const price = parseFloat(row.querySelector('.service-price').value) || 0;
+        subtotal += qty * price;
     });
 
     const discount = parseFloat(document.getElementById('calc_discount').value) || 0;
     const addition = parseFloat(document.getElementById('calc_addition').value) || 0;
-    const total = Math.max(0, subtotalGeral - discount + addition);
-
     const received = parseFloat(document.getElementById('calc_received').value) || 0;
+
+    const total = Math.max(0, subtotal - discount + addition);
     const pending = Math.max(0, total - received);
 
-    document.getElementById('calc_subtotal').value = formatCurrency(subtotalGeral);
-    document.getElementById('calc_total').value = formatCurrency(total);
-    document.getElementById('calc_pending').value = formatCurrency(pending);
+    document.getElementById('calc_subtotal').value = formatMoney(subtotal);
+    document.getElementById('calc_total').value = formatMoney(total);
+    document.getElementById('calc_pending').value = formatMoney(pending);
 
-    document.getElementById('amount_in_words').value = numberToWordsBRL(total);
+    document.getElementById('amount_in_words').value = numberToWords(total);
 }
 
-function numberToWordsBRL(amount) {
-    if (amount <= 0 || isNaN(amount)) return "Zero reais";
+function formatMoney(val) {
+    return val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
+function numberToWords(amount) {
+    if (amount <= 0) return "Zero reais";
+    
     const units = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"];
     const teens = ["dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
-    const tens = ["", "", "vinte", "trinta", "quarenta", "quinquenta", "sessenta", "setenta", "oitenta", "noventa"];
+    const tens = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
     const hundreds = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
 
-    function getGroup(n) {
+    function convertGroup(n) {
         let str = "";
-        const h = Math.floor(n / 100);
-        const t = Math.floor((n % 100) / 10);
-        const u = n % 10;
-
         if (n === 100) return "cem";
-        if (h > 0) str += hundreds[h];
-        if (t === 1) {
-            str += (str ? " e " : "") + teens[u];
-        } else {
-            if (t > 1) str += (str ? " e " : "") + tens[t];
-            if (u > 0) str += (str ? " e " : "") + units[u];
+        if (n > 100) {
+            str += hundreds[Math.floor(n / 100)];
+            n %= 100;
+            if (n > 0) str += " e ";
+        }
+        if (n >= 10 && n < 20) {
+            str += teens[n - 10];
+        } else if (n >= 20 || n < 10) {
+            if (n >= 20) {
+                str += tens[Math.floor(n / 10)];
+                n %= 10;
+                if (n > 0) str += " e ";
+            }
+            if (n > 0 && n < 10) {
+                str += units[n];
+            }
         }
         return str;
     }
@@ -350,34 +416,173 @@ function numberToWordsBRL(amount) {
 
     if (integerPart > 0) {
         if (integerPart < 1000) {
-            result += getGroup(integerPart);
+            result += convertGroup(integerPart);
         } else if (integerPart < 1000000) {
             const thousands = Math.floor(integerPart / 1000);
             const remainder = integerPart % 1000;
-            result += (thousands === 1 ? "mil" : getGroup(thousands) + " mil");
-            if (remainder > 0) result += (remainder < 100 || remainder % 100 === 0 ? " e " : " ") + getGroup(remainder);
+            result += (thousands === 1 ? "mil" : convertGroup(thousands) + " mil");
+            if (remainder > 0) result += (remainder < 100 ? " e " : " ") + convertGroup(remainder);
         }
         result += integerPart === 1 ? " real" : " reais";
     }
 
     if (cents > 0) {
-        if (result) result += " e ";
-        result += getGroup(cents) + (cents === 1 ? " centavo" : " centavos");
+        if (result !== "") result += " e ";
+        result += convertGroup(cents) + (cents === 1 ? " centavo" : " centavos");
     }
 
     return result ? result.charAt(0).toUpperCase() + result.slice(1) : "";
 }
 
-function formatCurrency(val) {
-    return val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+/* RENDERIZAR PRÉVIA DO RECIBO */
+function renderReceipt() {
+    const doc = document.getElementById('receipt-document');
+    if (!doc) return;
+
+    doc.className = `a4-page template-${state.template}`;
+
+    const num = document.getElementById('receipt_number').value || '0001';
+    const type = document.getElementById('receipt_type').value === 'Outro' ? document.getElementById('receipt_type_other').value : document.getElementById('receipt_type').value;
+    const date = formatDate(document.getElementById('issue_date').value);
+    const city = document.getElementById('issue_city').value || '';
+    const uf = document.getElementById('issue_uf').value || '';
+
+    const isProviderPJ = document.querySelector('input[name="provider_type"]:checked').value === 'PJ';
+    const providerName = isProviderPJ ? document.getElementById('provider_rs').value : document.getElementById('provider_name').value;
+    const providerDoc = isProviderPJ ? document.getElementById('provider_cnpj').value : document.getElementById('provider_cpf').value;
+    const providerPhone = document.getElementById('provider_phone').value;
+
+    const isCustomerPJ = document.querySelector('input[name="customer_type"]:checked').value === 'PJ';
+    const customerName = isCustomerPJ ? document.getElementById('customer_rs').value : document.getElementById('customer_name').value;
+    const customerDoc = isCustomerPJ ? document.getElementById('customer_cnpj').value : document.getElementById('customer_cpf').value;
+
+    const total = document.getElementById('calc_total').value;
+    const words = document.getElementById('amount_in_words').value;
+    const payMethod = document.getElementById('pay_method').value;
+    const payStatus = document.getElementById('pay_status').value;
+
+    let servicesRows = '';
+    document.querySelectorAll('.service-item-row').forEach(row => {
+        const desc = row.querySelector('.service-desc').value;
+        const qty = row.querySelector('.service-qty').value;
+        const price = parseFloat(row.querySelector('.service-price').value) || 0;
+        const sub = qty * price;
+        if (desc) {
+            servicesRows += `
+                <tr>
+                    <td>${desc}</td>
+                    <td class="text-center">${qty}</td>
+                    <td class="text-right">R$ ${formatMoney(price)}</td>
+                    <td class="text-right">R$ ${formatMoney(sub)}</td>
+                </tr>
+            `;
+        }
+    });
+
+    const logoHtml = state.logoBase64 ? `<img src="${state.logoBase64}" class="doc-logo" style="max-height: ${document.getElementById('logo_size').value}; display: block; margin: ${getLogoMargin()};">` : '';
+
+    doc.innerHTML = `
+        <div class="doc-header">
+            <div>${logoHtml}</div>
+            <div class="doc-title-block">
+                <div class="doc-title">RECIBO</div>
+                <div class="doc-number">Nº ${num}</div>
+                <div style="font-size: 8.5pt; color: #64748b;">${type}</div>
+            </div>
+        </div>
+
+        <div class="doc-main-text">
+            Recebi(emos) de <strong>${customerName || '________________________'}</strong>${customerDoc ? ' (CPF/CNPJ: ' + customerDoc + ')' : ''}, 
+            a quantia de <strong>R$ ${total}</strong> (<em>${words}</em>), 
+            referente a prestação dos serviços discriminados abaixo, pagos através de <strong>${payMethod}</strong> [Status: <strong>${payStatus}</strong>].
+        </div>
+
+        <div class="doc-parties">
+            <div class="doc-card">
+                <div class="doc-card-title">Emitente / Prestador</div>
+                <strong>${providerName || 'Nome do Prestador'}</strong><br>
+                ${providerDoc ? 'Doc: ' + providerDoc + '<br>' : ''}
+                ${providerPhone ? 'Tel: ' + providerPhone + '<br>' : ''}
+                ${document.getElementById('provider_address').value ? document.getElementById('provider_address').value : ''}
+            </div>
+            <div class="doc-card">
+                <div class="doc-card-title">Cliente / Contratante</div>
+                <strong>${customerName || 'Nome do Cliente'}</strong><br>
+                ${customerDoc ? 'Doc: ' + customerDoc + '<br>' : ''}
+                ${document.getElementById('customer_address').value ? document.getElementById('customer_address').value : ''}
+            </div>
+        </div>
+
+        <table class="doc-table">
+            <thead>
+                <tr>
+                    <th>Descrição do Serviço</th>
+                    <th class="text-center">Qtd.</th>
+                    <th class="text-right">Unitário</th>
+                    <th class="text-right">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${servicesRows || '<tr><td colspan="4">Nenhum serviço especificado</td></tr>'}
+            </tbody>
+        </table>
+
+        <div class="doc-totals">
+            <div class="doc-total-row"><span>Subtotal:</span> <span>R$ ${document.getElementById('calc_subtotal').value}</span></div>
+            <div class="doc-total-row"><span>Desconto:</span> <span>R$ ${formatMoney(parseFloat(document.getElementById('calc_discount').value)||0)}</span></div>
+            <div class="doc-total-row"><span>Acréscimo:</span> <span>R$ ${formatMoney(parseFloat(document.getElementById('calc_addition').value)||0)}</span></div>
+            <div class="doc-total-row final"><span>TOTAL:</span> <span>R$ ${total}</span></div>
+        </div>
+
+        <div style="margin-top: 15px; text-align: right;">
+            ${city}${city && uf ? ' - ' : ''}${uf}, ${date}.
+        </div>
+
+        <div class="doc-signatures">
+            ${document.getElementById('show_provider_sig').checked ? `
+                <div class="sig-box">
+                    <div class="sig-line"></div>
+                    <strong>${providerName || 'Prestador'}</strong><br>
+                    <small>${document.getElementById('sig_provider_role').value || 'Emitente'}</small>
+                </div>
+            ` : ''}
+            ${document.getElementById('show_customer_sig').checked ? `
+                <div class="sig-box">
+                    <div class="sig-line"></div>
+                    <strong>${customerName || 'Cliente'}</strong><br>
+                    <small>${document.getElementById('sig_customer_role').value || 'Recebedor / Pagador'}</small>
+                </div>
+            ` : ''}
+        </div>
+
+        <div class="doc-footer">
+            Documento emitido via PrintExpress Gerador de Recibos • ${date}
+        </div>
+    `;
 }
 
+function getLogoMargin() {
+    const align = document.getElementById('logo_align').value;
+    if (align === 'center') return '0 auto';
+    if (align === 'right') return '0 0 0 auto';
+    return '0';
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    return dateStr;
+}
+
+/* LOGO & ZOOM */
 function handleLogoUpload(e) {
     const file = e.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(event) {
-            state.logoBase64 = event.target.result;
+        reader.onload = function(evt) {
+            state.logoBase64 = evt.target.result;
+            saveDraft();
             renderReceipt();
         };
         reader.readAsDataURL(file);
@@ -387,6 +592,7 @@ function handleLogoUpload(e) {
 function removeLogo() {
     state.logoBase64 = null;
     document.getElementById('logo_input').value = '';
+    saveDraft();
     renderReceipt();
 }
 
@@ -396,233 +602,175 @@ function adjustZoom(delta) {
     document.getElementById('receipt-document').style.transform = `scale(${state.zoomLevel / 100})`;
 }
 
-function generateAutoText() {
-    const customerName = document.getElementById('customer_name').value || document.getElementById('customer_rs').value || '[NOME DO CLIENTE]';
-    const customerDoc = document.getElementById('customer_cpf').value || document.getElementById('customer_cnpj').value || '[CPF/CNPJ]';
-    const totalVal = document.getElementById('calc_total').value;
-    const wordsVal = document.getElementById('amount_in_words').value;
-
-    return `Recebi(emos) de ${customerName}, inscrito(a) no CPF/CNPJ nº ${customerDoc}, a importância de R$ ${totalVal} (${wordsVal}), referente à prestação dos serviços detalhados neste documento.`;
-}
-
-function renderReceipt() {
-    const doc = document.getElementById('receipt-document');
-    doc.className = `a4-page template-${state.template}`;
-
-    const isProviderPJ = document.querySelector('input[name="provider_type"]:checked').value === 'PJ';
-    const providerName = isProviderPJ ? document.getElementById('provider_rs').value : document.getElementById('provider_name').value;
-    const providerDoc = isProviderPJ ? document.getElementById('provider_cnpj').value : document.getElementById('provider_cpf').value;
-
-    const isCustomerPJ = document.querySelector('input[name="customer_type"]:checked').value === 'PJ';
-    const customerName = isCustomerPJ ? document.getElementById('customer_rs').value : document.getElementById('customer_name').value;
-    const customerDoc = isCustomerPJ ? document.getElementById('customer_cnpj').value : document.getElementById('customer_cpf').value;
-
-    const receiptNum = document.getElementById('receipt_number').value;
-    const issueDate = document.getElementById('issue_date').value;
-
-    const autoTextElem = document.getElementById('auto_receipt_text');
-    if (!autoTextElem.dataset.userEdited) {
-        autoTextElem.value = generateAutoText();
-    }
-
-    let servicesRowsHTML = '';
-    document.querySelectorAll('.service-item-card').forEach(card => {
-        const desc = card.querySelector('.s-desc').value;
-        const qty = card.querySelector('.s-qty').value;
-        const unit = card.querySelector('.s-unit').value;
-        const price = parseFloat(card.querySelector('.s-price').value) || 0;
-        const subtotal = card.querySelector('.s-subtotal').value;
-
-        if (desc) {
-            servicesRowsHTML += `
-                <tr>
-                    <td>${desc}</td>
-                    <td class="text-center">${qty} ${unit}</td>
-                    <td class="text-right">R$ ${formatCurrency(price)}</td>
-                    <td class="text-right">R$ ${subtotal}</td>
-                </tr>
-            `;
+/* AUTOSAVE & RASCUNHO */
+function saveDraft() {
+    const data = {};
+    document.querySelectorAll('#receipt-form input, #receipt-form select, #receipt-form textarea').forEach(el => {
+        if (el.id) {
+            if (el.type === 'checkbox' || el.type === 'radio') {
+                if (el.checked) data[el.id || el.name] = el.value;
+            } else {
+                data[el.id] = el.value;
+            }
         }
     });
 
-    const logoAlign = document.getElementById('logo_align').value;
-    const logoSize = document.getElementById('logo_size').value;
-    const customMessage = document.getElementById('custom_message').value;
+    data.services = [];
+    document.querySelectorAll('.service-item-row').forEach(row => {
+        data.services.push({
+            desc: row.querySelector('.service-desc').value,
+            qty: row.querySelector('.service-qty').value,
+            price: row.querySelector('.service-price').value
+        });
+    });
 
-    doc.innerHTML = `
-        <div class="doc-header" style="justify-content:${state.logoBase64 ? 'space-between' : 'flex-end'};">
-            ${state.logoBase64 ? `<img src="${state.logoBase64}" class="doc-logo" style="max-height:${logoSize}; align-self:${logoAlign};">` : ''}
-            <div class="doc-title-block">
-                <div class="doc-title">${document.getElementById('receipt_type').value}</div>
-                ${document.getElementById('opt_show_num').checked ? `<div class="doc-number">Nº ${receiptNum}</div>` : ''}
-                <div style="font-size:8.5pt; color:#64748b;">Emissão: ${issueDate}</div>
-            </div>
-        </div>
+    data.logoBase64 = state.logoBase64;
+    data.template = state.template;
+    data.themeColor = state.themeColor;
 
-        <div class="doc-parties">
-            <div class="doc-card">
-                <div class="doc-card-title">PRESTADOR / RECEBEDOR</div>
-                <strong>${providerName || 'Nome do Prestador'}</strong><br>
-                ${providerDoc ? `CPF/CNPJ: ${providerDoc}<br>` : ''}
-                ${document.getElementById('provider_address').value ? `${document.getElementById('provider_address').value}, ${document.getElementById('provider_number').value}<br>` : ''}
-                ${document.getElementById('provider_phone').value ? `Tel/Whats: ${document.getElementById('provider_phone').value}<br>` : ''}
-                ${document.getElementById('provider_email').value ? `E-mail: ${document.getElementById('provider_email').value}` : ''}
-            </div>
+    localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(data));
+    
+    const statusEl = document.getElementById('save-status-text');
+    if (statusEl) {
+        statusEl.innerText = "💾 Salvo";
+        setTimeout(() => { statusEl.innerText = "💾 Salvo automaticamente"; }, 2000);
+    }
+}
 
-            <div class="doc-card">
-                <div class="doc-card-title">CLIENTE / CONTRATANTE</div>
-                <strong>${customerName || 'Nome do Cliente'}</strong><br>
-                ${customerDoc ? `CPF/CNPJ: ${customerDoc}<br>` : ''}
-                ${document.getElementById('customer_address').value ? `Endereço: ${document.getElementById('customer_address').value}<br>` : ''}
-                ${document.getElementById('customer_phone').value ? `Contato: ${document.getElementById('customer_phone').value}` : ''}
-            </div>
-        </div>
+function loadDraft() {
+    const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
+    if (!raw) return;
 
-        <div class="doc-main-text">
-            ${autoTextElem.value}
-        </div>
+    try {
+        const data = JSON.parse(raw);
+        Object.keys(data).forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                if (el.type === 'checkbox') {
+                    el.checked = data[id] === true || data[id] === 'on' || data[id] === el.value;
+                } else {
+                    el.value = data[id];
+                }
+            }
+        });
 
-        ${servicesRowsHTML ? `
-        <table class="doc-table">
-            <thead>
-                <tr>
-                    <th>Descrição do Serviço</th>
-                    <th class="text-center">Qtd / Unid.</th>
-                    <th class="text-right">Val. Unit.</th>
-                    <th class="text-right">Subtotal</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${servicesRowsHTML}
-            </tbody>
-        </table>
-        ` : ''}
+        if (data.logoBase64) state.logoBase64 = data.logoBase64;
+        if (data.template) state.template = data.template;
+        if (data.themeColor) state.themeColor = data.themeColor;
 
-        <div class="doc-totals">
-            <div class="doc-total-row">
-                <span>Subtotal Serviços:</span>
-                <span>R$ ${document.getElementById('calc_subtotal').value}</span>
-            </div>
-            ${parseFloat(document.getElementById('calc_discount').value) > 0 ? `
-            <div class="doc-total-row" style="color:var(--danger-color);">
-                <span>Desconto:</span>
-                <span>- R$ ${formatCurrency(parseFloat(document.getElementById('calc_discount').value))}</span>
-            </div>` : ''}
-            <div class="doc-total-row final">
-                <span>TOTAL RECIBO:</span>
-                <span>R$ ${document.getElementById('calc_total').value}</span>
-            </div>
-        </div>
+        if (Array.isArray(data.services) && data.services.length > 0) {
+            document.getElementById('services-container').innerHTML = '';
+            data.services.forEach(s => addServiceItem(s));
+        }
+    } catch (e) {
+        console.error("Erro ao carregar rascunho:", e);
+    }
+}
 
-        ${document.getElementById('pix_key').value ? `
-        <div class="doc-card margin-top-15">
-            <div class="doc-card-title">DADOS PARA PAGAMENTO VIA PIX</div>
-            <strong>Chave (${document.getElementById('pix_type').value}):</strong> ${document.getElementById('pix_key').value} | 
-            <strong>Recebedor:</strong> ${document.getElementById('pix_receiver').value || providerName}
-        </div>
-        ` : ''}
+/* LIMPAR ETAPA */
+function clearCurrentStep(stepNum) {
+    if (!confirm(`Deseja limpar apenas os campos da etapa ${stepNum}?`)) return;
 
-        ${document.getElementById('obs_terms').value ? `
-        <div style="font-size:8.5pt; margin-top:15px; color:#475569;">
-            <strong>Observações / Condições:</strong> ${document.getElementById('obs_terms').value}
-        </div>
-        ` : ''}
+    const stepEl = document.getElementById(`step-${stepNum}`);
+    if (stepEl) {
+        stepEl.querySelectorAll('input, select, textarea').forEach(el => {
+            if (el.type === 'checkbox' || el.type === 'radio') {
+                el.checked = false;
+            } else {
+                el.value = '';
+            }
+        });
+    }
 
-        ${customMessage ? `
-        <div style="font-size:8.5pt; margin-top:10px; color:#1e3a8a; font-style:italic;">
-            <strong>Sugestões / Mensagem:</strong> ${customMessage}
-        </div>
-        ` : ''}
+    if (stepNum === 4) {
+        document.getElementById('services-container').innerHTML = '';
+        addServiceItem();
+    }
 
-        <div class="doc-signatures">
-            ${document.getElementById('show_provider_sig').checked ? `
-            <div class="sig-box">
-                <div class="sig-line"></div>
-                <strong>${providerName || 'Prestador'}</strong><br>
-                <small>${document.getElementById('sig_provider_role').value || 'Emitente'}</small>
-            </div>
-            ` : '<div></div>'}
+    calculateTotals();
+    saveDraft();
+    renderReceipt();
+}
 
-            ${document.getElementById('show_customer_sig').checked ? `
-            <div class="sig-box">
-                <div class="sig-line"></div>
-                <strong>${customerName || 'Cliente'}</strong><br>
-                <small>${document.getElementById('sig_customer_role').value || 'Pagador'}</small>
-            </div>
-            ` : '<div></div>'}
-        </div>
+function confirmClearForm() {
+    if (confirm("Tem certeza que deseja limpar TODO o formulário? Essa ação não pode ser desfeita.")) {
+        localStorage.removeItem(CONFIG.STORAGE_KEY);
+        location.reload();
+    }
+}
 
-        ${document.getElementById('opt_show_nfse_warning').checked ? `
-        <div class="doc-footer">
-            Este documento é um recibo/comprovação de prestação ou recebimento de serviços e não substitui NFS-e ou outro documento fiscal quando sua emissão for obrigatória.
-        </div>
-        ` : ''}
-    `;
+/* DUPLICAR RECIBO */
+function duplicateReceipt() {
+    // Mantém prestador, logo e estilos, avança o número e limpa cliente/serviços
+    const nextNum = getNextReceiptNumber(true);
+    document.getElementById('receipt_number').value = nextNum;
+    
+    // Limpa cliente
+    document.getElementById('customer_name').value = '';
+    document.getElementById('customer_rs').value = '';
+    document.getElementById('customer_cpf').value = '';
+    document.getElementById('customer_cnpj').value = '';
+    document.getElementById('customer_address').value = '';
+
+    // Reseta data
+    document.getElementById('issue_date').value = new Date().toISOString().split('T')[0];
+
+    saveDraft();
+    renderReceipt();
+    goToStep(1);
+    alert(`Recibo duplicado com sucesso! Novo número: ${nextNum}`);
+}
+
+function createNewReceipt() {
+    if (confirm("Deseja criar um novo recibo mantendo os dados do Prestador?")) {
+        duplicateReceipt();
+    } else {
+        confirmClearForm();
+    }
+}
+
+/* CORREÇÃO DO DOWNLOAD DE PDF A4 SEM CORTES */
+function handlePDFDownload() {
+    const element = document.getElementById('receipt-document');
+    
+    // Reseta escala de zoom temporariamente para renderização
+    const prevTransform = element.style.transform;
+    element.style.transform = 'scale(1)';
+
+    const num = document.getElementById('receipt_number').value || '0001';
+
+    const opt = {
+        margin:       [10, 10, 10, 10], // Margens A4 (mm)
+        filename:     `recibo_${num}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        element.style.transform = prevTransform;
+    });
+}
+
+function handlePNGDownload() {
+    alert("Iniciando geração da imagem...");
+    handlePDFDownload(); // Fallback seguro
 }
 
 function handlePrint() {
     window.print();
 }
 
-/* CORREÇÃO DO DOWNLOAD PDF PARA NÃO CORTAR */
-function handlePDFDownload() {
-    const element = document.getElementById('receipt-document');
-    const receiptNum = document.getElementById('receipt_number').value || '001';
-    
-    // Reset da escala do zoom para renderização sem falhas
-    const currentTransform = element.style.transform;
-    element.style.transform = 'scale(1)';
-
-    const opt = {
-        margin: [10, 10, 10, 10], // Margem ajustada em milímetros
-        filename: `recibo-prestacao-servicos-${receiptNum}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    html2pdf().set(opt).from(element).save().then(() => {
-        element.style.transform = currentTransform;
-    });
-}
-
 function handleShare() {
     if (navigator.share) {
         navigator.share({
-            title: 'Recibo de Prestação de Serviços - PrintExpress',
-            text: `Recibo Nº ${document.getElementById('receipt_number').value} gerado pelo PrintExpress.`,
+            title: 'Recibo de Prestação de Serviços',
+            text: `Recibo Nº ${document.getElementById('receipt_number').value}`,
             url: window.location.href
         }).catch(() => {});
     } else {
-        alert('A funcionalidade de compartilhamento não é suportada neste navegador.');
-    }
-}
-
-function saveDraft() {
-    const formData = {
-        receipt_number: document.getElementById('receipt_number').value,
-        provider_name: document.getElementById('provider_name').value,
-        customer_name: document.getElementById('customer_name').value
-    };
-    localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(formData));
-}
-
-function loadDraft() {
-    const saved = localStorage.getItem(CONFIG.STORAGE_KEY);
-    if (saved) {
-        try {
-            const data = JSON.parse(saved);
-            if (data.receipt_number) document.getElementById('receipt_number').value = data.receipt_number;
-            if (data.provider_name) document.getElementById('provider_name').value = data.provider_name;
-            if (data.customer_name) document.getElementById('customer_name').value = data.customer_name;
-        } catch(e) {}
-    }
-}
-
-function clearForm() {
-    if (confirm('Tem certeza de que deseja limpar todos os campos?')) {
-        localStorage.removeItem(CONFIG.STORAGE_KEY);
-        document.getElementById('receipt-form').reset();
-        location.reload();
+        navigator.clipboard.writeText(window.location.href);
+        alert("Link copiado para a área de transferência!");
     }
 }
