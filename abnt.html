@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Em breve | PrintExpress</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f7fb;
+      color: #172033;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    header {
+      width: 100%;
+      padding: 18px 6%;
+      background: rgba(255, 255, 255, 0.92);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+      backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #172033;
+      text-decoration: none;
+      letter-spacing: -0.4px;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      color: #172033;
+      font-weight: 600;
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.09);
+      background: #fff;
+      transition: 0.25s ease;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 70px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .background-effect {
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: rgba(80, 110, 255, 0.08);
+      filter: blur(80px);
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .content {
+      width: min(900px, 100%);
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .icon {
+      width: 86px;
+      height: 86px;
+      margin: 0 auto 28px;
+      border-radius: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+      background: #fff;
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.09);
+      animation: floating 3.5s ease-in-out infinite;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(80, 110, 255, 0.09);
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 6vw, 4.6rem);
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 20px;
+    }
+
+    .description {
+      max-width: 650px;
+      margin: 0 auto;
+      font-size: 1.08rem;
+      line-height: 1.7;
+      color: #667085;
+    }
+
+    /* =========================
+       FEATURE CARD
+    ========================= */
+
+    .feature {
+      margin: 45px auto 0;
+      max-width: 680px;
+      padding: 28px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.07);
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.08);
+      text-align: left;
+    }
+
+    .feature-title {
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .feature p {
+      color: #667085;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    /* =========================
+       BUTTONS
+    ========================= */
+
+    .actions {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 22px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: 0.25s ease;
+    }
+
+    .primary-btn {
+      background: #172033;
+      color: #fff;
+      box-shadow: 0 12px 30px rgba(23, 32, 51, 0.18);
+    }
+
+    .secondary-btn {
+      background: #fff;
+      color: #172033;
+      border: 1px solid rgba(0, 0, 0, 0.09);
+    }
+
+    .primary-btn:hover,
+    .secondary-btn:hover {
+      transform: translateY(-3px);
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      padding: 25px 20px;
+      text-align: center;
+      color: #7a8496;
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      background: #fff;
+    }
+
+    /* =========================
+       ANIMATION
+    ========================= */
+
+    @keyframes floating {
+      0%, 100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-7px);
+      }
+    }
+
+    @media (max-width: 600px) {
+
+      header {
+        padding: 15px 18px;
+      }
+
+      .logo {
+        font-size: 1.15rem;
+      }
+
+      .back-btn {
+        padding: 9px 12px;
+        font-size: 0.85rem;
+      }
+
+      main {
+        padding: 55px 18px;
+      }
+
+      .icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 22px;
+        font-size: 2rem;
+      }
+
+      h1 {
+        letter-spacing: -1px;
+      }
+
+      .description {
+        font-size: 0.98rem;
+      }
+
+      .feature {
+        padding: 22px;
+        border-radius: 20px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .primary-btn,
+      .secondary-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <a href="index.html" class="logo">PrintExpress</a>
+
+    <a href="index.html" class="back-btn">
+      ← Voltar
+    </a>
+  </header>
+
+  <main>
+
+    <div class="background-effect"></div>
+
+    <section class="content">
+
+      <div class="icon">🎓</div>
+
+      <div class="badge">
+        ✨ Em desenvolvimento
+      </div>
+
+      <h1>
+        Formatação ABNT está chegando.
+      </h1>
+
+      <p class="description">
+        Estamos preparando uma nova experiência no PrintExpress
+        para deixar seus documentos e arquivos ainda mais fáceis
+        de criar, organizar e resolver.
+      </p>
+
+      <div class="feature">
+
+        <div class="feature-title">
+          🚀 O que vem por aí?
+        </div>
+
+        <p>
+          Esta página fará parte das próximas novidades do
+          PrintExpress. Em breve, você poderá acessar todos os
+          recursos e serviços desta seção.
+        </p>
+
+      </div>
+
+      <div class="actions">
+
+        <a href="index.html" class="primary-btn">
+          ← Voltar para o PrintExpress
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer>
+    © 2026 PrintExpress. Todos os direitos reservados.
+  </footer>
+
+</body>
+</html>
