@@ -99,26 +99,20 @@
       gap: 5px;
     }
 
+    /* LAYOUT DE COLUNA ÚNICA: FORMULÁRIO EM CIMA, PRÉVIA EM BAIXO */
     .app-container {
-      max-width: 1400px;
+      max-width: 1100px;
       margin: 1.5rem auto;
       padding: 0 1rem;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: flex;
+      flex-direction: column;
       gap: 1.5rem;
-    }
-
-    @media (max-width: 1024px) {
-      .app-container {
-        grid-template-columns: 1fr;
-      }
     }
 
     /* ==========================================
        CARROSSEL / AVISOS
        ========================================== */
     .announcements-carousel {
-      grid-column: 1 / -1;
       background: linear-gradient(135deg, var(--brand-color), #3b82f6);
       color: white;
       border-radius: var(--radius);
@@ -396,23 +390,43 @@
     }
 
     /* ==========================================
-       PREVIEW & RECIBO A4 (ÁREA DA IMPRESSÃO)
+       PRÉVIA UNIVERSAL E RESPONSIVA (ABAIXO DO FORM)
        ========================================== */
     .preview-section {
       background: #525659;
-      padding: 1.5rem;
+      padding: 2rem 1rem;
       border-radius: var(--radius);
       display: flex;
       flex-direction: column;
       align-items: center;
-      overflow-x: auto;
-      min-height: 500px;
-      visibility: visible !important;
-      opacity: 1 !important;
+      width: 100%;
+      box-shadow: var(--shadow-md);
+    }
+
+    .preview-header-title {
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 800px;
+      justify-content: flex-start;
     }
 
     body.dark-mode .preview-section {
       background: #0f172a;
+    }
+
+    /* Envelope responsivo para redimensionar o A4 perfeitamente em telas pequenas */
+    .preview-viewport {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+      padding: 10px 0;
     }
 
     /* Folha A4 Padrão */
@@ -427,25 +441,26 @@
       box-sizing: border-box;
       font-size: 10pt;
       line-height: 1.4;
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
+      flex-shrink: 0;
     }
 
-    /* Adaptabilidade de visualização em telas menores */
-    @media (max-width: 850px) {
+    /* Adaptabilidade perfeita em todos os tipos de aparelhos (Smartphones / Tablets) */
+    @media (max-width: 820px) {
+      .preview-viewport {
+        overflow-x: hidden;
+      }
       .a4-page {
-        transform: scale(0.75);
+        transform: scale(0.72);
         transform-origin: top center;
-        margin-bottom: -70mm;
+        margin-bottom: -80mm;
       }
     }
 
     @media (max-width: 500px) {
       .a4-page {
-        transform: scale(0.48);
+        transform: scale(0.44);
         transform-origin: top center;
-        margin-bottom: -150mm;
+        margin-bottom: -165mm;
       }
     }
 
@@ -598,7 +613,7 @@
       body * {
         visibility: hidden;
       }
-      .preview-section, .preview-section * {
+      .preview-section, .preview-section *, .preview-viewport, .a4-page, .a4-page * {
         visibility: visible;
       }
       .preview-section {
@@ -608,6 +623,10 @@
         width: 100%;
         background: white !important;
         padding: 0 !important;
+        box-shadow: none !important;
+      }
+      .preview-header-title {
+        display: none !important;
       }
       .a4-page {
         box-shadow: none !important;
@@ -615,7 +634,7 @@
         margin: 0 !important;
         width: 100% !important;
       }
-      .action-toolbar, .announcements-carousel, .header-bar {
+      .action-toolbar, .announcements-carousel, .header-bar, .editor-section {
         display: none !important;
       }
     }
@@ -638,7 +657,7 @@
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
+  <!-- MAIN CONTAINER (FLUXO VERTICAL) -->
   <main class="app-container">
 
     <!-- CARROSSEL / AVISOS -->
@@ -1119,10 +1138,15 @@
 
     </section>
 
-    <!-- PRÉVIA / RECIBO A4 REAL -->
+    <!-- PRÉVIA DO RECIBO A4 LOCALIZADA LOGO ABAIXO DO FORMULÁRIO -->
     <section class="preview-section" id="preview-section-wrapper">
-      <div class="a4-page model-moderno" id="receipt-preview">
-        <!-- Renderizado dinamicamente via JS -->
+      <div class="preview-header-title">
+        <i class="fa-solid fa-file-lines"></i> Prévia do Recibo em Tempo Real
+      </div>
+      <div class="preview-viewport">
+        <div class="a4-page model-moderno" id="receipt-preview">
+          <!-- Renderizado dinamicamente via JS -->
+        </div>
       </div>
     </section>
 
@@ -1206,6 +1230,11 @@
       document.querySelectorAll('.step-panel').forEach((panel, idx) => {
         panel.classList.toggle('active', idx === (stepNum - 1));
       });
+
+      // Se for para a etapa 8 (Design / Prévia), faz rolagem suave até a prévia
+      if (stepNum === 8) {
+        document.getElementById('preview-section-wrapper').scrollIntoView({ behavior: 'smooth' });
+      }
 
       // Garantir atualização e visibilidade da prévia ao mudar de etapa
       renderPreview();
