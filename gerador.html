@@ -406,6 +406,9 @@
       flex-direction: column;
       align-items: center;
       overflow-x: auto;
+      min-height: 500px;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
     body.dark-mode .preview-section {
@@ -424,6 +427,9 @@
       box-sizing: border-box;
       font-size: 10pt;
       line-height: 1.4;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
     /* Adaptabilidade de visualização em telas menores */
@@ -680,7 +686,7 @@
         <button class="step-btn" onclick="switchStep(5)"><i class="fa-solid fa-money-bill-wave"></i> 5. Pagamento</button>
         <button class="step-btn" onclick="switchStep(6)"><i class="fa-solid fa-qrcode"></i> 6. Pix/Banco</button>
         <button class="step-btn" onclick="switchStep(7)"><i class="fa-solid fa-pen-nib"></i> 7. Observações</button>
-        <button class="step-btn" onclick="switchStep(8)"><i class="fa-solid fa-palette"></i> 8. Design</button>
+        <button class="step-btn" onclick="switchStep(8)"><i class="fa-solid fa-eye"></i> 8. Prévia / Design</button>
       </nav>
 
       <!-- FORMULÁRIO -->
@@ -1045,10 +1051,10 @@
           </div>
         </div>
 
-        <!-- ETAPA 8: DESIGN E MODELOS -->
+        <!-- ETAPA 8: PRÉVIA E DESIGN -->
         <div class="step-panel" id="step-8">
           <div class="step-header">
-            <span class="step-title"><i class="fa-solid fa-palette"></i> Personalização do Recibo</span>
+            <span class="step-title"><i class="fa-solid fa-palette"></i> Personalização e Visualização</span>
             <button type="button" class="btn-clear-step" onclick="clearStep(8)"><i class="fa-solid fa-eraser"></i> Limpar esta etapa</button>
           </div>
           <div class="form-grid">
@@ -1114,7 +1120,7 @@
     </section>
 
     <!-- PRÉVIA / RECIBO A4 REAL -->
-    <section class="preview-section">
+    <section class="preview-section" id="preview-section-wrapper">
       <div class="a4-page model-moderno" id="receipt-preview">
         <!-- Renderizado dinamicamente via JS -->
       </div>
@@ -1139,12 +1145,14 @@
     document.addEventListener("DOMContentLoaded", () => {
       // Data atual default
       const today = new Date().toISOString().split('T')[0];
-      document.getElementById('ident_data').value = today;
-      document.getElementById('pag_data').value = today;
+      if (!document.getElementById('ident_data').value) document.getElementById('ident_data').value = today;
+      if (!document.getElementById('pag_data').value) document.getElementById('pag_data').value = today;
       
       // Hora atual default
       const now = new Date();
-      document.getElementById('ident_hora').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      if (!document.getElementById('ident_hora').value) {
+        document.getElementById('ident_hora').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      }
 
       // Serviço inicial padrão
       servicesData = [
@@ -1198,6 +1206,9 @@
       document.querySelectorAll('.step-panel').forEach((panel, idx) => {
         panel.classList.toggle('active', idx === (stepNum - 1));
       });
+
+      // Garantir atualização e visibilidade da prévia ao mudar de etapa
+      renderPreview();
     }
 
     function clearStep(stepNum) {
@@ -1339,6 +1350,8 @@
        ========================================== */
     function renderPreview() {
       const page = document.getElementById('receipt-preview');
+      if (!page) return;
+
       const model = document.getElementById('design_model').value;
       const color = document.getElementById('design_color').value;
 
@@ -1346,24 +1359,31 @@
       page.style.setProperty('--receipt-color', color);
 
       // Coleta de Dados
-      const num = document.getElementById('ident_numero').value;
-      const tipo = document.getElementById('ident_tipo').value;
-      const data = document.getElementById('ident_data').value;
-      const cidade = document.getElementById('ident_cidade').value;
-      const uf = document.getElementById('ident_uf').value;
+      const num = document.getElementById('ident_numero').value || '0001';
+      const tipo = document.getElementById('ident_tipo').value || 'Recibo de Pagamento';
+      const data = document.getElementById('ident_data').value || '';
+      const cidade = document.getElementById('ident_cidade').value || '';
+      const uf = document.getElementById('ident_uf').value || '';
 
       const prestNome = document.getElementById('prest_nome').value || 'Nome do Prestador / Empresa';
-      const prestDoc = document.getElementById('prest_doc').value;
-      const prestTel = document.getElementById('prest_tel').value;
-      const prestEnd = document.getElementById('prest_endereco').value;
+      const prestDoc = document.getElementById('prest_doc').value || '';
+      const prestTel = document.getElementById('prest_tel').value || '';
+      const prestEnd = document.getElementById('prest_endereco').value || '';
 
       const cliNome = document.getElementById('cli_nome').value || 'Nome do Cliente';
-      const cliDoc = document.getElementById('cli_doc').value;
-      const cliEnd = document.getElementById('cli_endereco').value;
+      const cliDoc = document.getElementById('cli_doc').value || '';
+      const cliEnd = document.getElementById('cli_endereco').value || '';
 
-      const total = document.getElementById('pag_total').value;
-      const extenso = document.getElementById('pag_extenso').value;
-      const formaPag = document.getElementById('pag_forma').value;
+      const subtotal = document.getElementById('pag_subtotal').value || '0.00';
+      const desconto = parseFloat(document.getElementById('pag_desconto').value) || 0;
+      const acrescimo = parseFloat(document.getElementById('pag_acrescimo').value) || 0;
+      const total = document.getElementById('pag_total').value || '0.00';
+      const extenso = document.getElementById('pag_extenso').value || '';
+      const formaPag = document.getElementById('pag_forma').value || '';
+
+      const execDetalhes = document.getElementById('exec_detalhes').value || '';
+      const obsTexto = document.getElementById('obs_texto').value || '';
+      const obsGarantia = document.getElementById('obs_garantia').value || '';
 
       const logoAlign = document.getElementById('design_logo_align').value;
       const logoSize = document.getElementById('design_logo_size').value;
@@ -1371,23 +1391,56 @@
       // Montagem das Linhas de Serviços
       let servicesRowsHtml = servicesData.map(s => `
         <tr>
-          <td>${s.desc}</td>
+          <td>${s.desc || '-'}</td>
           <td style="text-align:center;">${s.qtd}</td>
-          <td style="text-align:right;">R$ ${parseFloat(s.val).toFixed(2)}</td>
+          <td style="text-align:right;">R$ ${parseFloat(s.val || 0).toFixed(2)}</td>
           <td style="text-align:right;">R$ ${(s.qtd * s.val).toFixed(2)}</td>
         </tr>
       `).join('');
 
+      // Bloco Detalhes de Execução Opcional
+      let execHtml = '';
+      if (execDetalhes.trim() !== '') {
+        execHtml = `
+          <div class="receipt-section">
+            <div class="receipt-section-title">Detalhes da Execução / Projeto</div>
+            <div style="font-size:8.5pt; color:#475569;">${execDetalhes}</div>
+          </div>
+        `;
+      }
+
       // Bloco Pix Opcional
       let pixHtml = '';
       if (document.getElementById('opt_show_pix').checked) {
+        const chave = document.getElementById('pix_chave').value;
+        const tipoChave = document.getElementById('pix_tipo').value;
+        const recebedor = document.getElementById('pix_recebedor').value;
+        const bancoPix = document.getElementById('pix_banco').value;
         pixHtml = `
           <div class="receipt-section" style="background:#f8fafc; padding:8px; border-radius:4px; margin-top:10px;">
             <div class="receipt-section-title">Dados para Pagamento via Pix</div>
-            <div style="display:flex; justify-content:space-between; font-size:8.5pt;">
-              <span><strong>Chave:</strong> ${document.getElementById('pix_chave').value} (${document.getElementById('pix_tipo').value})</span>
-              <span><strong>Recebedor:</strong> ${document.getElementById('pix_recebedor').value}</span>
-              <span><strong>Banco:</strong> ${document.getElementById('pix_banco').value}</span>
+            <div style="display:flex; justify-content:space-between; font-size:8.5pt; flex-wrap:wrap; gap:8px;">
+              <span><strong>Chave:</strong> ${chave} (${tipoChave})</span>
+              <span><strong>Recebedor:</strong> ${recebedor}</span>
+              <span><strong>Banco:</strong> ${bancoPix}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // Bloco Banco Tradicional Opcional
+      let bankHtml = '';
+      if (document.getElementById('opt_show_bank').checked) {
+        const banco = document.getElementById('bank_nome').value;
+        const agencia = document.getElementById('bank_agencia').value;
+        const conta = document.getElementById('bank_conta').value;
+        bankHtml = `
+          <div class="receipt-section" style="background:#f8fafc; padding:8px; border-radius:4px; margin-top:10px;">
+            <div class="receipt-section-title">Dados Bancários para Transferência</div>
+            <div style="display:flex; justify-content:space-between; font-size:8.5pt; flex-wrap:wrap; gap:8px;">
+              <span><strong>Banco:</strong> ${banco}</span>
+              <span><strong>Agência:</strong> ${agencia}</span>
+              <span><strong>Conta:</strong> ${conta}</span>
             </div>
           </div>
         `;
@@ -1410,7 +1463,16 @@
         `;
       }
 
-      // HTML Final do Recibo
+      // Ajuste de Resumo Financeiro
+      let financialSummary = `
+        <div style="margin-top: 8px; text-align: right; font-size: 8.5pt;">
+          <div>Subtotal: <strong>R$ ${subtotal}</strong></div>
+          ${desconto > 0 ? `<div>Desconto: <strong style="color:#ef4444;">- R$ ${desconto.toFixed(2)}</strong></div>` : ''}
+          ${acrescimo > 0 ? `<div>Acréscimo: <strong>+ R$ ${acrescimo.toFixed(2)}</strong></div>` : ''}
+        </div>
+      `;
+
+      // HTML Final da Prévia
       page.innerHTML = `
         <div style="display:flex; justify-content:${logoAlign}; margin-bottom: 10px;">
           ${currentLogoBase64 ? `<img src="${currentLogoBase64}" style="max-height:${logoSize}px; object-fit:contain;">` : ''}
@@ -1419,8 +1481,8 @@
         <div class="receipt-header">
           <div>
             <div class="receipt-title" style="color:${color}">${tipo}</div>
-            <div style="font-size:9pt; color:#475569;">${prestNome} | ${prestDoc}</div>
-            <div style="font-size:8pt; color:#64748b;">${prestEnd} - ${prestTel}</div>
+            <div style="font-size:9pt; color:#475569;">${prestNome} ${prestDoc ? '| ' + prestDoc : ''}</div>
+            <div style="font-size:8pt; color:#64748b;">${prestEnd} ${prestTel ? '- ' + prestTel : ''}</div>
           </div>
           <div style="text-align:right;">
             <div class="receipt-num">Nº ${num}</div>
@@ -1454,18 +1516,25 @@
               ${servicesRowsHtml}
             </tbody>
           </table>
+          ${financialSummary}
         </div>
+
+        ${execHtml}
 
         <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:8.5pt;">
           <div><strong>Forma de Pagamento:</strong> ${formaPag}</div>
-          <div><strong>Local e Data:</strong> ${cidade}/${uf}, ${data}</div>
+          <div><strong>Local e Data:</strong> ${cidade}${uf ? '/' + uf : ''}, ${data}</div>
         </div>
 
         ${pixHtml}
+        ${bankHtml}
 
-        <div class="receipt-section" style="margin-top:10px;">
-          <div style="font-size:8pt; color:#64748b;">${document.getElementById('obs_texto').value}</div>
-        </div>
+        ${obsTexto || obsGarantia ? `
+          <div class="receipt-section" style="margin-top:10px;">
+            ${obsTexto ? `<div style="font-size:8pt; color:#64748b;"><strong>Observações:</strong> ${obsTexto}</div>` : ''}
+            ${obsGarantia ? `<div style="font-size:8pt; color:#64748b;"><strong>Garantia/Termos:</strong> ${obsGarantia}</div>` : ''}
+          </div>
+        ` : ''}
 
         ${sigHtml}
 
