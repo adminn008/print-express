@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Gerador de Recibos Profissional - PrintExpress</title>
+
+  <!-- CDNs Externas (PDF e Imagem) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* ==========================================
+       RESET & VARIÁVEIS GLOBAIS
+       ========================================== */
+    :root {
+      --bg-primary: #f4f6f9;
+      --bg-surface: #ffffff;
+      --bg-card: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --brand-color: #2563eb;
+      --brand-hover: #1d4ed8;
+      --accent-color: #10b981;
+      --danger-color: #ef4444;
+      --warning-color: #f59e0b;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --radius: 8px;
+      --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body.dark-mode {
+      --bg-primary: #0f172a;
+      --bg-surface: #1e293b;
+      --bg-card: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 60px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* ==========================================
+       LAYOUT & NAVEGAÇÃO
+       ========================================== */
+    .header-bar {
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--brand-color);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-badge {
+      font-size: 0.8rem;
+      padding: 4px 8px;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--accent-color);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .app-container {
+      max-width: 1400px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 1024px) {
+      .app-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ==========================================
+       CARROSSEL / AVISOS
+       ========================================== */
+    .announcements-carousel {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, var(--brand-color), #3b82f6);
+      color: white;
+      border-radius: var(--radius);
+      padding: 1rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+
+    .carousel-slide {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .carousel-slide.active {
+      display: flex;
+    }
+
+    .carousel-slide i {
+      font-size: 1.5rem;
+    }
+
+    .carousel-dots {
+      display: flex;
+      gap: 6px;
+      position: absolute;
+      bottom: 8px;
+      right: 15px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background: white;
+    }
+
+    /* ==========================================
+       FORMULÁRIO & STEPS
+       ========================================== */
+    .editor-section {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .steps-nav {
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+      scrollbar-width: thin;
+    }
+
+    .step-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .step-btn.active {
+      background: var(--brand-color);
+      color: white;
+      border-color: var(--brand-color);
+    }
+
+    .step-panel {
+      display: none;
+    }
+
+    .step-panel.active {
+      display: block;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-clear-step {
+      background: none;
+      border: none;
+      color: var(--danger-color);
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+    }
+
+    .form-group {
+      grid-column: span 12;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .col-3 { grid-column: span 3; }
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-8 { grid-column: span 8; }
+
+    @media (max-width: 640px) {
+      .col-3, .col-4, .col-6, .col-8 {
+        grid-column: span 12;
+      }
+    }
+
+    label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="time"],
+    input[type="email"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-primary);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--brand-color);
+    }
+
+    /* Switch Component */
+    .switch-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 22px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 22px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--brand-color);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    /* Dynamic Table */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+
+    .services-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .services-table th, .services-table td {
+      border: 1px solid var(--border-color);
+      padding: 8px;
+      text-align: left;
+    }
+
+    .services-table th {
+      background: var(--bg-primary);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 10px 16px;
+      border-radius: 6px;
+      border: none;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s, opacity 0.2s;
+    }
+
+    .btn-primary { background: var(--brand-color); color: white; }
+    .btn-primary:hover { background: var(--brand-hover); }
+    .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border-color); }
+    .btn-danger { background: var(--danger-color); color: white; }
+
+    .action-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* ==========================================
+       PREVIEW & RECIBO A4 (ÁREA DA IMPRESSÃO)
+       ========================================== */
+    .preview-section {
+      background: #525659;
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: auto;
+    }
+
+    body.dark-mode .preview-section {
+      background: #0f172a;
+    }
+
+    /* Folha A4 Padrão */
+    .a4-page {
+      background: white !important;
+      color: #1e293b !important;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 15mm;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      box-sizing: border-box;
+      font-size: 10pt;
+      line-height: 1.4;
+    }
+
+    /* Adaptabilidade de visualização em telas menores */
+    @media (max-width: 850px) {
+      .a4-page {
+        transform: scale(0.75);
+        transform-origin: top center;
+        margin-bottom: -70mm;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .a4-page {
+        transform: scale(0.48);
+        transform-origin: top center;
+        margin-bottom: -150mm;
+      }
+    }
+
+    /* MODELOS DE RECIBO */
+    
+    /* 1. Clássico */
+    .model-classico {
+      border: 2px solid #333;
+    }
+    .model-classico .receipt-header {
+      border-bottom: 2px solid #333;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+
+    /* 2. Moderno */
+    .model-moderno {
+      border-top: 8px solid var(--receipt-color, #2563eb);
+    }
+    .model-moderno .receipt-header {
+      background: #f8fafc;
+      padding: 15px;
+      border-radius: 6px;
+    }
+
+    /* 3. Empresarial */
+    .model-empresarial .receipt-header {
+      display: flex;
+      border-bottom: 3px double #000;
+      padding-bottom: 15px;
+    }
+
+    /* 4. Minimalista */
+    .model-minimalista {
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    /* 5. Elegante */
+    .model-elegante {
+      border: 1px solid #d4af37;
+      padding: 20mm;
+    }
+    .model-elegante .receipt-header {
+      text-align: center;
+      color: #8b6508;
+    }
+
+    /* 6. Clean */
+    .model-clean {
+      box-shadow: none;
+    }
+
+    /* 7. Compacto */
+    .model-compacto {
+      font-size: 8pt;
+    }
+
+    /* Elementos Internos do Recibo */
+    .receipt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .receipt-title {
+      font-size: 18pt;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .receipt-num {
+      font-size: 12pt;
+      font-weight: bold;
+      color: #e11d48;
+    }
+
+    .receipt-section {
+      margin-bottom: 15px;
+    }
+
+    .receipt-section-title {
+      font-size: 9pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 5px;
+      padding-bottom: 2px;
+    }
+
+    .receipt-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+    }
+
+    .receipt-table th, .receipt-table td {
+      border: 1px solid #cbd5e1;
+      padding: 6px 8px;
+      text-align: left;
+    }
+
+    .receipt-table th {
+      background-color: #f1f5f9;
+    }
+
+    .text-right { text-align: right; }
+
+    .signatures-area {
+      margin-top: 40px;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .signature-box {
+      flex: 1;
+      text-align: center;
+      border-top: 1px solid #000;
+      padding-top: 5px;
+    }
+
+    .legal-notice {
+      margin-top: 30px;
+      font-size: 7pt;
+      color: #64748b;
+      text-align: center;
+      border-top: 1px solid #eee;
+      padding-top: 5px;
+    }
+
+    /* Footer da Aplicação */
+    .app-footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      margin-top: 2rem;
+    }
+
+    /* Keyframes */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* REGRA DE IMPRESSÃO - Apenas o Recibo */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .preview-section, .preview-section * {
+        visibility: visible;
+      }
+      .preview-section {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        padding: 0 !important;
+      }
+      .a4-page {
+        box-shadow: none !important;
+        transform: none !important;
+        margin: 0 !important;
+        width: 100% !important;
+      }
+      .action-toolbar, .announcements-carousel, .header-bar {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER BAR -->
+  <header class="header-bar">
+    <div class="brand-logo">
+      <i class="fa-solid fa-print"></i> PrintExpress
+    </div>
+    <div class="header-actions">
+      <div class="status-badge" id="save-status">
+        <i class="fa-solid fa-floppy-disk"></i> <span id="save-status-text">✓ Salvo</span>
+      </div>
+      <button class="btn btn-secondary" id="btn-theme" title="Alternar Modo Escuro">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="app-container">
+
+    <!-- CARROSSEL / AVISOS -->
+    <div class="announcements-carousel">
+      <div class="carousel-slide active">
+        <i class="fa-solid fa-floppy-disk"></i>
+        <div>
+          <strong>Salvamento automático:</strong> Seu progresso pode ser recuperado durante o preenchimento.
+        </div>
+      </div>
+      <div class="carousel-slide">
+        <i class="fa-solid fa-gift"></i>
+        <div>
+          <strong>Gerador gratuito:</strong> Crie seu modelo de recibo gratuitamente.
+        </div>
+      </div>
+      <div class="carousel-slide">
+        <i class="fa-solid fa-file-pdf"></i>
+        <div>
+          <strong>Formato A4:</strong> Prepare seu recibo para impressão em formato A4.
+        </div>
+      </div>
+      <div class="carousel-slide">
+        <i class="fa-solid fa-print"></i>
+        <div>
+          <strong>Impressão:</strong> Depois de gerar seu recibo, você pode imprimir pelo PrintExpress.
+        </div>
+      </div>
+      <div class="carousel-dots">
+        <span class="dot active" onclick="setSlide(0)"></span>
+        <span class="dot" onclick="setSlide(1)"></span>
+        <span class="dot" onclick="setSlide(2)"></span>
+        <span class="dot" onclick="setSlide(3)"></span>
+      </div>
+    </div>
+
+    <!-- PAINEL DE EDIÇÃO (STEPS) -->
+    <section class="editor-section">
+      <!-- Navegação das Etapas -->
+      <nav class="steps-nav">
+        <button class="step-btn active" onclick="switchStep(1)"><i class="fa-solid fa-hashtag"></i> 1. Identificação</button>
+        <button class="step-btn" onclick="switchStep(2)"><i class="fa-solid fa-user-gear"></i> 2. Prestador</button>
+        <button class="step-btn" onclick="switchStep(3)"><i class="fa-solid fa-user"></i> 3. Cliente</button>
+        <button class="step-btn" onclick="switchStep(4)"><i class="fa-solid fa-list-check"></i> 4. Serviços</button>
+        <button class="step-btn" onclick="switchStep(5)"><i class="fa-solid fa-money-bill-wave"></i> 5. Pagamento</button>
+        <button class="step-btn" onclick="switchStep(6)"><i class="fa-solid fa-qrcode"></i> 6. Pix/Banco</button>
+        <button class="step-btn" onclick="switchStep(7)"><i class="fa-solid fa-pen-nib"></i> 7. Observações</button>
+        <button class="step-btn" onclick="switchStep(8)"><i class="fa-solid fa-palette"></i> 8. Design</button>
+      </nav>
+
+      <!-- FORMULÁRIO -->
+      <form id="receipt-form" onsubmit="return false;">
+
+        <!-- ETAPA 1: IDENTIFICAÇÃO -->
+        <div class="step-panel active" id="step-1">
+          <div class="step-header">
+            <span class="step-title"><i class="fa-solid fa-hashtag"></i> Identificação do Recibo</span>
+            <button type="button" class="btn-clear-step" onclick="clearStep(1)"><i class="fa-solid fa-eraser"></i> Limpar esta etapa</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group col-4">
+              <label>Número do Recibo</label>
+              <input type="text" id="ident_numero" value="0001">
+            </div>
+            <div class="form-group col-4">
+              <label>Série</label>
+              <input type="text" id="ident_serie" value="01">
+            </div>
+            <div class="form-group col-4">
+              <label>Tipo de Recibo</label>
+              <select id="ident_tipo">
+                <option value="Recibo de Pagamento">Recibo de Pagamento</option>
+                <option value="Recibo de Prestação de Serviços">Recibo de Serviços</option>
+                <option value="Recibo de Sinal / Entrada">Recibo de Sinal</option>
+                <option value="Comprovante de Entrega">Comprovante de Entrega</option>
+              </select>
+            </div>
+            <div class="form-group col-4">
+              <label>Data</label>
+              <input type="date" id="ident_data">
+            </div>
+            <div class="form-group col-4">
+              <label>Hora</label>
+              <input type="time" id="ident_hora">
+            </div>
+            <div class="form-group col-4">
+              <label>Cidade</label>
+              <input type="text" id="ident_cidade" placeholder="Ex: Curitiba">
+            </div>
+            <div class="form-group col-3">
+              <label>UF</label>
+              <input type="text" id="ident_uf" maxlength="2" placeholder="PR">
+            </div>
+            <div class="form-group col-3">
+              <label>Período de Ref.</label>
+              <input type="text" id="ident_periodo" placeholder="Ex: Mês 09/2026">
+            </div>
+            <div class="form-group col-3">
+              <label>Nº Pedido</label>
+              <input type="text" id="ident_pedido">
+            </div>
+            <div class="form-group col-3">
+              <label>Nº Orçamento</label>
+              <input type="text" id="ident_orcamento">
+            </div>
+          </div>
+        </div>
+
+        <!-- ETAPA 2: PRESTADOR -->
+        <div class="step-panel" id="step-2">
+          <div class="step-header">
+            <span class="step-title"><i class="fa-solid fa-user-gear"></i> Dados do Prestador</span>
+            <button type="button" class="btn-clear-step" onclick="clearStep(2)"><i class="fa-solid fa-eraser"></i> Limpar esta etapa</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group col-4">
+              <label>Tipo Pessoa</label>
+              <select id="prest_tipo" onchange="toggleCpfCnpj('prest')">
+                <option value="PJ">Pessoa Jurídica (CNPJ)</option>
+                <option value="PF">Pessoa Física (CPF)</option>
+              </select>
+            </div>
+            <div class="form-group col-8">
+              <label id="lbl_prest_nome">Razão Social / Nome</label>
+              <input type="text" id="prest_nome" placeholder="Nome da sua Empresa ou Seu Nome">
+            </div>
+            <div class="form-group col-4">
+              <label id="lbl_prest_doc">CNPJ</label>
+              <input type="text" id="prest_doc" placeholder="00.000.000/0000-00">
+            </div>
+            <div class="form-group col-4">
+              <label>Telefone / WhatsApp</label>
+              <input type="text" id="prest_tel" placeholder="(00) 00000-0000">
+            </div>
+            <div class="form-group col-4">
+              <label>E-mail</label>
+              <input type="email" id="prest_email">
+            </div>
+            <div class="form-group col-3">
+              <label>CEP</label>
+              <input type="text" id="prest_cep" placeholder="00000-000">
+            </div>
+            <div class="form-group col-6">
+              <label>Endereço</label>
+              <input type="text" id="prest_endereco" placeholder="Rua, Av, Número">
+            </div>
+            <div class="form-group col-3">
+              <label>Bairro</label>
+              <input type="text" id="prest_bairro">
+            </div>
+            <div class="form-group col-4">
+              <label>Cidade/UF</label>
+              <input type="text" id="prest_cidade_uf" placeholder="Ex: Curitiba/PR">
+            </div>
+            <div class="form-group col-4">
+              <label>Site</label>
+              <input type="text" id="prest_site" placeholder="www.seusite.com.br">
+            </div>
+            <div class="form-group col-4">
+              <label>Instagram</label>
+              <input type="text" id="prest_instagram" placeholder="@seuinstagram">
+            </div>
+            <div class="form-group col-12">
+              <button type="button" class="btn btn-secondary" onclick="savePrestadorProfile()">
+                <i class="fa-solid fa-bookmark"></i> Salvar dados do Prestador no Navegador
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ETAPA 3: CLIENTE -->
+        <div class="step-panel" id="step-3">
+          <div class="step-header">
+            <span class="step-title"><i class="fa-solid fa-user"></i> Dados do Cliente</span>
+            <button type="button" class="btn-clear-step" onclick="clearStep(3)"><i class="fa-solid fa-eraser"></i> Limpar esta etapa</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group col-4">
+              <label>Tipo Pessoa</label>
+              <select id="cli_tipo" onchange="toggleCpfCnpj('cli')">
+                <option value="PF">Pessoa Física (CPF)</option>
+                <option value="PJ">Pessoa Jurídica (CNPJ)</option>
+              </select>
+            </div>
+            <div class="form-group col-8">
+              <label id="lbl_cli_nome">Nome Completo</label>
+              <input type="text" id="cli_nome" placeholder="Nome do Pagador">
+            </div>
+            <div class="form-group col-4">
+              <label id="lbl_cli_doc">CPF</label>
+              <input type="text" id="cli_doc">
+            </div>
+            <div class="form-group col-4">
+              <label>RG / IE</label>
+              <input type="text" id="cli_rg">
+            </div>
+            <div class="form-group col-4">
+              <label>Telefone / WhatsApp</label>
+              <input type="text" id="cli_tel">
+            </div>
+            <div class="form-group col-6">
+              <label>E-mail</label>
+              <input type="email" id="cli_email">
+            </div>
+            <div class="form-group col-6">
+              <label>Endereço Completo</label>
+              <input type="text" id="cli_endereco">
+            </div>
+            <div class="form-group col-12">
+              <label>Responsável pelo Pagamento</label>
+              <input type="text" id="cli_responsavel" placeholder="Nome de quem efetuou o pagamento (opcional)">
+            </div>
+          </div>
+        </div>
+
+        <!-- ETAPA 4: SERVIÇOS -->
+        <div class="step-panel" id="step-4">
+          <div class="step-header">
+            <span class="step-title"><i class="fa-solid fa-list-check"></i> Serviços / Produtos</span>
+            <button type="button" class="btn-clear-step" onclick="clearStep(4)"><i class="fa-solid fa-eraser"></i> Limpar esta etapa</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="services-table" id="services-table">
+              <thead>
+                <tr>
+                  <th>Descrição</th>
+                  <th width="80">Qtd</th>
+                  <th width="110">Val. Unit</th>
+                  <th width="110">Total</th>
+                  <th width="40"></th>
+                </tr>
+              </thead>
+              <tbody id="services-body">
+                <!-- Inserido dinamicamente via JS -->
+              </tbody>
+            </table>
+          </div>
+          
+          <button type="button" class="btn btn-secondary" style="margin-top: 10px;" onclick="addServiceRow()">
+            <i class="fa-solid fa-plus"></i> Adicionar serviço
+          </button>
+
+          <hr style="margin: 15px 0; border: none; border-top: 1px solid var(--border-color);">
+
+          <div class="form-grid">
+            <div class="form-group col-12">
+              <label>Detalhes da Execução / Projeto</label>
+              <textarea id="exec_detalhes" rows="2" placeholder="Local de entrega, profissionais envolvidos, OS, etc."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- ETAPA 5: PAGAMENTO -->
+        <div class="step-panel" id="step-5">
+          <div class="step-header">
+            <span class="step-title"><i class="fa-solid fa-money-bill-wave"></i> Informações de Pagamento</span>
+            <button type="button" class="btn-clear-step" onclick="clearStep(5)"><i class="fa-solid fa-eraser"></i> Limpar esta etapa</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group col-4">
+              <label>Forma de Pagamento</label>
+              <select id="pag_forma">
+                <option value="Pix">Pix</option>
+                <option value="Dinheiro">Dinheiro</option>
+                <option value="Cartão de Crédito">Cartão de Crédito</option>
+                <option value="Cartão de Débito">Cartão de Débito</option>
+                <option value="Boleto Bancário">Boleto Bancário</option>
+                <option value="Transferência Bancária">Transferência (TED/DOC)</option>
+              </select>
+            </div>
+            <div class="form-group col-4">
+              <label>Status</label>
+              <select id="pag_status">
+                <option value="Pago">Pago / Quitado</option>
+                <option value="Parcial">Pago Parcialmente</option>
+                <option value="Pendente">Pendente</option>
+              </select>
+            </div>
+            <div class="form-group col-4">
+              <label>Data Pagamento</label>
+              <input type="date" id="pag_data">
+            </div>
+            <div class="form-group col-3">
+              <label>Subtotal (R$)</label>
+              <input type="text" id="pag_subtotal" readonly>
+            </div>
+            <div class="form-group col-3">
+              <label>Desconto (R$)</label>
+              <input type="number" id="pag_desconto" value="0.00" step="0.01" oninput="calculateTotals()">
+            </div>
+            <div class="form-group col-3">
+              <label>Acréscimo (R$)</label>
+              <input type="number" id="pag_acrescimo" value="0.00" step="0.01" oninput="calculateTotals()">
+            </div>
+            <div class="form-group col-3">
+              <label>Total Final (R$)</label>
+              <input type="text" id="pag_total" readonly>
+            </div>
+            <div class="form-group col-6">
+              <label>Valor Recebido (R$)</label>
+              <input type="number" id="pag_recebido" value="0.00" step="0.01" oninput="calculateTotals()">
+            </div>
+            <div class="form-group col-6">
+              <label>Valor Pendente (R$)</label>
+              <input type="text" id="pag_pendente" readonly>
+            </div>
+            <div class="form-group col-12">
+              <label>Valor por Extenso</label>
+              <input type="text" id="pag_extenso" readonly>
+            </div>
+          </div>
+        </div>
+
+        <!-- ETAPA 6: PIX & DADOS BANCÁRIOS -->
+        <div class="step-panel" id="step-6">
+          <div class="step-header">
+            <span class="step-title"><i class="fa-solid fa-qrcode"></i> Pix e Dados Bancários</span>
+            <button type="button" class="btn-clear-step" onclick="clearStep(6)"><i class="fa-solid fa-eraser"></i> Limpar esta etapa</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group col-12">
+              <div class="switch-group">
+                <label>Exibir Chave Pix no Recibo</label>
+                <label class="switch">
+                  <input type="checkbox" id="opt_show_pix" onchange="renderPreview()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="form-group col-4">
+              <label>Tipo de Chave</label>
+              <select id="pix_tipo">
+                <option value="CNPJ/CPF">CNPJ/CPF</option>
+                <option value="E-mail">E-mail</option>
+                <option value="Telefone">Telefone</option>
+                <option value="Chave Aleatória">Chave Aleatória</option>
+              </select>
+            </div>
+            <div class="form-group col-8">
+              <label>Chave Pix</label>
+              <input type="text" id="pix_chave">
+            </div>
+            <div class="form-group col-6">
+              <label>Recebedor</label>
+              <input type="text" id="pix_recebedor">
+            </div>
+            <div class="form-group col-6">
+              <label>Banco Pix</label>
+              <input type="text" id="pix_banco">
+            </div>
+
+            <div class="form-group col-12" style="margin-top: 10px;">
+              <div class="switch-group">
+                <label>Exibir Dados Bancários Tradicionais</label>
+                <label class="switch">
+                  <input type="checkbox" id="opt_show_bank" onchange="renderPreview()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="form-group col-4">
+              <label>Banco</label>
+              <input type="text" id="bank_nome">
+            </div>
+            <div class="form-group col-4">
+              <label>Agência</label>
+              <input type="text" id="bank_agencia">
+            </div>
+            <div class="form-group col-4">
+              <label>Conta Corrente/Poupança</label>
+              <input type="text" id="bank_conta">
+            </div>
+          </div>
+        </div>
+
+        <!-- ETAPA 7: OBSERVAÇÕES & ASSINATURAS -->
+        <div class="step-panel" id="step-7">
+          <div class="step-header">
+            <span class="step-title"><i class="fa-solid fa-pen-nib"></i> Observações e Assinaturas</span>
+            <button type="button" class="btn-clear-step" onclick="clearStep(7)"><i class="fa-solid fa-eraser"></i> Limpar esta etapa</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group col-12">
+              <label>Observações Gerais</label>
+              <textarea id="obs_texto" rows="2" placeholder="Informações adicionais do pagamento..."></textarea>
+            </div>
+            <div class="form-group col-12">
+              <label>Termos de Garantia / Condições</label>
+              <textarea id="obs_garantia" rows="2" placeholder="Condições de garantia de serviço..."></textarea>
+            </div>
+
+            <div class="form-group col-12" style="margin-top: 10px;">
+              <div class="switch-group">
+                <label>Ativar Área de Assinaturas</label>
+                <label class="switch">
+                  <input type="checkbox" id="opt_show_signatures" checked onchange="renderPreview()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="form-group col-6">
+              <label>Assinante (Prestador)</label>
+              <input type="text" id="sig_prest_nome" placeholder="Nome do Emitente">
+            </div>
+            <div class="form-group col-6">
+              <label>Assinante (Cliente)</label>
+              <input type="text" id="sig_cli_nome" placeholder="Nome do Pagador">
+            </div>
+          </div>
+        </div>
+
+        <!-- ETAPA 8: DESIGN E MODELOS -->
+        <div class="step-panel" id="step-8">
+          <div class="step-header">
+            <span class="step-title"><i class="fa-solid fa-palette"></i> Personalização do Recibo</span>
+            <button type="button" class="btn-clear-step" onclick="clearStep(8)"><i class="fa-solid fa-eraser"></i> Limpar esta etapa</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group col-6">
+              <label>Modelo do Recibo</label>
+              <select id="design_model" onchange="renderPreview()">
+                <option value="classico">1. Clássico</option>
+                <option value="moderno" selected>2. Moderno</option>
+                <option value="empresarial">3. Empresarial</option>
+                <option value="minimalista">4. Minimalista</option>
+                <option value="elegante">5. Elegante</option>
+                <option value="clean">6. Clean</option>
+                <option value="compacto">7. Compacto</option>
+              </select>
+            </div>
+            <div class="form-group col-6">
+              <label>Cor Principal</label>
+              <input type="color" id="design_color" value="#2563eb" onchange="renderPreview()" style="height: 40px; padding: 2px;">
+            </div>
+            <div class="form-group col-6">
+              <label>Upload do Logotipo</label>
+              <input type="file" id="design_logo_file" accept="image/*" onchange="handleLogoUpload(this)">
+            </div>
+            <div class="form-group col-3">
+              <label>Tamanho da Logo (px)</label>
+              <input type="number" id="design_logo_size" value="100" min="40" max="250" oninput="renderPreview()">
+            </div>
+            <div class="form-group col-3">
+              <label>Alinhamento Logo</label>
+              <select id="design_logo_align" onchange="renderPreview()">
+                <option value="flex-start">Esquerda</option>
+                <option value="center">Centro</option>
+                <option value="flex-end">Direita</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+      </form>
+
+      <!-- BARRA DE AÇÕES DO GERADOR -->
+      <div class="action-toolbar">
+        <button class="btn btn-primary" onclick="window.print()">
+          <i class="fa-solid fa-print"></i> Imprimir Recibo
+        </button>
+        <button class="btn btn-primary" style="background:#059669;" onclick="exportPDF()">
+          <i class="fa-solid fa-file-pdf"></i> Baixar PDF
+        </button>
+        <button class="btn btn-secondary" onclick="exportPNG()">
+          <i class="fa-solid fa-image"></i> Baixar PNG
+        </button>
+        <button class="btn btn-secondary" onclick="shareReceipt()">
+          <i class="fa-solid fa-share-nodes"></i> Compartilhar
+        </button>
+        <button class="btn btn-secondary" onclick="duplicateReceipt()">
+          <i class="fa-solid fa-copy"></i> Duplicar
+        </button>
+        <button class="btn btn-danger" onclick="confirmClearAll()">
+          <i class="fa-solid fa-trash-can"></i> Limpar Tudo
+        </button>
+      </div>
+
+    </section>
+
+    <!-- PRÉVIA / RECIBO A4 REAL -->
+    <section class="preview-section">
+      <div class="a4-page model-moderno" id="receipt-preview">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- RODAPÉ COMPLETO DA APLICAÇÃO -->
+  <footer class="app-footer">
+    © 2026 PrintExpress. Todos os direitos reservados.
+  </footer>
+
+  <!-- SCRIPT PRINCIPAL E LÓGICA DO SISTEMA -->
+  <script>
+    /* ==========================================
+       ESTADO DA APLICAÇÃO
+       ========================================== */
+    let currentLogoBase64 = '';
+    let servicesData = [];
+
+    // Inicialização do documento
+    document.addEventListener("DOMContentLoaded", () => {
+      // Data atual default
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('ident_data').value = today;
+      document.getElementById('pag_data').value = today;
+      
+      // Hora atual default
+      const now = new Date();
+      document.getElementById('ident_hora').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+      // Serviço inicial padrão
+      servicesData = [
+        { desc: 'Prestação de Serviço de Impressão / Gráfica', qtd: 1, val: 150.00 }
+      ];
+
+      setupMasks();
+      loadStoredData();
+      renderServicesTable();
+      calculateTotals();
+      renderPreview();
+      startCarousel();
+
+      // Listeners de atualização em tempo real
+      document.getElementById('receipt-form').addEventListener('input', () => {
+        triggerAutoSave();
+        renderPreview();
+      });
+      document.getElementById('receipt-form').addEventListener('change', () => {
+        triggerAutoSave();
+        renderPreview();
+      });
+    });
+
+    /* ==========================================
+       CARROSSEL / AVISOS
+       ========================================== */
+    let slideIndex = 0;
+    function startCarousel() {
+      setInterval(() => {
+        slideIndex = (slideIndex + 1) % 4;
+        setSlide(slideIndex);
+      }, 5000);
+    }
+
+    function setSlide(index) {
+      slideIndex = index;
+      const slides = document.querySelectorAll('.carousel-slide');
+      const dots = document.querySelectorAll('.dot');
+      slides.forEach((s, i) => s.classList.toggle('active', i === index));
+      dots.forEach((d, i) => d.classList.toggle('active', i === index));
+    }
+
+    /* ==========================================
+       NAVEGAÇÃO STEPS
+       ========================================== */
+    function switchStep(stepNum) {
+      document.querySelectorAll('.step-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', idx === (stepNum - 1));
+      });
+      document.querySelectorAll('.step-panel').forEach((panel, idx) => {
+        panel.classList.toggle('active', idx === (stepNum - 1));
+      });
+    }
+
+    function clearStep(stepNum) {
+      if (!confirm(`Deseja realmente limpar todos os dados da Etapa ${stepNum}?`)) return;
+      
+      const stepPanel = document.getElementById(`step-${stepNum}`);
+      const inputs = stepPanel.querySelectorAll('input, select, textarea');
+      inputs.forEach(input => {
+        if (input.type === 'checkbox') input.checked = false;
+        else if (input.type === 'number') input.value = '0';
+        else input.value = '';
+      });
+
+      if (stepNum === 4) {
+        servicesData = [];
+        renderServicesTable();
+      }
+
+      calculateTotals();
+      renderPreview();
+      triggerAutoSave();
+    }
+
+    /* ==========================================
+       TABELA DINÂMICA DE SERVIÇOS
+       ========================================== */
+    function renderServicesTable() {
+      const tbody = document.getElementById('services-body');
+      tbody.innerHTML = '';
+
+      servicesData.forEach((item, index) => {
+        const total = (item.qtd * item.val).toFixed(2);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input type="text" value="${item.desc}" oninput="updateServiceItem(${index}, 'desc', this.value)"></td>
+          <td><input type="number" value="${item.qtd}" min="1" oninput="updateServiceItem(${index}, 'qtd', this.value)"></td>
+          <td><input type="number" value="${item.val}" step="0.01" oninput="updateServiceItem(${index}, 'val', this.value)"></td>
+          <td><strong>R$ ${total}</strong></td>
+          <td><button type="button" class="btn-clear-step" onclick="removeServiceRow(${index})"><i class="fa-solid fa-trash"></i></button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function addServiceRow() {
+      servicesData.push({ desc: 'Novo Serviço / Item', qtd: 1, val: 0.00 });
+      renderServicesTable();
+      calculateTotals();
+      renderPreview();
+    }
+
+    function removeServiceRow(index) {
+      servicesData.splice(index, 1);
+      renderServicesTable();
+      calculateTotals();
+      renderPreview();
+    }
+
+    function updateServiceItem(index, key, val) {
+      if (key === 'qtd') servicesData[index].qtd = parseFloat(val) || 0;
+      else if (key === 'val') servicesData[index].val = parseFloat(val) || 0;
+      else servicesData[index].desc = val;
+
+      renderServicesTable();
+      calculateTotals();
+      renderPreview();
+    }
+
+    /* ==========================================
+       CÁLCULOS AUTOMÁTICOS E VALOR POR EXTENSO
+       ========================================== */
+    function calculateTotals() {
+      const subtotal = servicesData.reduce((acc, curr) => acc + (curr.qtd * curr.val), 0);
+      const desconto = parseFloat(document.getElementById('pag_desconto').value) || 0;
+      const acrescimo = parseFloat(document.getElementById('pag_acrescimo').value) || 0;
+      const total = subtotal - desconto + acrescimo;
+      
+      const recebido = parseFloat(document.getElementById('pag_recebido').value) || 0;
+      const pendente = Math.max(0, total - recebido);
+
+      document.getElementById('pag_subtotal').value = subtotal.toFixed(2);
+      document.getElementById('pag_total').value = total.toFixed(2);
+      document.getElementById('pag_pendente').value = pendente.toFixed(2);
+
+      document.getElementById('pag_extenso').value = numeroParaExtenso(total);
+    }
+
+    function numeroParaExtenso(valor) {
+      if (valor === 0) return "Zero reais";
+      
+      const unidades = ["", "Um", "Dois", "Três", "Quatro", "Cinco", "Seis", "Sete", "Oito", "Nove"];
+      const dezena1 = ["Dez", "Onze", "Doze", "Treze", "Catorze", "Quinze", "Dezesseis", "Dezesseis", "Dezoito", "Dezenove"];
+      const dezenas = ["", "", "Vinte", "Trinta", "Quarenta", "Cinquenta", "Sessenta", "Setenta", "Oitenta", "Noventa"];
+      const centenas = ["", "Cento", "Duzentos", "Trezentos", "Quatrocentos", "Quinhentos", "Seiscentos", "Setecentos", "Oitocentos", "Novecentos"];
+
+      let inteiro = Math.floor(valor);
+      let centavos = Math.round((valor - inteiro) * 100);
+
+      function converterGrupo(n) {
+        if (n === 100) return "Cem";
+        let c = Math.floor(n / 100);
+        let d = Math.floor((n % 100) / 10);
+        let u = n % 10;
+        let str = "";
+
+        if (c > 0) str += centenas[c];
+        if (d === 1) {
+          str += (str ? " e " : "") + dezena1[u];
+        } else {
+          if (d > 1) str += (str ? " e " : "") + dezenas[d];
+          if (u > 0) str += (str ? " e " : "") + unidades[u];
+        }
+        return str;
+      }
+
+      let res = "";
+      if (inteiro > 0) {
+        if (inteiro < 1000) {
+          res += converterGrupo(inteiro);
+        } else {
+          let mil = Math.floor(inteiro / 1000);
+          let resto = inteiro % 1000;
+          res += (mil === 1 ? "Mil" : converterGrupo(mil) + " Mil");
+          if (resto > 0) res += " e " + converterGrupo(resto);
+        }
+        res += (inteiro === 1 ? " Real" : " Reais");
+      }
+
+      if (centavos > 0) {
+        if (res) res += " e ";
+        res += converterGrupo(centavos) + (centavos === 1 ? " Centavo" : " Centavos");
+      }
+
+      return res;
+    }
+
+    /* ==========================================
+       RENDERIZAÇÃO DA PRÉVIA A4
+       ========================================== */
+    function renderPreview() {
+      const page = document.getElementById('receipt-preview');
+      const model = document.getElementById('design_model').value;
+      const color = document.getElementById('design_color').value;
+
+      page.className = `a4-page model-${model}`;
+      page.style.setProperty('--receipt-color', color);
+
+      // Coleta de Dados
+      const num = document.getElementById('ident_numero').value;
+      const tipo = document.getElementById('ident_tipo').value;
+      const data = document.getElementById('ident_data').value;
+      const cidade = document.getElementById('ident_cidade').value;
+      const uf = document.getElementById('ident_uf').value;
+
+      const prestNome = document.getElementById('prest_nome').value || 'Nome do Prestador / Empresa';
+      const prestDoc = document.getElementById('prest_doc').value;
+      const prestTel = document.getElementById('prest_tel').value;
+      const prestEnd = document.getElementById('prest_endereco').value;
+
+      const cliNome = document.getElementById('cli_nome').value || 'Nome do Cliente';
+      const cliDoc = document.getElementById('cli_doc').value;
+      const cliEnd = document.getElementById('cli_endereco').value;
+
+      const total = document.getElementById('pag_total').value;
+      const extenso = document.getElementById('pag_extenso').value;
+      const formaPag = document.getElementById('pag_forma').value;
+
+      const logoAlign = document.getElementById('design_logo_align').value;
+      const logoSize = document.getElementById('design_logo_size').value;
+
+      // Montagem das Linhas de Serviços
+      let servicesRowsHtml = servicesData.map(s => `
+        <tr>
+          <td>${s.desc}</td>
+          <td style="text-align:center;">${s.qtd}</td>
+          <td style="text-align:right;">R$ ${parseFloat(s.val).toFixed(2)}</td>
+          <td style="text-align:right;">R$ ${(s.qtd * s.val).toFixed(2)}</td>
+        </tr>
+      `).join('');
+
+      // Bloco Pix Opcional
+      let pixHtml = '';
+      if (document.getElementById('opt_show_pix').checked) {
+        pixHtml = `
+          <div class="receipt-section" style="background:#f8fafc; padding:8px; border-radius:4px; margin-top:10px;">
+            <div class="receipt-section-title">Dados para Pagamento via Pix</div>
+            <div style="display:flex; justify-content:space-between; font-size:8.5pt;">
+              <span><strong>Chave:</strong> ${document.getElementById('pix_chave').value} (${document.getElementById('pix_tipo').value})</span>
+              <span><strong>Recebedor:</strong> ${document.getElementById('pix_recebedor').value}</span>
+              <span><strong>Banco:</strong> ${document.getElementById('pix_banco').value}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // Bloco Assinaturas Opcional
+      let sigHtml = '';
+      if (document.getElementById('opt_show_signatures').checked) {
+        sigHtml = `
+          <div class="signatures-area">
+            <div class="signature-box">
+              <strong>${document.getElementById('sig_prest_nome').value || prestNome}</strong><br>
+              <span style="font-size:8pt; color:#666;">Emitente / Prestador</span>
+            </div>
+            <div class="signature-box">
+              <strong>${document.getElementById('sig_cli_nome').value || cliNome}</strong><br>
+              <span style="font-size:8pt; color:#666;">Pagador / Cliente</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // HTML Final do Recibo
+      page.innerHTML = `
+        <div style="display:flex; justify-content:${logoAlign}; margin-bottom: 10px;">
+          ${currentLogoBase64 ? `<img src="${currentLogoBase64}" style="max-height:${logoSize}px; object-fit:contain;">` : ''}
+        </div>
+
+        <div class="receipt-header">
+          <div>
+            <div class="receipt-title" style="color:${color}">${tipo}</div>
+            <div style="font-size:9pt; color:#475569;">${prestNome} | ${prestDoc}</div>
+            <div style="font-size:8pt; color:#64748b;">${prestEnd} - ${prestTel}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="receipt-num">Nº ${num}</div>
+            <div style="font-size:8.5pt;">Data: ${data}</div>
+          </div>
+        </div>
+
+        <div class="receipt-section">
+          <div class="receipt-section-title">Recebemos de</div>
+          <div style="font-size:10pt; font-weight:bold;">${cliNome}</div>
+          <div style="font-size:8.5pt;">CPF/CNPJ: ${cliDoc || 'Não informado'} | Endereço: ${cliEnd || 'Não informado'}</div>
+        </div>
+
+        <div class="receipt-section">
+          <div class="receipt-section-title">A quantia de</div>
+          <div style="font-size:11pt; font-weight:bold; color:${color}">R$ ${total} (${extenso})</div>
+        </div>
+
+        <div class="receipt-section">
+          <div class="receipt-section-title">Referente aos serviços/produtos abaixo</div>
+          <table class="receipt-table">
+            <thead>
+              <tr>
+                <th>Descrição</th>
+                <th width="40" style="text-align:center;">Qtd</th>
+                <th width="80" style="text-align:right;">Unitário</th>
+                <th width="80" style="text-align:right;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${servicesRowsHtml}
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:8.5pt;">
+          <div><strong>Forma de Pagamento:</strong> ${formaPag}</div>
+          <div><strong>Local e Data:</strong> ${cidade}/${uf}, ${data}</div>
+        </div>
+
+        ${pixHtml}
+
+        <div class="receipt-section" style="margin-top:10px;">
+          <div style="font-size:8pt; color:#64748b;">${document.getElementById('obs_texto').value}</div>
+        </div>
+
+        ${sigHtml}
+
+        <div class="legal-notice">
+          Este gerador cria um modelo de recibo com base nas informações fornecidas pelo usuário. O documento não substitui documentos fiscais ou outros documentos cuja emissão dependa de requisitos legais específicos.
+        </div>
+      `;
+    }
+
+    /* ==========================================
+       PERSISTÊNCIA & LOCALSTORAGE
+       ========================================== */
+    function triggerAutoSave() {
+      document.getElementById('save-status-text').innerText = '💾 Salvando...';
+      setTimeout(() => {
+        const formData = {
+          ident_numero: document.getElementById('ident_numero').value,
+          prest_nome: document.getElementById('prest_nome').value,
+          prest_doc: document.getElementById('prest_doc').value,
+          cli_nome: document.getElementById('cli_nome').value,
+          cli_doc: document.getElementById('cli_doc').value,
+          servicesData: servicesData,
+          logo: currentLogoBase64
+        };
+        localStorage.setItem('printexpress_recibo_data', JSON.stringify(formData));
+        document.getElementById('save-status-text').innerText = '✓ Salvo';
+      }, 500);
+    }
+
+    function loadStoredData() {
+      const data = localStorage.getItem('printexpress_recibo_data');
+      if (data) {
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.ident_numero) document.getElementById('ident_numero').value = parsed.ident_numero;
+          if (parsed.prest_nome) document.getElementById('prest_nome').value = parsed.prest_nome;
+          if (parsed.prest_doc) document.getElementById('prest_doc').value = parsed.prest_doc;
+          if (parsed.cli_nome) document.getElementById('cli_nome').value = parsed.cli_nome;
+          if (parsed.cli_doc) document.getElementById('cli_doc').value = parsed.cli_doc;
+          if (parsed.servicesData) servicesData = parsed.servicesData;
+          if (parsed.logo) currentLogoBase64 = parsed.logo;
+        } catch (e) { console.error("Erro ao carregar dados salvos", e); }
+      }
+    }
+
+    function savePrestadorProfile() {
+      const profile = {
+        nome: document.getElementById('prest_nome').value,
+        doc: document.getElementById('prest_doc').value,
+        tel: document.getElementById('prest_tel').value,
+        email: document.getElementById('prest_email').value,
+        end: document.getElementById('prest_endereco').value
+      };
+      localStorage.setItem('printexpress_prestador_profile', JSON.stringify(profile));
+      alert("Dados do prestador salvos com sucesso!");
+    }
+
+    function confirmClearAll() {
+      if (confirm("Tem certeza que deseja apagar TODOS os campos do formulário? Esta ação não pode ser desfeita.")) {
+        localStorage.removeItem('printexpress_recibo_data');
+        location.reload();
+      }
+    }
+
+    function duplicateReceipt() {
+      let currentNum = parseInt(document.getElementById('ident_numero').value) || 1;
+      let nextNum = String(currentNum + 1).padStart(4, '0');
+      document.getElementById('ident_numero').value = nextNum;
+      
+      // Limpa dados específicos do cliente para duplicar
+      document.getElementById('cli_nome').value = '';
+      document.getElementById('cli_doc').value = '';
+      document.getElementById('cli_endereco').value = '';
+      
+      renderPreview();
+      triggerAutoSave();
+      alert(`Recibo duplicado! Novo Número: ${nextNum}`);
+    }
+
+    /* ==========================================
+       AÇÕES DE EXPORTAÇÃO (PDF, PNG, SHARE)
+       ========================================== */
+    function exportPDF() {
+      const element = document.getElementById('receipt-preview');
+      const num = document.getElementById('ident_numero').value;
+      const opt = {
+        margin:       0,
+        filename:     `Recibo_${num}_PrintExpress.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save();
+    }
+
+    function exportPNG() {
+      const element = document.getElementById('receipt-preview');
+      const num = document.getElementById('ident_numero').value;
+
+      html2canvas(element, { scale: 2 }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Recibo_${num}_PrintExpress.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+
+    async function shareReceipt() {
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'Recibo PrintExpress',
+            text: 'Segue comprovante do recibo gerado pelo PrintExpress.',
+            url: window.location.href,
+          });
+        } catch (err) { console.log('Erro ao compartilhar:', err); }
+      } else {
+        alert("O seu navegador não suporta o compartilhamento direto. Baixe o PDF ou PNG para enviar.");
+      }
+    }
+
+    /* ==========================================
+       MÁSCARAS & UTILITÁRIOS
+       ========================================== */
+    function handleLogoUpload(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentLogoBase64 = e.target.result;
+          renderPreview();
+          triggerAutoSave();
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function toggleCpfCnpj(prefix) {
+      const type = document.getElementById(`${prefix}_tipo`).value;
+      const lblDoc = document.getElementById(`lbl_${prefix}_doc`);
+      const lblNome = document.getElementById(`lbl_${prefix}_nome`);
+
+      if (type === 'PJ') {
+        lblDoc.innerText = 'CNPJ';
+        lblNome.innerText = 'Razão Social';
+      } else {
+        lblDoc.innerText = 'CPF';
+        lblNome.innerText = 'Nome Completo';
+      }
+    }
+
+    function setupMasks() {
+      // Alternância de Tema Escuro
+      const btnTheme = document.getElementById('btn-theme');
+      btnTheme.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        btnTheme.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+      });
+    }
+  </script>
+</body>
+</html>
