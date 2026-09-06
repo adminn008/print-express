@@ -21,6 +21,7 @@
             --accent-gold: #f59e0b;
             --color-open: #22c55e;
             --color-closed: #ef4444;
+            --color-warning: #eab308;
             --font-main: 'Plus Jakarta Sans', -apple-system, sans-serif;
             --header-height: min(8vh, 70px);
             --footer-height: min(6vh, 50px);
@@ -79,7 +80,7 @@
             justify-content: space-between;
             align-items: center;
             z-index: 100;
-            background: linear-gradient(180deg, rgba(5,5,5,0.9) 0%, rgba(5,5,5,0) 100%);
+            background: linear-gradient(180deg, rgba(5,5,5,0.95) 0%, rgba(5,5,5,0) 100%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
@@ -126,6 +127,12 @@
             background: rgba(34, 197, 94, 0.1);
         }
 
+        .status-badge.warning {
+            color: var(--color-warning);
+            border-color: rgba(234, 179, 8, 0.3);
+            background: rgba(234, 179, 8, 0.1);
+        }
+
         .status-badge.closed {
             color: var(--color-closed);
             border-color: rgba(239, 68, 68, 0.3);
@@ -157,7 +164,7 @@
             justify-content: space-between;
             align-items: center;
             z-index: 100;
-            background: linear-gradient(0deg, rgba(5,5,5,0.9) 0%, rgba(5,5,5,0) 100%);
+            background: linear-gradient(0deg, rgba(5,5,5,0.95) 0%, rgba(5,5,5,0) 100%);
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             font-size: min(0.95rem, 1.8vh);
             color: var(--text-secondary);
@@ -169,7 +176,7 @@
             gap: 10px;
             color: var(--accent-light);
             font-weight: 600;
-            max-width: 60%;
+            max-width: 55%;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -179,7 +186,6 @@
             display: none;
         }
 
-        /* Indicador de Slide por Pontos (Dots) */
         .slide-dots {
             display: flex;
             align-items: center;
@@ -202,7 +208,7 @@
         }
 
         /* ==========================================================================
-           ESTRUTURA DE SLIDES FLEXÍVEL E ANTI-CORTE (RESPONSIVIDADE AJUSTADA)
+           ESTRUTURA DE SLIDES FLEXÍVEL E ANTI-CORTE
            ========================================================================== */
         .presentation-container {
             width: 100%;
@@ -239,7 +245,6 @@
             transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1), visibility 1s ease;
         }
 
-        /* Elementos Animados Internos */
         .anim-item {
             opacity: 0;
             transform: translateY(20px);
@@ -257,7 +262,7 @@
         .slide.active .delay-4 { transition-delay: 0.6s; }
 
         /* ==========================================================================
-           ESTILOS DOS SLIDES (OTIMIZADOS PARA VIEWPORT HEIGHT - vh)
+           MODELOS VISUAIS E COMPONENTES ORGANIZADOS
            ========================================================================== */
 
         /* SLIDE 1: MARCA */
@@ -296,7 +301,7 @@
             line-height: 1.3;
         }
 
-        /* SLIDE 2: IMPRESSÃO */
+        /* MODELO A: SPLIT (IMAGEM + TEXTO) */
         .slide-layout-split {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -367,7 +372,108 @@
             flex-shrink: 0;
         }
 
-        /* SLIDE 3: SERVIÇOS */
+        /* MODELO B: TABELA COMPATÍVEL COM TV */
+        .table-container {
+            width: 100%;
+            max-width: 1100px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .custom-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--accent-light);
+            padding: 2vh 2vw;
+            font-size: min(1.4rem, 2.5vh);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .custom-table td {
+            padding: 2vh 2vw;
+            font-size: min(1.3rem, 2.4vh);
+            color: var(--text-primary);
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .custom-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .custom-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* MODELO C & D: AVISOS E OPERACIONAL */
+        .notice-category-badge {
+            background: rgba(2, 132, 199, 0.2);
+            border: 1px solid var(--accent-light);
+            color: var(--accent-light);
+            font-size: min(1.2rem, 2.2vh);
+            font-weight: 900;
+            padding: 0.5rem 1.8rem;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 2vh;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .notice-category-badge.important {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #fca5a5;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+        }
+
+        .notice-content-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 4vh 4vw;
+            text-align: center;
+            max-width: 900px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2vh;
+        }
+
+        .notice-title-text {
+            font-size: min(3rem, 5.5vh);
+            font-weight: 900;
+            color: var(--text-primary);
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+
+        .notice-body-text {
+            font-size: min(1.8rem, 3.2vh);
+            color: var(--text-secondary);
+            line-height: 1.4;
+            font-weight: 600;
+        }
+
+        /* GRIDS DE SERVIÇOS, PRODUTOS E DIFERENCIAIS */
         .grid-3col {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -400,7 +506,6 @@
             color: var(--text-primary);
         }
 
-        /* SLIDE 4: PRODUTOS */
         .grid-4col {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -431,7 +536,6 @@
             color: var(--text-primary);
         }
 
-        /* SLIDE 5: DIFERENCIAIS */
         .differentials-wrapper {
             display: flex;
             justify-content: space-between;
@@ -463,7 +567,7 @@
             color: var(--accent-light);
         }
 
-        /* SLIDE 6: PROMOÇÃO */
+        /* PROMOÇÕES */
         .promo-badge {
             background: var(--accent-gold);
             color: #000;
@@ -520,7 +624,7 @@
             width: 100%;
         }
 
-        /* SLIDE 7: CONTATO */
+        /* MODELO J: CONTATO E LOCALIZAÇÃO DA LOJA */
         .contact-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -560,57 +664,6 @@
             color: var(--text-primary);
         }
 
-        /* ==========================================================================
-           NOVO SISTEMA — ESTILOS DOS AVISOS E INFORMAÇÕES ROTATIVAS
-           ========================================================================== */
-        .notice-category-badge {
-            background: rgba(2, 132, 199, 0.2);
-            border: 1px solid var(--accent-light);
-            color: var(--accent-light);
-            font-size: min(1.2rem, 2.2vh);
-            font-weight: 900;
-            padding: 0.5rem 1.8rem;
-            border-radius: 50px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 2vh;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-
-        .notice-content-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 4vh 4vw;
-            text-align: center;
-            max-width: 900px;
-            width: 90%;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(15px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2vh;
-        }
-
-        .notice-title-text {
-            font-size: min(3rem, 5.5vh);
-            font-weight: 900;
-            color: var(--text-primary);
-            line-height: 1.2;
-            letter-spacing: -0.5px;
-        }
-
-        .notice-body-text {
-            font-size: min(1.8rem, 3.2vh);
-            color: var(--text-secondary);
-            line-height: 1.4;
-            font-weight: 600;
-        }
-
         .regions-pills {
             display: flex;
             flex-wrap: wrap;
@@ -647,9 +700,7 @@
             display: block;
         }
 
-        /* ==========================================================================
-           CONTROLES & TELA CHEIA & BARRA DE PROGRESSO
-           ========================================================================== */
+        /* CONTROLES & PROGRESSO */
         .fullscreen-btn {
             position: fixed;
             bottom: calc(var(--footer-height) + 15px);
@@ -695,7 +746,6 @@
             transition: width 0.1s linear;
         }
 
-        /* AJUSTES PARA TELAS MENORES OU PROPORÇÕES ESPECÍFICAS (4:3, LAPTOPS) */
         @media (max-height: 600px) {
             .grid-3col { grid-template-columns: repeat(3, 1fr); }
             .grid-4col { grid-template-columns: repeat(4, 1fr); }
@@ -713,10 +763,10 @@
     <header class="top-bar">
         <div class="header-brand">
             <span class="logo-mini" id="hdr-logo">🖨️</span>
-            <span id="hdr-name">NOME DA GRÁFICA</span>
+            <span id="hdr-name">PRINT EXPRESS</span>
         </div>
         <div class="header-info">
-            <span id="hdr-city">Quitandinha – PR</span>
+            <span id="hdr-city">São José dos Pinhais – PR</span>
             <span>•</span>
             <span id="hdr-temp">🌡️ --°C</span>
             <span>•</span>
@@ -733,11 +783,11 @@
         <!-- SLIDE 1: MARCA -->
         <div class="slide active" data-duration="6">
             <div class="brand-logo-wrapper anim-item delay-1" id="cfg-logo">🖨️</div>
-            <h1 class="brand-name anim-item delay-2" id="cfg-brand-name">NOME DA GRÁFICA</h1>
+            <h1 class="brand-name anim-item delay-2" id="cfg-brand-name">PRINT EXPRESS</h1>
             <p class="brand-tagline anim-item delay-3" id="cfg-tagline">Impressão, criação e soluções de alta qualidade para o seu dia a dia.</p>
         </div>
 
-        <!-- SLIDE 2: IMPRESSÃO -->
+        <!-- SLIDE 2: IMPRESSÃO (MODELO A) -->
         <div class="slide" data-duration="8">
             <div class="slide-layout-split">
                 <div class="visual-box anim-item delay-1">
@@ -755,13 +805,13 @@
             </div>
         </div>
 
-        <!-- SLIDE 3: SERVIÇOS -->
+        <!-- SLIDE 3: SERVIÇOS (MODELO H) -->
         <div class="slide" data-duration="8">
             <h2 class="section-title anim-item delay-1">🛠️ NOSSOS SERVIÇOS</h2>
             <div class="grid-3col" id="cfg-services-grid"></div>
         </div>
 
-        <!-- SLIDE 4: PRODUTOS -->
+        <!-- SLIDE 4: PRODUTOS (MODELO H) -->
         <div class="slide" data-duration="8">
             <h2 class="section-title anim-item delay-1">📦 PRODUTOS EM DESTAQUE</h2>
             <div class="grid-4col" id="cfg-products-grid"></div>
@@ -773,7 +823,7 @@
             <div class="differentials-wrapper" id="cfg-differentials-grid"></div>
         </div>
 
-        <!-- SLIDE 6: PROMOÇÃO -->
+        <!-- SLIDE 6: PROMOÇÃO (MODELO I) -->
         <div class="slide" data-duration="8">
             <div class="promo-badge anim-item delay-1">🔥 Oferta Especial</div>
             <div class="promo-card anim-item delay-2">
@@ -784,7 +834,7 @@
             </div>
         </div>
 
-        <!-- SLIDE 7: CHAMADA FINAL & CONTATO -->
+        <!-- SLIDE 7: CONTATO & LOJA (MODELO J) -->
         <div class="slide" data-duration="8">
             <div class="brand-logo-wrapper anim-item delay-1" style="width: min(80px, 10vh); height: min(80px, 10vh); font-size: min(40px, 5vh); margin-bottom: 1vh;">🖨️</div>
             <h2 class="section-title anim-item delay-1" style="font-size: min(2.8rem, 4.5vh); margin-bottom: 0.5vh;">PRECISA DE IMPRESSÃO?</h2>
@@ -795,21 +845,21 @@
                     <div class="contact-icon">📱</div>
                     <div class="contact-info">
                         <label>WhatsApp</label>
-                        <span id="cfg-contact-whatsapp">(00) 00000-0000</span>
+                        <span id="cfg-contact-whatsapp">(41) 99968-2836</span>
                     </div>
                 </div>
                 <div class="contact-card">
                     <div class="contact-icon">📸</div>
                     <div class="contact-info">
                         <label>Instagram</label>
-                        <span id="cfg-contact-instagram">@suagrafica</span>
+                        <span id="cfg-contact-instagram">@printexpress</span>
                     </div>
                 </div>
                 <div class="contact-card">
                     <div class="contact-icon">📍</div>
                     <div class="contact-info">
                         <label>Endereço</label>
-                        <span id="cfg-contact-address">Rua Principal, 123 - Centro</span>
+                        <span id="cfg-contact-address">Rua das Flores, 1000 - Centro</span>
                     </div>
                 </div>
                 <div class="contact-card">
@@ -836,7 +886,7 @@
         </div>
     </footer>
 
-    <!-- Barra de Progresso do Tempo do Slide -->
+    <!-- Barra de Progresso -->
     <div class="progress-bar-container">
         <div class="progress-bar" id="progressBar"></div>
     </div>
@@ -845,35 +895,37 @@
     <button class="fullscreen-btn" id="fsBtn" onclick="toggleFullScreen()">🖥️ Modo Tela Cheia</button>
 
     <!-- ==========================================================================
-       ÁREA DE CONFIGURAÇÃO & LÓGICA DE FUNCIONAMENTO CONTINUO
-       ========================================================================== */
-    -->
+       ÁREA DE CONFIGURAÇÃO & EDITAÇÃO DE CONTEÚDOS DO PAINEL
+       ========================================================================== -->
     <script>
         /* ----------------------------------------------------------------------
-           ⚙️ CENTRAL DE CONFIGURAÇÃO (EDITE APENAS OS DADOS ABAIXO)
+           ⚙️ CENTRAL DE CONFIGURAÇÃO GERAL (EDITÁVEL)
            ---------------------------------------------------------------------- */
         const CONFIG = {
-            // Identificação da Loja & Localização
+            // Identificação e Localização Real da Gráfica
             nomeGrafica: "PRINT EXPRESS",
             tagline: "Impressão, criação e soluções rápidas para o seu dia a dia.",
             iconeLogo: "🖨️",
             cidadeEstado: "São José dos Pinhais – PR",
 
-            // Coordenadas para obter o clima real (Open-Meteo API)
-            lat: -25.8672,
-            lon: -49.5008,
+            // Coordenadas para temperatura em tempo real (Open-Meteo API)
+            lat: -25.5347,
+            lon: -49.1923,
 
-            // Horário de Funcionamento para o Status Automático (Formato 24h)
+            // Som Geral (ON/OFF)
+            somAtivo: false,
+
+            // Horário de Funcionamento para Status do Header
             horarioFuncionamento: {
-                diasUteis: { inicio: "08:00", fim: "18:00" }, // Segunda a Sexta
+                diasUteis: { inicio: "08:00", fim: "18:00" },
                 sabado: { ativo: true, inicio: "08:00", fim: "12:00" },
-                domingo: { ativo: false } // Fechado no Domingo
+                domingo: { ativo: false }
             },
 
-            // Área de Avisos Importantes (Barra Inferior)
+            // Ticker da Barra Inferior
             avisoText: "Hoje atendemos normalmente. Traga seu arquivo no pen-drive ou envie pelo WhatsApp!", 
 
-            // Serviços (Slide 3)
+            // Serviços
             servicos: [
                 { icone: "📄", titulo: "Documentos" },
                 { icone: "💼", titulo: "Currículos" },
@@ -883,7 +935,7 @@
                 { icone: "📦", titulo: "Personalizados" }
             ],
 
-            // Produtos (Slide 4)
+            // Produtos
             produtos: [
                 { icone: "🎴", titulo: "Cartões de Visita" },
                 { icone: "📜", titulo: "Panfletos / Banners" },
@@ -892,10 +944,10 @@
                 { icone: "📘", titulo: "Apostilas / Bloco" },
                 { icone: "📐", titulo: "Ploter / Desenhos" },
                 { icone: "🎁", titulo: "Brindes Exclusivos" },
-                { icone: "📋", titulo: "Comprovantes / Talões" }
+                { icone: "📋", titulo: "Talões de Pedido" }
             ],
 
-            // Diferenciais (Slide 5)
+            // Diferenciais
             diferenciais: [
                 { icone: "⚡", titulo: "Rapidez" },
                 { icone: "✨", titulo: "Qualidade" },
@@ -904,14 +956,14 @@
                 { icone: "🎯", titulo: "Precisão" }
             ],
 
-            // Promoção (Slide 6)
+            // Promoção
             promocao: {
                 titulo: "Impressão Colorida A4",
                 preco: "R$ 0,99",
                 validade: "Condição válida para volumes acima de 50 cópias."
             },
 
-            // Contatos (Slide 7)
+            // Contato
             contato: {
                 whatsapp: "(41) 99968-2836",
                 instagram: "@printexpress",
@@ -921,208 +973,71 @@
         };
 
         /* ----------------------------------------------------------------------
-           📢 NOVO SISTEMA — CADASTRO DE AVISOS E INFORMAÇÕES ROTATIVAS
-           ----------------------------------------------------------------------
-           Categorias disponíveis:
-           "novidade", "aviso", "melhoria", "horario", "servico",
-           "promocao", "localizacao", "informacao", "campanha", "video"
+           📊 CADASTRO DE AVISOS, TABELAS E VÍDEOS ROTATIVOS (EDITÁVEL)
            ---------------------------------------------------------------------- */
-        const AVISOS_CONFIG = [
+        const CONTEUDOS_ADICIONAIS = [
+            // MODELO D: AVISO OPERACIONAL
             {
+                tipo: "operacional",
                 ativo: true,
-                categoria: "novidade",
-                icone: "🆕",
-                titulo: "NOVIDADE NO PRINTEXPRESS",
-                texto: "Confira as novidades e melhorias da nossa gráfica.",
-                imagem: null,
-                video: null,
-                duracao: 7,
-                dataInicio: null,
-                dataTermino: null
+                statusTipo: "NORMAL", // "NORMAL" | "ALTERADO" | "ENCERRADO" | "MANUTENCAO"
+                titulo: "ATENDIMENTO NORMAL",
+                texto: "Atendimento funcionando normalmente dentro do horário comercial.",
+                duracao: 7
             },
+
+            // MODELO B: TABELA DE PREÇOS / SERVIÇOS
             {
+                tipo: "tabela",
                 ativo: true,
-                categoria: "servico",
-                icone: "🖼️",
-                titulo: "NOVO SERVIÇO",
-                texto: "Agora oferecemos impressão frente e verso com mais praticidade.",
-                imagem: "https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?auto=format&fit=crop&w=1200&q=80",
-                video: null,
-                duracao: 8,
-                dataInicio: null,
-                dataTermino: null
+                titulo: "📋 TABELA DE SERVIÇOS RÁPIDOS",
+                duracao: 9,
+                colunas: ["SERVIÇO", "DETALHES", "VALOR / STATUS"],
+                linhas: [
+                    ["Impressão P&B A4", "Papel Sulfite 75g", "A partir de R$ 0,30"],
+                    ["Impressão Colorida A4", "Alta Definição", "A partir de R$ 0,99"],
+                    ["Digitalização de Documentos", "Envio para e-mail/WhatsApp", "Disponível"],
+                    ["Encadernação Espiral", "Até 100 folhas com capa", "Consulte valores"]
+                ]
             },
+
+            // MODELO G: NOVIDADE / NOTÍCIA
             {
+                tipo: "novidade",
                 ativo: true,
-                categoria: "melhoria",
-                icone: "🔧",
-                titulo: "ESTAMOS MELHORANDO",
-                texto: "Novos recursos e melhorias estão chegando para facilitar seu atendimento.",
+                categoria: "🆕 NOVIDADE",
+                titulo: "IMPRESSÃO EM PAPEL FOTOGRÁFICO",
+                texto: "Agora imprimimos suas fotos com qualidade profissional e papel brilhante de alta gramatura.",
                 imagem: null,
-                video: null,
-                duracao: 7,
-                dataInicio: null,
-                dataTermino: null
+                duracao: 8
             },
+
+            // MODELO C: AVISO IMPORTANTE
             {
+                tipo: "aviso",
                 ativo: true,
-                categoria: "horario",
-                icone: "🕐",
-                titulo: "HORÁRIO DE ATENDIMENTO",
-                texto: "Confira nossos horários antes de realizar sua retirada.",
-                imagem: null,
-                video: null,
-                duracao: 7,
-                dataInicio: null,
-                dataTermino: null
+                categoria: "🚨 ATENÇÃO",
+                importante: true,
+                titulo: "ENVIE SEUS ARQUIVOS EM PDF",
+                texto: "Para garantir a melhor qualidade e evitar desconfiguração das fontes, envie seus documentos preferencialmente em formato PDF.",
+                duracao: 8
             },
+
+            // MODELO F: VÍDEO DEMONSTRATIVO
             {
-                ativo: true,
-                categoria: "localizacao",
-                icone: "📍",
-                titulo: "ATENDIMENTO LOCAL",
-                texto: "Atendemos clientes da região e bairros próximos com máxima agilidade.",
-                regioes: ["Centro", "Bairro Alto", "São Cristóvão", "Água Verde", "Região Metropolitana"],
-                imagem: null,
-                video: null,
-                duracao: 8,
-                dataInicio: null,
-                dataTermino: null
-            },
-            {
-                ativo: true,
-                categoria: "servico",
-                icone: "🖨️",
-                titulo: "PRECISA IMPRIMIR?",
-                texto: "Envie seu arquivo e conte com nosso atendimento.",
-                imagem: null,
-                video: null,
-                duracao: 7,
-                dataInicio: null,
-                dataTermino: null
-            },
-            {
-                ativo: true,
-                categoria: "promocao",
-                icone: "🎉",
-                titulo: "PROMOÇÃO DE SETEMBRO",
-                texto: "Condição especial para impressões em lote válida até 30/09.",
-                imagem: null,
-                video: null,
-                duracao: 8,
-                dataInicio: "2026-09-01",
-                dataTermino: "2026-09-30"
-            },
-            {
-                ativo: true,
-                categoria: "aviso",
-                icone: "📢",
-                titulo: "AVISO IMPORTANTE",
-                texto: "Consulte nossa equipe caso tenha alguma dúvida sobre seu pedido.",
-                imagem: null,
-                video: null,
-                duracao: 7,
-                dataInicio: null,
-                dataTermino: null
-            },
-            {
-                ativo: true,
-                categoria: "dica",
-                icone: "💡",
-                titulo: "DICA ÚTIL",
-                texto: "Confira seu arquivo antes de enviá-lo para impressão.",
-                imagem: null,
-                video: null,
-                duracao: 7,
-                dataInicio: null,
-                dataTermino: null
-            },
-            {
-                ativo: false, // Exemplo de vídeo (defina ativo: true e inclua o link do MP4 para utilizar)
-                categoria: "video",
-                icone: "🎥",
-                titulo: "NOSSO PROCESSO",
-                texto: "",
-                imagem: null,
-                video: "https://www.w3schools.com/html/mov_bbb.mp4",
-                duracao: 10,
-                dataInicio: null,
-                dataTermino: null
+                tipo: "video",
+                ativo: false, // Mude para true e coloque um arquivo .mp4 válido
+                titulo: "NOSSO PROCESSO DE IMPRESSÃO",
+                videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+                duracao: 10
             }
         ];
 
         /* ----------------------------------------------------------------------
-           MOTOR DE RENDERIZAÇÃO DO NOVO SISTEMA DE AVISOS
-           ---------------------------------------------------------------------- */
-        function renderAvisosSlides() {
-            const container = document.getElementById('presentationContainer');
-            const hoje = new Date().toISOString().split('T')[0];
-
-            AVISOS_CONFIG.forEach((aviso) => {
-                // Validação de ativo e período (dataInicio / dataTermino)
-                if (!aviso.ativo) return;
-                if (aviso.dataInicio && hoje < aviso.dataInicio) return;
-                if (aviso.dataTermino && hoje > aviso.dataTermino) return;
-
-                const slideDiv = document.createElement('div');
-                slideDiv.className = 'slide';
-                slideDiv.setAttribute('data-duration', aviso.duracao || 8);
-
-                let contentHTML = '';
-
-                if (aviso.video) {
-                    // FORMATO VÍDEO
-                    contentHTML = `
-                        <div class="video-notice-box anim-item delay-1">
-                            <video src="${aviso.video}" autoplay loop muted playsinline></video>
-                        </div>
-                    `;
-                } else if (aviso.imagem) {
-                    // FORMATO IMAGEM + TEXTO
-                    contentHTML = `
-                        <div class="slide-layout-split">
-                            <div class="visual-box anim-item delay-1">
-                                <img src="${aviso.imagem}" alt="${aviso.titulo}">
-                            </div>
-                            <div>
-                                <div class="notice-category-badge anim-item delay-1">${aviso.icone} ${aviso.categoria.toUpperCase()}</div>
-                                <h2 class="section-title anim-item delay-2">${aviso.titulo}</h2>
-                                <p class="notice-body-text anim-item delay-3" style="text-align: left;">«${aviso.texto}»</p>
-                            </div>
-                        </div>
-                    `;
-                } else if (aviso.regioes && aviso.regioes.length > 0) {
-                    // FORMATO REGION/LOCALIZAÇÃO
-                    contentHTML = `
-                        <div class="notice-category-badge anim-item delay-1">${aviso.icone} ${aviso.titulo}</div>
-                        <div class="notice-content-card anim-item delay-2">
-                            <p class="notice-body-text">«${aviso.texto}»</p>
-                            <div class="regions-pills anim-item delay-3">
-                                ${aviso.regioes.map(r => `<span class="region-pill">📍 ${r}</span>`).join('')}
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    // FORMATO APENAS TEXTO
-                    contentHTML = `
-                        <div class="notice-category-badge anim-item delay-1">${aviso.icone} ${aviso.categoria.toUpperCase()}</div>
-                        <div class="notice-content-card anim-item delay-2">
-                            <h2 class="notice-title-text">${aviso.titulo}</h2>
-                            <p class="notice-body-text">«${aviso.texto}»</p>
-                        </div>
-                    `;
-                }
-
-                slideDiv.innerHTML = contentHTML;
-                container.appendChild(slideDiv);
-            });
-        }
-
-        /* ----------------------------------------------------------------------
-           MOTOR DE EXECUÇÃO E REGRAS DE NEGÓCIO DO PAINEL
+           MOTOR DE RENDERIZAÇÃO E EXECUÇÃO DO PAINEL
            ---------------------------------------------------------------------- */
 
-        // Busca e atualização da temperatura em tempo real via Open-Meteo API
+        // Clima Real via Open-Meteo API
         async function fetchWeather() {
             try {
                 const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.lat}&longitude=${CONFIG.lon}&current_weather=true`);
@@ -1132,13 +1047,72 @@
                     document.getElementById('hdr-temp').innerText = `🌡️ ${temp}°C`;
                 }
             } catch (error) {
-                console.error("Erro ao buscar dados do clima:", error);
+                document.getElementById('hdr-temp').innerText = `🌡️ Temp. indisponível`;
             }
         }
 
-        // Renderização dos Dados no DOM
+        // Renderizar Conteúdos Adicionais Dinâmicos
+        function renderConteudosDinamicos() {
+            const container = document.getElementById('presentationContainer');
+
+            CONTEUDOS_ADICIONAIS.forEach((item) => {
+                if (!item.ativo) return;
+
+                const slideDiv = document.createElement('div');
+                slideDiv.className = 'slide';
+                slideDiv.setAttribute('data-duration', item.duracao || 8);
+
+                let contentHTML = '';
+
+                if (item.tipo === 'tabela') {
+                    contentHTML = `
+                        <h2 class="section-title anim-item delay-1">${item.titulo}</h2>
+                        <div class="table-container anim-item delay-2">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>${item.colunas.map(col => `<th>${col}</th>`).join('')}</tr>
+                                </thead>
+                                <tbody>
+                                    ${item.linhas.map(linha => `
+                                        <tr>${linha.map(cel => `<td>${cel}</td>`).join('')}</tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } else if (item.tipo === 'operacional') {
+                    let badgeClass = "notice-category-badge";
+                    if (item.statusTipo === "ENCERRADO") badgeClass += " important";
+                    contentHTML = `
+                        <div class="${badgeClass} anim-item delay-1">🚨 AVISO OPERACIONAL</div>
+                        <div class="notice-content-card anim-item delay-2">
+                            <h2 class="notice-title-text">${item.titulo}</h2>
+                            <p class="notice-body-text">«${item.texto}»</p>
+                        </div>
+                    `;
+                } else if (item.tipo === 'video') {
+                    contentHTML = `
+                        <div class="video-notice-box anim-item delay-1">
+                            <video src="${item.videoUrl}" autoplay loop muted playsinline></video>
+                        </div>
+                    `;
+                } else {
+                    let badgeClass = item.importante ? "notice-category-badge important" : "notice-category-badge";
+                    contentHTML = `
+                        <div class="${badgeClass} anim-item delay-1">${item.categoria || '📢 AVISO'}</div>
+                        <div class="notice-content-card anim-item delay-2">
+                            <h2 class="notice-title-text">${item.titulo}</h2>
+                            <p class="notice-body-text">«${item.texto}»</p>
+                        </div>
+                    `;
+                }
+
+                slideDiv.innerHTML = contentHTML;
+                container.appendChild(slideDiv);
+            });
+        }
+
         function initData() {
-            // Header e Geral
             document.getElementById('hdr-name').innerText = CONFIG.nomeGrafica;
             document.getElementById('hdr-logo').innerText = CONFIG.iconeLogo;
             document.getElementById('hdr-city').innerText = CONFIG.cidadeEstado;
@@ -1147,11 +1121,9 @@
             document.getElementById('cfg-tagline').innerText = CONFIG.tagline;
             document.getElementById('cfg-logo').innerText = CONFIG.iconeLogo;
 
-            // Busca inicial da temperatura e agendamento de atualização periódica
             fetchWeather();
-            setInterval(fetchWeather, 600000); // Atualiza a cada 10 minutos
+            setInterval(fetchWeather, 600000); // 10 min
 
-            // Avisos da Barra Inferior
             const noticeContainer = document.getElementById('notice-container');
             const noticeText = document.getElementById('cfg-notice-text');
             if (CONFIG.avisoText && CONFIG.avisoText.trim() !== "") {
@@ -1161,81 +1133,68 @@
                 noticeContainer.classList.add('hidden');
             }
 
-            // Renderizar Serviços
-            const servGrid = document.getElementById('cfg-services-grid');
-            servGrid.innerHTML = CONFIG.servicos.map((s, idx) => `
+            // Renderizar Grids Fixos
+            document.getElementById('cfg-services-grid').innerHTML = CONFIG.servicos.map((s, idx) => `
                 <div class="service-card anim-item delay-${(idx % 3) + 1}">
                     <div class="service-icon">${s.icone}</div>
                     <div class="service-title">${s.titulo}</div>
                 </div>
             `).join('');
 
-            // Renderizar Produtos
-            const prodGrid = document.getElementById('cfg-products-grid');
-            prodGrid.innerHTML = CONFIG.produtos.map((p, idx) => `
+            document.getElementById('cfg-products-grid').innerHTML = CONFIG.produtos.map((p, idx) => `
                 <div class="product-card anim-item delay-${(idx % 4) + 1}">
                     <div class="product-icon">${p.icone}</div>
                     <div class="product-title">${p.titulo}</div>
                 </div>
             `).join('');
 
-            // Renderizar Diferenciais
-            const diffGrid = document.getElementById('cfg-differentials-grid');
-            diffGrid.innerHTML = CONFIG.diferenciais.map((d, idx) => `
+            document.getElementById('cfg-differentials-grid').innerHTML = CONFIG.diferenciais.map((d, idx) => `
                 <div class="diff-item anim-item delay-${idx + 1}">
                     <div class="diff-icon">${d.icone}</div>
                     <div class="diff-title">${d.titulo}</div>
                 </div>
             `).join('');
 
-            // Promoção
             document.getElementById('cfg-promo-title').innerText = CONFIG.promocao.titulo;
             document.getElementById('cfg-promo-price').innerText = CONFIG.promocao.preco;
             document.getElementById('cfg-promo-validity').innerText = CONFIG.promocao.validade;
 
-            // Contatos
             document.getElementById('cfg-contact-whatsapp').innerText = CONFIG.contato.whatsapp;
             document.getElementById('cfg-contact-instagram').innerText = CONFIG.contato.instagram;
             document.getElementById('cfg-contact-address').innerText = CONFIG.contato.endereco;
             document.getElementById('cfg-contact-hours').innerText = CONFIG.contato.horario;
 
-            // Renderizar Novos Avisos Rotativos na Apresentação
-            renderAvisosSlides();
+            renderConteudosDinamicos();
 
-            // Atualizar Referência de Slides Globais e Criar Indicador de Pontos (Dots)
             slides = document.querySelectorAll('.slide');
             const dotsContainer = document.getElementById('slideDots');
             dotsContainer.innerHTML = Array.from(slides).map((_, i) => `<div class="dot ${i === 0 ? 'active' : ''}"></div>`).join('');
         }
 
-        // Relógio, Data e Status de Funcionamento em Tempo Real
+        // Relógio e Status em Tempo Real
         function updateClockAndStatus() {
             const now = new Date();
-
-            // Formatação de Data Extensa
             const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
             let dateStr = now.toLocaleDateString('pt-BR', options);
-            dateStr = dateStr.charAt(0).toUpperCase() + dateStr.slice(1); // Primeiras letras maiúsculas
+            dateStr = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
             document.getElementById('clock-date').innerText = dateStr;
 
-            // Formatação de Hora
             const hrs = String(now.getHours()).padStart(2, '0');
             const mins = String(now.getMinutes()).padStart(2, '0');
             const secs = String(now.getSeconds()).padStart(2, '0');
             document.getElementById('clock-time').innerText = `${hrs}:${mins}:${secs}`;
 
-            // Validação do Status (Aberto/Fechado)
-            const dayOfWeek = now.getDay(); // 0 = Domingo, 1 = Segunda...
+            const dayOfWeek = now.getDay();
             const currentTimeStr = `${hrs}:${mins}`;
             let isOpen = false;
 
-            if (dayOfWeek >= 1 && dayOfWeek <= 5) { // Segunda a Sexta
+            if (dayOfWeek >= 1 && dayOfWeek <= 5) {
                 const cfg = CONFIG.horarioFuncionamento.diasUteis;
                 if (currentTimeStr >= cfg.inicio && currentTimeStr < cfg.fim) isOpen = true;
-            } else if (dayOfWeek === 6) { // Sábado
+            } else if (dayOfWeek === 6) {
                 const cfg = CONFIG.horarioFuncionamento.sabado;
                 if (cfg.ativo && currentTimeStr >= cfg.inicio && currentTimeStr < cfg.fim) isOpen = true;
-            } else if (dayOfWeek === 0) { // Domingo
+            } else if (dayOfWeek === 0) {
                 const cfg = CONFIG.horarioFuncionamento.domingo;
                 if (cfg.ativo && currentTimeStr >= cfg.inicio && currentTimeStr < cfg.fim) isOpen = true;
             }
@@ -1252,7 +1211,7 @@
             }
         }
 
-        // Loop Automático de Slides e Progresso
+        // Sistema de Rotação Perpétua
         let currentSlide = 0;
         let slides = [];
         const progressBar = document.getElementById('progressBar');
@@ -1270,20 +1229,17 @@
             const activeSlide = slides[currentSlide];
             activeSlide.classList.add('active');
 
-            // Recarregar vídeos caso o slide atual seja do tipo vídeo
             const activeVideo = activeSlide.querySelector('video');
             if (activeVideo) {
                 activeVideo.currentTime = 0;
                 activeVideo.play().catch(() => {});
             }
 
-            // Atualizar Indicador de Pontos (Dots)
             const dots = document.querySelectorAll('.dot');
             dots.forEach((dot, idx) => {
                 dot.classList.toggle('active', idx === currentSlide);
             });
 
-            // Gerenciar Tempo do Slide Atual
             const durationSec = parseInt(activeSlide.getAttribute('data-duration')) || 8;
             startProgressBar(durationSec);
 
@@ -1310,20 +1266,14 @@
             }, 50);
         }
 
-        // Gerenciamento do Modo Tela Cheia
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Erro ao ativar Tela Cheia: ${err.message}`);
-                });
+                document.documentElement.requestFullscreen().catch(() => {});
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
+                if (document.exitFullscreen) document.exitFullscreen();
             }
         }
 
-        // Ocultar Botão Flutuante de Tela Cheia na Inatividade
         let mouseTimer;
         const fsBtn = document.getElementById('fsBtn');
         document.addEventListener('mousemove', () => {
@@ -1334,11 +1284,10 @@
             }, 3000);
         });
 
-        // Inicialização Completa e Execução Perpétua
         window.addEventListener('DOMContentLoaded', () => {
             initData();
             updateClockAndStatus();
-            setInterval(updateClockAndStatus, 1000); // Atualiza Relógio a cada segundo de forma contínua
+            setInterval(updateClockAndStatus, 1000);
             showSlide(0);
         });
     </script>
