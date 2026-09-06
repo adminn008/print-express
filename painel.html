@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Painel de Marketing - Gráfica Digital</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
@@ -11,7 +11,7 @@
            ========================================================================== */
         :root {
             --bg-color: #050505;
-            --card-bg: #0f172a;
+            --card-bg: rgba(15, 23, 42, 0.75);
             --border-color: rgba(255, 255, 255, 0.08);
             --text-primary: #ffffff;
             --text-secondary: #94a3b8;
@@ -19,8 +19,11 @@
             --accent-glow: rgba(2, 132, 199, 0.35);
             --accent-light: #38bdf8;
             --accent-gold: #f59e0b;
+            --color-open: #22c55e;
+            --color-closed: #ef4444;
             --font-main: 'Plus Jakarta Sans', -apple-system, sans-serif;
-            --slide-duration-default: 8s;
+            --header-height: min(8vh, 70px);
+            --footer-height: min(6vh, 50px);
         }
 
         * {
@@ -37,7 +40,7 @@
             background-color: var(--bg-color);
             color: var(--text-primary);
             font-family: var(--font-main);
-            overflow: hidden;
+            overflow: hidden !important; /* Trava absoluta contra scrollbars */
             position: relative;
         }
 
@@ -50,7 +53,7 @@
             width: 80vw;
             height: 80vh;
             background: radial-gradient(circle, var(--accent-glow) 0%, rgba(0,0,0,0) 70%);
-            opacity: 0.4;
+            opacity: 0.35;
             z-index: 1;
             pointer-events: none;
             filter: blur(80px);
@@ -58,49 +61,189 @@
         }
 
         @keyframes pulseGlow {
-            0% { opacity: 0.25; transform: translate(-50%, -50%) scale(0.9); }
-            100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.1); }
+            0% { opacity: 0.2; transform: translate(-50%, -50%) scale(0.9); }
+            100% { opacity: 0.45; transform: translate(-50%, -50%) scale(1.1); }
         }
 
         /* ==========================================================================
-           ESTRUTURA DE SLIDES E TRANSIÇÕES
+           BARRA SUPERIOR (HEADER) & BARRA INFERIOR (FOOTER)
            ========================================================================== */
-        .presentation-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            z-index: 2;
-        }
-
-        .slide {
+        .top-bar {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            height: var(--header-height);
+            padding: 0 3vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(180deg, rgba(5,5,5,0.9) 0%, rgba(5,5,5,0) 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: min(1.3rem, 2.5vh);
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--text-primary);
+        }
+
+        .header-brand .logo-mini {
+            font-size: min(1.6rem, 3vh);
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 2vw;
+            font-size: min(1.1rem, 2.2vh);
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: min(0.9rem, 1.8vh);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .status-badge.open {
+            color: var(--color-open);
+            border-color: rgba(34, 197, 94, 0.3);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .status-badge.closed {
+            color: var(--color-closed);
+            border-color: rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 0 10px currentColor;
+            animation: blink 1.5s infinite alternate;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        .bottom-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: var(--footer-height);
+            padding: 0 3vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(0deg, rgba(5,5,5,0.9) 0%, rgba(5,5,5,0) 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: min(0.95rem, 1.8vh);
+            color: var(--text-secondary);
+        }
+
+        .notice-ticker {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent-light);
+            font-weight: 600;
+            max-width: 60%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .notice-ticker.hidden {
+            display: none;
+        }
+
+        /* Indicador de Slide por Pontos (Dots) */
+        .slide-dots {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .dot.active {
+            background: var(--accent-light);
+            width: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* ==========================================================================
+           ESTRUTURA DE SLIDES FLEXÍVEL E ANTI-CORTE (RESPONSIVIDADE AJUSTADA)
+           ========================================================================== */
+        .presentation-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            z-index: 2;
+            padding-top: var(--header-height);
+            padding-bottom: var(--footer-height);
+            box-sizing: border-box;
+        }
+
+        .slide {
+            position: absolute;
+            top: var(--header-height);
+            left: 0;
+            width: 100%;
+            height: calc(100vh - var(--header-height) - var(--footer-height));
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 4vw 6vw;
+            padding: 2vh 4vw;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.2s ease;
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s ease;
             transform: scale(0.98);
+            box-sizing: border-box;
         }
 
         .slide.active {
             opacity: 1;
             visibility: visible;
             transform: scale(1);
-            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 1.2s ease;
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1), visibility 1s ease;
         }
 
         /* Elementos Animados Internos */
         .anim-item {
             opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(20px);
+            transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .slide.active .anim-item {
@@ -108,48 +251,48 @@
             transform: translateY(0);
         }
 
-        .slide.active .delay-1 { transition-delay: 0.2s; }
-        .slide.active .delay-2 { transition-delay: 0.4s; }
-        .slide.active .delay-3 { transition-delay: 0.6s; }
-        .slide.active .delay-4 { transition-delay: 0.8s; }
+        .slide.active .delay-1 { transition-delay: 0.15s; }
+        .slide.active .delay-2 { transition-delay: 0.3s; }
+        .slide.active .delay-3 { transition-delay: 0.45s; }
+        .slide.active .delay-4 { transition-delay: 0.6s; }
 
         /* ==========================================================================
-           ESTILOS ESPECÍFICOS DE CADA SLIDE
+           ESTILOS DOS SLIDES (OTIMIZADOS PARA VIEWPORT HEIGHT - vh)
            ========================================================================== */
 
         /* SLIDE 1: MARCA */
         .brand-logo-wrapper {
-            width: 140px;
-            height: 140px;
+            width: min(120px, 15vh);
+            height: min(120px, 15vh);
             background: linear-gradient(135deg, var(--accent-primary), var(--accent-light));
-            border-radius: 30px;
+            border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 72px;
+            font-size: min(60px, 8vh);
             box-shadow: 0 20px 40px var(--accent-glow);
-            margin-bottom: 2rem;
+            margin-bottom: 2vh;
         }
 
         .brand-name {
-            font-size: 5rem;
+            font-size: min(4.5rem, 8vh);
             font-weight: 900;
-            letter-spacing: -2px;
+            letter-spacing: -1px;
             text-transform: uppercase;
             background: linear-gradient(180deg, #ffffff 30%, var(--text-secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            line-height: 1;
-            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5vh;
             text-align: center;
         }
 
         .brand-tagline {
-            font-size: 2.2rem;
+            font-size: min(1.8rem, 3.5vh);
             color: var(--accent-light);
             font-weight: 600;
             text-align: center;
-            max-width: 900px;
+            max-width: 85vw;
             line-height: 1.3;
         }
 
@@ -157,7 +300,7 @@
         .slide-layout-split {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 4vw;
+            gap: 3vw;
             width: 100%;
             height: 100%;
             align-items: center;
@@ -166,12 +309,13 @@
         .visual-box {
             position: relative;
             width: 100%;
-            height: 70vh;
-            border-radius: 28px;
+            height: 100%;
+            max-height: 55vh;
+            border-radius: 20px;
             overflow: hidden;
             border: 1px solid var(--border-color);
             background: rgba(255, 255, 255, 0.02);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
         }
 
         .visual-box img {
@@ -181,30 +325,30 @@
         }
 
         .section-title {
-            font-size: 3.8rem;
+            font-size: min(3rem, 5.5vh);
             font-weight: 800;
             color: var(--text-primary);
-            margin-bottom: 2rem;
+            margin-bottom: 2vh;
             display: flex;
             align-items: center;
-            gap: 20px;
-            letter-spacing: -1px;
+            gap: 15px;
+            letter-spacing: -0.5px;
         }
 
         .bullet-list {
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1.5vh;
         }
 
         .bullet-item {
-            font-size: 2rem;
+            font-size: min(1.6rem, 2.8vh);
             font-weight: 600;
             color: var(--text-secondary);
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 14px;
         }
 
         .bullet-item::before {
@@ -212,50 +356,46 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 44px;
-            height: 44px;
+            width: min(36px, 4vh);
+            height: min(36px, 4vh);
             background: var(--accent-glow);
             color: var(--accent-light);
             border-radius: 50%;
-            font-size: 1.5rem;
+            font-size: min(1.2rem, 2vh);
             font-weight: 800;
             border: 1px solid var(--accent-light);
+            flex-shrink: 0;
         }
 
         /* SLIDE 3: SERVIÇOS */
         .grid-3col {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 2vw;
+            gap: 1.5vw;
             width: 100%;
-            margin-top: 2rem;
+            margin-top: 1.5vh;
         }
 
         .service-card {
-            background: rgba(15, 23, 42, 0.6);
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
-            padding: 3rem 2rem;
-            border-radius: 24px;
+            padding: 2.5vh 1.5vw;
+            border-radius: 18px;
             text-align: center;
             backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1.2rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .service-card:hover {
-            border-color: var(--accent-light);
+            gap: 1vh;
         }
 
         .service-icon {
-            font-size: 4rem;
+            font-size: min(3rem, 5vh);
             line-height: 1;
         }
 
         .service-title {
-            font-size: 2.2rem;
+            font-size: min(1.5rem, 2.6vh);
             font-weight: 700;
             color: var(--text-primary);
         }
@@ -264,29 +404,29 @@
         .grid-4col {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1.5vw;
+            gap: 1.2vw;
             width: 100%;
-            margin-top: 2rem;
+            margin-top: 1.5vh;
         }
 
         .product-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 2.5rem 1.5rem;
+            border-radius: 16px;
+            padding: 2vh 1vw;
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1rem;
+            gap: 0.8vh;
         }
 
         .product-icon {
-            font-size: 3.2rem;
+            font-size: min(2.5rem, 4.5vh);
         }
 
         .product-title {
-            font-size: 1.6rem;
+            font-size: min(1.3rem, 2.2vh);
             font-weight: 700;
             color: var(--text-primary);
         }
@@ -296,29 +436,29 @@
             display: flex;
             justify-content: space-between;
             width: 100%;
-            gap: 2vw;
-            margin-top: 3rem;
+            gap: 1.2vw;
+            margin-top: 2vh;
         }
 
         .diff-item {
             flex: 1;
             background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
             border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 3.5rem 1.5rem;
+            border-radius: 20px;
+            padding: 3vh 1vw;
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1.5rem;
+            gap: 1vh;
         }
 
         .diff-icon {
-            font-size: 4.5rem;
+            font-size: min(3.5rem, 6vh);
         }
 
         .diff-title {
-            font-size: 2.2rem;
+            font-size: min(1.6rem, 2.8vh);
             font-weight: 800;
             color: var(--accent-light);
         }
@@ -327,57 +467,56 @@
         .promo-badge {
             background: var(--accent-gold);
             color: #000;
-            font-size: 1.5rem;
+            font-size: min(1.2rem, 2vh);
             font-weight: 900;
-            padding: 0.6rem 2rem;
+            padding: 0.4rem 1.5rem;
             border-radius: 50px;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+            letter-spacing: 1.5px;
+            margin-bottom: 1.5vh;
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.25);
         }
 
         .promo-card {
-            background: linear-gradient(135deg, rgba(2, 132, 199, 0.2), rgba(15, 23, 42, 0.8));
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.25), rgba(15, 23, 42, 0.85));
             border: 2px solid var(--accent-light);
-            border-radius: 32px;
-            padding: 3.5rem 5rem;
+            border-radius: 24px;
+            padding: 3vh 3vw;
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1rem;
-            box-shadow: 0 20px 60px rgba(2, 132, 199, 0.25);
-            max-width: 900px;
-            width: 100%;
+            gap: 0.8vh;
+            box-shadow: 0 20px 50px rgba(2, 132, 199, 0.2);
+            max-width: 800px;
+            width: 90%;
         }
 
         .promo-title {
-            font-size: 3.2rem;
+            font-size: min(2.5rem, 4.5vh);
             font-weight: 800;
             color: var(--text-primary);
         }
 
         .promo-price-prefix {
-            font-size: 2rem;
+            font-size: min(1.5rem, 2.5vh);
             color: var(--text-secondary);
-            margin-top: 1rem;
         }
 
         .promo-price {
-            font-size: 7rem;
+            font-size: min(5.5rem, 10vh);
             font-weight: 900;
             color: var(--accent-light);
             line-height: 1;
-            letter-spacing: -3px;
+            letter-spacing: -2px;
         }
 
         .promo-validity {
-            font-size: 1.4rem;
+            font-size: min(1.1rem, 2vh);
             color: var(--text-secondary);
-            margin-top: 1rem;
+            margin-top: 1vh;
             border-top: 1px solid var(--border-color);
-            padding-top: 1rem;
+            padding-top: 1vh;
             width: 100%;
         }
 
@@ -385,55 +524,55 @@
         .contact-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 2vw;
+            gap: 1.5vw;
             width: 100%;
-            max-width: 1100px;
-            margin-top: 2.5rem;
+            max-width: 1000px;
+            margin-top: 1.5vh;
         }
 
         .contact-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 2rem 2.5rem;
+            border-radius: 16px;
+            padding: 1.8vh 1.8vw;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
 
         .contact-icon {
-            font-size: 3rem;
+            font-size: min(2.5rem, 4vh);
             color: var(--accent-light);
         }
 
         .contact-info label {
             display: block;
-            font-size: 1.1rem;
+            font-size: min(0.9rem, 1.6vh);
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             font-weight: 700;
         }
 
         .contact-info span {
-            font-size: 2rem;
+            font-size: min(1.5rem, 2.6vh);
             font-weight: 800;
             color: var(--text-primary);
         }
 
         /* ==========================================================================
-           CONTROLES & TELA CHEIA (DISCRETOS)
+           CONTROLES & TELA CHEIA & BARRA DE PROGRESSO
            ========================================================================== */
         .fullscreen-btn {
             position: fixed;
-            bottom: 20px;
+            bottom: calc(var(--footer-height) + 15px);
             right: 20px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.12);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
-            padding: 12px 20px;
+            padding: 10px 18px;
             border-radius: 50px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
             z-index: 9999;
@@ -452,13 +591,12 @@
             pointer-events: none;
         }
 
-        /* Barra de Progresso do Slide */
         .progress-bar-container {
             position: fixed;
-            bottom: 0;
+            bottom: var(--footer-height);
             left: 0;
             width: 100%;
-            height: 6px;
+            height: 4px;
             background: rgba(255, 255, 255, 0.05);
             z-index: 1000;
         }
@@ -470,33 +608,40 @@
             transition: width 0.1s linear;
         }
 
-        /* RESPONSIVIDADE PARA DIFERENTES PROPORÇÕES DE TELAS DA TV */
-        @media (max-width: 1200px) {
-            .brand-name { font-size: 3.8rem; }
-            .brand-tagline { font-size: 1.6rem; }
-            .section-title { font-size: 2.8rem; }
-            .bullet-item { font-size: 1.5rem; }
-            .service-title { font-size: 1.6rem; }
-            .promo-price { font-size: 5rem; }
-            .contact-info span { font-size: 1.5rem; }
+        /* AJUSTES PARA TELAS MENORES OU PROPORÇÕES ESPECÍFICAS (4:3, LAPTOPS) */
+        @media (max-height: 600px) {
+            .grid-3col { grid-template-columns: repeat(3, 1fr); }
+            .grid-4col { grid-template-columns: repeat(4, 1fr); }
+            .bullet-list { gap: 0.8vh; }
+            .service-card, .product-card, .diff-item { padding: 1.5vh 0.8vw; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Glow de Fundo Ambient -->
+    <!-- Ambient Glow Background -->
     <div class="ambient-glow"></div>
 
-    <!-- Barra de Progresso do Slide -->
-    <div class="progress-bar-container">
-        <div class="progress-bar" id="progressBar"></div>
-    </div>
+    <!-- BARRA SUPERIOR (HEADER) -->
+    <header class="top-bar">
+        <div class="header-brand">
+            <span class="logo-mini" id="hdr-logo">🖨️</span>
+            <span id="hdr-name">NOME DA GRÁFICA</span>
+        </div>
+        <div class="header-info">
+            <span id="hdr-city">Quitandinha – PR</span>
+            <span>•</span>
+            <span id="hdr-temp">🌡️ --°C</span>
+            <span>•</span>
+            <div id="hdr-status" class="status-badge open">
+                <span class="status-dot"></span>
+                <span id="hdr-status-text">ABERTO</span>
+            </div>
+        </div>
+    </header>
 
-    <!-- Botão Discreto de Tela Cheia -->
-    <button class="fullscreen-btn" id="fsBtn" onclick="toggleFullScreen()">🖥️ Modo Tela Cheia</button>
-
-    <!-- CONTAINER DA APRESENTACÃO -->
-    <div class="presentation-container">
+    <!-- CONTAINER DA APRESENTAÇÃO DE SLIDES -->
+    <main class="presentation-container">
 
         <!-- SLIDE 1: MARCA -->
         <div class="slide active" data-duration="6">
@@ -526,25 +671,19 @@
         <!-- SLIDE 3: SERVIÇOS -->
         <div class="slide" data-duration="8">
             <h2 class="section-title anim-item delay-1">🛠️ NOSSOS SERVIÇOS</h2>
-            <div class="grid-3col" id="cfg-services-grid">
-                <!-- Inserido dinamicamente via JS -->
-            </div>
+            <div class="grid-3col" id="cfg-services-grid"></div>
         </div>
 
         <!-- SLIDE 4: PRODUTOS -->
         <div class="slide" data-duration="8">
             <h2 class="section-title anim-item delay-1">📦 PRODUTOS EM DESTAQUE</h2>
-            <div class="grid-4col" id="cfg-products-grid">
-                <!-- Inserido dinamicamente via JS -->
-            </div>
+            <div class="grid-4col" id="cfg-products-grid"></div>
         </div>
 
         <!-- SLIDE 5: DIFERENCIAIS -->
         <div class="slide" data-duration="7">
             <h2 class="section-title anim-item delay-1">✨ POR QUE NOS ESCOLHER?</h2>
-            <div class="differentials-wrapper" id="cfg-differentials-grid">
-                <!-- Inserido dinamicamente via JS -->
-            </div>
+            <div class="differentials-wrapper" id="cfg-differentials-grid"></div>
         </div>
 
         <!-- SLIDE 6: PROMOÇÃO -->
@@ -560,9 +699,9 @@
 
         <!-- SLIDE 7: CHAMADA FINAL & CONTATO -->
         <div class="slide" data-duration="8">
-            <div class="brand-logo-wrapper anim-item delay-1" style="width: 90px; height: 90px; font-size: 48px; margin-bottom: 1rem;">🖨️</div>
-            <h2 class="section-title anim-item delay-1" style="font-size: 3.2rem; margin-bottom: 0.5rem;">PRECISA DE IMPRESSÃO?</h2>
-            <p style="font-size: 2rem; color: var(--accent-light); font-weight: 700;" class="anim-item delay-2">FALE COM A GENTE AGORA MESMO!</p>
+            <div class="brand-logo-wrapper anim-item delay-1" style="width: min(80px, 10vh); height: min(80px, 10vh); font-size: min(40px, 5vh); margin-bottom: 1vh;">🖨️</div>
+            <h2 class="section-title anim-item delay-1" style="font-size: min(2.8rem, 4.5vh); margin-bottom: 0.5vh;">PRECISA DE IMPRESSÃO?</h2>
+            <p style="font-size: min(1.6rem, 2.8vh); color: var(--accent-light); font-weight: 700;" class="anim-item delay-2">FALE COM A GENTE AGORA MESMO!</p>
             
             <div class="contact-grid anim-item delay-3">
                 <div class="contact-card">
@@ -596,22 +735,56 @@
             </div>
         </div>
 
+    </main>
+
+    <!-- BARRA INFERIOR (FOOTER) -->
+    <footer class="bottom-bar">
+        <div class="notice-ticker" id="notice-container">
+            <span>📢</span>
+            <span id="cfg-notice-text">Hoje atendemos normalmente. Conte com a nossa equipe!</span>
+        </div>
+        <div class="slide-dots" id="slideDots"></div>
+        <div id="hdr-clock" style="font-weight: 700; color: var(--text-primary);">
+            <span id="clock-date">Domingo, 6 de setembro de 2026</span> • <span id="clock-time" style="color: var(--accent-light);">00:00:00</span>
+        </div>
+    </footer>
+
+    <!-- Barra de Progresso do Tempo do Slide -->
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
     </div>
 
+    <!-- Botão Discreto de Tela Cheia -->
+    <button class="fullscreen-btn" id="fsBtn" onclick="toggleFullScreen()">🖥️ Modo Tela Cheia</button>
+
     <!-- ==========================================================================
-       ÁREA DE CONFIGURAÇÃO FÁCIL & LÓGICA DE FUNCIONAMENTO
+       ÁREA DE CONFIGURAÇÃO & LÓGICA DE FUNCIONAMENTO CONTINUO
        ========================================================================== -->
     <script>
         /* ----------------------------------------------------------------------
            ⚙️ CENTRAL DE CONFIGURAÇÃO (EDITE APENAS OS DADOS ABAIXO)
            ---------------------------------------------------------------------- */
         const CONFIG = {
-            // Dados da Marca
+            // Identificação da Loja & Localização
             nomeGrafica: "PRINT EXPRESS",
             tagline: "Impressão, criação e soluções rápidas para o seu dia a dia.",
-            iconeLogo: "🖨️", // Pode ser Emoji ou texto curto
+            iconeLogo: "🖨️",
+            cidadeEstado: "Quitandinha – PR",
 
-            // Serviços (Slide 3) - Adicione ou remova conforme necessário
+            // Clima (Insira o valor direto OU deixe null/vazio para mostrar 'Temperatura indisponível' ou integrar API)
+            temperaturaManual: "18°C", // Ex: "18°C" ou null
+
+            // Horário de Funcionamento para o Status Automático (Formato 24h)
+            horarioFuncionamento: {
+                diasUteis: { inicio: "08:00", fim: "18:00" }, // Segunda a Sexta
+                sabado: { ativo: true, inicio: "08:00", fim: "12:00" },
+                domingo: { ativo: false } // Fechado no Domingo
+            },
+
+            // Área de Avisos Importantes (Barra Inferior)
+            avisoText: "Hoje atendemos normalmente. Traga seu arquivo no pen-drive ou envie pelo WhatsApp!", 
+
+            // Serviços (Slide 3)
             servicos: [
                 { icone: "📄", titulo: "Documentos" },
                 { icone: "💼", titulo: "Currículos" },
@@ -621,7 +794,7 @@
                 { icone: "📦", titulo: "Personalizados" }
             ],
 
-            // Produtos (Slide 4) - Cuidado para exibir apenas o que a loja vende
+            // Produtos (Slide 4)
             produtos: [
                 { icone: "🎴", titulo: "Cartões de Visita" },
                 { icone: "📜", titulo: "Panfletos / Banners" },
@@ -649,7 +822,7 @@
                 validade: "Condição válida para volumes acima de 50 cópias."
             },
 
-            // Contatos e Informações da Loja (Slide 7)
+            // Contatos (Slide 7)
             contato: {
                 whatsapp: "(41) 99968-2836",
                 instagram: "@printexpress",
@@ -659,14 +832,37 @@
         };
 
         /* ----------------------------------------------------------------------
-           LÓGICA DO MOTOR DA APRESENTACÃO (NÃO ALTERAR ABAIXO)
+           MOTOR DE EXECUÇÃO E REGRAS DE NEGÓCIO DO PAINEL
            ---------------------------------------------------------------------- */
-        
-        // Renderizar Configurações no DOM
+
+        // Renderização dos Dados no DOM
         function initData() {
+            // Header e Geral
+            document.getElementById('hdr-name').innerText = CONFIG.nomeGrafica;
+            document.getElementById('hdr-logo').innerText = CONFIG.iconeLogo;
+            document.getElementById('hdr-city').innerText = CONFIG.cidadeEstado;
+            
             document.getElementById('cfg-brand-name').innerText = CONFIG.nomeGrafica;
             document.getElementById('cfg-tagline').innerText = CONFIG.tagline;
             document.getElementById('cfg-logo').innerText = CONFIG.iconeLogo;
+
+            // Temperatura
+            const tempEl = document.getElementById('hdr-temp');
+            if (CONFIG.temperaturaManual) {
+                tempEl.innerText = `🌡️ ${CONFIG.temperaturaManual}`;
+            } else {
+                tempEl.innerText = "🌡️ Temperatura indisponível";
+            }
+
+            // Avisos
+            const noticeContainer = document.getElementById('notice-container');
+            const noticeText = document.getElementById('cfg-notice-text');
+            if (CONFIG.avisoText && CONFIG.avisoText.trim() !== "") {
+                noticeText.innerText = CONFIG.avisoText;
+                noticeContainer.classList.remove('hidden');
+            } else {
+                noticeContainer.classList.add('hidden');
+            }
 
             // Renderizar Serviços
             const servGrid = document.getElementById('cfg-services-grid');
@@ -705,9 +901,57 @@
             document.getElementById('cfg-contact-instagram').innerText = CONFIG.contato.instagram;
             document.getElementById('cfg-contact-address').innerText = CONFIG.contato.endereco;
             document.getElementById('cfg-contact-hours').innerText = CONFIG.contato.horario;
+
+            // Criar Pontos Indicadores de Slide (Dots)
+            const dotsContainer = document.getElementById('slideDots');
+            dotsContainer.innerHTML = Array.from(slides).map((_, i) => `<div class="dot ${i === 0 ? 'active' : ''}"></div>`).join('');
         }
 
-        // Sistema de Troca de Slides Automática
+        // Relógio, Data e Status de Funcionamento em Tempo Real
+        function updateClockAndStatus() {
+            const now = new Date();
+
+            // Formatação de Data Extensa
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            let dateStr = now.toLocaleDateString('pt-BR', options);
+            dateStr = dateStr.charAt(0).toUpperCase() + dateStr.slice(1); // Primeiras letras maiúsculas
+            document.getElementById('clock-date').innerText = dateStr;
+
+            // Formatação de Hora
+            const hrs = String(now.getHours()).padStart(2, '0');
+            const mins = String(now.getMinutes()).padStart(2, '0');
+            const secs = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock-time').innerText = `${hrs}:${mins}:${secs}`;
+
+            // Validação do Status (Aberto/Fechado)
+            const dayOfWeek = now.getDay(); // 0 = Domingo, 1 = Segunda...
+            const currentTimeStr = `${hrs}:${mins}`;
+            let isOpen = false;
+
+            if (dayOfWeek >= 1 && dayOfWeek <= 5) { // Segunda a Sexta
+                const cfg = CONFIG.horarioFuncionamento.diasUteis;
+                if (currentTimeStr >= cfg.inicio && currentTimeStr < cfg.fim) isOpen = true;
+            } else if (dayOfWeek === 6) { // Sábado
+                const cfg = CONFIG.horarioFuncionamento.sabado;
+                if (cfg.ativo && currentTimeStr >= cfg.inicio && currentTimeStr < cfg.fim) isOpen = true;
+            } else if (dayOfWeek === 0) { // Domingo
+                const cfg = CONFIG.horarioFuncionamento.domingo;
+                if (cfg.ativo && currentTimeStr >= cfg.inicio && currentTimeStr < cfg.fim) isOpen = true;
+            }
+
+            const statusBadge = document.getElementById('hdr-status');
+            const statusText = document.getElementById('hdr-status-text');
+
+            if (isOpen) {
+                statusBadge.className = "status-badge open";
+                statusText.innerText = "ABERTO";
+            } else {
+                statusBadge.className = "status-badge closed";
+                statusText.innerText = "FECHADO";
+            }
+        }
+
+        // Loop Automático de Slides e Progresso
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const progressBar = document.getElementById('progressBar');
@@ -715,9 +959,7 @@
         let progressInterval;
 
         function showSlide(index) {
-            slides.forEach((slide, i) => {
-                slide.classList.remove('active');
-            });
+            slides.forEach((slide) => slide.classList.remove('active'));
 
             currentSlide = index;
             if (currentSlide >= slides.length) currentSlide = 0;
@@ -725,11 +967,16 @@
             const activeSlide = slides[currentSlide];
             activeSlide.classList.add('active');
 
-            // Obter duração do slide atual
+            // Atualizar Indicador de Pontos (Dots)
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === currentSlide);
+            });
+
+            // Gerenciar Tempo do Slide Atual
             const durationSec = parseInt(activeSlide.getAttribute('data-duration')) || 8;
             startProgressBar(durationSec);
 
-            // Programar próximo slide
             clearTimeout(slideTimeout);
             slideTimeout = setTimeout(() => {
                 showSlide(currentSlide + 1);
@@ -753,11 +1000,11 @@
             }, 50);
         }
 
-        // Suporte para Tela Cheia (Fullscreen API)
+        // Gerenciamento do Modo Tela Cheia
         function toggleFullScreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Erro ao ativar tela cheia: ${err.message}`);
+                    console.log(`Erro ao ativar Tela Cheia: ${err.message}`);
                 });
             } else {
                 if (document.exitFullscreen) {
@@ -766,21 +1013,22 @@
             }
         }
 
-        // Esconder botão de Tela Cheia após alguns segundos sem mover o mouse
+        // Ocultar Botão Flutuante de Tela Cheia na Inatividade
         let mouseTimer;
         const fsBtn = document.getElementById('fsBtn');
-
         document.addEventListener('mousemove', () => {
             fsBtn.classList.remove('fade-out');
             clearTimeout(mouseTimer);
             mouseTimer = setTimeout(() => {
                 fsBtn.classList.add('fade-out');
-            }, 4000);
+            }, 3000);
         });
 
-        // Inicialização
+        // Inicialização Completa e Execução Perpétua
         window.addEventListener('DOMContentLoaded', () => {
             initData();
+            updateClockAndStatus();
+            setInterval(updateClockAndStatus, 1000); // Atualiza Relógio a cada segundo de forma contínua
             showSlide(0);
         });
     </script>
