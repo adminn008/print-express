@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central de Controle — Gestão da Gráfica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Firebase SDKs (v9 Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-check-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen pb-12">
+
+    <!-- TELA DE LOGIN (Autenticação Segura) -->
+    <div id="login-screen" class="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+            <div class="flex items-center gap-3 justify-center mb-6 text-indigo-600">
+                <i data-lucide="shield-check" class="w-10 h-10"></i>
+                <h1 class="text-2xl font-black tracking-tight text-gray-900">Acesso Restrito</h1>
+            </div>
+            <p class="text-sm text-gray-500 text-center mb-6">Entre com suas credenciais para gerenciar a TV da Gráfica.</p>
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">E-mail</label>
+                    <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Senha</label>
+                    <input type="password" id="login-password" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition">Entrar no Painel</button>
+            </form>
+            <p id="login-error" class="text-red-500 text-xs font-bold mt-4 text-center hidden"></p>
+        </div>
+    </div>
+
+    <!-- PAINEL ADMINISTRATIVO PRINCIPAL -->
+    <div id="admin-panel" class="hidden max-w-5xl mx-auto px-4 pt-6">
+        
+        <!-- Cabeçalho do Painel -->
+        <header class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 mb-6 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-100 p-3 rounded-xl text-indigo-600">
+                    <i data-lucide="sliders" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">Central de Controle</h1>
+                    <p class="text-xs text-gray-500">Gerenciamento dinâmico em tempo real para a TV</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Firebase Conectado
+                </span>
+                <button onclick="handleLogout()" class="p-2 text-gray-400 hover:text-red-600 transition" title="Sair">
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- STATUS OPERACIONAL RÁPIDO -->
+        <section class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 mb-6">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4 flex items-center gap-2">
+                <i data-lucide="activity" class="w-4 h-4 text-indigo-600"></i> Status Atual da Gráfica na TV
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button onclick="setStatus('normal', '🟢 Atendimento Normal')" class="p-4 rounded-xl border text-left hover:border-emerald-500 bg-emerald-50/50 border-emerald-200 text-emerald-900 flex items-center justify-between">
+                    <span class="font-bold text-sm">🟢 Normal</span>
+                    <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i>
+                </button>
+                <button onclick="setStatus('alerta', '🟡 Movimento Elevado')" class="p-4 rounded-xl border text-left hover:border-amber-500 bg-amber-50/50 border-amber-200 text-amber-900 flex items-center justify-between">
+                    <span class="font-bold text-sm">🟡 Movimento Elevado</span>
+                    <i data-lucide="alert-circle" class="w-5 h-5 text-amber-600"></i>
+                </button>
+                <button onclick="setStatus('urgente', '🔴 Manutenção / Fechado')" class="p-4 rounded-xl border text-left hover:border-rose-500 bg-rose-50/50 border-rose-200 text-rose-900 flex items-center justify-between">
+                    <span class="font-bold text-sm">🔴 Indisponível</span>
+                    <i data-lucide="x-circle" class="w-5 h-5 text-rose-600"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- NAVEGAÇÃO DE ABAS -->
+        <div class="flex gap-2 border-b border-gray-200 mb-6 overflow-x-auto pb-2">
+            <button onclick="switchTab('pedidos')" id="tab-pedidos" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white shadow-sm whitespace-nowrap">📦 Pedidos</button>
+            <button onclick="switchTab('avisos')" id="tab-avisos" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-gray-600 hover:bg-gray-50 whitespace-nowrap">📢 Avisos Exibidos</button>
+            <button onclick="switchTab('config')" id="tab-config" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-gray-600 hover:bg-gray-50 whitespace-nowrap">⚙️ Configurações Gerais</button>
+        </div>
+
+        <!-- ABA 1: GERENCIAMENTO DE PEDIDOS -->
+        <section id="sec-pedidos" class="space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+                <h3 class="text-base font-bold text-gray-900 mb-4">Adicionar / Atualizar Pedido na Fila</h3>
+                <form onsubmit="savePedido(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Nº do Pedido</label>
+                        <input type="text" id="ped-numero" placeholder="Ex: #0045" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Cliente / Identificador</label>
+                        <input type="text" id="ped-cliente" placeholder="Ex: Maria Rocha" class="w-full px-4 py-2.5 rounded-xl border border-gray-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Status na TV</label>
+                        <select id="ped-status" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 font-bold">
+                            <option value="pronto">🟢 PRONTO</option>
+                            <option value="producao">🟡 EM PRODUÇÃO</option>
+                            <option value="aguardando">🟠 AGUARDANDO</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow transition">Salvar Pedido</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="font-bold text-gray-900">Lista de Pedidos Ativos na TV</h3>
+                    <span id="count-pedidos" class="text-xs font-bold bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full">0 Pedidos</span>
+                </div>
+                <div id="admin-pedidos-list" class="divide-y divide-gray-100">
+                    <!-- Lista dinâmica de pedidos com botões de ação rápida -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA 2: GERENCIAMENTO DE AVISOS -->
+        <section id="sec-avisos" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+                <h3 class="text-base font-bold text-gray-900 mb-4">Novo Aviso ou Conteúdo Dinâmico</h3>
+                <form onsubmit="saveAviso(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Categoria</label>
+                            <select id="avi-categoria" class="w-full px-4 py-2.5 rounded-xl border border-gray-300">
+                                <option value="📢 Aviso">📢 Aviso</option>
+                                <option value="⚠️ Importante">⚠️ Importante</option>
+                                <option value="🏷️ Promoção">🏷️ Promoção</option>
+                                <option value="📊 Tabela">📊 Tabela de Prazos</option>
+                                <option value="🎥 Vídeo">🎥 Vídeo</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Prioridade</label>
+                            <select id="avi-prioridade" class="w-full px-4 py-2.5 rounded-xl border border-gray-300">
+                                <option value="normal">Normal</option>
+                                <option value="alta">Alta (Prioritário + Som)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Duração na Tela (s)</label>
+                            <input type="number" id="avi-duracao" value="10" min="5" max="60" class="w-full px-4 py-2.5 rounded-xl border border-gray-300">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Título do Aviso</label>
+                        <input type="text" id="avi-titulo" placeholder="Ex: Manutenção Programada de Maquinário" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Texto Principal</label>
+                        <textarea id="avi-texto" rows="3" placeholder="Mensagem detalhada que será lida na TV..." class="w-full px-4 py-2.5 rounded-xl border border-gray-300"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">URL da Imagem (Opcional)</label>
+                        <input type="url" id="avi-imagem" placeholder="https://..." class="w-full px-4 py-2.5 rounded-xl border border-gray-300">
+                    </div>
+
+                    <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow transition">Publicar Aviso na TV</button>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <h3 class="font-bold text-gray-900">Avisos Ativos na Rotação</h3>
+                </div>
+                <div id="admin-avisos-list" class="divide-y divide-gray-100">
+                    <!-- Lista de avisos gerenciáveis -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA 3: CONFIGURAÇÕES -->
+        <section id="sec-config" class="hidden bg-white rounded-2xl p-6 shadow-sm border border-gray-200 space-y-4">
+            <h3 class="text-base font-bold text-gray-900 mb-4">Informações da Gráfica e Exibição</h3>
+            <form onsubmit="saveConfig(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Nome da Gráfica</label>
+                    <input type="text" id="cfg-nome" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Cidade para Previsão do Tempo</label>
+                    <input type="text" id="cfg-cidade" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300">
+                </div>
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" id="cfg-som" class="w-5 h-5 text-indigo-600 rounded">
+                    <label for="cfg-som" class="text-sm font-bold text-gray-700">Ativar Efeitos Sonoros para Avisos de Alta Prioridade</label>
+                </div>
+                <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow transition">Salvar Configurações</button>
+            </form>
+        </section>
+
+    </div>
+
+    <script>
+        // =========================================================================
+        // CONFIGURAÇÃO DO FIREBASE
+        // =========================================================================
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY_AQUI",
+            authDomain: "SEU_PROJETO.firebaseapp.com",
+            projectId: "SEU_PROJETO_ID",
+            storageBucket: "SEU_PROJETO.appspot.com",
+            messagingSenderId: "SEU_SENDER_ID",
+            appId: "SEU_APP_ID"
+        };
+
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Autenticação Realtime
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                initAdminListeners();
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('admin-panel').classList.add('hidden');
+            }
+        });
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+            try {
+                await auth.signInWithEmailAndPassword(email, pass);
+            } catch (err) {
+                const errBox = document.getElementById('login-error');
+                errBox.innerText = "Falha no login: Credenciais inválidas.";
+                errBox.classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            auth.signOut();
+        }
+
+        // =========================================================================
+        // GESTÃO DINÂMICA
+        // =========================================================================
+        function switchTab(tab) {
+            ['pedidos', 'avisos', 'config'].forEach(t => {
+                document.getElementById(`sec-${t}`).classList.add('hidden');
+                document.getElementById(`tab-${t}`).className = "px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-gray-600 hover:bg-gray-50 whitespace-nowrap";
+            });
+            document.getElementById(`sec-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}`).className = "px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white shadow-sm whitespace-nowrap";
+        }
+
+        function setStatus(tipo, texto) {
+            db.collection("configuracoes").doc("status").set({ tipo, texto });
+        }
+
+        function savePedido(e) {
+            e.preventDefault();
+            const numero = document.getElementById('ped-numero').value;
+            const cliente = document.getElementById('ped-cliente').value;
+            const status = document.getElementById('ped-status').value;
+
+            db.collection("pedidos").doc(numero).set({
+                numero, cliente, status, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                document.getElementById('ped-numero').value = '';
+                document.getElementById('ped-cliente').value = '';
+            });
+        }
+
+        function deletePedido(id) {
+            db.collection("pedidos").doc(id).delete();
+        }
+
+        function saveAviso(e) {
+            e.preventDefault();
+            const categoria = document.getElementById('avi-categoria').value;
+            const prioridade = document.getElementById('avi-prioridade').value;
+            const duracao = parseInt(document.getElementById('avi-duracao').value);
+            const titulo = document.getElementById('avi-titulo').value;
+            const texto = document.getElementById('avi-texto').value;
+            const imagem = document.getElementById('avi-imagem').value;
+
+            const formato = imagem ? 'imagem' : (categoria.includes('Tabela') ? 'tabela' : 'simples');
+
+            db.collection("avisos").add({
+                categoria, prioridade, duracao, titulo, texto, imagem, formato, ativo: true, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                document.getElementById('avi-titulo').value = '';
+                document.getElementById('avi-texto').value = '';
+                document.getElementById('avi-imagem').value = '';
+            });
+        }
+
+        function deleteAviso(id) {
+            db.collection("avisos").doc(id).delete();
+        }
+
+        function saveConfig(e) {
+            e.preventDefault();
+            const nomeGrafica = document.getElementById('cfg-nome').value;
+            const cidade = document.getElementById('cfg-cidade').value;
+            const somAtivado = document.getElementById('cfg-som').checked;
+
+            db.collection("configuracoes").doc("geral").set({ nomeGrafica, cidade, somAtivado });
+        }
+
+        function initAdminListeners() {
+            db.collection("pedidos").onSnapshot(snapshot => {
+                const list = document.getElementById('admin-pedidos-list');
+                document.getElementById('count-pedidos').innerText = `${snapshot.size} Pedidos`;
+                list.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const p = doc.data();
+                    const item = document.createElement('div');
+                    item.className = "p-4 flex justify-between items-center";
+                    item.innerHTML = `
+                        <div>
+                            <span class="font-bold text-gray-900">#${p.numero}</span> - <span class="text-sm text-gray-600">${p.cliente || 'Sem nome'}</span>
+                            <span class="ml-2 px-2 py-0.5 text-xs font-bold rounded uppercase ${p.status === 'pronto' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${p.status}</span>
+                        </div>
+                        <button onclick="deletePedido('${doc.id}')" class="text-red-500 hover:text-red-700 text-sm font-bold">Excluir</button>
+                    `;
+                    list.appendChild(item);
+                });
+            });
+
+            db.collection("avisos").onSnapshot(snapshot => {
+                const list = document.getElementById('admin-avisos-list');
+                list.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const a = doc.data();
+                    const item = document.createElement('div');
+                    item.className = "p-4 flex justify-between items-center";
+                    item.innerHTML = `
+                        <div>
+                            <span class="text-xs font-bold text-indigo-600">${a.categoria}</span>
+                            <h4 class="font-bold text-gray-900">${a.titulo}</h4>
+                        </div>
+                        <button onclick="deleteAviso('${doc.id}')" class="text-red-500 hover:text-red-700 text-sm font-bold">Remover</button>
+                    `;
+                    list.appendChild(item);
+                });
+            });
+
+            db.collection("configuracoes").doc("geral").get().then(doc => {
+                if (doc.exists) {
+                    const d = doc.data();
+                    document.getElementById('cfg-nome').value = d.nomeGrafica || '';
+                    document.getElementById('cfg-cidade').value = d.cidade || '';
+                    document.getElementById('cfg-som').checked = d.somAtivado ?? true;
+                }
+            });
+        }
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>
