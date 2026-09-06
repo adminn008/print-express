@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Marketing - Gráfica Digital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           CONFIGURAÇÕES DE ESTILO E DESIGN SYSTEM (PRETO / DARK ELEGANTE)
+           ========================================================================== */
+        :root {
+            --bg-color: #050505;
+            --card-bg: #0f172a;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --accent-primary: #0284c7;
+            --accent-glow: rgba(2, 132, 199, 0.35);
+            --accent-light: #38bdf8;
+            --accent-gold: #f59e0b;
+            --font-main: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            --slide-duration-default: 8s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ambient Lighting Background */
+        .ambient-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw;
+            height: 80vh;
+            background: radial-gradient(circle, var(--accent-glow) 0%, rgba(0,0,0,0) 70%);
+            opacity: 0.4;
+            z-index: 1;
+            pointer-events: none;
+            filter: blur(80px);
+            animation: pulseGlow 10s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulseGlow {
+            0% { opacity: 0.25; transform: translate(-50%, -50%) scale(0.9); }
+            100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* ==========================================================================
+           ESTRUTURA DE SLIDES E TRANSIÇÕES
+           ========================================================================== */
+        .presentation-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4vw 6vw;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.2s ease;
+            transform: scale(0.98);
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 1.2s ease;
+        }
+
+        /* Elementos Animados Internos */
+        .anim-item {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide.active .anim-item {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide.active .delay-1 { transition-delay: 0.2s; }
+        .slide.active .delay-2 { transition-delay: 0.4s; }
+        .slide.active .delay-3 { transition-delay: 0.6s; }
+        .slide.active .delay-4 { transition-delay: 0.8s; }
+
+        /* ==========================================================================
+           ESTILOS ESPECÍFICOS DE CADA SLIDE
+           ========================================================================== */
+
+        /* SLIDE 1: MARCA */
+        .brand-logo-wrapper {
+            width: 140px;
+            height: 140px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-light));
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 72px;
+            box-shadow: 0 20px 40px var(--accent-glow);
+            margin-bottom: 2rem;
+        }
+
+        .brand-name {
+            font-size: 5rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #ffffff 30%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .brand-tagline {
+            font-size: 2.2rem;
+            color: var(--accent-light);
+            font-weight: 600;
+            text-align: center;
+            max-width: 900px;
+            line-height: 1.3;
+        }
+
+        /* SLIDE 2: IMPRESSÃO */
+        .slide-layout-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4vw;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+        }
+
+        .visual-box {
+            position: relative;
+            width: 100%;
+            height: 70vh;
+            border-radius: 28px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.02);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        .visual-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .section-title {
+            font-size: 3.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            letter-spacing: -1px;
+        }
+
+        .bullet-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .bullet-item {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .bullet-item::before {
+            content: "✓";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: var(--accent-glow);
+            color: var(--accent-light);
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: 800;
+            border: 1px solid var(--accent-light);
+        }
+
+        /* SLIDE 3: SERVIÇOS */
+        .grid-3col {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2vw;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .service-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            padding: 3rem 2rem;
+            border-radius: 24px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .service-card:hover {
+            border-color: var(--accent-light);
+        }
+
+        .service-icon {
+            font-size: 4rem;
+            line-height: 1;
+        }
+
+        .service-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* SLIDE 4: PRODUTOS */
+        .grid-4col {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5vw;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .product-icon {
+            font-size: 3.2rem;
+        }
+
+        .product-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* SLIDE 5: DIFERENCIAIS */
+        .differentials-wrapper {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            gap: 2vw;
+            margin-top: 3rem;
+        }
+
+        .diff-item {
+            flex: 1;
+            background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3.5rem 1.5rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .diff-icon {
+            font-size: 4.5rem;
+        }
+
+        .diff-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--accent-light);
+        }
+
+        /* SLIDE 6: PROMOÇÃO */
+        .promo-badge {
+            background: var(--accent-gold);
+            color: #000;
+            font-size: 1.5rem;
+            font-weight: 900;
+            padding: 0.6rem 2rem;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .promo-card {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.2), rgba(15, 23, 42, 0.8));
+            border: 2px solid var(--accent-light);
+            border-radius: 32px;
+            padding: 3.5rem 5rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 20px 60px rgba(2, 132, 199, 0.25);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .promo-title {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .promo-price-prefix {
+            font-size: 2rem;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+        }
+
+        .promo-price {
+            font-size: 7rem;
+            font-weight: 900;
+            color: var(--accent-light);
+            line-height: 1;
+            letter-spacing: -3px;
+        }
+
+        .promo-validity {
+            font-size: 1.4rem;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+            width: 100%;
+        }
+
+        /* SLIDE 7: CONTATO */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2vw;
+            width: 100%;
+            max-width: 1100px;
+            margin-top: 2.5rem;
+        }
+
+        .contact-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .contact-icon {
+            font-size: 3rem;
+            color: var(--accent-light);
+        }
+
+        .contact-info label {
+            display: block;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .contact-info span {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        /* ==========================================================================
+           CONTROLES & TELA CHEIA (DISCRETOS)
+           ========================================================================== */
+        .fullscreen-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+            transition: opacity 0.5s ease, transform 0.2s ease;
+            opacity: 1;
+        }
+
+        .fullscreen-btn:hover {
+            background: var(--accent-primary);
+            transform: scale(1.05);
+        }
+
+        .fullscreen-btn.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Barra de Progresso do Slide */
+        .progress-bar-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-light));
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        /* RESPONSIVIDADE PARA DIFERENTES PROPORÇÕES DE TELAS DA TV */
+        @media (max-width: 1200px) {
+            .brand-name { font-size: 3.8rem; }
+            .brand-tagline { font-size: 1.6rem; }
+            .section-title { font-size: 2.8rem; }
+            .bullet-item { font-size: 1.5rem; }
+            .service-title { font-size: 1.6rem; }
+            .promo-price { font-size: 5rem; }
+            .contact-info span { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Glow de Fundo Ambient -->
+    <div class="ambient-glow"></div>
+
+    <!-- Barra de Progresso do Slide -->
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Botão Discreto de Tela Cheia -->
+    <button class="fullscreen-btn" id="fsBtn" onclick="toggleFullScreen()">🖥️ Modo Tela Cheia</button>
+
+    <!-- CONTAINER DA APRESENTACÃO -->
+    <div class="presentation-container">
+
+        <!-- SLIDE 1: MARCA -->
+        <div class="slide active" data-duration="6">
+            <div class="brand-logo-wrapper anim-item delay-1" id="cfg-logo">🖨️</div>
+            <h1 class="brand-name anim-item delay-2" id="cfg-brand-name">NOME DA GRÁFICA</h1>
+            <p class="brand-tagline anim-item delay-3" id="cfg-tagline">Impressão, criação e soluções de alta qualidade para o seu dia a dia.</p>
+        </div>
+
+        <!-- SLIDE 2: IMPRESSÃO -->
+        <div class="slide" data-duration="8">
+            <div class="slide-layout-split">
+                <div class="visual-box anim-item delay-1">
+                    <img src="https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?auto=format&fit=crop&w=1200&q=80" alt="Impressão de alta qualidade">
+                </div>
+                <div>
+                    <h2 class="section-title anim-item delay-1">🖨️ IMPRESSÃO</h2>
+                    <ul class="bullet-list">
+                        <li class="bullet-item anim-item delay-2">Preto e Branco & Colorido</li>
+                        <li class="bullet-item anim-item delay-3">Impressão Frente e Verso</li>
+                        <li class="bullet-item anim-item delay-4">Diversos Formatos e Papéis</li>
+                        <li class="bullet-item anim-item delay-4">Alta Definição e Nitidez</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: SERVIÇOS -->
+        <div class="slide" data-duration="8">
+            <h2 class="section-title anim-item delay-1">🛠️ NOSSOS SERVIÇOS</h2>
+            <div class="grid-3col" id="cfg-services-grid">
+                <!-- Inserido dinamicamente via JS -->
+            </div>
+        </div>
+
+        <!-- SLIDE 4: PRODUTOS -->
+        <div class="slide" data-duration="8">
+            <h2 class="section-title anim-item delay-1">📦 PRODUTOS EM DESTAQUE</h2>
+            <div class="grid-4col" id="cfg-products-grid">
+                <!-- Inserido dinamicamente via JS -->
+            </div>
+        </div>
+
+        <!-- SLIDE 5: DIFERENCIAIS -->
+        <div class="slide" data-duration="7">
+            <h2 class="section-title anim-item delay-1">✨ POR QUE NOS ESCOLHER?</h2>
+            <div class="differentials-wrapper" id="cfg-differentials-grid">
+                <!-- Inserido dinamicamente via JS -->
+            </div>
+        </div>
+
+        <!-- SLIDE 6: PROMOÇÃO -->
+        <div class="slide" data-duration="8">
+            <div class="promo-badge anim-item delay-1">🔥 Oferta Especial</div>
+            <div class="promo-card anim-item delay-2">
+                <h3 class="promo-title" id="cfg-promo-title">Impressão Colorida A4</h3>
+                <div class="promo-price-prefix">a partir de</div>
+                <div class="promo-price" id="cfg-promo-price">R$ 0,99</div>
+                <div class="promo-validity" id="cfg-promo-validity">Validade: Até o final do mês ou enquanto durar o estoque.</div>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: CHAMADA FINAL & CONTATO -->
+        <div class="slide" data-duration="8">
+            <div class="brand-logo-wrapper anim-item delay-1" style="width: 90px; height: 90px; font-size: 48px; margin-bottom: 1rem;">🖨️</div>
+            <h2 class="section-title anim-item delay-1" style="font-size: 3.2rem; margin-bottom: 0.5rem;">PRECISA DE IMPRESSÃO?</h2>
+            <p style="font-size: 2rem; color: var(--accent-light); font-weight: 700;" class="anim-item delay-2">FALE COM A GENTE AGORA MESMO!</p>
+            
+            <div class="contact-grid anim-item delay-3">
+                <div class="contact-card">
+                    <div class="contact-icon">📱</div>
+                    <div class="contact-info">
+                        <label>WhatsApp</label>
+                        <span id="cfg-contact-whatsapp">(00) 00000-0000</span>
+                    </div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">📸</div>
+                    <div class="contact-info">
+                        <label>Instagram</label>
+                        <span id="cfg-contact-instagram">@suagrafica</span>
+                    </div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">📍</div>
+                    <div class="contact-info">
+                        <label>Endereço</label>
+                        <span id="cfg-contact-address">Rua Principal, 123 - Centro</span>
+                    </div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">⏰</div>
+                    <div class="contact-info">
+                        <label>Atendimento</label>
+                        <span id="cfg-contact-hours">Seg a Sex: 08h às 18h</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ==========================================================================
+       ÁREA DE CONFIGURAÇÃO FÁCIL & LÓGICA DE FUNCIONAMENTO
+       ========================================================================== -->
+    <script>
+        /* ----------------------------------------------------------------------
+           ⚙️ CENTRAL DE CONFIGURAÇÃO (EDITE APENAS OS DADOS ABAIXO)
+           ---------------------------------------------------------------------- */
+        const CONFIG = {
+            // Dados da Marca
+            nomeGrafica: "PRINT EXPRESS",
+            tagline: "Impressão, criação e soluções rápidas para o seu dia a dia.",
+            iconeLogo: "🖨️", // Pode ser Emoji ou texto curto
+
+            // Serviços (Slide 3) - Adicione ou remova conforme necessário
+            servicos: [
+                { icone: "📄", titulo: "Documentos" },
+                { icone: "💼", titulo: "Currículos" },
+                { icone: "🎨", titulo: "Design Gráfico" },
+                { icone: "🖨️", titulo: "Impressões" },
+                { icone: "📑", titulo: "Encadernação" },
+                { icone: "📦", titulo: "Personalizados" }
+            ],
+
+            // Produtos (Slide 4) - Cuidado para exibir apenas o que a loja vende
+            produtos: [
+                { icone: "🎴", titulo: "Cartões de Visita" },
+                { icone: "📜", titulo: "Panfletos / Banners" },
+                { icone: "🏷️", titulo: "Adesivos / Etiquetas" },
+                { icone: "✉️", titulo: "Convites Elegantes" },
+                { icone: "📘", titulo: "Apostilas / Bloco" },
+                { icone: "📐", titulo: "Ploter / Desenhos" },
+                { icone: "🎁", titulo: "Brindes Exclusivos" },
+                { icone: "📋", titulo: "Comprovantes / Talões" }
+            ],
+
+            // Diferenciais (Slide 5)
+            diferenciais: [
+                { icone: "⚡", titulo: "Rapidez" },
+                { icone: "✨", titulo: "Qualidade" },
+                { icone: "📱", titulo: "Facilidade" },
+                { icone: "🤝", titulo: "Atendimento" },
+                { icone: "🎯", titulo: "Precisão" }
+            ],
+
+            // Promoção (Slide 6)
+            promocao: {
+                titulo: "Impressão Colorida A4",
+                preco: "R$ 0,99",
+                validade: "Condição válida para volumes acima de 50 cópias."
+            },
+
+            // Contatos e Informações da Loja (Slide 7)
+            contato: {
+                whatsapp: "(41) 99968-2836",
+                instagram: "@printexpress",
+                endereco: "Rua das Flores, 1000 - Centro",
+                horario: "Seg a Sex: 08h às 18h"
+            }
+        };
+
+        /* ----------------------------------------------------------------------
+           LÓGICA DO MOTOR DA APRESENTACÃO (NÃO ALTERAR ABAIXO)
+           ---------------------------------------------------------------------- */
+        
+        // Renderizar Configurações no DOM
+        function initData() {
+            document.getElementById('cfg-brand-name').innerText = CONFIG.nomeGrafica;
+            document.getElementById('cfg-tagline').innerText = CONFIG.tagline;
+            document.getElementById('cfg-logo').innerText = CONFIG.iconeLogo;
+
+            // Renderizar Serviços
+            const servGrid = document.getElementById('cfg-services-grid');
+            servGrid.innerHTML = CONFIG.servicos.map((s, idx) => `
+                <div class="service-card anim-item delay-${(idx % 3) + 1}">
+                    <div class="service-icon">${s.icone}</div>
+                    <div class="service-title">${s.titulo}</div>
+                </div>
+            `).join('');
+
+            // Renderizar Produtos
+            const prodGrid = document.getElementById('cfg-products-grid');
+            prodGrid.innerHTML = CONFIG.produtos.map((p, idx) => `
+                <div class="product-card anim-item delay-${(idx % 4) + 1}">
+                    <div class="product-icon">${p.icone}</div>
+                    <div class="product-title">${p.titulo}</div>
+                </div>
+            `).join('');
+
+            // Renderizar Diferenciais
+            const diffGrid = document.getElementById('cfg-differentials-grid');
+            diffGrid.innerHTML = CONFIG.diferenciais.map((d, idx) => `
+                <div class="diff-item anim-item delay-${idx + 1}">
+                    <div class="diff-icon">${d.icone}</div>
+                    <div class="diff-title">${d.titulo}</div>
+                </div>
+            `).join('');
+
+            // Promoção
+            document.getElementById('cfg-promo-title').innerText = CONFIG.promocao.titulo;
+            document.getElementById('cfg-promo-price').innerText = CONFIG.promocao.preco;
+            document.getElementById('cfg-promo-validity').innerText = CONFIG.promocao.validade;
+
+            // Contatos
+            document.getElementById('cfg-contact-whatsapp').innerText = CONFIG.contato.whatsapp;
+            document.getElementById('cfg-contact-instagram').innerText = CONFIG.contato.instagram;
+            document.getElementById('cfg-contact-address').innerText = CONFIG.contato.endereco;
+            document.getElementById('cfg-contact-hours').innerText = CONFIG.contato.horario;
+        }
+
+        // Sistema de Troca de Slides Automática
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progressBar');
+        let slideTimeout;
+        let progressInterval;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+            });
+
+            currentSlide = index;
+            if (currentSlide >= slides.length) currentSlide = 0;
+
+            const activeSlide = slides[currentSlide];
+            activeSlide.classList.add('active');
+
+            // Obter duração do slide atual
+            const durationSec = parseInt(activeSlide.getAttribute('data-duration')) || 8;
+            startProgressBar(durationSec);
+
+            // Programar próximo slide
+            clearTimeout(slideTimeout);
+            slideTimeout = setTimeout(() => {
+                showSlide(currentSlide + 1);
+            }, durationSec * 1000);
+        }
+
+        function startProgressBar(seconds) {
+            clearInterval(progressInterval);
+            progressBar.style.width = '0%';
+            let startTime = Date.now();
+            let totalMs = seconds * 1000;
+
+            progressInterval = setInterval(() => {
+                let elapsedTime = Date.now() - startTime;
+                let percentage = (elapsedTime / totalMs) * 100;
+                if (percentage >= 100) {
+                    percentage = 100;
+                    clearInterval(progressInterval);
+                }
+                progressBar.style.width = percentage + '%';
+            }, 50);
+        }
+
+        // Suporte para Tela Cheia (Fullscreen API)
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Erro ao ativar tela cheia: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Esconder botão de Tela Cheia após alguns segundos sem mover o mouse
+        let mouseTimer;
+        const fsBtn = document.getElementById('fsBtn');
+
+        document.addEventListener('mousemove', () => {
+            fsBtn.classList.remove('fade-out');
+            clearTimeout(mouseTimer);
+            mouseTimer = setTimeout(() => {
+                fsBtn.classList.add('fade-out');
+            }, 4000);
+        });
+
+        // Inicialização
+        window.addEventListener('DOMContentLoaded', () => {
+            initData();
+            showSlide(0);
+        });
+    </script>
+</body>
+</html>
