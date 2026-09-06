@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog PrintExpress - Dicas, Documentos e Impressão</title>
+    <meta name="description" content="Informações, dicas e conteúdos úteis para facilitar seu dia a dia com documentos, impressão, currículos e tecnologia.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --accent: #38bdf8;
+            --accent-light: rgba(2, 132, 199, 0.08);
+            --danger: #ef4444;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --font-scale: 1rem;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-light: rgba(56, 189, 248, 0.12);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        html {
+            font-size: var(--font-scale);
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -50px;
+            left: 10px;
+            background: var(--primary);
+            color: #ffffff;
+            padding: 10px 16px;
+            z-index: 10001;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .skip-link:focus { top: 10px; }
+
+        /* HEADER & NAVBAR */
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .reading-progress-bar {
+            height: 4px;
+            background: var(--primary);
+            width: 0%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            transition: width 0.1s linear;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand-group {
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+        }
+
+        .brand-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            list-style: none;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: var(--accent-light);
+            color: var(--primary);
+        }
+
+        .nav-btn-main {
+            background: var(--primary);
+            color: #ffffff !important;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25);
+        }
+
+        .nav-btn-main:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .theme-toggle {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        /* CONTAINER PRINCIPAL */
+        .main-wrapper {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 32px 20px;
+            flex: 1;
+        }
+
+        /* BARRA DE PESQUISA */
+        .search-section {
+            margin-bottom: 32px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            background: var(--bg-card);
+            padding: 8px;
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--primary);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px 16px;
+            font-size: 15px;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .search-btn:hover { background: var(--primary-hover); }
+
+        /* ATALHOS DE CATEGORIAS */
+        .categories-nav {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+            margin-bottom: 36px;
+            scrollbar-width: thin;
+        }
+
+        .cat-chip {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow);
+        }
+
+        .cat-chip:hover, .cat-chip.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* DESTAQUE PRINCIPAL */
+        .featured-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            margin-bottom: 48px;
+        }
+
+        .featured-img-container {
+            position: relative;
+            min-height: 320px;
+            overflow: hidden;
+        }
+
+        .featured-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .featured-content {
+            padding: 36px 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .badge-category {
+            align-self: flex-start;
+            background: var(--accent-light);
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .featured-title {
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 1.3;
+            color: var(--text-main);
+        }
+
+        .featured-excerpt {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .btn-read {
+            align-self: flex-start;
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .btn-read:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        /* TITULO DE SEÇÃO */
+        .section-title-box {
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* GRADE DE ARTIGOS */
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .article-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .article-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+        }
+
+        .card-img-box {
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 10px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        .card-excerpt {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        /* PÁGINA INDIVIDUAL DO ARTIGO */
+        .article-single-view {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .breadcrumbs a {
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .single-title {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.2;
+            color: var(--text-main);
+            margin-bottom: 12px;
+        }
+
+        .single-hero-img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+            margin: 24px 0;
+        }
+
+        .article-content {
+            font-size: 16px;
+            color: var(--text-main);
+            line-height: 1.8;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .article-content h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-top: 16px;
+        }
+
+        .article-content h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-top: 10px;
+        }
+
+        .article-content ul, .article-content ol {
+            padding-left: 24px;
+        }
+
+        .article-content li {
+            margin-bottom: 8px;
+        }
+
+        .tip-box {
+            background: var(--accent-light);
+            border-left: 4px solid var(--primary);
+            padding: 16px 20px;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            font-size: 14px;
+            margin: 12px 0;
+        }
+
+        .cta-banner-article {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.1) 0%, rgba(56, 189, 248, 0.15) 100%);
+            border: 1px solid var(--primary);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-top: 28px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .share-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .share-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        /* RODAPÉ */
+        footer {
+            background-color: var(--bg-card);
+            border-top: 3px solid var(--primary);
+            padding: 48px 20px 24px 20px;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 32px;
+        }
+
+        .footer-brand {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .footer-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            max-width: 380px;
+            line-height: 1.6;
+        }
+
+        .footer-heading {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .footer-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .footer-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .footer-link:hover { color: var(--primary); }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .btn-top {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 900px) {
+            .featured-card { grid-template-columns: 1fr; }
+            .featured-img-container { height: 220px; min-height: auto; }
+            .footer-container { grid-template-columns: 1fr; gap: 24px; }
+            .single-title { font-size: 24px; }
+            .article-single-view { padding: 24px 16px; }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--bg-card);
+                border-bottom: 1px solid var(--border-color);
+                flex-direction: column;
+                padding: 16px;
+                box-shadow: var(--shadow);
+            }
+            .nav-menu.open { display: flex; }
+            .articles-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="#mainContent" class="skip-link">Pular para o conteúdo principal</a>
+
+    <!-- CABEÇALHO -->
+    <header role="banner">
+        <div class="reading-progress-bar" id="progressBar"></div>
+        <div class="header-container">
+            <a href="#" onclick="carregarView('home')" class="brand-group" aria-label="PrintExpress Blog - Ir para início">
+                <div class="brand-title">🖨️ PrintExpress <span style="font-size:12px; background:var(--accent-light); padding:2px 8px; border-radius:10px;">BLOG</span></div>
+                <div class="brand-desc">Informações, dicas e conteúdos úteis para o seu dia a dia</div>
+            </a>
+
+            <button class="mobile-menu-btn" onclick="toggleMenu()" aria-label="Abrir Menu">☰</button>
+
+            <nav role="navigation">
+                <ul class="nav-menu" id="navMenu">
+                    <li><button class="nav-btn active" onclick="carregarView('home')">🏠 Início</button></li>
+                    <li><button class="nav-btn" onclick="carregarView('categorias')">📚 Categorias</button></li>
+                    <li>
+                        <button class="theme-toggle" id="themeBtn" onclick="alternarTema()">
+                            <span id="themeIcon">🌙</span> <span id="themeText">Escuro</span>
+                        </button>
+                    </li>
+                    <li><a href="index.html" class="nav-btn nav-btn-main">← Voltar ao Site Principal</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- CONTAINER CONTEÚDO PRINCIPAL -->
+    <main class="main-wrapper" id="mainContent">
+
+        <!-- VIEW: PÁGINA INICIAL / CATEGORIAS / BUSCA -->
+        <div id="homeView">
+            
+            <!-- PESQUISA -->
+            <section class="search-section" aria-label="Pesquisa do Blog">
+                <form class="search-box" onsubmit="executarBusca(event)">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar por título, categoria ou palavra-chave..." aria-label="Campo de pesquisa">
+                    <button type="submit" class="search-btn">🔎 Pesquisar</button>
+                </form>
+            </section>
+
+            <!-- CHIPS DE CATEGORIAS -->
+            <nav class="categories-nav" aria-label="Filtro por categorias">
+                <button class="cat-chip active" onclick="filtrarCategoria('todas')">✨ Todas</button>
+                <button class="cat-chip" onclick="filtrarCategoria('Impressões')">🖨️ Impressões</button>
+                <button class="cat-chip" onclick="filtrarCategoria('Documentos')">📄 Documentos</button>
+                <button class="cat-chip" onclick="filtrarCategoria('Currículos')">💼 Currículos</button>
+                <button class="cat-chip" onclick="filtrarCategoria('Geradores')">🧾 Geradores</button>
+                <button class="cat-chip" onclick="filtrarCategoria('SOS Documento')">🆘 SOS Documento</button>
+                <button class="cat-chip" onclick="filtrarCategoria('Tecnologia')">💻 Tecnologia</button>
+                <button class="cat-chip" onclick="filtrarCategoria('PrintExpress')">📢 PrintExpress</button>
+            </nav>
+
+            <!-- DESTAQUE PRINCIPAL -->
+            <section id="featuredSection" class="featured-card" aria-label="Artigo em Destaque">
+                <!-- Preenchido via JS -->
+            </section>
+
+            <!-- ARTIGOS RECENTES / LISTA -->
+            <section aria-label="Lista de Artigos">
+                <div class="section-title-box">
+                    <h2 class="section-title" id="gridTitle">📰 Artigos Recentes</h2>
+                </div>
+                <div class="articles-grid" id="articlesGrid">
+                    <!-- Preenchido via JS -->
+                </div>
+            </section>
+        </div>
+
+        <!-- VIEW: ARTIGO SINGLE -->
+        <article class="article-single-view" id="singleArticleView">
+            <nav class="breadcrumbs" aria-label="Navegação estruturada">
+                <a onclick="carregarView('home')">Início</a> › 
+                <a id="singleBreadCategory" onclick="filtrarBreadcrumb()">Categoria</a> › 
+                <span>Artigo</span>
+            </nav>
+
+            <span class="badge-category" id="singleCategory">Categoria</span>
+            <h1 class="single-title" id="singleTitle">Título do Artigo</h1>
+
+            <div class="article-meta">
+                <span>📅 <span id="singleDate">06/09/2026</span></span>
+                <span>⏱️ <span id="singleReadTime">4 min</span> de leitura</span>
+            </div>
+
+            <img id="singleImg" class="single-hero-img" src="" alt="Imagem ilustrativa do artigo">
+
+            <div class="article-content" id="singleContent">
+                <!-- Conteúdo completo renderizado via JS -->
+            </div>
+
+            <div class="share-bar">
+                <button class="share-btn" onclick="compartilharWhatsApp()">💬 Compartilhar no WhatsApp</button>
+                <button class="btn-read" onclick="carregarView('home')" style="background:var(--bg-input); color:var(--text-main);">← Voltar para todos os artigos</button>
+            </div>
+        </article>
+
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer role="contentinfo">
+        <div class="footer-container">
+            <div>
+                <div class="footer-brand">🖨️ PrintExpress Blog</div>
+                <p class="footer-desc">Informações, dicas e conteúdos úteis para facilitar seu dia a dia com documentos, impressão e tecnologia.</p>
+            </div>
+            <div>
+                <h3 class="footer-heading">Navegação</h3>
+                <ul class="footer-list">
+                    <li><a class="footer-link" onclick="carregarView('home')">Início</a></li>
+                    <li><a class="footer-link" onclick="carregarView('categorias')">Categorias</a></li>
+                    <li><a class="footer-link" href="index.html">Site Principal</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="footer-heading">Institucional</h3>
+                <ul class="footer-list">
+                    <li><a class="footer-link" href="sobre.html">Sobre o PrintExpress</a></li>
+                    <li><a class="footer-link" href="privacidade.html">Política de Privacidade</a></li>
+                    <li><a class="footer-link" href="termos.html">Termos de Uso</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 PrintExpress. Todos os direitos reservados.</p>
+            <button class="btn-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">Voltar ao topo ↑</button>
+        </div>
+    </footer>
+
+    <!-- BANCO DE DADOS DE ARTIGOS & LÓGICA JS -->
+    <script>
+        // BANCO DE DADOS COMPLETO E REAL DOS ARTIGOS
+        const ARTIGOS = [
+            {
+                id: "pedido-impressao-express",
+                titulo: "Como fazer um pedido de impressão pelo PrintExpress",
+                categoria: "Impressões",
+                data: "2026-09-06",
+                dataFmt: "06 de Setembro de 2026",
+                tempo: "3 min",
+                resumo: "Aprenda o passo a passo completo para enviar seus arquivos e receber tudo impresso com rapidez e comodidade.",
+                imagem: "https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?auto=format&fit=crop&w=800&q=80",
+                destaque: true,
+                conteudo: `
+                    <p>Fazer um pedido de impressão online não precisa ser complicado. No <strong>PrintExpress</strong>, simplificamos o processo para que você possa enviar seus arquivos diretamente do seu computador ou celular sem perder tempo em filas.</p>
+                    
+                    <h2>Passo a Passo para Enviar seu Pedido</h2>
+                    <ol>
+                        <li><strong>Acesse a área de Impressões:</strong> Navegue até a página oficial de impressão pelo menu principal.</li>
+                        <li><strong>Selecione o tipo de impressão:</strong> Escolha entre P&B (Preto e Branco) ou Colorido, além do formato do papel (A4).</li>
+                        <li><strong>Anexe seu arquivo:</strong> Aceitamos formatos padrão como PDF ou imagens de alta qualidade (PNG/JPG).</li>
+                        <li><strong>Defina o acabamento:</strong> Escolha se deseja impressão simples (somente frente) ou frente e verso.</li>
+                        <li><strong>Confirme pelo WhatsApp:</strong> Seu pedido será direcionado diretamente para produção com acompanhamento em tempo real.</li>
+                    </ol>
+
+                    <div class="tip-box">
+                        💡 <strong>Dica de Ouro:</strong> Prefira sempre salvar seus documentos no formato <strong>PDF</strong> antes de enviar. Isso garante que a formatação e as margens fiquem exatamente como você montou.
+                    </div>
+
+                    <div class="cta-banner-article">
+                        <h3>Pronto para imprimir seu documento?</h3>
+                        <p>Envie seus arquivos agora mesmo e retire sem pegar filas.</p>
+                        <a href="impressao.html" class="btn-read">🚀 Ir para Pedido de Impressão</a>
+                    </div>
+                `
+            },
+            {
+                id: "envio-documentos-celular",
+                titulo: "Como enviar um documento pelo celular com segurança",
+                categoria: "Documentos",
+                data: "2026-09-05",
+                dataFmt: "05 de Setembro de 2026",
+                tempo: "4 min",
+                resumo: "Descubra as melhores práticas para organizar, conferir e enviar documentos importantes usando apenas o seu smartphone.",
+                imagem: "https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=800&q=80",
+                destaque: false,
+                conteudo: `
+                    <p>O celular se tornou a principal ferramenta para lidar com documentos no dia a dia. Seja para enviar um boleto, RG ou comprovante, alguns cuidados garantem que a impressão saia perfeita e legível.</p>
+
+                    <h2>1. Verifique a Resolução do Arquivo</h2>
+                    <p>Ao tirar foto de um documento físico para enviar, certifique-se de estar em um ambiente bem iluminado. Evite sombras sobre o papel e garanta que todas as bordas e textos estejam legíveis.</p>
+
+                    <h2>2. Cuidado com Informações Pessoais</h2>
+                    <p>No PrintExpress, mantemos uma política rigorosa de privacidade e descarte seguro dos arquivos após o serviço. Contudo, ao salvar seus arquivos no celular, evite guardar senhas ou dados ultra sensíveis expostos em fotos desorganizadas.</p>
+
+                    <h2>3. Como enviar diretamente para o PrintExpress</h2>
+                    <p>Você pode acessar a página de documentos oficiais ou enviar o arquivo baixado em PDF diretamente pelo nosso sistema. O arquivo vai limpo e pronto para impressão imediata.</p>
+
+                    <div class="cta-banner-article">
+                        <h3>Precisa imprimir boletos ou documentos oficiais?</h3>
+                        <p>Acesse nossa área dedicada a documentos rápidos.</p>
+                        <a href="documentos.html" class="btn-read">🏛️ Acessar Documentos Oficiais</a>
+                    </div>
+                `
+            },
+            {
+                id: "primeiro-curriculo-dicas",
+                titulo: "O que colocar no primeiro currículo para se destacar",
+                categoria: "Currículos",
+                data: "2026-09-03",
+                dataFmt: "03 de Setembro de 2026",
+                tempo: "5 min",
+                resumo: "Não tem experiência anterior? Veja como organizar seus dados, cursos e objetivos para montar um currículo profissional impecável.",
+                imagem: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=800&q=80",
+                destaque: false,
+                conteudo: `
+                    <p>Montar o primeiro currículo pode parecer desafiador quando não se tem experiência formal de trabalho. A boa notícia é que recrutadores valorizam muito a organização, vontade de aprender e habilidades transversais.</p>
+
+                    <h2>Estrutura Ideal para o Primeiro Currículo</h2>
+                    <ul>
+                        <li><strong>Dados de Contato:</strong> Nome completo, telefone/WhatsApp atualizado, e-mail profissional e cidade.</li>
+                        <li><strong>Objetivo Profissional:</strong> Seja direto. Exemplo: "Busco oportunidade na área de atendimento ao cliente ou primeiro emprego administrativo."</li>
+                        <li><strong>Escolaridade:</strong> Informe seu nível de ensino (ex: Ensino Médio Concluído ou em andamento).</li>
+                        <li><strong>Cursos e Qualificações:</strong> Inclua cursos livres, informática básica, idiomas ou workshops.</li>
+                        <li><strong>Atividades Extraordinárias:</strong> Trabalhos voluntários ou projetos escolares contam muito!</li>
+                    </ul>
+
+                    <div class="tip-box">
+                        ⚠️ <strong>Erro comum:</strong> Nunca inclua números de documentos como CPF ou RG no currículo. Guarde essas informações para a contratação.
+                    </div>
+
+                    <div class="cta-banner-article">
+                        <h3>Precisa de ajuda para estruturar seu currículo?</h3>
+                        <p>Conheça nosso serviço de elaboração e atualização de currículos.</p>
+                        <a href="curriculo.html" class="btn-read">💼 Criar Currículo Profissional</a>
+                    </div>
+                `
+            },
+            {
+                id: "como-usar-gerador-recibos",
+                titulo: "Como utilizar o Gerador de Recibo de forma rápida",
+                categoria: "Geradores",
+                data: "2026-09-01",
+                dataFmt: "01 de Setembro de 2026",
+                tempo: "3 min",
+                resumo: "Entenda a importância de emitir comprovantes de pagamento legíveis e como utilizar nossa ferramenta prática.",
+                imagem: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80",
+                destaque: false,
+                conteudo: `
+                    <p>Emitir um recibo formal é fundamental para prestadores de serviço, autônomos e pagamentos informais. Ele serve como comprovação jurídica e financeira para ambos os lados.</p>
+
+                    <h2>O que não pode faltar em um recibo:</h2>
+                    <ul>
+                        <li>Valor numérico e por extenso;</li>
+                        <li>Nome de quem pagou e de quem recebeu;</li>
+                        <li>Descrição clara do serviço prestado ou produto vendido;</li>
+                        <li>Data e cidade do pagamento;</li>
+                        <li>Assinatura do recebedor.</li>
+                    </ul>
+
+                    <p>Para facilitar sua vida, o PrintExpress disponibiliza um <strong>Gerador de Recibos</strong> automático no site, pronto para preencher e gerar de maneira imediata.</p>
+
+                    <div class="cta-banner-article">
+                        <h3>Precisa gerar um recibo agora mesmo?</h3>
+                        <p>Utilize nossa ferramenta gratuita no site.</p>
+                        <a href="gerador.html" class="btn-read">⚙️ Ir para Gerador de Recibos</a>
+                    </div>
+                `
+            },
+            {
+                id: "sos-pdf-desconfigurado",
+                titulo: "PDF desconfigurado ou desformatado: o que fazer?",
+                categoria: "SOS Documento",
+                data: "2026-08-28",
+                dataFmt: "28 de Agosto de 2026",
+                tempo: "4 min",
+                resumo: "Veja por que os arquivos cortam na hora de imprimir e saiba como nosso suporte SOS Documento resolve isso.",
+                imagem: "https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&w=800&q=80",
+                destaque: false,
+                conteudo: `
+                    <p>Você envia um arquivo para impressão e percebe que as bordas foram cortadas ou o texto mudou de fonte? Esse é um dos problemas mais comuns na rotina de documentos.</p>
+
+                    <h2>Por que os arquivos desconfiguram?</h2>
+                    <p>Isso acontece frequentemente quando um arquivo editável (como arquivos de texto comuns) é aberto em dispositivos com sistemas operacionais ou versões de programas diferentes. As fontes não encontradas são substituídas automaticamente, desalinhando o texto.</p>
+
+                    <h2>Como resolver com o SOS Documento</h2>
+                    <p>Se você tem um arquivo importante que está torto, pesado, cortando ou com erro de abertura, a equipe do PrintExpress realiza a adequação técnica do seu documento antes da impressão final.</p>
+
+                    <div class="cta-banner-article">
+                        <h3>Está com problemas no seu arquivo?</h3>
+                        <p>Não passe sufoco. Nós ajustamos e preparamos seu documento.</p>
+                        <a href="sos-documentos.html" class="btn-read">🆘 Resolver no SOS Documentos</a>
+                    </div>
+                `
+            },
+            {
+                id: "dicas-organizar-arquivos-celular",
+                titulo: "Dicas essenciais para organizar seus arquivos no celular",
+                categoria: "Tecnologia",
+                data: "2026-08-25",
+                dataFmt: "25 de Agosto de 2026",
+                tempo: "3 min",
+                resumo: "Evite perder tempo procurando PDFs e fotos importantes na hora de solicitar uma impressão rápida.",
+                imagem: "https://images.unsplash.com/photo-1616469829941-c7200edec809?auto=format&fit=crop&w=800&q=80",
+                destaque: false,
+                conteudo: `
+                    <p>Encontrar um comprovante antigo ou um documento baixado no mar de arquivos do smartphone pode ser estressante. Manter uma rotina simples de organização economiza minutos preciosos no seu dia a dia.</p>
+
+                    <h2>3 Passos para a Organização Digital</h2>
+                    <ol>
+                        <li><strong>Crie pastas por tema:</strong> Separe pastas chamadas "Documentos Pessoais", "Boletos", "Trabalho" e "Imprimir".</li>
+                        <li><strong>Renomeie os arquivos ao baixar:</strong> Em vez de manter "IMG_20260901_WA.pdf", renomeie para "Comprovante_Agua_Set2026.pdf".</li>
+                        <li><strong>Diferencie formatos:</strong> Entenda que arquivos PDF mantêm a qualidade de leitura, enquanto arquivos PNG/JPG são imagens. Para documentos, o PDF é sempre a melhor escolha.</li>
+                    </ol>
+                `
+            },
+            {
+                id: "conheca-novo-printexpress",
+                titulo: "PrintExpress de cara nova: mais agilidade para você",
+                categoria: "PrintExpress",
+                data: "2026-08-20",
+                dataFmt: "20 de Agosto de 2026",
+                tempo: "2 min",
+                resumo: "Conheça as melhorias de navegação, novas áreas e ferramentas integradas à nossa plataforma.",
+                imagem: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=800&q=80",
+                destaque: false,
+                conteudo: `
+                    <p>O <strong>PrintExpress</strong> foi atualizado para oferecer uma experiência ainda mais fluida, moderna e acessível em smartphones, tablets e computadores.</p>
+
+                    <h2>O que mudou?</h2>
+                    <ul>
+                        <li>Navegação mais limpa e intuitiva;</li>
+                        <li>Melhorias no tempo de carregamento das páginas;</li>
+                        <li>Novas áreas como o SOS Documento e este Blog dedicado a conteúdos informativos;</li>
+                        <li>Suporte aprimorado ao Modo Escuro nativo.</li>
+                    </ul>
+
+                    <p>Nossa missão continua sendo facilitar sua rotina com impressões rápidas, serviços de qualidade e suporte dedicado.</p>
+                `
+            }
+        ];
+
+        // LÓGICA DE ESTADO DA APLICAÇÃO (SPA)
+        let categoriaAtiva = "todas";
+
+        window.addEventListener('DOMContentLoaded', () => {
+            inicializarTema();
+            renderizarApp();
+            configurarScrollProgress();
+        });
+
+        // TEMA ESCURO / CLARO COM LOCALSTORAGE
+        function inicializarTema() {
+            const savedTheme = localStorage.getItem('blog_theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+            atualizarBotaoTema();
+        }
+
+        function alternarTema() {
+            const atual = document.documentElement.getAttribute('data-theme');
+            const novo = atual === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', novo);
+            localStorage.setItem('blog_theme', novo);
+            atualizarBotaoTema();
+        }
+
+        function atualizarBotaoTema() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.getElementById('themeIcon').innerText = isDark ? '☀️' : '🌙';
+            document.getElementById('themeText').innerText = isDark ? 'Claro' : 'Escuro';
+        }
+
+        function toggleMenu() {
+            document.getElementById('navMenu').classList.toggle('open');
+        }
+
+        // SCROLL PROGRESS BAR
+        function configurarScrollProgress() {
+            window.addEventListener('scroll', () => {
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                document.getElementById('progressBar').style.width = scrolled + '%';
+            });
+        }
+
+        // RENDERIZAÇÃO DA HOME E LISTAGEM
+        function renderizarApp() {
+            const featured = ARTIGOS.find(a => a.destaque) || ARTIGOS[0];
+            
+            // Render Destaque
+            const featuredContainer = document.getElementById('featuredSection');
+            featuredContainer.innerHTML = `
+                <div class="featured-img-container">
+                    <img src="${featured.imagem}" alt="${featured.titulo}" class="featured-img">
+                </div>
+                <div class="featured-content">
+                    <span class="badge-category">${featured.categoria}</span>
+                    <h2 class="featured-title">${featured.titulo}</h2>
+                    <p class="featured-excerpt">${featured.resumo}</p>
+                    <div class="article-meta">
+                        <span>📅 ${featured.dataFmt}</span>
+                        <span>⏱️ ${featured.tempo} de leitura</span>
+                    </div>
+                    <button class="btn-read" onclick="abrirArtigo('${featured.id}')">Ler artigo completo →</button>
+                </div>
+            `;
+
+            renderizarGrid(ARTIGOS);
+        }
+
+        function renderizarGrid(lista) {
+            const grid = document.getElementById('articlesGrid');
+            grid.innerHTML = '';
+
+            if (lista.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">🔎 Nenhum artigo encontrado para esta busca.</div>`;
+                return;
+            }
+
+            lista.forEach(artigo => {
+                const card = document.createElement('div');
+                card.className = 'article-card';
+                card.onclick = () => abrirArtigo(artigo.id);
+                card.innerHTML = `
+                    <div class="card-img-box">
+                        <img src="${artigo.imagem}" alt="${artigo.titulo}" class="card-img" loading="lazy">
+                    </div>
+                    <div class="card-body">
+                        <span class="badge-category">${artigo.categoria}</span>
+                        <h3 class="card-title">${artigo.titulo}</h3>
+                        <p class="card-excerpt">${artigo.resumo}</p>
+                        <div class="article-meta">
+                            <span>📅 ${artigo.dataFmt}</span>
+                            <span>⏱️ ${artigo.tempo}</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // FILTROS E PESQUISA
+        function filtrarCategoria(cat) {
+            categoriaAtiva = cat;
+            document.querySelectorAll('.cat-chip').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.includes(cat) || (cat === 'todas' && btn.innerText.includes('Todas')));
+            });
+
+            if (cat === 'todas') {
+                document.getElementById('gridTitle').innerText = '📰 Artigos Recentes';
+                renderizarGrid(ARTIGOS);
+            } else {
+                document.getElementById('gridTitle').innerText = `📚 Categorias: ${cat}`;
+                const filtrados = ARTIGOS.filter(a => a.categoria.toLowerCase() === cat.toLowerCase());
+                renderizarGrid(filtrados);
+            }
+            carregarView('home');
+        }
+
+        function executarBusca(e) {
+            e.preventDefault();
+            const termo = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!termo) {
+                renderizarGrid(ARTIGOS);
+                return;
+            }
+
+            const resultados = ARTIGOS.filter(a => 
+                a.titulo.toLowerCase().includes(termo) || 
+                a.resumo.toLowerCase().includes(termo) || 
+                a.categoria.toLowerCase().includes(termo)
+            );
+
+            document.getElementById('gridTitle').innerText = `🔎 Resultados para: "${termo}"`;
+            renderizarGrid(resultados);
+            carregarView('home');
+        }
+
+        // ABRIR ARTIGO INDIVIDUAL
+        function abrirArtigo(id) {
+            const artigo = ARTIGOS.find(a => a.id === id);
+            if (!artigo) return;
+
+            document.getElementById('singleCategory').innerText = artigo.categoria;
+            document.getElementById('singleBreadCategory').innerText = artigo.categoria;
+            document.getElementById('singleTitle').innerText = artigo.titulo;
+            document.getElementById('singleDate').innerText = artigo.dataFmt;
+            document.getElementById('singleReadTime').innerText = artigo.tempo;
+            document.getElementById('singleImg').src = artigo.imagem;
+            document.getElementById('singleImg').alt = artigo.titulo;
+            document.getElementById('singleContent').innerHTML = artigo.conteudo;
+
+            carregarView('article');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function filtrarBreadcrumb() {
+            const cat = document.getElementById('singleBreadCategory').innerText;
+            filtrarCategoria(cat);
+        }
+
+        // CONTROLE DE VIEWS (SPA)
+        function carregarView(view) {
+            const home = document.getElementById('homeView');
+            const single = document.getElementById('singleArticleView');
+
+            if (view === 'article') {
+                home.style.display = 'none';
+                single.style.display = 'block';
+            } else {
+                home.style.display = 'block';
+                single.style.display = 'none';
+                if (view === 'categorias') {
+                    window.scrollTo({top: document.querySelector('.categories-nav').offsetTop - 100, behavior: 'smooth'});
+                }
+            }
+            document.getElementById('navMenu').classList.remove('open');
+        }
+
+        function compartilharWhatsApp() {
+            const titulo = document.getElementById('singleTitle').innerText;
+            const url = window.location.href;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent('Confira este artigo no Blog do PrintExpress: ' + titulo + ' - ' + url)}`, '_blank');
+        }
+    </script>
+</body>
+</html>
