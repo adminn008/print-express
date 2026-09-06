@@ -84,18 +84,6 @@
 
     .header-controls { display: flex; gap: 8px; align-items: center; }
 
-    .status-badge {
-        font-size: 12px;
-        font-weight: 700;
-        padding: 6px 12px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-    .status-open { background: rgba(16, 185, 129, 0.15); color: var(--green); }
-    .status-closed { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-
     .theme-toggle, .access-btn {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
@@ -142,18 +130,6 @@
         display: block;
     }
 
-    .box-privacidade {
-        background: var(--accent-light);
-        border: 1px solid var(--primary);
-        border-radius: 14px;
-        padding: 14px 16px;
-        font-size: 13px;
-        color: var(--text-main);
-        display: flex;
-        gap: 12px;
-        align-items: flex-start;
-    }
-
     .step-card {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
@@ -174,14 +150,26 @@
     }
 
     .alerta-desconsiderar {
-        background: rgba(239, 68, 68, 0.12);
+        background: rgba(239, 68, 68, 0.08);
         border: 1px solid var(--danger);
         color: var(--danger);
-        padding: 12px;
+        padding: 14px 16px;
         border-radius: 12px;
         font-size: 13px;
         font-weight: 700;
-        text-align: center;
+        line-height: 1.4;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group label {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--text-main);
     }
 
     input[type="text"], input[type="tel"], input[type="number"], input[type="file"], select, textarea {
@@ -201,28 +189,67 @@
         box-shadow: 0 0 0 3px var(--accent-light);
     }
 
-    .servicos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-
-    .servico-card {
-        background: var(--bg-input);
-        border: 2px solid var(--border-color);
+    /* CUSTOM FILE UPLOAD AREA */
+    .file-dropzone {
+        border: 2px dashed var(--primary);
+        background: var(--accent-light);
         border-radius: 14px;
-        padding: 14px 8px;
+        padding: 20px;
         text-align: center;
         cursor: pointer;
+        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .file-dropzone:hover {
+        background: rgba(2, 132, 199, 0.12);
+        transform: translateY(-2px);
+    }
+
+    .file-dropzone input[type="file"] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .file-dropzone-icon {
+        font-size: 28px;
+    }
+
+    .file-dropzone-text {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .file-dropzone-sub {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .file-selected-name {
+        margin-top: 6px;
+        padding: 8px 12px;
+        background: var(--bg-card);
+        border: 1px solid var(--primary);
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--primary);
+        display: inline-flex;
+        align-items: center;
         gap: 6px;
+        word-break: break-all;
     }
-
-    .servico-card:hover:not(.disabled) {
-        transform: translateY(-3px);
-        border-color: var(--primary);
-    }
-
-    .servico-card.selected { border-color: var(--primary); background: var(--accent-light); }
-    .servico-card.disabled { opacity: 0.6; cursor: not-allowed; }
 
     .checkbox-card {
         background: var(--bg-input);
@@ -246,14 +273,46 @@
         margin-top: 4px;
     }
 
+    /* RESUMO DO PEDIDO */
     .price-box {
         background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        padding: 20px; border-radius: 14px;
+        border: 2px solid var(--border-color);
+        padding: 20px; 
+        border-radius: 16px;
         display: flex; 
         flex-direction: column;
-        gap: 8px;
+        gap: 10px;
         font-size: 14px;
+    }
+
+    .price-box-title {
+        font-weight: 800;
+        font-size: 15px;
+        color: var(--primary);
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .summary-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .summary-item span:first-child {
+        font-weight: 600;
     }
 
     .price-row {
@@ -422,9 +481,15 @@
         gap: 8px;
     }
 
+    .helper-text {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 2px;
+    }
+
     @media (max-width: 500px) {
         body { padding: 16px 10px 80px 10px; }
-        .servicos-grid { grid-template-columns: repeat(2, 1fr); }
+        .radio-group { flex-direction: column; gap: 10px; }
     }
 </style>
 </head>    
@@ -517,7 +582,7 @@
         <input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">    
 
         <div class="alerta-desconsiderar">    
-            ⚠️ ATENÇÃO: Pedidos sem pagamento confirmado serão desconsiderados e cancelados automaticamente.    
+            ⚠️ <strong>Atenção ao Pagamento:</strong> Pedidos sem pagamento confirmado poderão ser desconsiderados/cancelados conforme as condições do PrintExpress.
         </div>    
 
         <h2>Monte seu Pedido</h2>    
@@ -534,7 +599,7 @@
 
         <div id="blocoA4">    
             <div class="form-group" style="margin-bottom: 12px;">    
-                <label for="tipo_impressao">Tipo de Impressão / Xerox:</label>    
+                <label for="tipo_impressao">🎨 Tipo de Impressão (Cor):</label>    
                 <select id="tipo_impressao" name="Codigo Opcao Cor">    
                     <option value="pb">Preto e Branco (P&B) - R$ 0,50/folha (Texto, Xerox simples)</option>    
                     <option value="pouca_cor">Colorida Pouca Cor - R$ 1,00/folha (Títulos coloridos, Xerox, logo simples)</option>    
@@ -543,8 +608,17 @@
                 </select>    
             </div>    
 
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label for="lado_impressao">📄 Lado da Impressão:</label>
+                <select id="lado_impressao" name="Lado da Impressao">
+                    <option value="Frente (somente um lado)">Frente (somente um lado)</option>
+                    <option value="Frente e verso">Frente e verso (dois lados na mesma folha)</option>
+                </select>
+                <p class="helper-text">💡 <strong>Frente:</strong> 1 folha = 1 lado impresso | <strong>Frente e Verso:</strong> Impressão nos dois lados da mesma folha.</p>
+            </div>
+
             <div class="form-group" style="margin-bottom: 12px;">    
-                <label for="quantidade">Quantidade de Cópias / Folhas:</label>    
+                <label for="quantidade">📑 Quantidade de Folhas / Cópias:</label>    
                 <input type="number" id="quantidade" name="Quantidade de Copias" value="1" min="1">    
             </div>    
 
@@ -556,13 +630,21 @@
             </div>    
 
             <div class="form-group">    
-                <div style="display:flex; justify-content:space-between; align-items:center;">    
-                    <label for="arquivo">Anexar Documento(s) – Máx. 10.00MB:</label>    
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px;">    
+                    <label for="arquivo">📎 Anexar Arquivo para Impressão:</label>    
                     <button type="button" class="btn-toggle-modo" id="btnToggleModo">✏️ Prefiro colar um texto</button>    
                 </div>    
                     
-                <div id="campoArquivoContainer">    
-                    <input type="file" id="arquivo" name="attachment" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">    
+                <div id="campoArquivoContainer">
+                    <div class="file-dropzone">
+                        <div class="file-dropzone-icon">📎</div>
+                        <div class="file-dropzone-text">Clique para selecionar o arquivo</div>
+                        <div class="file-dropzone-sub">PDF, DOC, DOCX, PNG, JPG, JPEG (Máx. 10MB)</div>
+                        <input type="file" id="arquivo" name="attachment" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">    
+                    </div>
+                    <div id="fileSelectedDisplay" class="file-selected-name hidden">
+                        📄 <span id="fileNameText">Nenhum arquivo</span>
+                    </div>
                     <div id="fileDetails" class="file-info hidden"></div>    
                 </div>    
 
@@ -613,11 +695,11 @@
         </div>    
 
         <div class="form-group">    
-            <label>Serviços e Opções Extras:</label>    
+            <label>Privacidade e Serviços Extras:</label>    
 
             <label class="checkbox-card">    
-                <input type="checkbox" id="opt_armazenamento" name="Armazenamento Seguro 24h" value="Sim (Gratis)">    
-                <span>💾 <strong>Armazenamento Seguro por 24h (Grátis):</strong> Garantia de eliminação de todos os seus arquivos do servidor após a confirmação do pedido — conforme diz em Política de Privacidade do site.</span>    
+                <input type="checkbox" id="opt_armazenamento" name="Armazenamento Seguro 24h" value="Sim (Gratis)" checked>    
+                <span>🔒 <strong>Privacidade e Segurança (Grátis):</strong> Seus arquivos são tratados de forma confidencial e utilizados estritamente para a realização da sua impressão.</span>    
             </label>    
 
             <label class="checkbox-card">    
@@ -630,20 +712,43 @@
             <label>Forma de Pagamento:</label>    
             <div class="radio-group">    
                 <label class="radio-label">    
-                    <input type="radio" name="Forma de Pagamento" value="PIX" checked> PIX    
+                    <input type="radio" id="pag_pix" name="Forma de Pagamento" value="PIX" checked> PIX    
                 </label>    
                 <label class="radio-label">    
-                    <input type="radio" name="Forma de Pagamento" value="Dinheiro"> Dinheiro (Na Retirada)    
+                    <input type="radio" id="pag_dinheiro" name="Forma de Pagamento" value="Dinheiro"> Dinheiro (Na Retirada)    
                 </label>    
             </div>    
         </div>    
 
         <div class="form-group">    
             <label for="observacoes">Observações ou Troco (Opcional):</label>    
-            <textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex: Imprimir frente e verso / Troco para R$ 20..."></textarea>    
+            <textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex: Imprimir páginas de 1 a 5 / Troco para R$ 20..."></textarea>    
         </div>    
 
         <div class="price-box">    
+            <div class="price-box-title">
+                📋 Resumo do Pedido
+            </div>
+            
+            <div class="summary-list" id="resumoDetalhado">
+                <div class="summary-item">
+                    <span>Tipo:</span>
+                    <span id="resumoTipoText">Preto e Branco</span>
+                </div>
+                <div class="summary-item">
+                    <span>Lado:</span>
+                    <span id="resumoLadoText">Frente</span>
+                </div>
+                <div class="summary-item">
+                    <span>Quantidade:</span>
+                    <span id="resumoQtdText">1 folha(s)</span>
+                </div>
+                <div class="summary-item">
+                    <span>Arquivo:</span>
+                    <span id="resumoArquivoText">Não selecionado</span>
+                </div>
+            </div>
+
             <div class="price-row">    
                 <span>Subtotal:</span>    
                 <span id="subtotalExibicao">R$ 0,50</span>    
@@ -820,9 +925,13 @@
     function trocarAbaServico(servico) {    
         servicoAtivo = servico;    
             
-        document.getElementById("cardA4").classList.remove("selected");    
-        document.getElementById("cardDoc").classList.remove("selected");    
-        document.getElementById("cardDig").classList.remove("selected");    
+        const cardA4 = document.getElementById("cardA4");
+        const cardDoc = document.getElementById("cardDoc");
+        const cardDig = document.getElementById("cardDig");
+
+        if (cardA4) cardA4.classList.remove("selected");    
+        if (cardDoc) cardDoc.classList.remove("selected");    
+        if (cardDig) cardDig.classList.remove("selected");    
 
         document.getElementById("blocoA4").classList.add("hidden");    
         document.getElementById("blocoDoc").classList.add("hidden");    
@@ -832,7 +941,7 @@
         const inputArqDoc = document.getElementById("arquivo_doc");    
 
         if (servico === 'a4') {    
-            document.getElementById("cardA4").classList.add("selected");    
+            if (cardA4) cardA4.classList.add("selected");    
             document.getElementById("blocoA4").classList.remove("hidden");    
             document.getElementById("hidden_servico_nome").value = "Impressao / Xerox A4";    
             
@@ -843,7 +952,7 @@
             if(!modoTextoAtivo) inputArqA4.setAttribute("required", "required");    
             inputArqDoc.removeAttribute("required");    
         } else if (servico === 'doc') {    
-            document.getElementById("cardDoc").classList.add("selected");    
+            if (cardDoc) cardDoc.classList.add("selected");    
             document.getElementById("blocoDoc").classList.remove("hidden");    
             document.getElementById("hidden_servico_nome").value = "Documentos Oficiais";    
             
@@ -854,7 +963,7 @@
             inputArqA4.removeAttribute("required");    
             inputArqDoc.setAttribute("required", "required");    
         } else if (servico === 'dig') {    
-            document.getElementById("cardDig").classList.add("selected");    
+            if (cardDig) cardDig.classList.add("selected");    
             document.getElementById("blocoDig").classList.remove("hidden");    
             document.getElementById("hidden_servico_nome").value = "Digitalização / Escaneamento";    
             
@@ -870,8 +979,9 @@
         calcularValor();    
     }    
 
-    // CÁLCULO DE VALOR EM TEMPO REAL    
+    // CÁLCULO DE VALOR E RESUMO EM TEMPO REAL    
     const selectTipo = document.getElementById("tipo_impressao");    
+    const selectLado = document.getElementById("lado_impressao");
     const inputQtd = document.getElementById("quantidade");    
     const selectDocOficial = document.getElementById("tipo_doc_oficial");    
     const inputQtdDoc = document.getElementById("qtd_doc");    
@@ -886,6 +996,12 @@
     const rowDesconto = document.getElementById("rowDesconto");    
     const rowExtra = document.getElementById("rowExtra");    
 
+    // Elementos de Resumo
+    const resumoTipoText = document.getElementById("resumoTipoText");
+    const resumoLadoText = document.getElementById("resumoLadoText");
+    const resumoQtdText = document.getElementById("resumoQtdText");
+    const resumoArquivoText = document.getElementById("resumoArquivoText");
+
     function calcularValor() {    
         let total = 0;    
         let subtotal = 0;    
@@ -894,22 +1010,47 @@
 
         if (servicoAtivo === 'a4') {    
             let precoUnitario = 0.50;    
+            let tipoNome = "Preto e Branco";
+
             switch(selectTipo.value) {    
-                case "pouca_cor": precoUnitario = 1.00; break;    
-                case "media_cor": precoUnitario = 1.35; break;    
-                case "cobertura_total": precoUnitario = 2.00; break;    
-                case "pb": default: precoUnitario = 0.50; break;    
+                case "pouca_cor": 
+                    precoUnitario = 1.00; 
+                    tipoNome = "Colorida Pouca Cor";
+                    break;    
+                case "media_cor": 
+                    precoUnitario = 1.35; 
+                    tipoNome = "Colorida Média Cor";
+                    break;    
+                case "cobertura_total": 
+                    precoUnitario = 2.00; 
+                    tipoNome = "Colorida Cobertura Total";
+                    break;    
+                case "pb": 
+                default: 
+                    precoUnitario = 0.50; 
+                    tipoNome = "Preto e Branco";
+                    break;    
             }    
             const qtd = parseInt(inputQtd.value) || 1;    
             subtotal = precoUnitario * qtd;    
             if (selectTipo.value === "media_cor" && qtd > 5) {    
                 desconto = (1.35 - 1.20) * qtd;    
             }    
+
+            // Atualização do Resumo
+            resumoTipoText.innerText = tipoNome;
+            resumoLadoText.innerText = selectLado ? selectLado.value : "Frente";
+            resumoQtdText.innerText = `${qtd} folha(s)`;
+
         } else if (servicoAtivo === 'doc') {    
             let precoDoc = 1.00;    
             if (selectDocOficial.value === 'boleto') precoDoc = 0.50;    
             const qtd = parseInt(inputQtdDoc.value) || 1;    
             subtotal = precoDoc * qtd;    
+
+            resumoTipoText.innerText = "Documento Oficial";
+            resumoLadoText.innerText = "Padrão";
+            resumoQtdText.innerText = `${qtd} via(s)`;
         } else if (servicoAtivo === 'dig') {    
             const qtd = parseInt(inputQtdDig.value) || 1;    
             subtotal = 2.00 * qtd;    
@@ -920,6 +1061,10 @@
 
             let totalDig = precoEfetivo * qtd;    
             desconto = subtotal - totalDig;    
+
+            resumoTipoText.innerText = "Digitalização";
+            resumoLadoText.innerText = "N/A";
+            resumoQtdText.innerText = `${qtd} pág(s)`;
         }    
 
         if (optAmostra && optAmostra.checked) {    
@@ -949,17 +1094,34 @@
     }    
 
     selectTipo.addEventListener("change", calcularValor);    
+    if (selectLado) selectLado.addEventListener("change", calcularValor);
     inputQtd.addEventListener("input", calcularValor);    
     selectDocOficial.addEventListener("change", calcularValor);    
     inputQtdDoc.addEventListener("input", calcularValor);    
     inputQtdDig.addEventListener("input", calcularValor);    
     if(optAmostra) optAmostra.addEventListener("change", calcularValor);    
 
+    // EXIBIÇÃO VISUAL DO ARQUIVO SELECIONADO
+    const inputArquivo = document.getElementById("arquivo");
+    const fileSelectedDisplay = document.getElementById("fileSelectedDisplay");
+    const fileNameText = document.getElementById("fileNameText");
+
+    inputArquivo.addEventListener("change", function() {
+        if (this.files && this.files.length > 0) {
+            const nomeArq = this.files[0].name;
+            fileNameText.innerText = nomeArq;
+            fileSelectedDisplay.classList.remove("hidden");
+            resumoArquivoText.innerText = nomeArq;
+        } else {
+            fileSelectedDisplay.classList.add("hidden");
+            resumoArquivoText.innerText = "Não selecionado";
+        }
+    });
+
     // MODO ANEXAR / COLAR TEXTO    
     const btnToggleModo = document.getElementById("btnToggleModo");    
     const campoArquivoContainer = document.getElementById("campoArquivoContainer");    
     const campoTextoContainer = document.getElementById("campoTextoContainer");    
-    const inputArquivo = document.getElementById("arquivo");    
     let modoTextoAtivo = false;    
 
     btnToggleModo.addEventListener("click", () => {    
@@ -969,11 +1131,13 @@
             campoTextoContainer.classList.remove("hidden");    
             btnToggleModo.innerText = "📁 Prefiro anexar arquivo";    
             inputArquivo.removeAttribute("required");    
+            resumoArquivoText.innerText = "Texto Digitado";
         } else {    
             campoTextoContainer.classList.add("hidden");    
             campoArquivoContainer.classList.remove("hidden");    
             btnToggleModo.innerText = "✏️ Prefiro colar um texto";    
             if(servicoAtivo === 'a4') inputArquivo.setAttribute("required", "required");    
+            resumoArquivoText.innerText = inputArquivo.files.length > 0 ? inputArquivo.files[0].name : "Não selecionado";
         }    
     });    
 
@@ -992,7 +1156,8 @@
 
         if (servicoAtivo === 'a4') {    
             const textoTipo = selectTipo.options[selectTipo.selectedIndex].text;    
-            document.getElementById("hidden_tipo_texto").value = textoTipo;    
+            const textoLado = selectLado ? selectLado.value : "Frente";
+            document.getElementById("hidden_tipo_texto").value = `${textoTipo} | Lado: ${textoLado}`;    
         } else if (servicoAtivo === 'doc') {    
             const textoDoc = selectDocOficial.options[selectDocOficial.selectedIndex].text;    
             document.getElementById("hidden_tipo_texto").value = textoDoc;    
