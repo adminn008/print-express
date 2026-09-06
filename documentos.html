@@ -232,6 +232,67 @@
             cursor: pointer;
         }
 
+        .upload-info-box {
+            background: var(--bg-input);
+            border: 1px dashed var(--primary);
+            padding: 12px 14px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        .upload-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-small-danger {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .resumo-conferencia {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .resumo-conferencia h4 {
+            color: var(--primary);
+            font-size: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            margin-bottom: 4px;
+        }
+
+        .resumo-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .resumo-item strong { color: var(--text-main); text-align: right; }
+        .resumo-item span { color: var(--text-muted); }
+
         .price-box {
             background: var(--bg-input);
             border: 1px solid var(--border-color);
@@ -279,6 +340,15 @@
             display: flex; align-items: center; justify-content: center; gap: 8px;
             margin-top: 12px;
             box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+
+        .orientacao-oficial {
+            background: rgba(2, 132, 199, 0.08);
+            border-left: 4px solid var(--primary);
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text-main);
         }
     </style>
 </head>
@@ -353,15 +423,15 @@
         </div>
 
         <div class="box-privacidade">
-            <div style="font-size: 24px;">🔒</div>
+            <div style="font-size: 24px;">🔐</div>
             <div>
-                <p style="margin-bottom: 20px;">
-                    <strong>Segurança e Sigilo Absoluto</strong><br>
-                    Utilizamos seus dados <strong>exclusivamente</strong> nos portais do governo/Detran para consultar e gerar o documento solicitado. Garantimos <strong>100% de sigilo e proteção total de dados</strong>.
+                <p style="margin-bottom: 8px;">
+                    <strong>Privacidade</strong><br>
+                    Os dados fornecidos são utilizados para atendimento e execução do serviço solicitado. Não envie senhas, códigos de autenticação ou credenciais de acesso.
                 </p>
                
                 <p>
-                    <strong>Aviso de Envio Seguro via WhatsApp:</strong> No novo fluxo do site, as informações do seu pedido desta aba não passam por intermediários e são encaminhadas direta e exclusivamente para o nosso WhatsApp oficial, garantindo máxima segurança, agilidade no atendimento e sigilo total dos seus dados.
+                    <strong>Aviso de Envio Seguro via WhatsApp:</strong> No novo fluxo do site, as informações do seu pedido desta aba não passam por intermediários e são encaminhadas direta e exclusivamente para o nosso WhatsApp oficial, garantindo máxima segurança e agilidade.
                 </p>
             </div>
         </div>
@@ -399,22 +469,33 @@
                 </select>
             </div>
 
-            <div class="form-group">
-                <label for="possiu_documento">Você possui o arquivo do documento?</label>
-                <select id="possiu_documento" name="Possui o Arquivo">
-                    <option value="nao">Não tenho o documento (Preciso que vocês busquem/emitam)</option>
-                    <option value="sim">Sim, eu tenho o documento (Apenas Anexo / Impressão)</option>
+            <div class="form-group" id="grupoComoSolicitar">
+                <label for="possiu_documento">Como você deseja solicitar?</label>
+                <select id="possiu_documento" name="Modo de Solicitação">
+                    <option value="nao">🔎 Preciso que o documento seja emitido</option>
+                    <option value="sim">📎 Já possuo o documento e quero apenas imprimir</option>
                 </select>
             </div>
 
             <div class="form-group" id="grupoAnexo">
                 <label for="arquivo">Anexar Documento (PDF ou Imagem):</label>
                 <input type="file" id="arquivo" name="attachment" accept=".pdf,.png,.jpg,.jpeg">
+                <div id="boxUploadInfo" class="upload-info-box hidden">
+                    <span>📎 Documento selecionado: <strong id="nomeArquivoSelecionado">""</strong></span>
+                    <div class="upload-actions">
+                        <button type="button" class="btn-small" onclick="document.getElementById('arquivo').click()">🔄 Trocar</button>
+                        <button type="button" class="btn-small btn-small-danger" onclick="removerArquivo()">✕ Remover</button>
+                    </div>
+                </div>
             </div>
 
             <div id="camposBusca" class="form-group" style="background: var(--bg-input); padding: 16px; border-radius: 14px; gap: 12px; border: 1px solid var(--border-color);">
-                <p style="font-size: 13px; font-weight: 700; color: var(--primary);">📋 Dados Obrigatórios para Busca no Portal Oficial:</p>
+                <p style="font-size: 13px; font-weight: 700; color: var(--primary);">📋 Dados Necessários para Emissão:</p>
                 
+                <div class="orientacao-oficial" id="orientacaoSeguranca">
+                    ℹ️ A emissão depende da liberação nos sistemas oficiais. Não solicitamos senhas do gov.br ou códigos de autenticação.
+                </div>
+
                 <div class="form-group" id="grupoPlaca">
                     <label for="placa">Placa do Veículo: *</label>
                     <input type="text" id="placa" name="Placa do Veiculo" placeholder="ABC-1D23" maxlength="8">
@@ -451,15 +532,74 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Caso o documento tenha mais de 10 páginas:</label>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" name="Acabamento Folhas Extra" value="Soltas" checked> 📄 Entregar Soltas
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="Acabamento Folhas Extra" value="Com Clipes"> 📎 Agrupar com Clipes (A partir de 10 pág.)
-                    </label>
+            <!-- OPÇÕES DE IMPRESSÃO ORGANIZADAS -->
+            <div id="secaoConfigImpressao" class="form-group" style="gap: 14px;">
+                <h3>🖨️ Configurações de Impressão</h3>
+
+                <div class="form-group">
+                    <label>Tipo de Impressão:</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="TipoImpressao" value="Preto e Branco" checked> 🖤 Preto e branco
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="TipoImpressao" value="Colorido"> 🎨 Colorido
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Lado da Impressão:</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="LadoImpressao" value="Frente" checked> 📄 Frente
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="LadoImpressao" value="Frente e Verso"> 🔄 Frente e verso
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="qtd_copias">Quantidade de Folhas/Cópias:</label>
+                    <input type="number" id="qtd_copias" name="Quantidade de Copias" value="1" min="1" max="100">
+                    <span style="font-size: 12px; color: var(--text-muted);">Ex.: Um documento com 5 páginas × 3 cópias = 15 páginas impressas.</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Organização das Cópias:</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="OrganizacaoCopias" value="Ordem normal" checked> 📑 Ordem normal
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="OrganizacaoCopias" value="Agrupar cada cópia completa"> 📦 Agrupar cada cópia completa
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Acabamento:</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="Acabamento" value="Sem acabamento" checked> 📄 Sem acabamento
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="Acabamento" value="Grampeado"> 📌 Grampeado
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Caso o documento tenha mais de 10 páginas:</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="Acabamento Folhas Extra" value="Soltas" checked> 📄 Entregar Soltas
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="Acabamento Folhas Extra" value="Com Clipes"> 📎 Agrupar com Clipes (A partir de 10 pág.)
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -511,22 +651,41 @@
 
             <div class="form-group">
                 <label for="observacoes">Observações (Opcional):</label>
-                <textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex: Preciso retirar até as 17h..."></textarea>
+                <textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex.: imprimir somente as páginas 2–5, fazer 2 cópias ou deixar uma observação sobre o pedido."></textarea>
+            </div>
+
+            <!-- CONFERÊNCIA AUTOMÁTICA -->
+            <div class="resumo-conferencia">
+                <h4>📋 Confira seu pedido</h4>
+                <div class="resumo-item"><span>Documento:</span> <strong id="confDoc">-</strong></div>
+                <div class="resumo-item"><span>Solicitação:</span> <strong id="confModo">-</strong></div>
+                <div class="resumo-item" id="confRowArquivo"><span>Arquivo:</span> <strong id="confArquivo">Não anexado</strong></div>
+                <div class="resumo-item" id="confRowDados"><span>Dados preenchidos:</span> <strong id="confDados">-</strong></div>
+                <div class="resumo-item"><span>Impressão:</span> <strong id="confImpressao">-</strong></div>
+                <div class="resumo-item"><span>Lado:</span> <strong id="confLado">-</strong></div>
+                <div class="resumo-item"><span>Quantidade:</span> <strong id="confQtd">1</strong></div>
+                <div class="resumo-item"><span>Organização:</span> <strong id="confOrg">-</strong></div>
+                <div class="resumo-item"><span>Acabamento:</span> <strong id="confAcabamento">-</strong></div>
+                <div class="resumo-item" id="confRowObs"><span>Observações:</span> <strong id="confObs">-</strong></div>
             </div>
 
             <div class="price-box">
+                <div style="font-weight:700; font-size:13px; color:var(--text-main); margin-bottom: 2px;">Resumo do valor</div>
                 <div class="price-row">
-                    <span>Documento Base:</span>
+                    <span>Impressão:</span>
                     <span id="valorBaseExibicao">R$ 12,20</span>
                 </div>
                 <div class="price-row" id="rowAdicionais" style="display: none; color: var(--primary);">
-                    <span>Adicionais Selecionados:</span>
+                    <span>Adicionais:</span>
                     <span id="valorAdicionaisExibicao">+ R$ 0,00</span>
                 </div>
                 <div class="price-row total">
-                    <span>Valor Total Estimado:</span>
+                    <span>Total estimado:</span>
                     <strong id="valorTotalExibicao">R$ 12,20</strong>
                 </div>
+                <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">
+                    ℹ️ O valor apresentado é uma estimativa e pode variar conforme o arquivo, quantidade e configurações da impressão.
+                </p>
             </div>
 
             <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido via WhatsApp 🚀</button>
@@ -627,9 +786,9 @@
             e.target.value = v;
         });
 
-        document.getElementById("nome").addEventListener("input", (e) => e.target.value = e.target.value.toUpperCase());
-        document.getElementById("placa").addEventListener("input", (e) => e.target.value = e.target.value.toUpperCase());
-        document.getElementById("nome_mae").addEventListener("input", (e) => e.target.value = e.target.value.toUpperCase());
+        document.getElementById("nome").addEventListener("input", (e) => { e.target.value = e.target.value.toUpperCase(); atualizarConferencia(); });
+        document.getElementById("placa").addEventListener("input", (e) => { e.target.value = e.target.value.toUpperCase(); atualizarConferencia(); });
+        document.getElementById("nome_mae").addEventListener("input", (e) => { e.target.value = e.target.value.toUpperCase(); atualizarConferencia(); });
 
         document.getElementById("cpf_titular").addEventListener("input", (e) => {
             let v = e.target.value.replace(/\D/g, '');
@@ -638,6 +797,7 @@
             v = v.replace(/(\d{3})(\d)/, '$1.$2');
             v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
             e.target.value = v;
+            atualizarConferencia();
         });
 
         document.getElementById("cnpj_numero").addEventListener("input", (e) => {
@@ -648,6 +808,7 @@
             v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
             v = v.replace(/(\d{4})(\d)/, '$1-$2');
             e.target.value = v;
+            atualizarConferencia();
         });
 
         const selectPossuiDoc = document.getElementById("possiu_documento");
@@ -667,6 +828,25 @@
         const cardPdfWhats = document.getElementById("card_pdf_whats");
         const optCopiaExtra = document.getElementById("opt_copia_extra");
         const optRecorte = document.getElementById("opt_recorte");
+
+        // GERENCIAMENTO VISUAL DE UPLOAD
+        inputArquivo.addEventListener("change", function() {
+            const boxInfo = document.getElementById("boxUploadInfo");
+            const nomeArq = document.getElementById("nomeArquivoSelecionado");
+            if (this.files && this.files.length > 0) {
+                nomeArq.innerText = `"${this.files[0].name}"`;
+                boxInfo.classList.remove("hidden");
+            } else {
+                boxInfo.classList.add("hidden");
+            }
+            atualizarConferencia();
+        });
+
+        function removerArquivo() {
+            inputArquivo.value = "";
+            document.getElementById("boxUploadInfo").classList.add("hidden");
+            atualizarConferencia();
+        }
 
         function calcularEAtualizarCampos() {
             let tipo = selectTipo.value;
@@ -692,6 +872,7 @@
             }
 
             if (temDoc) {
+                document.getElementById("grupoAnexo").style.display = "flex";
                 inputArquivo.disabled = false;
                 inputArquivo.required = true;
                 
@@ -703,11 +884,11 @@
                 inputCnpj.disabled = true;
                 inputDescricaoOutro.disabled = true;
 
-                document.getElementById("camposBusca").classList.add("campo-desativado-wrapper");
+                document.getElementById("camposBusca").style.display = "none";
             } else {
+                document.getElementById("grupoAnexo").style.display = "none";
                 inputArquivo.disabled = true;
                 inputArquivo.required = false;
-                inputArquivo.value = "";
 
                 inputPlaca.disabled = false;
                 inputRenavam.disabled = false;
@@ -717,13 +898,13 @@
                 inputCnpj.disabled = false;
                 inputDescricaoOutro.disabled = false;
 
-                document.getElementById("camposBusca").classList.remove("campo-desativado-wrapper");
+                document.getElementById("camposBusca").style.display = "flex";
             }
 
             document.getElementById("grupoPlaca").style.display = (tipo === "crlv" && !temDoc) ? "flex" : "none";
             document.getElementById("grupoRenavam").style.display = (tipo === "crlv" && !temDoc) ? "flex" : "none";
 
-            document.getElementById("grupoCpfTitular").style.display = ((tipo === "situacao_cpf" || tipo === "antecedentes") && !temDoc) ? "flex" : "none";
+            document.getElementById("grupoCpfTitular").style.display = ((tipo === "crlv" || tipo === "situacao_cpf" || tipo === "antecedentes") && !temDoc) ? "flex" : "none";
             document.getElementById("grupoDataNascimento").style.display = ((tipo === "situacao_cpf" || tipo === "antecedentes") && !temDoc) ? "flex" : "none";
             
             document.getElementById("grupoNomeMae").style.display = (tipo === "antecedentes" && !temDoc) ? "flex" : "none";
@@ -761,7 +942,53 @@
             }
 
             document.getElementById("valorTotalExibicao").innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            document.getElementById("hidden_total").value = `R$ ${total.toFixed(2).replace('.', ',')}`;
+
+            atualizarConferencia();
             return total;
+        }
+
+        function atualizarConferencia() {
+            document.getElementById("confDoc").innerText = selectTipo.options[selectTipo.selectedIndex].text;
+            const modo = selectPossuiDoc.value === "sim" ? "Já possuo (Somente Impressão)" : "Solicitar Emissão";
+            document.getElementById("confModo").innerText = modo;
+
+            if (selectPossuiDoc.value === "sim") {
+                document.getElementById("confRowArquivo").style.display = "flex";
+                document.getElementById("confRowDados").style.display = "none";
+                const file = inputArquivo.files[0];
+                document.getElementById("confArquivo").innerText = file ? file.name : "Não anexado";
+            } else {
+                document.getElementById("confRowArquivo").style.display = "none";
+                document.getElementById("confRowDados").style.display = "flex";
+                let dadosArr = [];
+                if (inputCpfTitular.value) dadosArr.push(`CPF: ${inputCpfTitular.value}`);
+                if (inputPlaca.value) dadosArr.push(`Placa: ${inputPlaca.value}`);
+                if (inputRenavam.value) dadosArr.push(`RENAVAM: ${inputRenavam.value}`);
+                if (inputDataNasc.value) dadosArr.push(`Nasc: ${inputDataNasc.value}`);
+                if (inputCnpj.value) dadosArr.push(`CNPJ: ${inputCnpj.value}`);
+                document.getElementById("confDados").innerText = dadosArr.length > 0 ? dadosArr.join(" | ") : "Pendente";
+            }
+
+            const tipoImp = document.querySelector('input[name="TipoImpressao"]:checked')?.value || "-";
+            const ladoImp = document.querySelector('input[name="LadoImpressao"]:checked')?.value || "-";
+            const qtdCop = document.getElementById("qtd_copias").value || "1";
+            const orgCop = document.querySelector('input[name="OrganizacaoCopias"]:checked')?.value || "-";
+            const acab = document.querySelector('input[name="Acabamento"]:checked')?.value || "-";
+            const obsText = document.getElementById("observacoes").value.trim();
+
+            document.getElementById("confImpressao").innerText = tipoImp;
+            document.getElementById("confLado").innerText = ladoImp;
+            document.getElementById("confQtd").innerText = `${qtdCop} cópia(s)`;
+            document.getElementById("confOrg").innerText = orgCop;
+            document.getElementById("confAcabamento").innerText = acab;
+
+            if (obsText) {
+                document.getElementById("confRowObs").style.display = "flex";
+                document.getElementById("confObs").innerText = obsText;
+            } else {
+                document.getElementById("confRowObs").style.display = "none";
+            }
         }
 
         selectPossuiDoc.addEventListener("change", calcularEAtualizarCampos);
@@ -770,11 +997,16 @@
         optPdfWhats.addEventListener("change", calcularEAtualizarCampos);
         optCopiaExtra.addEventListener("change", calcularEAtualizarCampos);
         optRecorte.addEventListener("change", calcularEAtualizarCampos);
+        document.getElementById("qtd_copias").addEventListener("input", atualizarConferencia);
+        document.getElementById("observacoes").addEventListener("input", atualizarConferencia);
+
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener("change", atualizarConferencia);
+        });
 
         calcularEAtualizarCampos();
 
         const form = document.getElementById("formDoc");
-        const btnSubmit = document.getElementById("btnSubmit");
 
         form.addEventListener("submit", (e) => {
             e.preventDefault();
@@ -786,6 +1018,12 @@
             const tipoDocText = selectTipo.options[selectTipo.selectedIndex].text;
             const possuiDocText = selectPossuiDoc.options[selectPossuiDoc.selectedIndex].text;
             const obs = document.getElementById("observacoes").value;
+
+            const tipoImp = document.querySelector('input[name="TipoImpressao"]:checked').value;
+            const ladoImp = document.querySelector('input[name="LadoImpressao"]:checked').value;
+            const qtdCop = document.getElementById("qtd_copias").value;
+            const orgCop = document.querySelector('input[name="OrganizacaoCopias"]:checked').value;
+            const acab = document.querySelector('input[name="Acabamento"]:checked').value;
 
             // Montando mensagem estruturada para o WhatsApp
             let detalhesBusca = "";
@@ -809,8 +1047,14 @@
                 `👤 *Cliente:* ${clienteNome}\n` +
                 `📱 *WhatsApp:* ${clienteWhats}\n` +
                 `📄 *Serviço:* ${tipoDocText}\n` +
-                `📁 *Possui Arquivo:* ${possuiDocText}\n` +
-                (detalhesBusca ? `\n*DADOS PARA BUSCA:*${detalhesBusca}\n` : '') +
+                `📁 *Solicitação:* ${possuiDocText}\n` +
+                (detalhesBusca ? `\n*DADOS PARA EMISSÃO:*${detalhesBusca}\n` : '') +
+                `\n🖨️ *CONFIGURAÇÕES DE IMPRESSÃO:*\n` +
+                `• Tipo: ${tipoImp}\n` +
+                `• Impressão: ${ladoImp}\n` +
+                `• Quantidade: ${qtdCop} cópia(s)\n` +
+                `• Organização: ${orgCop}\n` +
+                `• Acabamento: ${acab}\n` +
                 (extras.length > 0 ? `\n✨ *Extras:* ${extras.join(', ')}\n` : '') +
                 (obs ? `\n💬 *Obs:* ${obs}\n` : '') +
                 `\n💳 *Pagamento:* ${pagamentoSel}\n` +
