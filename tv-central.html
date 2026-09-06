@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central de Avisos — Gráfica (TV)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Firebase SDKs (v9 Compat para simplicidade e performance em navegadores de TV) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            color: #f9fafb;
+            overflow: hidden;
+            user-select: none;
+        }
+        .slide-enter {
+            animation: fadeIn 0.8s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .progress-bar-fill {
+            transition: width 0.1s linear;
+        }
+        /* Oculta barra de rolagem */
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col justify-between p-6 relative">
+
+    <!-- 🧭 ÁREA SUPERIOR (Cabeçalho) -->
+    <header class="flex justify-between items-center bg-gray-900/80 backdrop-blur border border-gray-800 rounded-2xl p-5 shadow-2xl z-20">
+        <div class="flex items-center gap-4">
+            <div class="bg-indigo-600 p-3 rounded-xl shadow-lg shadow-indigo-500/30">
+                <i data-lucide="printer" class="w-8 h-8 text-white"></i>
+            </div>
+            <div>
+                <h1 id="config-nome" class="text-2xl font-black tracking-tight text-white uppercase">Gráfica Central</h1>
+                <p class="text-sm font-semibold tracking-widest text-indigo-400 uppercase">Central de Avisos & Operações</p>
+            </div>
+        </div>
+
+        <!-- Status Operacional em Destaque -->
+        <div id="status-operacional-tag" class="flex items-center gap-3 px-5 py-2.5 rounded-full bg-emerald-500/10 border border-emerald-500/30">
+            <span id="status-ping" class="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="status-texto" class="text-emerald-400 font-bold uppercase tracking-wider text-sm">🟢 Atendimento Normal</span>
+        </div>
+
+        <!-- Clima, Data e Relógio Realtime -->
+        <div class="flex items-center gap-8">
+            <div id="weather-box" class="flex items-center gap-3 bg-gray-800/60 px-4 py-2 rounded-xl border border-gray-700/50">
+                <i id="weather-icon" data-lucide="cloud-sun" class="w-6 h-6 text-amber-400"></i>
+                <div class="text-right">
+                    <div id="temp-display" class="text-lg font-bold">--°C</div>
+                    <div id="cidade-display" class="text-xs text-gray-400 font-medium">Carregando...</div>
+                </div>
+            </div>
+
+            <div class="text-right">
+                <div id="clock-display" class="text-3xl font-black tracking-tight text-white font-mono">00:00:00</div>
+                <div id="date-display" class="text-xs font-semibold text-gray-400 uppercase">Segunda, 00 de Janeiro</div>
+            </div>
+
+            <button id="fullscreen-btn" onclick="toggleFullscreen()" class="p-3 bg-gray-800 hover:bg-gray-700 rounded-xl border border-gray-700 text-gray-300 transition">
+                <i data-lucide="maximize-2" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- 📺 ÁREA CENTRAL (Rotação de Conteúdos) -->
+    <main id="content-display" class="flex-1 my-6 relative overflow-hidden flex items-center justify-center">
+        <!-- O conteúdo dinâmico (Avisos, Tabelas, Vídeos, Promoções) será injetado via JS -->
+    </main>
+
+    <!-- 📦 PAINEL INFERIOR (Pedidos em Produção/Prontos + Rodapé) -->
+    <footer class="flex flex-col gap-4 z-20">
+        <!-- Status de Pedidos Dinâmicos -->
+        <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-4 flex items-center gap-6 overflow-x-auto shadow-2xl">
+            <div class="flex items-center gap-2 border-r border-gray-800 pr-6 text-indigo-400 font-extrabold uppercase text-sm tracking-wider whitespace-nowrap">
+                <i data-lucide="package" class="w-5 h-5"></i>
+                <span>Painel de Pedidos:</span>
+            </div>
+            <div id="pedidos-container" class="flex items-center gap-4 overflow-x-auto w-full py-1">
+                <!-- Pedidos carregados dinamicamente do Firebase -->
+                <span class="text-gray-500 text-sm italic">Carregando fila de pedidos...</span>
+            </div>
+        </div>
+
+        <!-- Indicador de Navegação e Barra de Progresso -->
+        <div class="flex items-center justify-between px-2">
+            <div id="dots-indicator" class="flex items-center gap-2">
+                <!-- Bolinhas de navegação ativas/inativas -->
+            </div>
+            
+            <div class="flex items-center gap-4 w-1/3">
+                <span id="offline-indicator" class="hidden text-xs font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full flex items-center gap-1">
+                    <i data-lucide="wifi-off" class="w-3.5 h-3.5"></i> Modo Offline (Cache Local)
+                </span>
+                <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden border border-gray-700/50">
+                    <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-cyan-400 h-full w-0 progress-bar-fill"></div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Elemento de Áudio para Avisos Importantes -->
+    <audio id="alert-sound" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // =========================================================================
+        // ⚙️ CONFIGURAÇÃO DO FIREBASE (INSIRA SUAS CREDENCIAIS AQUI)
+        // =========================================================================
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY_AQUI",
+            authDomain: "SEU_PROJETO.firebaseapp.com",
+            projectId: "SEU_PROJETO_ID",
+            storageBucket: "SEU_PROJETO.appspot.com",
+            messagingSenderId: "SEU_SENDER_ID",
+            appId: "SEU_APP_ID"
+        };
+
+        // Inicializa o Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        db.enablePersistence().catch(() => console.warn("Cache offline ativado parcialmente."));
+
+        // =========================================================================
+        // 🛠️ ESTADO DA APLICAÇÃO & DADOS LOCAIS DE FALLBACK (Sempre Roda sem Erro)
+        // =========================================================================
+        let appConfig = {
+            nomeGrafica: "Gráfica & Editora Express",
+            cidade: "São Paulo",
+            weatherApiKey: "bd5e378503939ddaee76f12ad7a97608", // Chave pública OpenWeatherMap
+            somAtivado: true
+        };
+
+        let statusOperacional = {
+            tipo: "normal",
+            texto: "🟢 Atendimento Normal"
+        };
+
+        let avisosList = [
+            {
+                id: "def1",
+                categoria: "📢 Aviso",
+                prioridade: "alta",
+                duracao: 10,
+                formato: "simples",
+                titulo: "SEJA BEM-VINDO À CENTRAL!",
+                texto: "Acompanhe nesta tela o status dos pedidos em tempo real, tabelas de prazos e comunicados importantes de nossa equipe.",
+                icone: "info",
+                ativo: true
+            },
+            {
+                id: "def2",
+                categoria: "🏷️ Promoção",
+                prioridade: "media",
+                duracao: 12,
+                formato: "promocao",
+                titulo: "SEMANA DOS PANFLETOS 10x14cm",
+                texto: "1.000 unidades em Papel Couché 90g com verniz total frente. Aproveite as condições especiais para pedidos hoje!",
+                imagem: "https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?auto=format&fit=crop&w=1200&q=80",
+                ativo: true
+            },
+            {
+                id: "def3",
+                categoria: "📊 Tabela",
+                prioridade: "media",
+                duracao: 15,
+                formato: "tabela",
+                titulo: "TABELA DE SERVIÇOS & PRAZOS MÉDIOS",
+                tabelaConteudo: [
+                    { item: "Impressão Digital A4/A3", prazo: "Imediato", obs: "Até 500 folhas" },
+                    { item: "Cartões de Visita (Couché 300g)", prazo: "24 a 48 Horas", obs: "Com verniz localizado" },
+                    { item: "Banners & Faixas em Lona", prazo: "No mesmo dia", obs: "Arte final aprovada até 12h" },
+                    { item: "Apostilas & Encadernações", prazo: "2 a 4 Horas", obs: "Espiral ou Wire-O" }
+                ],
+                ativo: true
+            }
+        ];
+
+        let pedidosList = [
+            { numero: "0042", cliente: "Balcão", status: "pronto" },
+            { numero: "0043", cliente: "Empresa X", status: "producao" },
+            { numero: "0044", cliente: "Design Studio", status: "aguardando" }
+        ];
+
+        let currentIndex = 0;
+        let rotationTimer = null;
+        let progressInterval = null;
+
+        // =========================================================================
+        // 🕒 RELÓGIO & CLIMA EM TEMPO REAL
+        // =========================================================================
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock-display').innerText = now.toLocaleTimeString('pt-BR');
+            
+            const options = { weekday: 'long', day: '2-digit', month: 'long' };
+            const dateStr = now.toLocaleDateString('pt-BR', options);
+            document.getElementById('date-display').innerText = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        async function fetchWeather() {
+            const cidade = appConfig.cidade || "São Paulo";
+            document.getElementById('cidade-display').innerText = cidade;
+            try {
+                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cidade)},BR&units=metric&lang=pt_br&appid=${appConfig.weatherApiKey}`);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                document.getElementById('temp-display').innerText = `${Math.round(data.main.temp)}°C`;
+            } catch (e) {
+                document.getElementById('temp-display').innerText = "🌡️ Indisponível";
+            }
+        }
+
+        // =========================================================================
+        // ☁️ SINCRONIZAÇÃO EM TEMPO REAL COM FIREBASE
+        // =========================================================================
+        function initFirebaseListeners() {
+            window.addEventListener('online', () => document.getElementById('offline-indicator').classList.add('hidden'));
+            window.addEventListener('offline', () => document.getElementById('offline-indicator').classList.remove('hidden'));
+
+            // Listener de Configurações
+            db.collection("configuracoes").doc("geral").onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    appConfig = { ...appConfig, ...data };
+                    document.getElementById('config-nome').innerText = appConfig.nomeGrafica;
+                    fetchWeather();
+                }
+            }, err => console.log("Executando em modo local/fallback."));
+
+            // Listener de Status Operacional
+            db.collection("configuracoes").doc("status").onSnapshot((doc) => {
+                if (doc.exists) {
+                    statusOperacional = doc.data();
+                    updateStatusUI();
+                }
+            });
+
+            // Listener de Avisos
+            db.collection("avisos").where("ativo", "==", true).onSnapshot((snapshot) => {
+                const loadedAvisos = [];
+                snapshot.forEach(doc => {
+                    loadedAvisos.push({ id: doc.id, ...doc.data() });
+                });
+                if (loadedAvisos.length > 0) {
+                    // Ordena por prioridade (alta primeiro)
+                    loadedAvisos.sort((a, b) => (a.prioridade === 'alta' ? -1 : 1));
+                    avisosList = loadedAvisos;
+                    currentIndex = 0;
+                    startRotation();
+                }
+            });
+
+            // Listener de Pedidos
+            db.collection("pedidos").onSnapshot((snapshot) => {
+                const loadedPedidos = [];
+                snapshot.forEach(doc => {
+                    loadedPedidos.push({ id: doc.id, ...doc.data() });
+                });
+                if (loadedPedidos.length > 0) {
+                    pedidosList = loadedPedidos;
+                    renderPedidos();
+                }
+            });
+        }
+
+        function updateStatusUI() {
+            const ping = document.getElementById('status-ping');
+            const txt = document.getElementById('status-texto');
+            const container = document.getElementById('status-operacional-tag');
+
+            txt.innerText = statusOperacional.texto;
+            if (statusOperacional.tipo === 'urgente' || statusOperacional.tipo === 'indisponivel') {
+                container.className = "flex items-center gap-3 px-5 py-2.5 rounded-full bg-rose-500/10 border border-rose-500/30";
+                ping.className = "w-3.5 h-3.5 rounded-full bg-rose-500 animate-ping";
+                txt.className = "text-rose-400 font-bold uppercase tracking-wider text-sm";
+            } else if (statusOperacional.tipo === 'alerta') {
+                container.className = "flex items-center gap-3 px-5 py-2.5 rounded-full bg-amber-500/10 border border-amber-500/30";
+                ping.className = "w-3.5 h-3.5 rounded-full bg-amber-500 animate-pulse";
+                txt.className = "text-amber-400 font-bold uppercase tracking-wider text-sm";
+            } else {
+                container.className = "flex items-center gap-3 px-5 py-2.5 rounded-full bg-emerald-500/10 border border-emerald-500/30";
+                ping.className = "w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse";
+                txt.className = "text-emerald-400 font-bold uppercase tracking-wider text-sm";
+            }
+        }
+
+        // =========================================================================
+        // 📦 RENDERIZAÇÃO DA BARRA DE PEDIDOS
+        // =========================================================================
+        function renderPedidos() {
+            const container = document.getElementById('pedidos-container');
+            container.innerHTML = '';
+
+            pedidosList.forEach(p => {
+                let badgeClass = "bg-gray-800 text-gray-300 border-gray-700";
+                let icon = "clock";
+
+                if (p.status === 'pronto') {
+                    badgeClass = "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 animate-pulse";
+                    icon = "check-circle";
+                } else if (p.status === 'producao') {
+                    badgeClass = "bg-amber-500/20 text-amber-300 border-amber-500/40";
+                    icon = "cog";
+                }
+
+                const item = document.createElement('div');
+                item.className = `flex items-center gap-2.5 px-4 py-2 rounded-xl border ${badgeClass} text-sm font-bold whitespace-nowrap shadow-sm`;
+                item.innerHTML = `
+                    <i data-lucide="${icon}" class="w-4 h-4"></i>
+                    <span>PEDIDO #${p.numero}</span>
+                    <span class="opacity-75 font-normal text-xs">(${p.cliente || 'Geral'})</span>
+                    <span class="uppercase text-xs font-black px-2 py-0.5 rounded bg-black/30">${p.status}</span>
+                `;
+                container.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        // =========================================================================
+        // 🔄 MOTOR DE ROTAÇÃO E RENDERIZAÇÃO VISUAL DOS AVISOS
+        // =========================================================================
+        function startRotation() {
+            if (rotationTimer) clearInterval(rotationTimer);
+            if (progressInterval) clearInterval(progressInterval);
+            if (avisosList.length === 0) return;
+
+            renderCurrentAviso();
+        }
+
+        function renderCurrentAviso() {
+            const aviso = avisosList[currentIndex];
+            const main = document.getElementById('content-display');
+            main.innerHTML = '';
+
+            const card = document.createElement('div');
+            card.className = "w-full h-full flex flex-col justify-center items-center slide-enter px-8";
+
+            // Emitir som se for aviso urgente/alta prioridade
+            if (aviso.prioridade === 'alta' && appConfig.somAtivado) {
+                const sound = document.getElementById('alert-sound');
+                sound.play().catch(() => {}); // Evita erro se restrito pelo navegador
+            }
+
+            // MODELOS VISUAIS
+            if (aviso.formato === 'imagem' && aviso.imagem) {
+                card.innerHTML = `
+                    <div class="grid grid-cols-12 gap-8 w-full max-w-7xl h-5/6 items-center bg-gray-900/60 border border-gray-800 rounded-3xl p-8 shadow-2xl">
+                        <div class="col-span-7 h-full rounded-2xl overflow-hidden border border-gray-700/50 relative shadow-inner">
+                            <img src="${aviso.imagem}" class="w-full h-full object-cover" alt="Aviso">
+                        </div>
+                        <div class="col-span-5 flex flex-col justify-center gap-6">
+                            <span class="self-start text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">${aviso.categoria}</span>
+                            <h2 class="text-4xl font-black text-white leading-tight">${aviso.titulo}</h2>
+                            <p class="text-xl text-gray-300 leading-relaxed">${aviso.texto}</p>
+                        </div>
+                    </div>
+                `;
+            } else if (aviso.formato === 'tabela' && aviso.tabelaConteudo) {
+                let rows = aviso.tabelaConteudo.map(r => `
+                    <tr class="border-b border-gray-800 hover:bg-gray-800/30">
+                        <td class="py-5 px-6 font-bold text-xl text-white">${r.item}</td>
+                        <td class="py-5 px-6 font-semibold text-lg text-indigo-400">${r.prazo}</td>
+                        <td class="py-5 px-6 text-gray-400 text-base">${r.obs || '-'}</td>
+                    </tr>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="w-full max-w-6xl bg-gray-900/80 border border-gray-800 rounded-3xl p-10 shadow-2xl">
+                        <div class="flex items-center gap-4 mb-8 border-b border-gray-800 pb-6">
+                            <i data-lucide="table" class="w-10 h-10 text-indigo-400"></i>
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-widest text-indigo-400">${aviso.categoria}</span>
+                                <h2 class="text-3xl font-black text-white">${aviso.titulo}</h2>
+                            </div>
+                        </div>
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="text-xs uppercase text-gray-400 border-b border-gray-800">
+                                    <th class="pb-4 px-6">Serviço / Item</th>
+                                    <th class="pb-4 px-6">Prazo Estimado</th>
+                                    <th class="pb-4 px-6">Observação</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                `;
+            } else if (aviso.formato === 'video' && aviso.videoUrl) {
+                card.innerHTML = `
+                    <div class="w-full max-w-6xl h-full rounded-3xl overflow-hidden border border-gray-800 shadow-2xl bg-black flex items-center justify-center">
+                        <iframe class="w-full h-full" src="${aviso.videoUrl}?autoplay=1&mute=1&loop=1" frameborder="0" allow="autoplay"></iframe>
+                    </div>
+                `;
+            } else if (aviso.prioridade === 'alta') {
+                // Modelo Urgente/Importante
+                card.innerHTML = `
+                    <div class="w-full max-w-5xl bg-gradient-to-br from-rose-950/80 to-gray-900 border-2 border-rose-500/50 rounded-3xl p-12 text-center shadow-2xl relative overflow-hidden">
+                        <div class="absolute -top-10 -right-10 w-40 h-40 bg-rose-500/10 rounded-full blur-3xl"></div>
+                        <div class="inline-flex p-4 rounded-2xl bg-rose-500/20 text-rose-400 mb-6 border border-rose-500/30">
+                            <i data-lucide="alert-triangle" class="w-12 h-12"></i>
+                        </div>
+                        <span class="block text-sm font-black uppercase tracking-widest text-rose-400 mb-2">${aviso.categoria}</span>
+                        <h2 class="text-5xl font-black text-white mb-6 tracking-tight">${aviso.titulo}</h2>
+                        <p class="text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed font-medium">${aviso.texto}</p>
+                    </div>
+                `;
+            } else {
+                // Modelo Simples (Aviso Padrão)
+                card.innerHTML = `
+                    <div class="w-full max-w-5xl bg-gray-900/60 border border-gray-800 rounded-3xl p-12 text-center shadow-2xl">
+                        <div class="inline-flex p-4 rounded-2xl bg-indigo-500/10 text-indigo-400 mb-6 border border-indigo-500/20">
+                            <i data-lucide="${aviso.icone || 'bell'}" class="w-12 h-12"></i>
+                        </div>
+                        <span class="block text-xs font-bold uppercase tracking-widest text-indigo-400 mb-2">${aviso.categoria}</span>
+                        <h2 class="text-4xl font-black text-white mb-6">${aviso.titulo}</h2>
+                        <p class="text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">${aviso.texto}</p>
+                    </div>
+                `;
+            }
+
+            main.appendChild(card);
+            lucide.createIcons();
+
+            renderDots();
+            runProgressBar(aviso.duracao || 10);
+        }
+
+        function renderDots() {
+            const container = document.getElementById('dots-indicator');
+            container.innerHTML = '';
+            avisosList.forEach((_, idx) => {
+                const dot = document.createElement('div');
+                dot.className = `h-2.5 rounded-full transition-all duration-300 ${idx === currentIndex ? 'w-8 bg-indigo-500' : 'w-2.5 bg-gray-800'}`;
+                container.appendChild(dot);
+            });
+        }
+
+        function runProgressBar(seconds) {
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = '0%';
+            
+            let elapsed = 0;
+            const intervalTime = 100; // a cada 100ms
+            const totalSteps = (seconds * 1000) / intervalTime;
+
+            if (progressInterval) clearInterval(progressInterval);
+
+            progressInterval = setInterval(() => {
+                elapsed++;
+                const percentage = (elapsed / totalSteps) * 100;
+                progressBar.style.width = `${percentage}%`;
+
+                if (elapsed >= totalSteps) {
+                    clearInterval(progressInterval);
+                    nextAviso();
+                }
+            }, intervalTime);
+        }
+
+        function nextAviso() {
+            currentIndex = (currentIndex + 1) % avisosList.length;
+            renderCurrentAviso();
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => alert(`Erro ao ativar Tela Cheia: ${err.message}`));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // =========================================================================
+        // 🚀 INICIALIZAÇÃO DA APLICAÇÃO
+        // =========================================================================
+        window.onload = () => {
+            fetchWeather();
+            renderPedidos();
+            startRotation();
+            initFirebaseListeners();
+        };
+    </script>
+</body>
+</html>
