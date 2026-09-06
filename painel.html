@@ -318,7 +318,7 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
         }
 
-        .visual-box img {
+        .visual-box img, .visual-box video {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -561,6 +561,93 @@
         }
 
         /* ==========================================================================
+           NOVO SISTEMA — ESTILOS DOS AVISOS E INFORMAÇÕES ROTATIVAS
+           ========================================================================== */
+        .notice-category-badge {
+            background: rgba(2, 132, 199, 0.2);
+            border: 1px solid var(--accent-light);
+            color: var(--accent-light);
+            font-size: min(1.2rem, 2.2vh);
+            font-weight: 900;
+            padding: 0.5rem 1.8rem;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 2vh;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .notice-content-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 4vh 4vw;
+            text-align: center;
+            max-width: 900px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2vh;
+        }
+
+        .notice-title-text {
+            font-size: min(3rem, 5.5vh);
+            font-weight: 900;
+            color: var(--text-primary);
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+
+        .notice-body-text {
+            font-size: min(1.8rem, 3.2vh);
+            color: var(--text-secondary);
+            line-height: 1.4;
+            font-weight: 600;
+        }
+
+        .regions-pills {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 2vh;
+        }
+
+        .region-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-size: min(1.3rem, 2.4vh);
+            font-weight: 700;
+            padding: 0.8vh 1.8vw;
+            border-radius: 12px;
+        }
+
+        .video-notice-box {
+            width: 100%;
+            height: 100%;
+            max-height: 60vh;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            background: #000;
+        }
+
+        .video-notice-box video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* ==========================================================================
            CONTROLES & TELA CHEIA & BARRA DE PROGRESSO
            ========================================================================== */
         .fullscreen-btn {
@@ -641,7 +728,7 @@
     </header>
 
     <!-- CONTAINER DA APRESENTAÇÃO DE SLIDES -->
-    <main class="presentation-container">
+    <main class="presentation-container" id="presentationContainer">
 
         <!-- SLIDE 1: MARCA -->
         <div class="slide active" data-duration="6">
@@ -759,7 +846,8 @@
 
     <!-- ==========================================================================
        ÁREA DE CONFIGURAÇÃO & LÓGICA DE FUNCIONAMENTO CONTINUO
-       ========================================================================== -->
+       ========================================================================== */
+    -->
     <script>
         /* ----------------------------------------------------------------------
            ⚙️ CENTRAL DE CONFIGURAÇÃO (EDITE APENAS OS DADOS ABAIXO)
@@ -833,6 +921,204 @@
         };
 
         /* ----------------------------------------------------------------------
+           📢 NOVO SISTEMA — CADASTRO DE AVISOS E INFORMAÇÕES ROTATIVAS
+           ----------------------------------------------------------------------
+           Categorias disponíveis:
+           "novidade", "aviso", "melhoria", "horario", "servico",
+           "promocao", "localizacao", "informacao", "campanha", "video"
+           ---------------------------------------------------------------------- */
+        const AVISOS_CONFIG = [
+            {
+                ativo: true,
+                categoria: "novidade",
+                icone: "🆕",
+                titulo: "NOVIDADE NO PRINTEXPRESS",
+                texto: "Confira as novidades e melhorias da nossa gráfica.",
+                imagem: null,
+                video: null,
+                duracao: 7,
+                dataInicio: null,
+                dataTermino: null
+            },
+            {
+                ativo: true,
+                categoria: "servico",
+                icone: "🖼️",
+                titulo: "NOVO SERVIÇO",
+                texto: "Agora oferecemos impressão frente e verso com mais praticidade.",
+                imagem: "https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?auto=format&fit=crop&w=1200&q=80",
+                video: null,
+                duracao: 8,
+                dataInicio: null,
+                dataTermino: null
+            },
+            {
+                ativo: true,
+                categoria: "melhoria",
+                icone: "🔧",
+                titulo: "ESTAMOS MELHORANDO",
+                texto: "Novos recursos e melhorias estão chegando para facilitar seu atendimento.",
+                imagem: null,
+                video: null,
+                duracao: 7,
+                dataInicio: null,
+                dataTermino: null
+            },
+            {
+                ativo: true,
+                categoria: "horario",
+                icone: "🕐",
+                titulo: "HORÁRIO DE ATENDIMENTO",
+                texto: "Confira nossos horários antes de realizar sua retirada.",
+                imagem: null,
+                video: null,
+                duracao: 7,
+                dataInicio: null,
+                dataTermino: null
+            },
+            {
+                ativo: true,
+                categoria: "localizacao",
+                icone: "📍",
+                titulo: "ATENDIMENTO LOCAL",
+                texto: "Atendemos clientes da região e bairros próximos com máxima agilidade.",
+                regioes: ["Centro", "Bairro Alto", "São Cristóvão", "Água Verde", "Região Metropolitana"],
+                imagem: null,
+                video: null,
+                duracao: 8,
+                dataInicio: null,
+                dataTermino: null
+            },
+            {
+                ativo: true,
+                categoria: "servico",
+                icone: "🖨️",
+                titulo: "PRECISA IMPRIMIR?",
+                texto: "Envie seu arquivo e conte com nosso atendimento.",
+                imagem: null,
+                video: null,
+                duracao: 7,
+                dataInicio: null,
+                dataTermino: null
+            },
+            {
+                ativo: true,
+                categoria: "promocao",
+                icone: "🎉",
+                titulo: "PROMOÇÃO DE SETEMBRO",
+                texto: "Condição especial para impressões em lote válida até 30/09.",
+                imagem: null,
+                video: null,
+                duracao: 8,
+                dataInicio: "2026-09-01",
+                dataTermino: "2026-09-30"
+            },
+            {
+                ativo: true,
+                categoria: "aviso",
+                icone: "📢",
+                titulo: "AVISO IMPORTANTE",
+                texto: "Consulte nossa equipe caso tenha alguma dúvida sobre seu pedido.",
+                imagem: null,
+                video: null,
+                duracao: 7,
+                dataInicio: null,
+                dataTermino: null
+            },
+            {
+                ativo: true,
+                categoria: "dica",
+                icone: "💡",
+                titulo: "DICA ÚTIL",
+                texto: "Confira seu arquivo antes de enviá-lo para impressão.",
+                imagem: null,
+                video: null,
+                duracao: 7,
+                dataInicio: null,
+                dataTermino: null
+            },
+            {
+                ativo: false, // Exemplo de vídeo (defina ativo: true e inclua o link do MP4 para utilizar)
+                categoria: "video",
+                icone: "🎥",
+                titulo: "NOSSO PROCESSO",
+                texto: "",
+                imagem: null,
+                video: "https://www.w3schools.com/html/mov_bbb.mp4",
+                duracao: 10,
+                dataInicio: null,
+                dataTermino: null
+            }
+        ];
+
+        /* ----------------------------------------------------------------------
+           MOTOR DE RENDERIZAÇÃO DO NOVO SISTEMA DE AVISOS
+           ---------------------------------------------------------------------- */
+        function renderAvisosSlides() {
+            const container = document.getElementById('presentationContainer');
+            const hoje = new Date().toISOString().split('T')[0];
+
+            AVISOS_CONFIG.forEach((aviso) => {
+                // Validação de ativo e período (dataInicio / dataTermino)
+                if (!aviso.ativo) return;
+                if (aviso.dataInicio && hoje < aviso.dataInicio) return;
+                if (aviso.dataTermino && hoje > aviso.dataTermino) return;
+
+                const slideDiv = document.createElement('div');
+                slideDiv.className = 'slide';
+                slideDiv.setAttribute('data-duration', aviso.duracao || 8);
+
+                let contentHTML = '';
+
+                if (aviso.video) {
+                    // FORMATO VÍDEO
+                    contentHTML = `
+                        <div class="video-notice-box anim-item delay-1">
+                            <video src="${aviso.video}" autoplay loop muted playsinline></video>
+                        </div>
+                    `;
+                } else if (aviso.imagem) {
+                    // FORMATO IMAGEM + TEXTO
+                    contentHTML = `
+                        <div class="slide-layout-split">
+                            <div class="visual-box anim-item delay-1">
+                                <img src="${aviso.imagem}" alt="${aviso.titulo}">
+                            </div>
+                            <div>
+                                <div class="notice-category-badge anim-item delay-1">${aviso.icone} ${aviso.categoria.toUpperCase()}</div>
+                                <h2 class="section-title anim-item delay-2">${aviso.titulo}</h2>
+                                <p class="notice-body-text anim-item delay-3" style="text-align: left;">«${aviso.texto}»</p>
+                            </div>
+                        </div>
+                    `;
+                } else if (aviso.regioes && aviso.regioes.length > 0) {
+                    // FORMATO REGION/LOCALIZAÇÃO
+                    contentHTML = `
+                        <div class="notice-category-badge anim-item delay-1">${aviso.icone} ${aviso.titulo}</div>
+                        <div class="notice-content-card anim-item delay-2">
+                            <p class="notice-body-text">«${aviso.texto}»</p>
+                            <div class="regions-pills anim-item delay-3">
+                                ${aviso.regioes.map(r => `<span class="region-pill">📍 ${r}</span>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // FORMATO APENAS TEXTO
+                    contentHTML = `
+                        <div class="notice-category-badge anim-item delay-1">${aviso.icone} ${aviso.categoria.toUpperCase()}</div>
+                        <div class="notice-content-card anim-item delay-2">
+                            <h2 class="notice-title-text">${aviso.titulo}</h2>
+                            <p class="notice-body-text">«${aviso.texto}»</p>
+                        </div>
+                    `;
+                }
+
+                slideDiv.innerHTML = contentHTML;
+                container.appendChild(slideDiv);
+            });
+        }
+
+        /* ----------------------------------------------------------------------
            MOTOR DE EXECUÇÃO E REGRAS DE NEGÓCIO DO PAINEL
            ---------------------------------------------------------------------- */
 
@@ -865,7 +1151,7 @@
             fetchWeather();
             setInterval(fetchWeather, 600000); // Atualiza a cada 10 minutos
 
-            // Avisos
+            // Avisos da Barra Inferior
             const noticeContainer = document.getElementById('notice-container');
             const noticeText = document.getElementById('cfg-notice-text');
             if (CONFIG.avisoText && CONFIG.avisoText.trim() !== "") {
@@ -913,7 +1199,11 @@
             document.getElementById('cfg-contact-address').innerText = CONFIG.contato.endereco;
             document.getElementById('cfg-contact-hours').innerText = CONFIG.contato.horario;
 
-            // Criar Pontos Indicadores de Slide (Dots)
+            // Renderizar Novos Avisos Rotativos na Apresentação
+            renderAvisosSlides();
+
+            // Atualizar Referência de Slides Globais e Criar Indicador de Pontos (Dots)
+            slides = document.querySelectorAll('.slide');
             const dotsContainer = document.getElementById('slideDots');
             dotsContainer.innerHTML = Array.from(slides).map((_, i) => `<div class="dot ${i === 0 ? 'active' : ''}"></div>`).join('');
         }
@@ -964,12 +1254,14 @@
 
         // Loop Automático de Slides e Progresso
         let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
+        let slides = [];
         const progressBar = document.getElementById('progressBar');
         let slideTimeout;
         let progressInterval;
 
         function showSlide(index) {
+            if (!slides || slides.length === 0) return;
+
             slides.forEach((slide) => slide.classList.remove('active'));
 
             currentSlide = index;
@@ -977,6 +1269,13 @@
 
             const activeSlide = slides[currentSlide];
             activeSlide.classList.add('active');
+
+            // Recarregar vídeos caso o slide atual seja do tipo vídeo
+            const activeVideo = activeSlide.querySelector('video');
+            if (activeVideo) {
+                activeVideo.currentTime = 0;
+                activeVideo.play().catch(() => {});
+            }
 
             // Atualizar Indicador de Pontos (Dots)
             const dots = document.querySelectorAll('.dot');
