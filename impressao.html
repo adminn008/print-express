@@ -142,6 +142,143 @@
         display: block;
     }
 
+    /* ESTILOS DA TABELA DE PREÇOS NOVA */
+    .tabela-precos-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .tabela-precos-card h2 {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 12px;
+    }
+
+    .tabela-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tabela-precos {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 14px;
+        min-width: 480px;
+    }
+
+    .tabela-precos th {
+        background: var(--bg-input);
+        color: var(--primary);
+        padding: 12px 14px;
+        font-weight: 700;
+        border-bottom: 2px solid var(--border-color);
+        white-space: nowrap;
+    }
+
+    .tabela-precos td {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-main);
+    }
+
+    .tabela-precos tr:last-child td {
+        border-bottom: none;
+    }
+
+    .tabela-precos .badge-valor {
+        background: var(--accent-light);
+        color: var(--primary);
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 8px;
+        display: inline-block;
+        white-space: nowrap;
+        border: 1px solid rgba(2, 132, 199, 0.2);
+    }
+
+    /* MODAL DE IMAGEM FULLSCREEN E ZOOM */
+    .modal-fullscreen {
+        display: none;
+        position: fixed;
+        z-index: 99999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.92);
+        backdrop-filter: blur(5px);
+        overflow: hidden;
+        touch-action: none;
+    }
+
+    .modal-fullscreen.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-fechar-modal {
+        position: absolute;
+        top: 20px;
+        right: 25px;
+        color: #ffffff;
+        font-size: 32px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 100000;
+        background: rgba(255, 255, 255, 0.2);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s ease, transform 0.2s ease;
+        user-select: none;
+    }
+
+    .btn-fechar-modal:hover {
+        background: rgba(255, 255, 255, 0.4);
+        transform: scale(1.1);
+    }
+
+    .wrapper-zoom {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: auto;
+        padding: 20px;
+    }
+
+    .img-zoomable {
+        max-width: 90vw;
+        max-height: 90vh;
+        object-fit: contain;
+        transition: transform 0.1s ease-out;
+        cursor: zoom-in;
+        transform-origin: center center;
+        image-rendering: -webkit-optimize-contrast;
+    }
+
+    .img-zoomable.zoomed {
+        cursor: zoom-out;
+    }
+
     .box-privacidade {
         background: var(--accent-light);
         border: 1px solid var(--primary);
@@ -616,6 +753,49 @@
         <p>Impressões, Xerox, Currículos e Serviços Rápidos</p>    
     </header>    
 
+    <!-- TABELA DE VALORES ADICIONADA -->
+    <div class="tabela-precos-card">
+        <h2>🏷️ Tabela de Valores</h2>
+        <div class="tabela-wrapper">
+            <table class="tabela-precos">
+                <thead>
+                    <tr>
+                        <th>Tipo de impressão</th>
+                        <th>Valor</th>
+                        <th>Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Preto e Branco (P&B)</strong></td>
+                        <td><span class="badge-valor">R$ 0,50/folha</span></td>
+                        <td>Texto, documentos e Xerox simples</td>
+                    </tr>
+                    <tr>
+                        <td><strong>P&B - Cobertura Alta</strong></td>
+                        <td><span class="badge-valor">R$ 1,00/folha</span></td>
+                        <td>Grandes áreas pretas, fundos escuros</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Colorida - Pouca Cor</strong></td>
+                        <td><span class="badge-valor">R$ 1,00/folha</span></td>
+                        <td>Títulos, detalhes, logos simples</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Colorida - Média Cor</strong></td>
+                        <td><span class="badge-valor">R$ 1,35/folha</span></td>
+                        <td>R$ 1,20/folha a partir de 6 folhas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Colorida - Cobertura Total</strong></td>
+                        <td><span class="badge-valor">R$ 2,00/folha</span></td>
+                        <td>Fotos, fundos e grande cobertura</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <div id="secaoBanner" class="banner-imagem-container" style="position: relative; display: inline-block; width: 100%; max-width: 450px; margin: 0 auto; cursor: pointer;" onclick="abrirImagem()">    
         <h3 style="    
             position: absolute;     
@@ -637,46 +817,128 @@
         </h3>    
         <img id="imgBanner" src="classificacao-img.png" alt="Tabela Visual Sobre Cores" class="banner-imagem" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x200/0284c7/ffffff?text=Coloque+sua+Imagem+Aqui';">
         <figure>
-  <figcaption>Material visual desenvolvido com auxílio de Inteligência Artificial (IA) — OpenAI / ChatGPT.</figcaption>
+  <figcaption style="font-size: 11px;">Material visual desenvolvido com auxílio de Inteligência Artificial (IA) — OpenAI / ChatGPT.</figcaption>
 </figure>
     </div>    
 
-    <div id="modalImagem" onclick="fecharImagem()" style="    
-        display: none;     
-        position: fixed;     
-        z-index: 9999;     
-        left: 0;     
-        top: 0;     
-        width: 100%;     
-        height: 100%;     
-        background-color: rgba(0, 0, 0, 0.85);     
-        align-items: center;     
-        justify-content: center;     
-        padding: 20px;    
-        backdrop-filter: blur(5px);    
-    ">    
-        <span style="    
-            position: absolute;     
-            top: 15px;     
-            right: 25px;     
-            color: #fff;     
-            font-size: 35px;     
-            font-weight: bold;     
-            cursor: pointer;    
-        ">&times;</span>    
-        <img id="imgModal" alt="Visualização ampliada" style="max-width: 90%; max-height: 90%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">    
+    <div id="modalImagem" class="modal-fullscreen">    
+        <span class="btn-fechar-modal" onclick="fecharImagem()">&times;</span>    
+        <div class="wrapper-zoom" id="wrapperZoom">
+            <img id="imgModal" alt="Visualização ampliada" class="img-zoomable" onclick="toggleZoom(event)">    
+        </div>
     </div>    
 
     <script>    
+        let zoomAtual = 1;
+        let pantoX = 0;
+        let pantoY = 0;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+
         function abrirImagem() {    
             const srcOriginal = document.getElementById("imgBanner").src;    
-            document.getElementById("imgModal").src = srcOriginal;    
-            document.getElementById("modalImagem").style.display = "flex";    
+            const imgModal = document.getElementById("imgModal");
+            imgModal.src = srcOriginal;    
+            
+            resetZoom();
+            document.getElementById("modalImagem").classList.add("active");    
         }    
 
         function fecharImagem() {    
-            document.getElementById("modalImagem").style.display = "none";    
+            document.getElementById("modalImagem").classList.remove("active");    
+            resetZoom();
         }    
+
+        function resetZoom() {
+            zoomAtual = 1;
+            pantoX = 0;
+            pantoY = 0;
+            aplicarTransform();
+            const imgModal = document.getElementById("imgModal");
+            if(imgModal) imgModal.classList.remove("zoomed");
+        }
+
+        function toggleZoom(e) {
+            e.stopPropagation();
+            const imgModal = document.getElementById("imgModal");
+            if (zoomAtual === 1) {
+                zoomAtual = 2.5;
+                imgModal.classList.add("zoomed");
+            } else {
+                resetZoom();
+            }
+            aplicarTransform();
+        }
+
+        function aplicarTransform() {
+            const imgModal = document.getElementById("imgModal");
+            if(imgModal) {
+                imgModal.style.transform = `translate(${pantoX}px, ${pantoY}px) scale(${zoomAtual})`;
+            }
+        }
+
+        // Suporte a pinch zoom e arrasto no modal
+        let initialDistance = 0;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const wrapper = document.getElementById("wrapperZoom");
+            const imgModal = document.getElementById("imgModal");
+
+            if(wrapper && imgModal) {
+                wrapper.addEventListener("wheel", function(e) {
+                    if (!document.getElementById("modalImagem").classList.contains("active")) return;
+                    e.preventDefault();
+                    if (e.deltaY < 0) {
+                        zoomAtual = Math.min(zoomAtual + 0.3, 4);
+                    } else {
+                        zoomAtual = Math.max(zoomAtual - 0.3, 1);
+                    }
+                    if(zoomAtual === 1) { pantoX = 0; pantoY = 0; imgModal.classList.remove("zoomed"); }
+                    else { imgModal.classList.add("zoomed"); }
+                    aplicarTransform();
+                }, { passive: false });
+
+                // Gestos touch / pinça
+                wrapper.addEventListener("touchstart", function(e) {
+                    if (e.touches.length === 2) {
+                        initialDistance = Math.hypot(
+                            e.touches[0].pageX - e.touches[1].pageX,
+                            e.touches[0].pageY - e.touches[1].pageY
+                        );
+                    } else if (e.touches.length === 1 && zoomAtual > 1) {
+                        isDragging = true;
+                        startX = e.touches[0].clientX - pantoX;
+                        startY = e.touches[0].clientY - pantoY;
+                    }
+                }, { passive: true });
+
+                wrapper.addEventListener("touchmove", function(e) {
+                    if (e.touches.length === 2) {
+                        e.preventDefault();
+                        const currentDistance = Math.hypot(
+                            e.touches[0].pageX - e.touches[1].pageX,
+                            e.touches[0].pageY - e.touches[1].pageY
+                        );
+                        const factor = currentDistance / initialDistance;
+                        zoomAtual = Math.min(Math.max(zoomAtual * factor, 1), 4);
+                        initialDistance = currentDistance;
+                        if(zoomAtual === 1) { pantoX = 0; pantoY = 0; imgModal.classList.remove("zoomed"); }
+                        else { imgModal.classList.add("zoomed"); }
+                        aplicarTransform();
+                    } else if (e.touches.length === 1 && isDragging && zoomAtual > 1) {
+                        e.preventDefault();
+                        pantoX = e.touches[0].clientX - startX;
+                        pantoY = e.touches[0].clientY - startY;
+                        aplicarTransform();
+                    }
+                }, { passive: false });
+
+                wrapper.addEventListener("touchend", function() {
+                    isDragging = false;
+                });
+            }
+        });
     </script>    
 
     <form id="formImpressao" class="step-card" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data" target="hidden_iframe">    
@@ -1504,187 +1766,234 @@
             }
         } else if (servicoAtivo === 'doc') {
             resumoServico.innerText = "Documentos Oficiais";
-            resumoTipo.innerText = selectDocOficial.options[selectDocOficial.selectedIndex].text.split('(')[0];
-            resumoDocPaginas.innerText = "📄 Documento: 1 páginas";
-            resumoPaginasSelecionadas.innerText = "📑 Páginas selecionadas: 1";
-            resumoTotalSelecionado.innerText = "📊 Total selecionado: 1 páginas";
-            resumoCopias.innerText = `🔄 Cópias: ${inputQtdDoc.value || 1}`;
-            resumoTotalPaginas.innerText = `🖨️ Total de páginas impressas: ${inputQtdDoc.value || 1}`;
+            resumoTipo.innerText = selectDocOficial.options[selectDocOficial.selectedIndex].text;
+            resumoDocPaginas.innerText = "N/A";
+            resumoPaginasSelecionadas.innerText = "N/A";
+            resumoTotalSelecionado.innerText = "N/A";
+            resumoCopias.innerText = `Vias: ${inputQtdDoc.value}`;
+            resumoTotalPaginas.innerText = `Vias: ${inputQtdDoc.value}`;
             resumoLado.innerText = "Padrão Doc";
-            resumoFolhas.innerText = `📃 Aproximadamente ${inputQtdDoc.value || 1} folhas`;
-            resumoAcabamento.innerText = "Não aplicável";
+            resumoFolhas.innerText = `${inputQtdDoc.value} folha(s)`;
+            resumoAcabamento.innerText = "Sem acabamento";
             const arqDoc = document.getElementById("arquivo_doc").files[0];
             resumoArquivo.innerText = arqDoc ? arqDoc.name : 'Nenhum selecionado';
         } else if (servicoAtivo === 'dig') {
             resumoServico.innerText = "Digitalização";
             resumoTipo.innerText = "Escaneamento";
-            resumoDocPaginas.innerText = `📄 Documento: ${inputQtdDig.value || 1} pág(s)`;
-            resumoPaginasSelecionadas.innerText = `📑 Páginas selecionadas: ${inputQtdDig.value || 1}`;
-            resumoTotalSelecionado.innerText = `📊 Total selecionado: ${inputQtdDig.value || 1} páginas`;
-            resumoCopias.innerText = "🔄 Cópias: 1";
-            resumoTotalPaginas.innerText = `🖨️ Total de páginas impressas: ${inputQtdDig.value || 1}`;
-            resumoLado.innerText = "Não aplicável";
-            resumoFolhas.innerText = `📃 Aproximadamente ${inputQtdDig.value || 1} folhas`;
-            resumoAcabamento.innerText = "Arquivo Digital";
-            resumoArquivo.innerText = "Documento Físico (Entregar)";
+            resumoDocPaginas.innerText = `Estimado: ${inputQtdDig.value} págs`;
+            resumoPaginasSelecionadas.innerText = "Todas";
+            resumoTotalSelecionado.innerText = `${inputQtdDig.value} págs`;
+            resumoCopias.innerText = "1 via digital";
+            resumoTotalPaginas.innerText = `${inputQtdDig.value} págs`;
+            resumoLado.innerText = "Digital";
+            resumoFolhas.innerText = "N/A (Digital)";
+            resumoAcabamento.innerText = "Digital (PDF/Imagem)";
+            resumoArquivo.innerText = "Envio Físico";
         }
     }
 
-    // INTERAÇÃO RADIO PAGINAS ESPECIFICAS
-    document.querySelectorAll('input[name="Opcao Selecao Paginas"]').forEach(r => {
-        r.addEventListener('change', function() {
-            const container = document.getElementById("containerPaginasEspecificas");
-            if (this.value === "especificas") {
-                container.classList.remove("hidden");
+    // ALTERNÂNCIA ENTRE ANEXO DE ARQUIVO E TEXTO DIRETO
+    let modoTextoAtivo = false;
+    const btnToggleModo = document.getElementById("btnToggleModo");
+    const campoArquivoContainer = document.getElementById("campoArquivoContainer");
+    const campoTextoContainer = document.getElementById("campoTextoContainer");
+    const inputArquivo = document.getElementById("arquivo");
+    const inputTexto = document.getElementById("textoDireto");
+
+    if (btnToggleModo) {
+        btnToggleModo.addEventListener("click", function () {
+            modoTextoAtivo = !modoTextoAtivo;
+            if (modoTextoAtivo) {
+                campoArquivoContainer.classList.add("hidden");
+                campoTextoContainer.classList.remove("hidden");
+                btnToggleModo.innerText = "📎 Prefiro anexar um arquivo";
+                inputArquivo.removeAttribute("required");
+                inputTexto.setAttribute("required", "required");
+                inputArquivo.value = "";
+                ocultarPreviewA4();
             } else {
-                container.classList.add("hidden");
+                campoTextoContainer.classList.add("hidden");
+                campoArquivoContainer.classList.remove("hidden");
+                btnToggleModo.innerText = "✏️ Prefiro colar um texto";
+                inputTexto.removeAttribute("required");
+                if (servicoAtivo === 'a4') inputArquivo.setAttribute("required", "required");
+                inputTexto.value = "";
             }
             calcularValor();
         });
-    });
+    }
 
-    document.getElementById("input_paginas_especificas").addEventListener("input", calcularValor);
-
-    selectTipo.addEventListener("change", calcularValor);    
-    inputQtd.addEventListener("input", calcularValor);    
-    inputQtdPaginas.addEventListener("input", calcularValor);
-    selectDocOficial.addEventListener("change", calcularValor);    
-    inputQtdDoc.addEventListener("input", calcularValor);    
-    inputQtdDig.addEventListener("input", calcularValor);    
-    selectAcabamento.addEventListener("change", calcularValor);
-    document.querySelectorAll('input[name="Lado da Impressao"]').forEach(r => r.addEventListener('change', calcularValor));
-    if(optRedimensionamento) optRedimensionamento.addEventListener("change", calcularValor);
-    if(optConferencia) optConferencia.addEventListener("change", calcularValor);
-    if(optAmostra) optAmostra.addEventListener("change", calcularValor);    
-
-    // GERENCIAMENTO VISUAL DO ARQUIVO SELECIONADO
-    const inputArquivo = document.getElementById("arquivo");    
+    // INTERAÇÃO DO PREVIEW DE ARQUIVO
     const filePreview = document.getElementById("filePreview");
     const fileNameDisplay = document.getElementById("fileNameDisplay");
 
-    inputArquivo.addEventListener("change", function() {
-        if (this.files && this.files[0]) {
-            fileNameDisplay.innerText = this.files[0].name;
-            filePreview.classList.remove("hidden");
-        } else {
-            filePreview.classList.add("hidden");
-        }
-        atualizarResumoConferencia();
-    });
-
-    function trocarArquivoA4() {
-        inputArquivo.click();
+    if (inputArquivo) {
+        inputArquivo.addEventListener("change", function () {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                if (fileNameDisplay) fileNameDisplay.innerText = file.name;
+                if (filePreview) filePreview.classList.remove("hidden");
+            } else {
+                ocultarPreviewA4();
+            }
+            calcularValor();
+        });
     }
 
     function removerArquivoA4() {
-        inputArquivo.value = "";
-        filePreview.classList.add("hidden");
-        atualizarResumoConferencia();
+        if (inputArquivo) inputArquivo.value = "";
+        ocultarPreviewA4();
+        calcularValor();
     }
 
-    // MODO ANEXAR / COLAR TEXTO    
-    const btnToggleModo = document.getElementById("btnToggleModo");    
-    const campoArquivoContainer = document.getElementById("campoArquivoContainer");    
-    const campoTextoContainer = document.getElementById("campoTextoContainer");    
-    let modoTextoAtivo = false;    
+    function trocarArquivoA4() {
+        if (inputArquivo) inputArquivo.click();
+    }
 
-    btnToggleModo.addEventListener("click", () => {    
-        modoTextoAtivo = !modoTextoAtivo;    
-        if (modoTextoAtivo) {    
-            campoArquivoContainer.classList.add("hidden");    
-            campoTextoContainer.classList.remove("hidden");    
-            btnToggleModo.innerText = "📁 Prefiro anexar arquivo";    
-            inputArquivo.removeAttribute("required");    
-        } else {    
-            campoTextoContainer.classList.add("hidden");    
-            campoArquivoContainer.classList.remove("hidden");    
-            btnToggleModo.innerText = "✏️ Prefiro colar um texto";    
-            if(servicoAtivo === 'a4') inputArquivo.setAttribute("required", "required");    
-        }    
-        atualizarResumoConferencia();
-    });    
+    function ocultarPreviewA4() {
+        if (filePreview) filePreview.classList.add("hidden");
+        if (fileNameDisplay) fileNameDisplay.innerText = "";
+    }
 
-    document.getElementById("textoDireto").addEventListener("input", atualizarResumoConferencia);
-    document.getElementById("arquivo_doc").addEventListener("change", atualizarResumoConferencia);
+    // MANIPULAÇÃO DA SELEÇÃO DE PÁGINAS
+    const radioPagTodas = document.getElementById("pag_todas");
+    const radioPagEspecificas = document.getElementById("pag_especificas");
+    const containerPagEspecificas = document.getElementById("containerPaginasEspecificas");
+    const inputPagEspecificas = document.getElementById("input_paginas_especificas");
 
-    // ENVIO DO FORMULÁRIO COM EXIBIÇÃO DA TELA DE PIX E SUPORTE
-    const form = document.getElementById("formImpressao");    
-    const btnSubmit = document.getElementById("btnSubmit");    
-    const telaSucesso = document.getElementById("telaSucesso");    
-    const boxDetalhes = document.getElementById("boxDetalhesPagamento");    
-
-    form.addEventListener("submit", function (e) {    
-        if (servicoAtivo === 'a4') {
-            const paginasDoc = parseInt(inputQtdPaginas.value) || 1;
-            const resSelecao = processarSelecaoPaginas(paginasDoc);
-            if (!resSelecao.valido) {
-                e.preventDefault();
-                return false;
+    if (radioPagTodas && radioPagEspecificas) {
+        radioPagTodas.addEventListener("change", function() {
+            if (this.checked) {
+                containerPagEspecificas.classList.add("hidden");
+                calcularValor();
             }
+        });
+
+        radioPagEspecificas.addEventListener("change", function() {
+            if (this.checked) {
+                containerPagEspecificas.classList.remove("hidden");
+                if(inputPagEspecificas) inputPagEspecificas.focus();
+                calcularValor();
+            }
+        });
+    }
+
+    if (inputPagEspecificas) {
+        inputPagEspecificas.addEventListener("input", function() {
+            calcularValor();
+        });
+    }
+
+    // LISTENERS PARA RECALCULAR AUTOMATICAMENTE
+    selectTipo.addEventListener("change", calcularValor);
+    inputQtd.addEventListener("input", calcularValor);
+    inputQtdPaginas.addEventListener("input", calcularValor);
+    selectDocOficial.addEventListener("change", calcularValor);
+    inputQtdDoc.addEventListener("input", calcularValor);
+    inputQtdDig.addEventListener("input", calcularValor);
+    selectAcabamento.addEventListener("change", calcularValor);
+
+    if (optRedimensionamento) optRedimensionamento.addEventListener("change", calcularValor);
+    if (optConferencia) optConferencia.addEventListener("change", calcularValor);
+    if (optAmostra) optAmostra.addEventListener("change", calcularValor);
+
+    document.querySelectorAll('input[name="Lado da Impressao"]').forEach(r => {
+        r.addEventListener("change", calcularValor);
+    });
+
+    document.querySelectorAll('input[name="Forma de Pagamento"]').forEach(r => {
+        r.addEventListener("change", calcularValor);
+    });
+
+    if (inputTexto) {
+        inputTexto.addEventListener("input", atualizarResumoConferencia);
+    }
+
+    const inputArquivoDoc = document.getElementById("arquivo_doc");
+    if (inputArquivoDoc) {
+        inputArquivoDoc.addEventListener("change", atualizarResumoConferencia);
+    }
+
+    // PROCESSAMENTO DO FORMULÁRIO DE ENVIO
+    const formImpressao = document.getElementById("formImpressao");
+    const telaSucesso = document.getElementById("telaSucesso");
+    const boxDetalhesPagamento = document.getElementById("boxDetalhesPagamento");
+    const btnNotificarWhats = document.getElementById("btnNotificarWhats");
+
+    formImpressao.addEventListener("submit", function (e) {
+        const paginasDoc = parseInt(inputQtdPaginas.value) || 1;
+        const resSelecao = processarSelecaoPaginas(paginasDoc);
+        
+        if (!resSelecao.valido && servicoAtivo === 'a4') {
+            e.preventDefault();
+            alert("⚠️ Corrija a seleção das páginas específicas antes de enviar o pedido.");
+            return;
         }
 
-        btnSubmit.disabled = true;    
-        btnSubmit.innerText = "Enviando Pedido... ⏳";    
+        const totalCalculado = calcularValor();
+        document.getElementById("hidden_total").value = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
 
-        const totalCalculado = calcularValor().toFixed(2).replace('.', ',');    
-        document.getElementById("hidden_total").value = `R$ ${totalCalculado}`;    
+        const tipoTextoObj = selectTipo.options[selectTipo.selectedIndex];
+        document.getElementById("hidden_tipo_texto").value = tipoTextoObj ? tipoTextoObj.text : "";
 
-        if (servicoAtivo === 'a4') {    
-            const textoTipo = selectTipo.options[selectTipo.selectedIndex].text;    
-            const ladoOpcao = document.querySelector('input[name="Lado da Impressao"]:checked').value;
-            document.getElementById("hidden_tipo_texto").value = `${textoTipo} | Lado: ${ladoOpcao}`;    
-        } else if (servicoAtivo === 'doc') {    
-            const textoDoc = selectDocOficial.options[selectDocOficial.selectedIndex].text;    
-            document.getElementById("hidden_tipo_texto").value = textoDoc;    
-        } else if (servicoAtivo === 'dig') {    
-            document.getElementById("hidden_tipo_texto").value = `Digitalização: ${inputQtdDig.value} página(s)`;    
-        }    
+        naAbaPagamento = true;
 
-        const obsTexto = document.getElementById("observacoes").value.trim();
-        document.getElementById("hidden_orientacao").value = obsTexto;
+        setTimeout(function () {
+            formImpressao.classList.add("hidden");
+            const secaoBanner = document.getElementById("secaoBanner");
+            const secaoCardChamativo = document.getElementById("secaoCardChamativo");
+            const tabelaCard = document.querySelector(".tabela-precos-card");
+            if (secaoBanner) secaoBanner.classList.add("hidden");
+            if (secaoCardChamativo) secaoCardChamativo.classList.add("hidden");
+            if (tabelaCard) tabelaCard.classList.add("hidden");
 
-        const formaPagamento = document.querySelector('input[name="Forma de Pagamento"]:checked').value;    
-        const nomeCliente = document.getElementById("nome").value.trim();    
+            const formaPagamento = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
+            const nomeCliente = document.getElementById("nome").value.trim();
+            const valorFormatado = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
 
-        setTimeout(() => {    
-            naAbaPagamento = true;    
-            form.style.display = "none";    
-            document.getElementById("secaoCardChamativo").style.display = "none";    
-            document.getElementById("secaoBanner").style.display = "none";    
-            telaSucesso.classList.remove("hidden");    
+            if (formaPagamento === "PIX") {
+                boxDetalhesPagamento.innerHTML = `
+                    <div class="pix-box-novo">
+                        <div style="font-size: 14px; font-weight: 700; color: var(--text-main);">Pagamento via Chave PIX (Copia e Cola)</div>
+                        <div class="valor-destaque">${valorFormatado}</div>
+                        <p style="font-size: 12px; color: var(--text-muted); text-align: center;">Copie a chave abaixo e realize o pagamento no seu aplicativo de banco.</p>
+                        <input type="text" value="${CHAVE_PIX_TEXTO}" readonly id="inputPixChave" style="font-size: 11px; text-align: center; background: var(--bg-card);">
+                        <button type="button" class="btn-copiar-pix" onclick="copiarChavePix()">📋 Copiar Chave PIX</button>
+                    </div>
+                `;
+            } else {
+                boxDetalhesPagamento.innerHTML = `
+                    <div class="dinheiro-box-novo">
+                        <div style="font-size: 14px; font-weight: 700; color: var(--text-main);">Pagamento em Dinheiro na Retirada</div>
+                        <div class="valor-destaque">${valorFormatado}</div>
+                        <p style="font-size: 13px; color: var(--text-muted); text-align: center;">Traga o valor exato ou informe nas observações se precisará de troco!</p>
+                    </div>
+                `;
+            }
 
-            if (formaPagamento === "PIX") {    
-                boxDetalhes.innerHTML = `    
-                    <div class="pix-box-novo">    
-                        <span style="font-weight: 700; color: var(--text-main);">Chave PIX (Copia e Cola):</span>    
-                        <div class="valor-destaque">R$ ${totalCalculado}</div>    
-                        <input type="text" id="pixCopiaCola" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-size:12px;">    
-                        <button class="btn-copiar-pix" onclick="copiarPix()">📋 Copiar Chave PIX</button>    
-                    </div>    
-                `;    
-            } else {    
-                boxDetalhes.innerHTML = `    
-                    <div class="dinheiro-box-novo">    
-                        <span style="font-weight: 700; color: var(--text-main);">Pagamento em Dinheiro</span>    
-                        <div class="valor-destaque">R$ ${totalCalculado}</div>    
-                        <p style="font-size:13px; color:var(--text-muted);">Você optou por pagar na retirada do documento.</p>    
-                    </div>    
-                `;    
-            }    
+            const msgWhats = encodeURIComponent(`Olá! Sou *${nomeCliente}* e acabei de fazer um pedido pelo site.\n\n*Serviço:* ${document.getElementById("hidden_servico_nome").value}\n*Valor Estimado:* ${valorFormatado}\n*Forma de Pagamento:* ${formaPagamento}\n\nAgardo confirmação!`);
+            btnNotificarWhats.href = `https://wa.me/5541999682836?text=${msgWhats}`;
 
-            const msgWhats = encodeURIComponent(`Olá! Fiz um pedido no site PrintExpress.\nNome: ${nomeCliente}\nValor: R$ ${totalCalculado}\nForma de Pagamento: ${formaPagamento}\n\nAguardo a confirmação do pedido!`);
-            document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;
+            telaSucesso.classList.remove("hidden");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }, 1000);
     });
 
-    function copiarPix() {
-        const pixInput = document.getElementById("pixCopiaCola");
-        pixInput.select();
-        pixInput.setSelectionRange(0, 99999);
-        navigator.clipboard.writeText(pixInput.value).then(() => {
-            alert("✅ Chave PIX copiada com sucesso!");
-        });
+    function copiarChavePix() {
+        const inputPix = document.getElementById("inputPixChave");
+        if (inputPix) {
+            inputPix.select();
+            inputPix.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(inputPix.value).then(() => {
+                alert("✅ Chave PIX copiada com sucesso!");
+            }).catch(() => {
+                alert("⚠️ Não foi possível copiar automaticamente. Copie o texto do campo manualmente.");
+            });
+        }
     }
+
+    // INICIALIZAÇÃO DOS CÁLCULOS
+    calcularValor();
 </script>
 </body>
 </html>
