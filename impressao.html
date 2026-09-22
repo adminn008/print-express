@@ -542,10 +542,57 @@
         gap: 8px;
     }
 
+    /* NOVOS ESTILOS ADICIONAIS */
+    .guia-escolha-box {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 14px;
+        font-size: 12px;
+        margin-top: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .guia-escolha-box summary {
+        font-weight: 700;
+        color: var(--primary);
+        cursor: pointer;
+        font-size: 13px;
+    }
+    .guia-escolha-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 8px;
+        padding-left: 4px;
+    }
+    .checklist-box {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 16px;
+        font-size: 13px;
+    }
+    .checklist-box h4 {
+        color: var(--primary);
+        font-size: 14px;
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+    .checklist-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        color: var(--text-main);
+        font-weight: 600;
+    }
+
     @media (max-width: 500px) {
         body { padding: 16px 10px 80px 10px; }
         .servicos-grid { grid-template-columns: repeat(2, 1fr); }
         .summary-grid { grid-template-columns: 1fr; }
+        .checklist-grid { grid-template-columns: 1fr; }
     }
 </style>
 </head>    
@@ -637,6 +684,13 @@
         <input type="hidden" id="hidden_tipo_texto" name="Opcao de Impressao Detalhada" value="">    
         <input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">    
 
+        <!-- NOVOS CAMPOS ADICIONAIS PARA FORMSUBMIT (SEM ALTERAR OS EXISTENTES) -->
+        <input type="hidden" id="hidden_qtd_paginas" name="Qtd Paginas Documento" value="1">
+        <input type="hidden" id="hidden_total_paginas_impressas" name="Total Paginas Impressas" value="1">
+        <input type="hidden" id="hidden_folhas_utilizadas" name="Folhas Utilizadas Estimadas" value="1">
+        <input type="hidden" id="hidden_tamanho_papel" name="Tamanho do Papel" value="A4">
+        <input type="hidden" id="hidden_orientacao" name="Orientacao do Cliente" value="">
+
         <div class="alerta-desconsiderar">    
             ⚠️ ATENÇÃO: Pedidos sem pagamento confirmado serão desconsiderados e cancelados automaticamente.    
         </div>    
@@ -654,14 +708,42 @@
         </div>    
 
         <div id="blocoA4">    
+            <!-- TAMANHO DO PAPEL ADICIONADO -->
+            <div class="form-group" style="margin-bottom: 12px;">    
+                <label for="tamanho_papel">📄 Tamanho do Papel:</label>    
+                <select id="tamanho_papel" disabled style="opacity: 0.8; cursor: not-allowed;">    
+                    <option value="A4" selected>A4 (Padrão - 21cm x 29,7cm)</option>    
+                </select>    
+            </div>
+
+            <!-- QUANTIDADE DE PÁGINAS DO DOCUMENTO ADICIONADO SEPARADO -->
+            <div class="form-group" style="margin-bottom: 12px;">    
+                <label for="qtd_paginas">📄 Quantidade de páginas do documento:</label>    
+                <input type="number" id="qtd_paginas" value="1" min="1">    
+                <span class="field-hint">Informe quantas páginas tem o seu arquivo PDF ou documento original.</span>
+            </div>
+
             <div class="form-group" style="margin-bottom: 12px;">    
                 <label for="tipo_impressao">🎨 Tipo de Impressão / Xerox:</label>    
                 <select id="tipo_impressao" name="Codigo Opcao Cor">    
-                    <option value="pb">Preto e Branco (P&B) - R$ 0,50/folha (Texto, Xerox simples)</option>    
-                    <option value="pouca_cor">Colorida Pouca Cor - R$ 1,00/folha (Títulos coloridos, Xerox, logo simples)</option>    
-                    <option value="media_cor">Colorida Média Cor - R$ 1,35/folha (🔥 R$ 1,20 a partir de 6 folhas)</option>    
-                    <option value="cobertura_total">Colorida Cobertura Total - R$ 2,00/folha (Fotos cheias ou cartazes)</option>    
+                    <option value="pb">🖤 Preto e Branco (P&B) - R$ 0,50/folha (Texto, documentos e Xerox simples)</option>    
+                    <option value="pb_cobertura_alta">⚫ P&B — Cobertura Alta - R$ 1,00/folha (Grandes áreas pretas, fundos escuros)</option>    
+                    <option value="pouca_cor">🎨 Colorida — Pouca Cor - R$ 1,00/folha (Títulos, detalhes, logos simples)</option>    
+                    <option value="media_cor">🌈 Colorida — Média Cor - R$ 1,35/folha (R$ 1,20/folha a partir de 6 folhas)</option>    
+                    <option value="cobertura_total">🖼️ Colorida — Cobertura Total - R$ 2,00/folha (Fotos, fundos e grande cobertura)</option>    
                 </select>    
+
+                <!-- 💡 GUIA DE ESCOLHA ADICIONADO -->
+                <details class="guia-escolha-box">
+                    <summary>💡 Qual tipo escolher?</summary>
+                    <div class="guia-escolha-list">
+                        <div><strong>🖤 P&B comum:</strong> Textos e documentos simples.</div>
+                        <div><strong>⚫ P&B cobertura alta:</strong> Grandes áreas pretas ou fundos escuros.</div>
+                        <div><strong>🎨 Colorida pouca cor:</strong> Pequenos detalhes, títulos e logos.</div>
+                        <div><strong>🌈 Colorida média cor:</strong> Vários elementos coloridos sem preencher grande parte da página.</div>
+                        <div><strong>🖼️ Colorida cobertura total:</strong> Fotos, fundos e páginas muito coloridas.</div>
+                    </div>
+                </details>
             </div>    
 
             <div class="form-group" style="margin-bottom: 12px;">    
@@ -671,17 +753,17 @@
                         <input type="radio" name="Lado da Impressao" value="Frente" checked> Frente (1 lado)    
                     </label>    
                     <label class="radio-label">    
-                        <input type="radio" name="Lado da Impressao" value="Frente e verso"> Frente e Verso (Ambos os lados na mesma folha)    
+                        <input type="radio" name="Lado da Impressao" value="Frente e verso"> Frente e verso (Ambos os lados na mesma folha)    
                     </label>    
                 </div>    
                 <span class="field-hint">Ao escolher "Frente e verso", o documento é impresso nos dois lados da mesma folha de papel.</span>    
             </div>    
 
             <div class="form-group" style="margin-bottom: 12px;">    
-                <label for="quantidade">📄 Quantidade de Cópias / Folhas:</label>    
+                <label for="quantidade">📄 Quantidade de Cópias:</label>    
                 <input type="number" id="quantidade" name="Quantidade de Copias" value="1" min="1">    
-                <div class="example-badge" style="margin-top: 4px;">    
-                    💡 <strong>Entenda o cálculo:</strong> Um documento de 5 páginas × 3 cópias = 15 páginas/folhas impressas.    
+                <div class="example-badge" style="margin-top: 6px;" id="badgeCalculoPaginas">    
+                    💡 <strong>Cálculo:</strong> 1 página × 1 cópia = 1 página impressa.
                 </div>    
             </div>    
 
@@ -689,7 +771,7 @@
                 <label>🔄 Organização das Cópias (para várias cópias):</label>    
                 <select id="organizacao_copias" name="Organizacao das Copias">    
                     <option value="Ordem normal (Colacionado)">Ordem normal (Documento 1 completo, depois Documento 2 completo...)</option>    
-                    <option value="Agrupar por página">Agrupar por página (Todas as pág. 1 juntas, todas as pág. 2 juntas...)</option>    
+                    <option value="Agrupar por página">📑 Agrupadas por página (Imprime todas as cópias de cada página antes de passar para a próxima)</option>    
                 </select>    
             </div>    
 
@@ -697,7 +779,7 @@
                 <label for="refile">✂️ Acabamento do Pedido:</label>    
                 <select id="refile" name="Refile de Bordas">    
                     <option value="manter">Sem acabamento (Folhas soltas / Bordas padrão)</option>    
-                    <option value="grampeado">Grampeado no canto superior esquerdo</option>    
+                    <option value="grampeado">📎 Grampeado (no canto superior esquerdo)</option>    
                 </select>    
                 <!-- Campo compatível para registrar o acabamento no e-mail -->
                 <input type="hidden" id="acabamento_grampo" name="Acabamento Grampo" value="Sem acabamento">
@@ -722,6 +804,9 @@
                             </div>
                         </div>
                     </div>
+                    <span class="field-hint" style="margin-top: 4px; display: block;">
+                        💡 Para garantir que o documento seja impresso como você preparou, recomendamos enviar o arquivo em PDF.
+                    </span>
                     <div id="fileDetails" class="file-info hidden"></div>    
                 </div>    
 
@@ -798,36 +883,48 @@
         </div>    
 
         <div class="form-group">    
-            <label for="observacoes">📝 Observações para a Impressão (Opcional):</label>    
-            <textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex: Imprimir somente as páginas 2–5, fazer 2 cópias ou deixar uma observação sobre o pedido."></textarea>    
+            <label for="observacoes">📝 Alguma orientação para a impressão?</label>    
+            <textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex: Imprimir somente páginas 3 a 8. Não imprimir a capa. Grampear no canto superior esquerdo."></textarea>    
             <span class="field-hint">Especifique detalhes como intervalo de páginas, observações de troco ou instruções especiais.</span>
         </div>    
 
-        <!-- ÁREA DE RESUMO E CONFERÊNCIA ANTES DE ENVIAR -->
+        <!-- ÁREA DE RESUMO E CONFERÊNCIA ANTES DE ENVIAR (RESUMO AUTOMÁTICO EXPANDIDO) -->
         <div class="summary-box">
-            <h3>📋 Confira seu Pedido</h3>
+            <h3>📋 RESUMO DO PEDIDO</h3>
             <div class="summary-grid">
                 <div class="summary-item">
                     <span class="label">Serviço</span>
                     <span class="value" id="resumoServico">Impressão A4</span>
                 </div>
                 <div class="summary-item">
-                    <span class="label">Tipo / Cor</span>
-                    <span class="value" id="resumoTipo">Preto e Branco</span>
+                    <span class="label">Tipo</span>
+                    <span class="value" id="resumoTipo">P&B</span>
                 </div>
                 <div class="summary-item">
-                    <span class="label">Lado</span>
+                    <span class="label">Documento</span>
+                    <span class="value" id="resumoDocPaginas">1 páginas</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Cópias</span>
+                    <span class="value" id="resumoCopias">1</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Total de Páginas</span>
+                    <span class="value" id="resumoTotalPaginas">1</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Impressão</span>
                     <span class="value" id="resumoLado">Frente</span>
                 </div>
                 <div class="summary-item">
-                    <span class="label">Quantidade</span>
-                    <span class="value" id="resumoQtd">1 folha(s) / cópia(s)</span>
+                    <span class="label">Folhas Utilizadas</span>
+                    <span class="value" id="resumoFolhas">1</span>
                 </div>
                 <div class="summary-item">
                     <span class="label">Acabamento</span>
                     <span class="value" id="resumoAcabamento">Sem acabamento</span>
                 </div>
-                <div class="summary-item">
+                <div class="summary-item" style="grid-column: span 2;">
                     <span class="label">Arquivo</span>
                     <span class="value" id="resumoArquivo">Nenhum selecionado</span>
                 </div>
@@ -855,10 +952,24 @@
                 <span>Valor Estimado:</span>    
                 <strong id="valorTotalExibicao">R$ 0,50</strong>    
             </div>    
+            <!-- AVISO SOBRE O VALOR ADICIONADO -->
             <span class="field-hint" style="margin-top: 6px; font-size: 11px; text-align: center;">
-                * O valor apresentado é uma estimativa. O valor final poderá depender da quantidade exata de páginas do arquivo e das configurações de impressão.
+                📌 O valor apresentado é uma estimativa e poderá ser confirmado após a análise do arquivo enviado.
             </span>
         </div>    
+
+        <!-- CHECKLIST ANTES DO ENVIO ADICIONADO -->
+        <div class="checklist-box">
+            <h4>Antes de enviar, confira:</h4>
+            <div class="checklist-grid">
+                <div>✓ Quantidade de páginas</div>
+                <div>✓ Quantidade de cópias</div>
+                <div>✓ P&B ou colorido</div>
+                <div>✓ Frente ou frente e verso</div>
+                <div>✓ Acabamento</div>
+                <div>✓ Arquivo correto</div>
+            </div>
+        </div>
 
         <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido para Impressão 🚀</button>    
     </form>    
@@ -1075,6 +1186,7 @@
     // CÁLCULO DE VALOR EM TEMPO REAL    
     const selectTipo = document.getElementById("tipo_impressao");    
     const inputQtd = document.getElementById("quantidade");    
+    const inputQtdPaginas = document.getElementById("qtd_paginas");
     const selectDocOficial = document.getElementById("tipo_doc_oficial");    
     const inputQtdDoc = document.getElementById("qtd_doc");    
     const inputQtdDig = document.getElementById("qtd_paginas_digitalizar");    
@@ -1100,17 +1212,36 @@
         if (servicoAtivo === 'a4') {    
             let precoUnitario = 0.50;    
             switch(selectTipo.value) {    
+                case "pb_cobertura_alta": precoUnitario = 1.00; break;
                 case "pouca_cor": precoUnitario = 1.00; break;    
                 case "media_cor": precoUnitario = 1.35; break;    
                 case "cobertura_total": precoUnitario = 2.00; break;    
                 case "pb": default: precoUnitario = 0.50; break;    
             }    
-            const qtd = parseInt(inputQtd.value) || 1;    
-            subtotal = precoUnitario * qtd;    
-            if (selectTipo.value === "media_cor" && qtd > 5) {    
-                desconto = (1.35 - 1.20) * qtd;    
+
+            const paginasDoc = parseInt(inputQtdPaginas.value) || 1;
+            const copias = parseInt(inputQtd.value) || 1;    
+            const totalPaginasImpressas = paginasDoc * copias;
+
+            // Atualiza explicação dinâmica do badge
+            const badge = document.getElementById("badgeCalculoPaginas");
+            const ladoOpcaoObj = document.querySelector('input[name="Lado da Impressao"]:checked');
+            const ehFrenteVerso = ladoOpcaoObj && ladoOpcaoObj.value === "Frente e verso";
+
+            let textoBadge = `💡 <strong>Cálculo:</strong> ${paginasDoc} página(s) × ${copias} cópia(s) = ${totalPaginasImpressas} páginas impressas.`;
+            if (ehFrenteVerso) {
+                const folhasEstimadas = Math.ceil(totalPaginasImpressas / 2);
+                textoBadge += `<br>📄 <em>${totalPaginasImpressas} páginas impressas correspondem a aproximadamente ${folhasEstimadas} folhas.</em>`;
             }
-            textoCalculo = `${qtd} folha(s) × R$ ${precoUnitario.toFixed(2).replace('.', ',')}`;
+            if(badge) badge.innerHTML = textoBadge;
+
+            // O preço é aplicado por folha/página impressa
+            subtotal = precoUnitario * totalPaginasImpressas;    
+            
+            if (selectTipo.value === "media_cor" && totalPaginasImpressas >= 6) {    
+                desconto = (1.35 - 1.20) * totalPaginasImpressas;    
+            }
+            textoCalculo = `${totalPaginasImpressas} página(s) × R$ ${precoUnitario.toFixed(2).replace('.', ',')}`;
         } else if (servicoAtivo === 'doc') {    
             let precoDoc = 1.00;    
             if (selectDocOficial.value === 'boleto') precoDoc = 0.50;    
@@ -1159,12 +1290,15 @@
         return total;    
     }    
 
-    // ATUALIZA A ÁREA "CONFIRA SEU PEDIDO"
+    // ATUALIZA A ÁREA "RESUMO DO PEDIDO"
     function atualizarResumoConferencia() {
         const resumoServico = document.getElementById("resumoServico");
         const resumoTipo = document.getElementById("resumoTipo");
+        const resumoDocPaginas = document.getElementById("resumoDocPaginas");
+        const resumoCopias = document.getElementById("resumoCopias");
+        const resumoTotalPaginas = document.getElementById("resumoTotalPaginas");
         const resumoLado = document.getElementById("resumoLado");
-        const resumoQtd = document.getElementById("resumoQtd");
+        const resumoFolhas = document.getElementById("resumoFolhas");
         const resumoAcabamento = document.getElementById("resumoAcabamento");
         const resumoArquivo = document.getElementById("resumoArquivo");
         const inputAcabamentoHidden = document.getElementById("acabamento_grampo");
@@ -1172,16 +1306,36 @@
         if (servicoAtivo === 'a4') {
             resumoServico.innerText = "Impressão A4";
             const tipoMap = {
-                'pb': 'Preto e Branco',
+                'pb': 'P&B',
+                'pb_cobertura_alta': 'P&B Cobertura Alta',
                 'pouca_cor': 'Colorida Pouca Cor',
                 'media_cor': 'Colorida Média Cor',
                 'cobertura_total': 'Colorida Cobertura Total'
             };
-            resumoTipo.innerText = tipoMap[selectTipo.value] || 'Preto e Branco';
+            resumoTipo.innerText = tipoMap[selectTipo.value] || 'P&B';
             
+            const pDoc = parseInt(inputQtdPaginas.value) || 1;
+            const cCop = parseInt(inputQtd.value) || 1;
+            const totPag = pDoc * cCop;
+
             const ladoOpcao = document.querySelector('input[name="Lado da Impressao"]:checked');
-            resumoLado.innerText = ladoOpcao ? ladoOpcao.value : 'Frente';
-            resumoQtd.innerText = `${inputQtd.value || 1} folha(s)/cópia(s)`;
+            const strLado = ladoOpcao ? ladoOpcao.value : 'Frente';
+            
+            let numFolhas = totPag;
+            if (strLado === "Frente e verso") {
+                numFolhas = Math.ceil(totPag / 2);
+            }
+
+            resumoDocPaginas.innerText = `${pDoc} página(s)`;
+            resumoCopias.innerText = `${cCop}`;
+            resumoTotalPaginas.innerText = `${totPag}`;
+            resumoLado.innerText = strLado;
+            resumoFolhas.innerText = `${numFolhas}`;
+
+            // Atualiza campos ocultos adicionais para envio do FormSubmit
+            document.getElementById("hidden_qtd_paginas").value = pDoc;
+            document.getElementById("hidden_total_paginas_impressas").value = totPag;
+            document.getElementById("hidden_folhas_utilizadas").value = numFolhas;
 
             const acabTexto = selectAcabamento.value === 'grampeado' ? 'Grampeado' : 'Sem acabamento';
             resumoAcabamento.innerText = acabTexto;
@@ -1197,16 +1351,22 @@
         } else if (servicoAtivo === 'doc') {
             resumoServico.innerText = "Documentos Oficiais";
             resumoTipo.innerText = selectDocOficial.options[selectDocOficial.selectedIndex].text.split('(')[0];
+            resumoDocPaginas.innerText = "1 página";
+            resumoCopias.innerText = `${inputQtdDoc.value || 1}`;
+            resumoTotalPaginas.innerText = `${inputQtdDoc.value || 1}`;
             resumoLado.innerText = "Padrão Doc";
-            resumoQtd.innerText = `${inputQtdDoc.value || 1} via(s)`;
+            resumoFolhas.innerText = `${inputQtdDoc.value || 1}`;
             resumoAcabamento.innerText = "Não aplicável";
             const arqDoc = document.getElementById("arquivo_doc").files[0];
             resumoArquivo.innerText = arqDoc ? arqDoc.name : 'Nenhum selecionado';
         } else if (servicoAtivo === 'dig') {
             resumoServico.innerText = "Digitalização";
             resumoTipo.innerText = "Escaneamento";
+            resumoDocPaginas.innerText = `${inputQtdDig.value || 1} pág(s)`;
+            resumoCopias.innerText = "1";
+            resumoTotalPaginas.innerText = `${inputQtdDig.value || 1}`;
             resumoLado.innerText = "Não aplicável";
-            resumoQtd.innerText = `${inputQtdDig.value || 1} pág(s)`;
+            resumoFolhas.innerText = `${inputQtdDig.value || 1}`;
             resumoAcabamento.innerText = "Arquivo Digital";
             resumoArquivo.innerText = "Documento Físico (Entregar)";
         }
@@ -1214,6 +1374,7 @@
 
     selectTipo.addEventListener("change", calcularValor);    
     inputQtd.addEventListener("input", calcularValor);    
+    inputQtdPaginas.addEventListener("input", calcularValor);
     selectDocOficial.addEventListener("change", calcularValor);    
     inputQtdDoc.addEventListener("input", calcularValor);    
     inputQtdDig.addEventListener("input", calcularValor);    
@@ -1294,6 +1455,9 @@
         } else if (servicoAtivo === 'dig') {    
             document.getElementById("hidden_tipo_texto").value = `Digitalização: ${inputQtdDig.value} página(s)`;    
         }    
+
+        const obsTexto = document.getElementById("observacoes").value.trim();
+        document.getElementById("hidden_orientacao").value = obsTexto;
 
         const formaPagamento = document.querySelector('input[name="Forma de Pagamento"]:checked').value;    
         const nomeCliente = document.getElementById("nome").value.trim();    
