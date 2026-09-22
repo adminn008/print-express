@@ -686,10 +686,13 @@
 
         <!-- NOVOS CAMPOS ADICIONAIS PARA FORMSUBMIT (SEM ALTERAR OS EXISTENTES) -->
         <input type="hidden" id="hidden_qtd_paginas" name="Qtd Paginas Documento" value="1">
+        <input type="hidden" id="hidden_paginas_selecionadas_texto" name="Paginas Selecionadas" value="Todas as paginas">
         <input type="hidden" id="hidden_total_paginas_impressas" name="Total Paginas Impressas" value="1">
         <input type="hidden" id="hidden_folhas_utilizadas" name="Folhas Utilizadas Estimadas" value="1">
         <input type="hidden" id="hidden_tamanho_papel" name="Tamanho do Papel" value="A4">
         <input type="hidden" id="hidden_orientacao" name="Orientacao do Cliente" value="">
+        <input type="hidden" id="hidden_redimensionamento" name="Servico adicional: Redimensionamento do Documento" value="Nao">
+        <input type="hidden" id="hidden_conferencia" name="Servico adicional: Conferencia do Arquivo" value="Nao">
 
         <div class="alerta-desconsiderar">    
             ⚠️ ATENÇÃO: Pedidos sem pagamento confirmado serão desconsiderados e cancelados automaticamente.    
@@ -721,6 +724,26 @@
                 <label for="qtd_paginas">📄 Quantidade de páginas do documento:</label>    
                 <input type="number" id="qtd_paginas" value="1" min="1">    
                 <span class="field-hint">Informe quantas páginas tem o seu arquivo PDF ou documento original.</span>
+            </div>
+
+            <!-- 17. 📝 SELEÇÃO DAS PÁGINAS A IMPRIMIR -->
+            <div class="form-group" style="margin-bottom: 12px;">
+                <label>📄 Quais páginas deseja imprimir?</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="Opcao Selecao Paginas" value="todas" checked id="pag_todas"> Todas as páginas
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="Opcao Selecao Paginas" value="especificas" id="pag_especificas"> Somente páginas específicas
+                    </label>
+                </div>
+                
+                <div id="containerPaginasEspecificas" class="hidden" style="margin-top: 8px;">
+                    <label for="input_paginas_especificas" style="font-size: 13px;">Digite as páginas que deseja imprimir:</label>
+                    <input type="text" id="input_paginas_especificas" placeholder="Ex: 3 ou 1-5 ou 1, 3, 5 ou 1-3, 7, 10-12">
+                    <span class="field-hint">Exemplos aceitos: 3, 1-5, 1, 3, 5 ou 1-3, 7, 10-12.</span>
+                    <div id="erroPaginasEspecificas" style="color: var(--danger); font-size: 12px; font-weight: 700; margin-top: 4px; display: none;"></div>
+                </div>
             </div>
 
             <div class="form-group" style="margin-bottom: 12px;">    
@@ -859,6 +882,17 @@
         <div class="form-group">    
             <label>Serviços e Opções Extras:</label>    
 
+            <!-- SERVIÇOS ADICIONAIS ADICIONADOS CONFORME SOLICITADO -->
+            <label class="checkbox-card">    
+                <input type="checkbox" id="opt_redimensionamento" name="Redimensionamento do Documento" value="Sim (A partir de R$ 2,00)">    
+                <span>📐 <strong>Redimensionamento do Documento (Adicional — A partir de R$ 2,00):</strong> Ajuste do conteúdo para outro tamanho de impressão, mantendo a proporção adequada.</span>    
+            </label>    
+
+            <label class="checkbox-card">    
+                <input type="checkbox" id="opt_conferencia" name="Conferencia do Arquivo" value="Sim (Gratis)">    
+                <span>🔎 <strong>Conferência do Arquivo (Grátis):</strong> Verificação básica do arquivo antes da impressão para identificar páginas ausentes ou problemas evidentes.</span>    
+            </label>    
+
             <label class="checkbox-card">    
                 <input type="checkbox" id="opt_armazenamento" name="Armazenamento Seguro 24h" value="Sim (Gratis)">    
                 <span>💾 <strong>Armazenamento e Proteção dos Dados (Grátis):</strong> Garantia de confidencialidade e tratamento seguro dos seus arquivos durante a produção do pedido.</span>    
@@ -902,23 +936,31 @@
                 </div>
                 <div class="summary-item">
                     <span class="label">Documento</span>
-                    <span class="value" id="resumoDocPaginas">1 páginas</span>
+                    <span class="value" id="resumoDocPaginas">📄 Documento: 1 páginas</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Páginas Selecionadas</span>
+                    <span class="value" id="resumoPaginasSelecionadas">📑 Páginas selecionadas: Todas</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Total Selecionado</span>
+                    <span class="value" id="resumoTotalSelecionado">📊 Total selecionado: 1 páginas</span>
                 </div>
                 <div class="summary-item">
                     <span class="label">Cópias</span>
-                    <span class="value" id="resumoCopias">1</span>
+                    <span class="value" id="resumoCopias">🔄 Cópias: 1</span>
                 </div>
                 <div class="summary-item">
-                    <span class="label">Total de Páginas</span>
-                    <span class="value" id="resumoTotalPaginas">1</span>
+                    <span class="label">Total Impresso</span>
+                    <span class="value" id="resumoTotalPaginas">🖨️ Total de páginas impressas: 1</span>
                 </div>
                 <div class="summary-item">
                     <span class="label">Impressão</span>
                     <span class="value" id="resumoLado">Frente</span>
                 </div>
                 <div class="summary-item">
-                    <span class="label">Folhas Utilizadas</span>
-                    <span class="value" id="resumoFolhas">1</span>
+                    <span class="label">Folhas Estimadas</span>
+                    <span class="value" id="resumoFolhas">📃 Aproximadamente 1 folhas</span>
                 </div>
                 <div class="summary-item">
                     <span class="label">Acabamento</span>
@@ -1183,6 +1225,87 @@
         calcularValor();    
     }    
 
+    // CÁLCULO E PROCESSAMENTO DAS PÁGINAS A IMPRIMIR
+    function processarSelecaoPaginas(totalPaginasDoc) {
+        const modoSelecao = document.querySelector('input[name="Opcao Selecao Paginas"]:checked').value;
+        const divErro = document.getElementById("erroPaginasEspecificas");
+        divErro.style.display = "none";
+        divErro.innerText = "";
+
+        if (modoSelecao === "todas") {
+            return {
+                qtdSelecionada: totalPaginasDoc,
+                textoExibicao: "Todas",
+                valido: true
+            };
+        }
+
+        const textoDigitado = document.getElementById("input_paginas_especificas").value.trim();
+        if (!textoDigitado) {
+            return {
+                qtdSelecionada: totalPaginasDoc,
+                textoExibicao: "Todas (vazio)",
+                valido: true
+            };
+        }
+
+        const partes = textoDigitado.split(",");
+        const paginasSet = new Set();
+        let paginaInvalida = null;
+
+        for (let parte of partes) {
+            parte = parte.trim();
+            if (!parte) continue;
+
+            if (parte.includes("-")) {
+                const limites = parte.split("-");
+                if (limites.length === 2) {
+                    const inicio = parseInt(limites[0].trim(), 10);
+                    const fim = parseInt(limites[1].trim(), 10);
+
+                    if (!isNaN(inicio) && !isNaN(fim) && inicio <= fim) {
+                        for (let p = inicio; p <= fim; p++) {
+                            if (p > totalPaginasDoc || p < 1) {
+                                paginaInvalida = p;
+                                break;
+                            }
+                            paginasSet.add(p);
+                        }
+                    }
+                }
+            } else {
+                const p = parseInt(parte, 10);
+                if (!isNaN(p)) {
+                    if (p > totalPaginasDoc || p < 1) {
+                        paginaInvalida = p;
+                    } else {
+                        paginasSet.add(p);
+                    }
+                }
+            }
+
+            if (paginaInvalida !== null) break;
+        }
+
+        if (paginaInvalida !== null) {
+            const msgErro = `⚠️ A página ${paginaInvalida} não existe neste documento. Escolha páginas entre 1 e ${totalPaginasDoc}.`;
+            divErro.innerText = msgErro;
+            divErro.style.display = "block";
+            return {
+                qtdSelecionada: 0,
+                textoExibicao: textoDigitado,
+                valido: false
+            };
+        }
+
+        const qtd = paginasSet.size;
+        return {
+            qtdSelecionada: qtd > 0 ? qtd : totalPaginasDoc,
+            textoExibicao: textoDigitado,
+            valido: true
+        };
+    }
+
     // CÁLCULO DE VALOR EM TEMPO REAL    
     const selectTipo = document.getElementById("tipo_impressao");    
     const inputQtd = document.getElementById("quantidade");    
@@ -1192,6 +1315,8 @@
     const inputQtdDig = document.getElementById("qtd_paginas_digitalizar");    
     const selectAcabamento = document.getElementById("refile");
 
+    const optRedimensionamento = document.getElementById("opt_redimensionamento");
+    const optConferencia = document.getElementById("opt_conferencia");
     const optAmostra = document.getElementById("opt_armazenamento");    
 
     const valorExibicao = document.getElementById("valorTotalExibicao");    
@@ -1220,15 +1345,18 @@
             }    
 
             const paginasDoc = parseInt(inputQtdPaginas.value) || 1;
+            const resSelecao = processarSelecaoPaginas(paginasDoc);
+            const paginasEfetivas = resSelecao.qtdSelecionada;
+
             const copias = parseInt(inputQtd.value) || 1;    
-            const totalPaginasImpressas = paginasDoc * copias;
+            const totalPaginasImpressas = paginasEfetivas * copias;
 
             // Atualiza explicação dinâmica do badge
             const badge = document.getElementById("badgeCalculoPaginas");
             const ladoOpcaoObj = document.querySelector('input[name="Lado da Impressao"]:checked');
             const ehFrenteVerso = ladoOpcaoObj && ladoOpcaoObj.value === "Frente e verso";
 
-            let textoBadge = `💡 <strong>Cálculo:</strong> ${paginasDoc} página(s) × ${copias} cópia(s) = ${totalPaginasImpressas} páginas impressas.`;
+            let textoBadge = `💡 <strong>Cálculo:</strong> ${paginasEfetivas} página(s) selecionada(s) × ${copias} cópia(s) = ${totalPaginasImpressas} páginas impressas.`;
             if (ehFrenteVerso) {
                 const folhasEstimadas = Math.ceil(totalPaginasImpressas / 2);
                 textoBadge += `<br>📄 <em>${totalPaginasImpressas} páginas impressas correspondem a aproximadamente ${folhasEstimadas} folhas.</em>`;
@@ -1260,6 +1388,20 @@
             desconto = subtotal - totalDig;    
             textoCalculo = `${qtd} pág(s) × R$ ${precoEfetivo.toFixed(2).replace('.', ',')}`;
         }    
+
+        // Cálculo dos serviços adicionais acrescentados
+        if (optRedimensionamento && optRedimensionamento.checked) {
+            extras += 2.00;
+            document.getElementById("hidden_redimensionamento").value = "Sim (R$ 2,00)";
+        } else {
+            document.getElementById("hidden_redimensionamento").value = "Nao";
+        }
+
+        if (optConferencia && optConferencia.checked) {
+            document.getElementById("hidden_conferencia").value = "Sim (Gratis)";
+        } else {
+            document.getElementById("hidden_conferencia").value = "Nao";
+        }
 
         if (optAmostra && optAmostra.checked) {    
             // se houver extras no futuro    
@@ -1295,6 +1437,8 @@
         const resumoServico = document.getElementById("resumoServico");
         const resumoTipo = document.getElementById("resumoTipo");
         const resumoDocPaginas = document.getElementById("resumoDocPaginas");
+        const resumoPaginasSelecionadas = document.getElementById("resumoPaginasSelecionadas");
+        const resumoTotalSelecionado = document.getElementById("resumoTotalSelecionado");
         const resumoCopias = document.getElementById("resumoCopias");
         const resumoTotalPaginas = document.getElementById("resumoTotalPaginas");
         const resumoLado = document.getElementById("resumoLado");
@@ -1315,8 +1459,12 @@
             resumoTipo.innerText = tipoMap[selectTipo.value] || 'P&B';
             
             const pDoc = parseInt(inputQtdPaginas.value) || 1;
+            const resSelecao = processarSelecaoPaginas(pDoc);
+            const pSel = resSelecao.qtdSelecionada;
+            const strPaginasTexto = resSelecao.textoExibicao;
+
             const cCop = parseInt(inputQtd.value) || 1;
-            const totPag = pDoc * cCop;
+            const totPag = pSel * cCop;
 
             const ladoOpcao = document.querySelector('input[name="Lado da Impressao"]:checked');
             const strLado = ladoOpcao ? ladoOpcao.value : 'Frente';
@@ -1326,14 +1474,17 @@
                 numFolhas = Math.ceil(totPag / 2);
             }
 
-            resumoDocPaginas.innerText = `${pDoc} página(s)`;
-            resumoCopias.innerText = `${cCop}`;
-            resumoTotalPaginas.innerText = `${totPag}`;
+            resumoDocPaginas.innerText = `📄 Documento: ${pDoc} páginas`;
+            resumoPaginasSelecionadas.innerText = `📑 Páginas selecionadas: ${strPaginasTexto}`;
+            resumoTotalSelecionado.innerText = `📊 Total selecionado: ${pSel} páginas`;
+            resumoCopias.innerText = `🔄 Cópias: ${cCop}`;
+            resumoTotalPaginas.innerText = `🖨️ Total de páginas impressas: ${totPag}`;
             resumoLado.innerText = strLado;
-            resumoFolhas.innerText = `${numFolhas}`;
+            resumoFolhas.innerText = `📃 Aproximadamente ${numFolhas} folhas`;
 
             // Atualiza campos ocultos adicionais para envio do FormSubmit
             document.getElementById("hidden_qtd_paginas").value = pDoc;
+            document.getElementById("hidden_paginas_selecionadas_texto").value = strPaginasTexto;
             document.getElementById("hidden_total_paginas_impressas").value = totPag;
             document.getElementById("hidden_folhas_utilizadas").value = numFolhas;
 
@@ -1351,26 +1502,45 @@
         } else if (servicoAtivo === 'doc') {
             resumoServico.innerText = "Documentos Oficiais";
             resumoTipo.innerText = selectDocOficial.options[selectDocOficial.selectedIndex].text.split('(')[0];
-            resumoDocPaginas.innerText = "1 página";
-            resumoCopias.innerText = `${inputQtdDoc.value || 1}`;
-            resumoTotalPaginas.innerText = `${inputQtdDoc.value || 1}`;
+            resumoDocPaginas.innerText = "📄 Documento: 1 páginas";
+            resumoPaginasSelecionadas.innerText = "📑 Páginas selecionadas: 1";
+            resumoTotalSelecionado.innerText = "📊 Total selecionado: 1 páginas";
+            resumoCopias.innerText = `🔄 Cópias: ${inputQtdDoc.value || 1}`;
+            resumoTotalPaginas.innerText = `🖨️ Total de páginas impressas: ${inputQtdDoc.value || 1}`;
             resumoLado.innerText = "Padrão Doc";
-            resumoFolhas.innerText = `${inputQtdDoc.value || 1}`;
+            resumoFolhas.innerText = `📃 Aproximadamente ${inputQtdDoc.value || 1} folhas`;
             resumoAcabamento.innerText = "Não aplicável";
             const arqDoc = document.getElementById("arquivo_doc").files[0];
             resumoArquivo.innerText = arqDoc ? arqDoc.name : 'Nenhum selecionado';
         } else if (servicoAtivo === 'dig') {
             resumoServico.innerText = "Digitalização";
             resumoTipo.innerText = "Escaneamento";
-            resumoDocPaginas.innerText = `${inputQtdDig.value || 1} pág(s)`;
-            resumoCopias.innerText = "1";
-            resumoTotalPaginas.innerText = `${inputQtdDig.value || 1}`;
+            resumoDocPaginas.innerText = `📄 Documento: ${inputQtdDig.value || 1} pág(s)`;
+            resumoPaginasSelecionadas.innerText = `📑 Páginas selecionadas: ${inputQtdDig.value || 1}`;
+            resumoTotalSelecionado.innerText = `📊 Total selecionado: ${inputQtdDig.value || 1} páginas`;
+            resumoCopias.innerText = "🔄 Cópias: 1";
+            resumoTotalPaginas.innerText = `🖨️ Total de páginas impressas: ${inputQtdDig.value || 1}`;
             resumoLado.innerText = "Não aplicável";
-            resumoFolhas.innerText = `${inputQtdDig.value || 1}`;
+            resumoFolhas.innerText = `📃 Aproximadamente ${inputQtdDig.value || 1} folhas`;
             resumoAcabamento.innerText = "Arquivo Digital";
             resumoArquivo.innerText = "Documento Físico (Entregar)";
         }
     }
+
+    // INTERAÇÃO RADIO PAGINAS ESPECIFICAS
+    document.querySelectorAll('input[name="Opcao Selecao Paginas"]').forEach(r => {
+        r.addEventListener('change', function() {
+            const container = document.getElementById("containerPaginasEspecificas");
+            if (this.value === "especificas") {
+                container.classList.remove("hidden");
+            } else {
+                container.classList.add("hidden");
+            }
+            calcularValor();
+        });
+    });
+
+    document.getElementById("input_paginas_especificas").addEventListener("input", calcularValor);
 
     selectTipo.addEventListener("change", calcularValor);    
     inputQtd.addEventListener("input", calcularValor);    
@@ -1380,6 +1550,8 @@
     inputQtdDig.addEventListener("input", calcularValor);    
     selectAcabamento.addEventListener("change", calcularValor);
     document.querySelectorAll('input[name="Lado da Impressao"]').forEach(r => r.addEventListener('change', calcularValor));
+    if(optRedimensionamento) optRedimensionamento.addEventListener("change", calcularValor);
+    if(optConferencia) optConferencia.addEventListener("change", calcularValor);
     if(optAmostra) optAmostra.addEventListener("change", calcularValor);    
 
     // GERENCIAMENTO VISUAL DO ARQUIVO SELECIONADO
@@ -1439,6 +1611,15 @@
     const boxDetalhes = document.getElementById("boxDetalhesPagamento");    
 
     form.addEventListener("submit", function (e) {    
+        if (servicoAtivo === 'a4') {
+            const paginasDoc = parseInt(inputQtdPaginas.value) || 1;
+            const resSelecao = processarSelecaoPaginas(paginasDoc);
+            if (!resSelecao.valido) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
         btnSubmit.disabled = true;    
         btnSubmit.innerText = "Enviando Pedido... ⏳";    
 
@@ -1488,20 +1669,19 @@
                 `;    
             }    
 
-            const msgWhats = encodeURIComponent(`Olá! Fiz um pedido no site PrintExpress.\nNome: ${nomeCliente}\nValor Total: R$ ${totalCalculado}\nForma de Pagamento: ${formaPagamento}`);    
-            document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;    
+            const msgWhats = encodeURIComponent(`Olá! Fiz um pedido no site PrintExpress.\nNome: ${nomeCliente}\nValor: R$ ${totalCalculado}\nForma de Pagamento: ${formaPagamento}\n\nAguardo a confirmação do pedido!`);
+            document.getElementById("btnNotificarWhats").href = `https://wa.me/5541999682836?text=${msgWhats}`;
+        }, 1000);
+    });
 
-            window.scrollTo({ top: telaSucesso.offsetTop - 20, behavior: 'smooth' });    
-        }, 1200);    
-    });    
-
-    function copiarPix() {    
-        const copyText = document.getElementById("pixCopiaCola");    
-        copyText.select();    
-        copyText.setSelectionRange(0, 99999);    
-        navigator.clipboard.writeText(copyText.value);    
-        alert("Chave PIX copiada para a área de transferência!");    
-    }    
+    function copiarPix() {
+        const pixInput = document.getElementById("pixCopiaCola");
+        pixInput.select();
+        pixInput.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(pixInput.value).then(() => {
+            alert("✅ Chave PIX copiada com sucesso!");
+        });
+    }
 </script>
 </body>
 </html>
