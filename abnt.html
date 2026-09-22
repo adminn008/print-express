@@ -765,6 +765,150 @@
       margin-bottom: 0.5rem;
     }
 
+    /* Radios e Pagamento Estilizados */
+    .payment-methods-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .payment-method-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      background: var(--bg-body);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 600;
+    }
+
+    .payment-method-card:hover {
+      border-color: var(--primary);
+    }
+
+    .payment-method-card input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--primary);
+    }
+
+    .payment-details-box {
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .pix-qr-code {
+      max-width: 220px;
+      width: 100%;
+      height: auto;
+      margin: 1rem auto;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .pix-key-display {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      font-family: monospace;
+      font-size: 0.95rem;
+      word-break: break-all;
+      margin: 1rem 0;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .pix-copy-confirm {
+      display: none;
+      background-color: rgba(0, 200, 83, 0.1);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 700;
+      margin-top: 0.75rem;
+    }
+
+    .mandatory-payment-notice {
+      background-color: rgba(234, 179, 8, 0.1);
+      border: 1px solid rgba(234, 179, 8, 0.5);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      text-align: left;
+    }
+
+    .mandatory-payment-notice h5 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .mandatory-payment-notice p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .mandatory-payment-notice p:last-child {
+      margin-bottom: 0;
+    }
+
+    .thank-you-screen {
+      display: none;
+      text-align: center;
+      padding: 3rem 1.5rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .thank-you-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .thank-you-text {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 1rem;
+    }
+
+    .clear-order-link {
+      display: inline-block;
+      margin-top: 1.25rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      text-decoration: underline;
+      cursor: pointer;
+      transition: var(--transition);
+      background: none;
+      border: none;
+    }
+
+    .clear-order-link:hover {
+      color: #ef4444;
+    }
+
     /* ==========================================================================
        10. IMPRESSÃO BANNER (SISTEMA INTEGRADO)
        ========================================================================== */
@@ -1136,6 +1280,21 @@
       </div>
     </div>
 
+    <!-- Modal Confirmação Visual para Limpar Pedido -->
+    <div id="confirmClearModal" class="modal" aria-hidden="true">
+      <div class="custom-dialog-card">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🗑️</div>
+        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem;">Começar novo pedido?</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+          Isso apagará todas as informações do pedido atual gravadas neste navegador. Deseja continuar?
+        </p>
+        <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+          <button id="btnConfirmClear" class="btn btn-primary" style="padding: 0.6rem 1.2rem; font-size: 0.9rem; background-color: #ef4444;">Sim, começar novo</button>
+          <button id="btnCancelClear" class="btn btn-secondary" style="padding: 0.6rem 1.2rem; font-size: 0.9rem;">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- ==========================================================================
          4. COMO FUNCIONA (PASSO A PASSO)
          ========================================================================== -->
@@ -1250,7 +1409,18 @@
           <p class="section-subtitle">Preencha os dados abaixo e entraremos em contato rapidamente com a cotação.</p>
         </div>
 
-        <div class="form-container">
+        <!-- Tela de Agradecimento (Incialmente Oculta) -->
+        <div id="thankYouScreen" class="thank-you-screen">
+          <div style="font-size: 3rem; margin-bottom: 0.5rem;">💙</div>
+          <h3 class="thank-you-title">Obrigado por escolher o PrintExpress!</h3>
+          <p class="thank-you-text">Seu pedido foi preparado e está pronto para ser enviado pelo WhatsApp.</p>
+          <p class="thank-you-text" style="font-size: 0.95rem;">Após a confirmação do pagamento, o serviço será iniciado conforme as condições e prazos informados.</p>
+          <div style="margin-top: 2rem;">
+            <button type="button" class="btn btn-primary" onclick="resetarEVoltarInicio()">Voltar ao início</button>
+          </div>
+        </div>
+
+        <div class="form-container" id="formContainer">
           
           <!-- Mensagem visual de erro para campos obrigatórios -->
           <div id="formWarningMsg" class="form-warning-msg"></div>
@@ -1261,13 +1431,13 @@
               <!-- Nome -->
               <div class="form-group full-width">
                 <label for="nome" class="form-label">Nome completo *</label>
-                <input type="text" id="nome" name="nome" class="form-input" placeholder="Seu nome completo" required>
+                <input type="text" id="nome" name="nome" class="form-input" placeholder="Seu nome completo" required oninput="salvarEstadoPedido()">
               </div>
 
               <!-- Tipo de Trabalho -->
               <div class="form-group full-width">
                 <label for="tipo_trabalho" class="form-label">Tipo de trabalho *</label>
-                <select id="tipo_trabalho" name="tipo_trabalho" class="form-select" required onchange="toggleOutroTrabalho(this.value)">
+                <select id="tipo_trabalho" name="tipo_trabalho" class="form-select" required onchange="toggleOutroTrabalho(this.value); salvarEstadoPedido();">
                   <option value="" disabled selected>Selecione uma opção</option>
                   <option value="Trabalho escolar">Trabalho escolar</option>
                   <option value="Trabalho acadêmico">Trabalho acadêmico</option>
@@ -1280,19 +1450,19 @@
               <!-- Campo Dinâmico: Qual tipo de trabalho? -->
               <div class="form-group full-width" id="group_outro_trabalho" style="display: none;">
                 <label for="especificar_outro" class="form-label">Qual tipo de trabalho? *</label>
-                <input type="text" id="especificar_outro" name="especificar_outro" class="form-input" placeholder="Ex: Artigo, Projeto, Trabalho de curso...">
+                <input type="text" id="especificar_outro" name="especificar_outro" class="form-input" placeholder="Ex: Artigo, Projeto, Trabalho de curso..." oninput="salvarEstadoPedido()">
               </div>
 
               <!-- Quantidade de Páginas -->
               <div class="form-group">
                 <label for="paginas" class="form-label">Qtd. aproximada de páginas</label>
-                <input type="number" id="paginas" name="quantidade_paginas" min="1" class="form-input" placeholder="Ex: 25">
+                <input type="number" id="paginas" name="quantidade_paginas" min="1" class="form-input" placeholder="Ex: 25" oninput="salvarEstadoPedido()">
               </div>
 
               <!-- Prazo Desejado -->
               <div class="form-group">
                 <label for="prazo" class="form-label">Prazo desejado para entrega</label>
-                <input type="date" id="prazo" name="prazo_desejado" class="form-input">
+                <input type="date" id="prazo" name="prazo_desejado" class="form-input" onchange="salvarEstadoPedido()">
               </div>
 
               <!-- O que precisa (Checkboxes Visuais) -->
@@ -1300,31 +1470,31 @@
                 <label class="form-label" style="margin-bottom: 0.5rem;">O que você precisa formatar/ajustar?</label>
                 <div class="options-grid">
                   <label class="checkbox-tile">
-                    <input type="checkbox" name="servicos[]" value="Formatação Geral" checked>
+                    <input type="checkbox" name="servicos[]" value="Formatação Geral" checked onchange="salvarEstadoPedido()">
                     <span>Formatação</span>
                   </label>
                   <label class="checkbox-tile">
-                    <input type="checkbox" name="servicos[]" value="Capa">
+                    <input type="checkbox" name="servicos[]" value="Capa" onchange="salvarEstadoPedido()">
                     <span>Capa</span>
                   </label>
                   <label class="checkbox-tile">
-                    <input type="checkbox" name="servicos[]" value="Folha de Rosto">
+                    <input type="checkbox" name="servicos[]" value="Folha de Rosto" onchange="salvarEstadoPedido()">
                     <span>Folha de rosto</span>
                   </label>
                   <label class="checkbox-tile">
-                    <input type="checkbox" name="servicos[]" value="Sumário">
+                    <input type="checkbox" name="servicos[]" value="Sumário" onchange="salvarEstadoPedido()">
                     <span>Sumário</span>
                   </label>
                   <label class="checkbox-tile">
-                    <input type="checkbox" name="servicos[]" value="Referências">
+                    <input type="checkbox" name="servicos[]" value="Referências" onchange="salvarEstadoPedido()">
                     <span>Referências</span>
                   </label>
                   <label class="checkbox-tile">
-                    <input type="checkbox" name="servicos[]" value="Paginação">
+                    <input type="checkbox" name="servicos[]" value="Paginação" onchange="salvarEstadoPedido()">
                     <span>Paginação</span>
                   </label>
                   <label class="checkbox-tile">
-                    <input type="checkbox" name="servicos[]" value="Outros">
+                    <input type="checkbox" name="servicos[]" value="Outros" onchange="salvarEstadoPedido()">
                     <span>Outros</span>
                   </label>
                 </div>
@@ -1345,11 +1515,62 @@
               <!-- Observações -->
               <div class="form-group full-width">
                 <label for="observacoes" class="form-label">Observações e instruções específicas</label>
-                <textarea id="observacoes" name="observacoes" rows="4" class="form-textarea" placeholder="Informe aqui as orientações do professor, instituição ou qualquer detalhe importante."></textarea>
+                <textarea id="observacoes" name="observacoes" rows="4" class="form-textarea" placeholder="Informe aqui as orientações do professor, instituição ou qualquer detalhe importante." oninput="salvarEstadoPedido()"></textarea>
+              </div>
+
+              <!-- Formas de Pagamento -->
+              <div class="form-group full-width" style="margin-top: 1rem;">
+                <label class="form-label" style="margin-bottom: 0.5rem;">Forma de pagamento *</label>
+                <div class="payment-methods-grid">
+                  <label class="payment-method-card">
+                    <input type="radio" name="forma_pagamento" value="PIX" checked onchange="alternarPagamento('PIX'); salvarEstadoPedido();">
+                    <span>💠 PIX</span>
+                  </label>
+                  <label class="payment-method-card">
+                    <input type="radio" name="forma_pagamento" value="Dinheiro" onchange="alternarPagamento('Dinheiro'); salvarEstadoPedido();">
+                    <span>💵 Dinheiro</span>
+                  </label>
+                </div>
+
+                <!-- Área PIX -->
+                <div id="areaPix" class="payment-details-box">
+                  <div style="font-weight: 700; font-size: 1.05rem;">Pagamento via PIX</div>
+                  <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem;">
+                    Valor total estimado: <strong style="color: var(--primary);" id="displayValorTotal">A partir de R$ 20,00</strong>
+                  </div>
+                  
+                  <img src="qrcode-pix.jpg" alt="QR Code PIX" class="pix-qr-code">
+                  
+                  <div style="font-size: 0.85rem; color: var(--text-muted);">Chave PIX para transferência:</div>
+                  <div id="pixKeyText" class="pix-key-display"></div>
+
+                  <button type="button" class="btn btn-secondary" onclick="copiarChavePix()" style="width: auto; padding: 0.6rem 1.25rem; font-size: 0.9rem;">
+                    📋 Copiar chave PIX
+                  </button>
+
+                  <div id="pixCopyConfirm" class="pix-copy-confirm">
+                    ✓ Chave PIX copiada!
+                  </div>
+                </div>
+
+                <!-- Área Dinheiro -->
+                <div id="areaDinheiro" class="payment-details-box" style="display: none;">
+                  <div style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">💵 Pagamento em Dinheiro</div>
+                  <p style="font-size: 0.925rem; color: var(--text-muted);">
+                    O pagamento será realizado em dinheiro conforme combinado no atendimento.
+                  </p>
+                </div>
+
+                <!-- Aviso Obrigatório de Pagamento -->
+                <div class="mandatory-payment-notice">
+                  <h5>⚠️ Importante</h5>
+                  <p><strong>Seu pedido só será iniciado após a confirmação do pagamento.</strong></p>
+                  <p>Após realizar o pagamento, envie o pedido pelo WhatsApp para que possamos confirmar e iniciar o serviço.</p>
+                </div>
               </div>
 
               <!-- Botão Enviar Pedido pelo WhatsApp -->
-              <div class="form-group full-width" style="margin-top: 1rem;">
+              <div class="form-group full-width" style="margin-top: 0.5rem;">
                 <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; background-color: #25D366; color: #ffffff;">
                   📲 Enviar pedido pelo WhatsApp
                 </button>
@@ -1357,6 +1578,12 @@
 
             </div>
           </form>
+
+          <div style="text-align: center;">
+            <button type="button" class="clear-order-link" onclick="abrirModalLimparPedido()">
+              Começar novo pedido
+            </button>
+          </div>
 
         </div>
 
@@ -1428,9 +1655,18 @@
        ========================================================================== -->
   <script>
     // CONSTANTE COM O NÚMERO DE WHATSAPP CONFIGURADO (COM CÓDIGO DO PAÍS E DDD)
-    const NUMERO_WHATSAPP = '5541999682836';
+    const NUMERO_WHATSAPP = '5541999999999';
+
+    // CHAVE PIX CONFIGURÁVEL
+    const PIX_KEY = "MINHA_CHAVE_PIX_AQUI";
 
     document.addEventListener('DOMContentLoaded', () => {
+      // Exibir chave PIX configurada
+      const pixKeyDisplay = document.getElementById('pixKeyText');
+      if (pixKeyDisplay) {
+        pixKeyDisplay.textContent = PIX_KEY;
+      }
+
       // --- A. GERENCIAMENTO DE TEMA (CLARO / ESCURO) ---
       const themeToggleBtn = document.getElementById('themeToggle');
       const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
@@ -1516,6 +1752,9 @@
           if (e.target === previewModal) closeModal();
         });
       }
+
+      // Restaurar estado salvo do pedido, se existir
+      restaurarEstadoPedido();
     });
 
     // --- C. FUNÇÃO TIPO DE TRABALHO (OUTRO) ---
@@ -1532,7 +1771,156 @@
       }
     }
 
-    // --- D. ENVIO DIRETO PELO WHATSAPP ---
+    // --- D. CONTROLE DE FORMA DE PAGAMENTO ---
+    function alternarPagamento(metodo) {
+      const areaPix = document.getElementById('areaPix');
+      const areaDinheiro = document.getElementById('areaDinheiro');
+
+      if (metodo === 'PIX') {
+        areaPix.style.display = 'block';
+        areaDinheiro.style.display = 'none';
+      } else if (metodo === 'Dinheiro') {
+        areaPix.style.display = 'none';
+        areaDinheiro.style.display = 'block';
+      }
+    }
+
+    // --- E. COPIAR CHAVE PIX COM CONFIRMAÇÃO VISUAL ---
+    function copiarChavePix() {
+      const confirmBox = document.getElementById('pixCopyConfirm');
+      
+      navigator.clipboard.writeText(PIX_KEY).then(() => {
+        confirmBox.style.display = 'block';
+        setTimeout(() => {
+          confirmBox.style.display = 'none';
+        }, 3000);
+      }).catch(() => {
+        const textarea = document.createElement('textarea');
+        textarea.value = PIX_KEY;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        confirmBox.style.display = 'block';
+        setTimeout(() => {
+          confirmBox.style.display = 'none';
+        }, 3000);
+      });
+    }
+
+    // --- F. LOCALSTORAGE: SALVAR, RESTAURAR E LIMPAR PEDIDO ---
+    const LOCAL_STORAGE_KEY = 'printexpress_abnt_pedido';
+
+    function salvarEstadoPedido() {
+      const nome = document.getElementById('nome').value;
+      const tipoTrabalho = document.getElementById('tipo_trabalho').value;
+      const especificarOutro = document.getElementById('especificar_outro').value;
+      const paginas = document.getElementById('paginas').value;
+      const prazo = document.getElementById('prazo').value;
+      const observacoes = document.getElementById('observacoes').value;
+      
+      const servicos = [];
+      document.querySelectorAll('input[name="servicos[]"]:checked').forEach(cb => {
+        servicos.push(cb.value);
+      });
+
+      const formaPagamentoElement = document.querySelector('input[name="forma_pagamento"]:checked');
+      const formaPagamento = formaPagamentoElement ? formaPagamentoElement.value : 'PIX';
+
+      const thankYouScreen = document.getElementById('thankYouScreen');
+      const estaConcluido = thankYouScreen.style.display === 'block';
+
+      const pedidoData = {
+        nome,
+        tipoTrabalho,
+        especificarOutro,
+        paginas,
+        prazo,
+        observacoes,
+        servicos,
+        formaPagamento,
+        estaConcluido
+      };
+
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(pedidoData));
+    }
+
+    function restaurarEstadoPedido() {
+      const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (!savedData) return;
+
+      try {
+        const pedido = JSON.parse(savedData);
+
+        if (pedido.nome !== undefined) document.getElementById('nome').value = pedido.nome;
+        if (pedido.tipoTrabalho !== undefined) {
+          document.getElementById('tipo_trabalho').value = pedido.tipoTrabalho;
+          toggleOutroTrabalho(pedido.tipoTrabalho);
+        }
+        if (pedido.especificarOutro !== undefined) document.getElementById('especificar_outro').value = pedido.especificarOutro;
+        if (pedido.paginas !== undefined) document.getElementById('paginas').value = pedido.paginas;
+        if (pedido.prazo !== undefined) document.getElementById('prazo').value = pedido.prazo;
+        if (pedido.observacoes !== undefined) document.getElementById('observacoes').value = pedido.observacoes;
+
+        if (Array.isArray(pedido.servicos)) {
+          document.querySelectorAll('input[name="servicos[]"]').forEach(cb => {
+            cb.checked = pedido.servicos.includes(cb.value);
+          });
+        }
+
+        if (pedido.formaPagamento) {
+          const radio = document.querySelector(`input[name="forma_pagamento"][value="${pedido.formaPagamento}"]`);
+          if (radio) {
+            radio.checked = true;
+            alternarPagamento(pedido.formaPagamento);
+          }
+        }
+
+        if (pedido.estaConcluido) {
+          document.getElementById('formContainer').style.display = 'none';
+          document.getElementById('thankYouScreen').style.display = 'block';
+        }
+      } catch (e) {
+        console.error('Erro ao restaurar dados do localStorage', e);
+      }
+    }
+
+    function abrirModalLimparPedido() {
+      const modal = document.getElementById('confirmClearModal');
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+
+      document.getElementById('btnConfirmClear').onclick = () => {
+        limparPedido();
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
+      };
+
+      document.getElementById('btnCancelClear').onclick = () => {
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
+      };
+    }
+
+    function limparPedido() {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+      document.getElementById('abntForm').reset();
+      toggleOutroTrabalho('');
+      alternarPagamento('PIX');
+      document.getElementById('fileNameDisplay').textContent = '';
+      document.getElementById('thankYouScreen').style.display = 'none';
+      document.getElementById('formContainer').style.display = 'block';
+    }
+
+    function resetarEVoltarInicio() {
+      limparPedido();
+      const sectionForm = document.getElementById('solicitar-orcamento');
+      if (sectionForm) {
+        sectionForm.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // --- G. ENVIO DIRETO PELO WHATSAPP ---
     function enviarPedidoWhatsApp() {
       const warningElement = document.getElementById('formWarningMsg');
       warningElement.style.display = 'none';
@@ -1544,6 +1932,7 @@
       const paginasInput = document.getElementById('paginas');
       const prazoInput = document.getElementById('prazo');
       const observacoesInput = document.getElementById('observacoes');
+      const formaPagamentoSelected = document.querySelector('input[name="forma_pagamento"]:checked');
 
       // Validação visual de campos obrigatórios
       let erros = [];
@@ -1600,6 +1989,7 @@
 
       let paginasTexto = paginasInput.value ? paginasInput.value : 'Não informada';
       let observacoesTexto = observacoesInput.value.trim() ? observacoesInput.value.trim() : 'Nenhuma observação';
+      let pagamentoTexto = formaPagamentoSelected ? formaPagamentoSelected.value : 'PIX';
 
       // Montagem da mensagem estruturada
       let mensagem = `📐 *NOVO PEDIDO — FORMATAÇÃO ABNT*\n\n`;
@@ -1608,15 +1998,21 @@
       mensagem += `📝 Serviço solicitado:\n${servicosTexto}\n\n`;
       mensagem += `📄 Quantidade aproximada de páginas:\n${paginasTexto}\n\n`;
       mensagem += `⏰ Prazo desejado:\n${prazoTexto}\n\n`;
+      mensagem += `💳 Forma de Pagamento Escolhida:\n${pagamentoTexto}\n\n`;
       mensagem += `📌 Observações:\n${observacoesTexto}\n\n`;
       mensagem += `💰 Valor base da formatação:\nA partir de R$ 20,00 (A combinar)`;
+
+      // Salvar estado atual do pedido como concluído
+      document.getElementById('formContainer').style.display = 'none';
+      document.getElementById('thankYouScreen').style.display = 'block';
+      salvarEstadoPedido();
 
       // Abrir o WhatsApp
       const urlWhatsApp = `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(mensagem)}`;
       window.open(urlWhatsApp, '_blank');
     }
 
-    // --- E. EXIBIÇÃO DO NOME DO ARQUIVO ANEXADO ---
+    // --- H. EXIBIÇÃO DO NOME DO ARQUIVO ANEXADO ---
     function updateFileName(input) {
       const display = document.getElementById('fileNameDisplay');
       if (input.files && input.files.length > 0) {
