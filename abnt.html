@@ -394,13 +394,14 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: #525659; /* Cor padronizada de fundo para contraste do documento */
+      background: #525659;
       min-height: 400px;
     }
 
     .preview-frame {
       width: 100%;
-      max-width: 650px;
+      max-width: 750px;
+      height: 600px;
       background: #ffffff;
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
       border-radius: 4px;
@@ -408,15 +409,13 @@
       position: relative;
     }
 
-    /* SVG Placeholder/Modelo de folha formatada ABNT */
-    .document-mockup {
+    .pdf-embed-container {
       width: 100%;
-      height: auto;
-      display: block;
-      background: #ffffff;
+      height: 100%;
+      border: none;
     }
 
-    /* Modal / Lightbox para prévia expandida */
+    /* Modal / Lightbox para prévia expandida e Notificações Customizadas */
     .modal {
       display: none;
       position: fixed;
@@ -438,22 +437,26 @@
 
     .modal-content {
       position: relative;
-      max-width: 90vw;
-      max-height: 90vh;
-      background: #ffffff;
+      width: 100%;
+      max-width: 900px;
+      height: 90vh;
+      background: var(--bg-surface);
+      color: var(--text-main);
       border-radius: var(--radius-md);
-      overflow: auto;
+      overflow: hidden;
       box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
       padding: 1rem;
+      display: flex;
+      flex-direction: column;
     }
 
     .modal-close {
       position: absolute;
       top: 1rem;
       right: 1rem;
-      background: #000000;
-      color: #ffffff;
-      border: none;
+      background: var(--bg-subtle);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
       width: 36px;
       height: 36px;
       border-radius: 50%;
@@ -463,6 +466,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .custom-dialog-card {
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      max-width: 450px;
+      width: 100%;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
     }
 
     /* ==========================================================================
@@ -475,7 +490,6 @@
       position: relative;
     }
 
-    /* Linha conectora no desktop */
     .steps-grid::before {
       content: "";
       position: absolute;
@@ -567,7 +581,7 @@
 
     .addons-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 1rem;
     }
 
@@ -583,12 +597,13 @@
     }
 
     .addon-badge {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       padding: 0.25rem 0.6rem;
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: 4px;
-      color: var(--text-muted);
+      color: var(--primary);
+      font-weight: 700;
     }
 
     /* Caixa de Aviso Importante */
@@ -627,7 +642,7 @@
     }
 
     /* ==========================================================================
-       9. FORMULÁRIO DE SOLICITAÇÃO DE ORÇAMENTO
+       9. FORMULÁRIO DE SOLICITAÇÃO & FLUXO DE PAGAMENTO/AGRADECIMENTO
        ========================================================================== */
     .form-section {
       scroll-margin-top: 90px;
@@ -679,7 +694,18 @@
       box-shadow: 0 0 0 3px var(--primary-light);
     }
 
-    /* Selection Options (Checkboxes Visuais) */
+    .invalid-input {
+      border-color: #ef4444 !important;
+    }
+
+    .error-msg {
+      color: #ef4444;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: none;
+    }
+
+    /* Checkboxes Visuais */
     .options-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -731,6 +757,60 @@
     .file-dropzone-icon {
       font-size: 2rem;
       margin-bottom: 0.5rem;
+    }
+
+    /* Estilos das Etapas de Pagamento e Resumo */
+    .payment-notice-banner {
+      background: rgba(0, 82, 204, 0.08);
+      border: 1px solid var(--primary);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-main);
+    }
+
+    .payment-methods {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0 1.5rem;
+    }
+
+    .payment-btn {
+      padding: 1rem;
+      background: var(--bg-body);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 700;
+      text-align: center;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .payment-btn.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .qr-container {
+      text-align: center;
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .qr-image {
+      max-width: 220px;
+      margin: 0 auto 1rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
     }
 
     /* ==========================================================================
@@ -837,7 +917,6 @@
        12. RESPONSIVIDADE (MEDIA QUERIES)
        ========================================================================== */
 
-    /* Tablet (<= 992px) */
     @media (max-width: 992px) {
       .steps-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -853,7 +932,6 @@
       }
     }
 
-    /* Celular (<= 640px) */
     @media (max-width: 640px) {
       .header-nav {
         height: 64px;
@@ -894,6 +972,10 @@
 
       .preview-actions .btn {
         flex: 1;
+      }
+
+      .preview-frame {
+        height: 450px;
       }
 
       .warning-box {
@@ -1053,7 +1135,7 @@
               <button id="btnZoomPreview" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
                 🔎 Visualizar exemplo
               </button>
-              <a href="#" id="btnDownloadPDF" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;" onclick="alert('O arquivo de demonstração em PDF será baixado.'); return false;">
+              <a href="modelo-demonstrativo.pdf" id="btnDownloadPDF" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
                 📥 Ver modelo completo
               </a>
             </div>
@@ -1061,34 +1143,10 @@
 
           <div class="preview-body">
             <div class="preview-frame">
-              <!-- Renderização visual do modelo ABNT através de vetor limpo -->
-              <svg class="document-mockup" viewBox="0 0 595 842" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="595" height="842" fill="white"/>
-                <!-- Margens ABNT Guia (Superior 3cm, Esquerda 3cm) -> aprox 85px -->
-                
-                <!-- Cabeçalho da Instituição -->
-                <rect x="180" y="85" width="235" height="10" rx="2" fill="#1e293b"/>
-                <rect x="210" y="102" width="175" height="8" rx="2" fill="#64748b"/>
-                
-                <!-- Autor -->
-                <rect x="230" y="220" width="135" height="10" rx="2" fill="#0f172a"/>
-
-                <!-- Título do Trabalho -->
-                <rect x="140" y="380" width="315" height="14" rx="2" fill="#0052cc"/>
-                <rect x="180" y="402" width="235" height="10" rx="2" fill="#0052cc"/>
-
-                <!-- Recuo de Folha de Rosto (Nota de apresentação) -->
-                <rect x="300" y="520" width="210" height="6" rx="1" fill="#94a3b8"/>
-                <rect x="300" y="532" width="210" height="6" rx="1" fill="#94a3b8"/>
-                <rect x="300" y="544" width="180" height="6" rx="1" fill="#94a3b8"/>
-
-                <!-- Local e Ano -->
-                <rect x="245" y="730" width="105" height="8" rx="2" fill="#64748b"/>
-                <rect x="270" y="745" width="55" height="8" rx="2" fill="#94a3b8"/>
-
-                <!-- Paginação -->
-                <rect x="510" y="45" width="20" height="8" rx="1" fill="#cbd5e1"/>
-              </svg>
+              <!-- Visualização incorporada do PDF diretamente no site -->
+              <object id="pdfPreviewObject" data="modelo-demonstrativo.pdf" type="application/pdf" class="pdf-embed-container">
+                <iframe src="modelo-demonstrativo.pdf" class="pdf-embed-container" title="Prévia PDF"></iframe>
+              </object>
             </div>
           </div>
         </div>
@@ -1099,24 +1157,30 @@
     <div id="previewModal" class="modal" aria-hidden="true">
       <div class="modal-content">
         <button id="btnCloseModal" class="modal-close" aria-label="Fechar prévia">&times;</button>
-        <div style="text-align: center; margin-bottom: 1rem;">
-          <h3 style="font-size: 1.1rem; color: #0f172a;">Modelo Demonstrativo de Formatação ABNT</h3>
-          <p style="font-size: 0.85rem; color: #64748b;">Padrão visual de capa e estrutura oficial PrintExpress</p>
+        <div style="text-align: center; margin-bottom: 1rem; flex-shrink: 0;">
+          <h3 style="font-size: 1.1rem; color: var(--text-main);">Modelo Demonstrativo de Formatação ABNT</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Padrão visual de capa e estrutura oficial PrintExpress</p>
         </div>
-        <svg class="document-mockup" style="max-width: 500px; margin: 0 auto; border: 1px solid #e2e8f0;" viewBox="0 0 595 842" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="595" height="842" fill="white"/>
-          <rect x="180" y="85" width="235" height="10" rx="2" fill="#1e293b"/>
-          <rect x="210" y="102" width="175" height="8" rx="2" fill="#64748b"/>
-          <rect x="230" y="220" width="135" height="10" rx="2" fill="#0f172a"/>
-          <rect x="140" y="380" width="315" height="14" rx="2" fill="#0052cc"/>
-          <rect x="180" y="402" width="235" height="10" rx="2" fill="#0052cc"/>
-          <rect x="300" y="520" width="210" height="6" rx="1" fill="#94a3b8"/>
-          <rect x="300" y="532" width="210" height="6" rx="1" fill="#94a3b8"/>
-          <rect x="300" y="544" width="180" height="6" rx="1" fill="#94a3b8"/>
-          <rect x="245" y="730" width="105" height="8" rx="2" fill="#64748b"/>
-          <rect x="270" y="745" width="55" height="8" rx="2" fill="#94a3b8"/>
-          <rect x="510" y="45" width="20" height="8" rx="1" fill="#cbd5e1"/>
-        </svg>
+        <div style="flex: 1; width: 100%; height: 100%;">
+          <object data="modelo-demonstrativo.pdf" type="application/pdf" class="pdf-embed-container">
+            <iframe src="modelo-demonstrativo.pdf" class="pdf-embed-container" title="Prévia PDF Ampliada"></iframe>
+          </object>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Notificação de Download Personalizado -->
+    <div id="downloadNoticeModal" class="modal" aria-hidden="true">
+      <div class="custom-dialog-card">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📄</div>
+        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem;">Abrir modelo demonstrativo</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+          Este dispositivo não consegue visualizar o PDF diretamente nesta página. O arquivo será baixado para o seu dispositivo para que você possa visualizá-lo.
+        </p>
+        <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+          <button id="btnConfirmDownload" class="btn btn-primary" style="padding: 0.6rem 1.2rem; font-size: 0.9rem;">Baixar modelo</button>
+          <button id="btnCancelDownload" class="btn btn-secondary" style="padding: 0.6rem 1.2rem; font-size: 0.9rem;">Cancelar</button>
+        </div>
       </div>
     </div>
 
@@ -1172,7 +1236,7 @@
             <span style="font-size: 0.9rem; font-weight: 700; text-transform: uppercase; color: var(--primary); letter-spacing: 1px;">
               Formatação ABNT
             </span>
-            <div class="price-main">A partir de R$ 25,00</div>
+            <div class="price-main">A partir de R$ 20,00</div>
             <p class="price-note">
               O valor pode variar conforme a quantidade de páginas, complexidade do documento e serviços adicionais solicitados.
             </p>
@@ -1182,28 +1246,28 @@
           
           <div class="addons-grid">
             <div class="addon-item">
-              <span>Formatação Completa</span>
-              <span class="addon-badge">Sob orçamento</span>
+              <span>📐 Formatação Completa</span>
+              <span class="addon-badge">A partir de R$ 20,00</span>
             </div>
             <div class="addon-item">
-              <span>Capa e Folha de rosto</span>
-              <span class="addon-badge">A consultar</span>
+              <span>🎓 Capa e Folha de rosto</span>
+              <span class="addon-badge">R$ 5,00</span>
             </div>
             <div class="addon-item">
-              <span>Sumário Automatizado</span>
-              <span class="addon-badge">A consultar</span>
+              <span>📋 Sumário Automatizado</span>
+              <span class="addon-badge">R$ 5,00</span>
             </div>
             <div class="addon-item">
-              <span>Ajuste de Referências</span>
-              <span class="addon-badge">A consultar</span>
+              <span>📚 Ajuste de Referências</span>
+              <span class="addon-badge">A partir de R$ 8,00</span>
             </div>
             <div class="addon-item">
-              <span>Digitação e Edição</span>
-              <span class="addon-badge">Sob orçamento</span>
+              <span>⌨️ Digitação e Edição</span>
+              <span class="addon-badge">R$ 2,00 por página</span>
             </div>
             <div class="addon-item">
-              <span>Impressão e Encadernação</span>
-              <span class="addon-badge">Sob consulta</span>
+              <span>🖨️ Impressão e Encadernação</span>
+              <span class="addon-badge">Sobre consulta</span>
             </div>
           </div>
         </div>
@@ -1225,7 +1289,7 @@
     </section>
 
     <!-- ==========================================================================
-         7. SOLICITAR ORÇAMENTO (FORMULÁRIO INDEPENDENTE)
+         7. SOLICITAR ORÇAMENTO (FORMULÁRIO E FLUXO DE PAGAMENTO)
          ========================================================================== -->
     <section id="solicitar-orcamento" class="section form-section" style="background: var(--bg-subtle); border-top: 1px solid var(--border-color);">
       <div class="container">
@@ -1235,37 +1299,47 @@
         </div>
 
         <div class="form-container">
-          <!-- Formulário isolado, sem afetar outras configurações globais ou dependências -->
-          <form action="https://formsubmit.co/seu-email@printexpress.com.br" method="POST" enctype="multipart/form-data">
-            
-            <!-- Configurações FormSubmit (Substitua o e-mail no action acima quando necessário) -->
-            <input type="hidden" name="_subject" value="Nova solicitação de Formatação ABNT - PrintExpress">
-            <input type="hidden" name="_captcha" value="false">
-
+          
+          <!-- ETAPA 1: PREENCHIMENTO DO PEDIDO -->
+          <form id="abntForm" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" onsubmit="event.preventDefault(); proximaEtapaPagamento();">
             <div class="form-grid">
+              
               <!-- Nome -->
               <div class="form-group">
                 <label for="nome" class="form-label">Nome completo *</label>
                 <input type="text" id="nome" name="nome" class="form-input" placeholder="Seu nome completo" required>
               </div>
 
-              <!-- Contato -->
+              <!-- Telefone / Contato com Máscara -->
               <div class="form-group">
-                <label for="contato" class="form-label">E-mail ou WhatsApp *</label>
-                <input type="text" id="contato" name="contato" class="form-input" placeholder="(00) 00000-0000 ou seu@email.com" required>
+                <label for="contato" class="form-label">Telefone / WhatsApp *</label>
+                <input type="text" id="contato" name="contato" class="form-input" placeholder="(41) 99999-9999" required maxlength="15">
+              </div>
+
+              <!-- E-mail com Validação Visual -->
+              <div class="form-group">
+                <label for="email" class="form-label">E-mail *</label>
+                <input type="email" id="email" name="email" class="form-input" placeholder="nome@email.com" required>
+                <span id="emailError" class="error-msg">Por favor, insira um e-mail válido (ex: nome@email.com).</span>
               </div>
 
               <!-- Tipo de Trabalho -->
               <div class="form-group">
                 <label for="tipo_trabalho" class="form-label">Tipo de trabalho *</label>
-                <select id="tipo_trabalho" name="tipo_trabalho" class="form-select" required>
+                <select id="tipo_trabalho" name="tipo_trabalho" class="form-select" required onchange="toggleOutroTrabalho(this.value)">
                   <option value="" disabled selected>Selecione uma opção</option>
                   <option value="Trabalho escolar">Trabalho escolar</option>
-                  <option value="Trabalho acadêmico (TCC / Monografia)">Trabalho acadêmico (TCC / Monografia)</option>
+                  <option value="Trabalho acadêmico">Trabalho acadêmico</option>
                   <option value="Relatório">Relatório</option>
-                  <option value="Pesquisa / Artigo">Pesquisa / Artigo</option>
+                  <option value="Pesquisa">Pesquisa</option>
                   <option value="Outro">Outro</option>
                 </select>
+              </div>
+
+              <!-- Campo Dinâmico: Qual tipo de trabalho? -->
+              <div class="form-group full-width" id="group_outro_trabalho" style="display: none;">
+                <label for="especificar_outro" class="form-label">Qual tipo de trabalho? *</label>
+                <input type="text" id="especificar_outro" name="especificar_outro" class="form-input" placeholder="Ex: Artigo, Projeto, Trabalho de curso...">
               </div>
 
               <!-- Quantidade de Páginas -->
@@ -1275,7 +1349,7 @@
               </div>
 
               <!-- Prazo Desejado -->
-              <div class="form-group full-width">
+              <div class="form-group">
                 <label for="prazo" class="form-label">Prazo desejado para entrega</label>
                 <input type="date" id="prazo" name="prazo_desejado" class="form-input">
               </div>
@@ -1333,15 +1407,91 @@
                 <textarea id="observacoes" name="observacoes" rows="4" class="form-textarea" placeholder="Informe aqui as orientações do professor, instituição ou qualquer detalhe importante."></textarea>
               </div>
 
-              <!-- Botão Enviar -->
+              <!-- Botão Avançar -->
               <div class="form-group full-width" style="margin-top: 1rem;">
                 <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">
-                  📩 Solicitar orçamento
+                  Avançar para Pagamento →
                 </button>
               </div>
 
             </div>
           </form>
+
+          <!-- ETAPA 2: ESCOLHA DA FORMA DE PAGAMENTO -->
+          <div id="stepPagamento" style="display: none;">
+            <h3 style="font-size: 1.35rem; font-weight: 700; margin-bottom: 0.5rem;">Escolha a Forma de Pagamento</h3>
+            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.5rem;">Confira as opções para prosseguir com seu pedido.</p>
+
+            <!-- Aviso Destacado de Pagamento -->
+            <div class="payment-notice-banner">
+              <p style="font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem; color: var(--primary);">
+                ℹ️ Seu pedido só será iniciado após a confirmação do pagamento.
+              </p>
+              <p style="font-size: 0.875rem; color: var(--text-muted);">
+                Após realizar o pagamento, confirme para que possamos dar continuidade ao seu pedido.
+              </p>
+            </div>
+
+            <!-- Seleção de Métodos -->
+            <div class="payment-methods">
+              <div id="btnMethodPix" class="payment-btn selected" onclick="selecionarMetodo('PIX')">
+                <span style="font-size: 1.5rem;">💠</span>
+                <span>PIX</span>
+              </div>
+              <div id="btnMethodDinheiro" class="payment-btn" onclick="selecionarMetodo('DINHEIRO')">
+                <span style="font-size: 1.5rem;">💵</span>
+                <span>Dinheiro</span>
+              </div>
+            </div>
+
+            <!-- Exibição do Método PIX -->
+            <div id="paymentContentPix" class="qr-container">
+              <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Pagamento via PIX</h4>
+              <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Escaneie o QR Code abaixo para efetuar o pagamento:</p>
+              
+              <img src="qrcode-pix.jpg" alt="QR Code PIX PrintExpress" class="qr-image" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'><rect width=\'200\' height=\'200\' fill=\'%23f1f5f9\'/><text x=\'50%\' y=\'50%\' font-family=\'sans-serif\' font-size=\'14\' fill=\'%2364748b\' text-anchor=\'middle\' dy=\'.3em\'>QR Code PIX</text></svg>'">
+              
+              <p style="font-size: 1.1rem; font-weight: 800; color: var(--primary); margin-bottom: 0.5rem;">
+                Valor base a pagar: R$ 20,00
+              </p>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                Importante: O pagamento deve ser realizado antes da produção do serviço.
+              </p>
+            </div>
+
+            <!-- Exibição do Método DINHEIRO -->
+            <div id="paymentContentDinheiro" class="qr-container" style="display: none;">
+              <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;">Pagamento em Dinheiro</h4>
+              <p style="font-size: 0.95rem; color: var(--text-muted); max-width: 450px; margin: 0 auto;">
+                O pagamento deverá ser combinado conforme o atendimento e especificidades do seu pedido.
+              </p>
+            </div>
+
+            <!-- Confirmação e Finalização -->
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+              <button type="button" class="btn btn-secondary" onclick="voltarParaFormulario()" style="flex: 1;">
+                ← Voltar
+              </button>
+              <button type="button" class="btn btn-primary" onclick="confirmarPagamentoEFinalizar()" style="flex: 2;">
+                Confirmar e Enviar Pedido ✔️
+              </button>
+            </div>
+          </div>
+
+          <!-- ETAPA 3: AGRADECIMENTO -->
+          <div id="stepAgradecimento" style="display: none; text-align: center; padding: 2rem 1rem;">
+            <div style="font-size: 3.5rem; margin-bottom: 1rem;">💙</div>
+            <h3 style="font-size: 1.75rem; font-weight: 800; color: var(--primary); margin-bottom: 1rem;">
+              Obrigado por escolher o PrintExpress! 💙
+            </h3>
+            <p style="font-size: 1.05rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem; line-height: 1.6;">
+              Recebemos suas informações. Após a confirmação do pagamento, seu pedido poderá ser iniciado conforme as condições e prazos informados.
+            </p>
+            <button class="btn btn-primary" onclick="resetarEVoltarInicio()">
+              🏠 Voltar ao início da página
+            </button>
+          </div>
+
         </div>
 
         <!-- 9. IMPRESSÃO (SISTEMA DE ENCAMINHAMENTO) -->
@@ -1391,10 +1541,11 @@
 
         <!-- Contato / Info -->
         <div>
-          <h4 class="footer-column-title">Atendimento</h4>
+          <h4 class="footer-column-title">ATENDIMENTO</h4>
           <ul class="footer-links">
-            <li><span style="color: var(--text-muted);">Segunda a Sexta: 08h às 18h</span></li>
-            <li><span style="color: var(--text-muted);">Suporte via WhatsApp e E-mail</span></li>
+            <li><span style="color: var(--text-muted);">Segunda a Sexta: 17h às 21h</span></li>
+            <li><span style="color: var(--text-muted);">Sábado e Domingo: 06h30 às 21h30</span></li>
+            <li><span style="color: var(--text-muted); margin-top: 0.5rem; display: block;">Suporte via WhatsApp e E-mail</span></li>
           </ul>
         </div>
       </div>
@@ -1407,15 +1558,16 @@
   </footer>
 
   <!-- ==========================================================================
-       11. SCRIPT INTERNO (GERENCIAMENTO DE TEMA, MODAL E ARQUIVOS)
+       11. SCRIPT INTERNO
        ========================================================================== -->
   <script>
+    let metodoPagamentoSelecionado = 'PIX';
+
     document.addEventListener('DOMContentLoaded', () => {
       // --- A. GERENCIAMENTO DE TEMA (CLARO / ESCURO) ---
       const themeToggleBtn = document.getElementById('themeToggle');
       const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
-      // Recupera a preferência salva ou pega a do sistema
       const currentTheme = localStorage.getItem('printexpress_theme') || 
                            (prefersDarkScheme.matches ? 'dark' : 'light');
 
@@ -1433,16 +1585,91 @@
         localStorage.setItem('printexpress_theme', newTheme);
       });
 
-      // --- B. MODAL / LIGHTBOX DA PRÉVIA ---
+      // --- B. MÁSCARA AUTOMÁTICA DE TELEFONE ---
+      const contatoInput = document.getElementById('contato');
+      if (contatoInput) {
+        contatoInput.addEventListener('input', (e) => {
+          let value = e.target.value.replace(/\D/g, '');
+          if (value.length > 11) value = value.slice(0, 11);
+          
+          if (value.length > 6) {
+            e.target.value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`;
+          } else if (value.length > 2) {
+            e.target.value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+          } else if (value.length > 0) {
+            e.target.value = `(${value}`;
+          } else {
+            e.target.value = '';
+          }
+        });
+      }
+
+      // --- C. VALIDAÇÃO DE E-MAIL EM TEMPO REAL ---
+      const emailInput = document.getElementById('email');
+      const emailError = document.getElementById('emailError');
+      if (emailInput) {
+        emailInput.addEventListener('blur', () => {
+          validarEmail(emailInput, emailError);
+        });
+        emailInput.addEventListener('input', () => {
+          if (emailInput.classList.contains('invalid-input')) {
+            validarEmail(emailInput, emailError);
+          }
+        });
+      }
+
+      // --- D. DETECÇÃO E FALLBACK DE PDF / MODAIS ---
+      const btnDownloadPDF = document.getElementById('btnDownloadPDF');
+      const downloadNoticeModal = document.getElementById('downloadNoticeModal');
+      const btnConfirmDownload = document.getElementById('btnConfirmDownload');
+      const btnCancelDownload = document.getElementById('btnCancelDownload');
       const previewModal = document.getElementById('previewModal');
       const btnZoomPreview = document.getElementById('btnZoomPreview');
       const btnCloseModal = document.getElementById('btnCloseModal');
 
+      // Interceptação de downloads de PDF com Modal próprio
+      if (btnDownloadPDF) {
+        btnDownloadPDF.addEventListener('click', (e) => {
+          e.preventDefault();
+          // Verifica se o navegador tem suporte básico embutido a PDF ou se é móvel sem suporte direto
+          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+          
+          if (isMobile) {
+            abrirModalDownload('modelo-demonstrativo.pdf');
+          } else {
+            window.open('modelo-demonstrativo.pdf', '_blank');
+          }
+        });
+      }
+
+      function abrirModalDownload(url) {
+        downloadNoticeModal.classList.add('active');
+        downloadNoticeModal.setAttribute('aria-hidden', 'false');
+        
+        btnConfirmDownload.onclick = () => {
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = '';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          fecharModalDownload();
+        };
+
+        btnCancelDownload.onclick = fecharModalDownload;
+      }
+
+      function fecharModalDownload() {
+        downloadNoticeModal.classList.remove('active');
+        downloadNoticeModal.setAttribute('aria-hidden', 'true');
+      }
+
+      // Modal para visualização ampliada
       if (btnZoomPreview && previewModal && btnCloseModal) {
         btnZoomPreview.addEventListener('click', () => {
           previewModal.classList.add('active');
           previewModal.setAttribute('aria-hidden', 'false');
-          document.body.style.overflow = 'hidden'; // Evita scroll ao fundo
+          document.body.style.overflow = 'hidden';
         });
 
         const closeModal = () => {
@@ -1452,23 +1679,124 @@
         };
 
         btnCloseModal.addEventListener('click', closeModal);
-
         previewModal.addEventListener('click', (e) => {
-          if (e.target === previewModal) {
-            closeModal();
-          }
-        });
-
-        // Fechar com tecla ESC
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && previewModal.classList.contains('active')) {
-            closeModal();
-          }
+          if (e.target === previewModal) closeModal();
         });
       }
     });
 
-    // --- C. EXIBIÇÃO DO NOME DO ARQUIVO ANEXADO ---
+    // --- E. FUNÇÃO TIPO DE TRABALHO (OUTRO) ---
+    function toggleOutroTrabalho(val) {
+      const groupOutro = document.getElementById('group_outro_trabalho');
+      const inputOutro = document.getElementById('especificar_outro');
+      if (val === 'Outro') {
+        groupOutro.style.display = 'flex';
+        inputOutro.setAttribute('required', 'required');
+      } else {
+        groupOutro.style.display = 'none';
+        inputOutro.removeAttribute('required');
+        inputOutro.value = '';
+      }
+    }
+
+    // --- F. VALIDAÇÃO DE E-MAIL ---
+    function validarEmail(input, errorElement) {
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!regex.test(input.value)) {
+        input.classList.add('invalid-input');
+        if (errorElement) errorElement.style.display = 'block';
+        return false;
+      } else {
+        input.classList.remove('invalid-input');
+        if (errorElement) errorElement.style.display = 'none';
+        return true;
+      }
+    }
+
+    // --- G. FLUXO DO FORMULÁRIO E PAGAMENTO ---
+    function proximaEtapaPagamento() {
+      const form = document.getElementById('abntForm');
+      const emailInput = document.getElementById('email');
+      const emailError = document.getElementById('emailError');
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      if (!validarEmail(emailInput, emailError)) {
+        emailInput.focus();
+        return;
+      }
+
+      document.getElementById('abntForm').style.display = 'none';
+      document.getElementById('stepPagamento').style.display = 'block';
+    }
+
+    function voltarParaFormulario() {
+      document.getElementById('stepPagamento').style.display = 'none';
+      document.getElementById('abntForm').style.display = 'block';
+    }
+
+    function selecionarMetodo(metodo) {
+      metodoPagamentoSelecionado = metodo;
+      const btnPix = document.getElementById('btnMethodPix');
+      const btnDinheiro = document.getElementById('btnMethodDinheiro');
+      const contentPix = document.getElementById('paymentContentPix');
+      const contentDinheiro = document.getElementById('paymentContentDinheiro');
+
+      if (metodo === 'PIX') {
+        btnPix.classList.add('selected');
+        btnDinheiro.classList.remove('selected');
+        contentPix.style.display = 'block';
+        contentDinheiro.style.display = 'none';
+      } else {
+        btnDinheiro.classList.add('selected');
+        btnPix.classList.remove('selected');
+        contentDinheiro.style.display = 'block';
+        contentPix.style.display = 'none';
+      }
+    }
+
+    function confirmarPagamentoEFinalizar() {
+      const form = document.getElementById('abntForm');
+      const formData = new FormData(form);
+
+      // Adiciona o método de pagamento selecionado aos dados do envio
+      formData.append('Metodo de Pagamento', metodoPagamentoSelecionado);
+
+      // Envia os dados para o FormSubmit em segundo plano
+      fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          document.getElementById('stepPagamento').style.display = 'none';
+          document.getElementById('stepAgradecimento').style.display = 'block';
+        } else {
+          alert('Ocorreu um erro ao enviar seu pedido. Por favor, tente novamente.');
+        }
+      })
+      .catch(error => {
+        console.error('Erro no envio:', error);
+        alert('Houve uma falha na conexão ao enviar o formulário.');
+      });
+    }
+
+    function resetarEVoltarInicio() {
+      document.getElementById('abntForm').reset();
+      document.getElementById('group_outro_trabalho').style.display = 'none';
+      document.getElementById('fileNameDisplay').textContent = '';
+      document.getElementById('stepAgradecimento').style.display = 'none';
+      document.getElementById('abntForm').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // --- H. EXIBIÇÃO DO NOME DO ARQUIVO ANEXADO ---
     function updateFileName(input) {
       const display = document.getElementById('fileNameDisplay');
       if (input.files && input.files.length > 0) {
