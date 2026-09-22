@@ -3,354 +3,1480 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Em breve | PrintExpress</title>
+  <title>Formatação ABNT | PrintExpress</title>
+  <meta name="description" content="Serviço profissional de formatação ABNT para trabalhos escolares, acadêmicos e relatórios. Deixe seu documento pronto para entregar.">
+  
+  <!-- Fonte Google - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    * {
+    /* ==========================================================================
+       1. VARIÁVEIS DE DESIGN E TEMAS (LIGHT / DARK)
+       ========================================================================== */
+    :root {
+      /* Brand Colors */
+      --primary: #0052cc;
+      --primary-hover: #003e99;
+      --primary-light: #e6f0ff;
+      --accent: #00c853;
+      --accent-hover: #00a843;
+      
+      /* Light Theme (Default) */
+      --bg-body: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border-color: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+      --shadow-hover: 0 15px 30px -5px rgba(0, 82, 204, 0.15);
+      
+      /* Layout & Mechanics */
+      --max-width: 1200px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Dark Theme Theme-Overrides */
+    [data-theme="dark"] {
+      --bg-body: #0b0f19;
+      --bg-surface: #151c2c;
+      --bg-subtle: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --primary-light: rgba(0, 82, 204, 0.2);
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      --shadow-hover: 0 15px 30px -5px rgba(0, 82, 204, 0.3);
+    }
+
+    /* ==========================================================================
+       2. RESET & REGRAS BASE
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
     }
 
     html {
       scroll-behavior: smooth;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 16px;
+      color-scheme: light dark;
     }
 
     body {
-      min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f5f7fb;
-      color: #172033;
-      display: flex;
-      flex-direction: column;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.6;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      overflow-x: hidden;
     }
 
-    /* =========================
-       HEADER
-    ========================= */
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-    header {
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    .container {
       width: 100%;
-      padding: 18px 6%;
-      background: rgba(255, 255, 255, 0.92);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.07);
-      backdrop-filter: blur(14px);
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ==========================================================================
+       3. NAVEGAÇÃO E CABEÇALHO
+       ========================================================================== */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      transition: var(--transition);
+    }
+
+    [data-theme="dark"] .header {
+      background-color: rgba(21, 28, 44, 0.85);
+    }
+
+    .header-nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      height: 72px;
     }
 
-    .logo {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: #172033;
-      text-decoration: none;
-      letter-spacing: -0.4px;
-    }
-
-    .back-btn {
-      text-decoration: none;
-      color: #172033;
-      font-weight: 600;
-      padding: 10px 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(0, 0, 0, 0.09);
-      background: #fff;
-      transition: 0.25s ease;
-    }
-
-    .back-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-    }
-
-    /* =========================
-       MAIN
-    ========================= */
-
-    main {
-      flex: 1;
+    .brand-logo {
       display: flex;
       align-items: center;
+      gap: 0.5rem;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+    }
+
+    .brand-logo span {
+      color: var(--text-main);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .nav-link {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+
+    .nav-link:hover {
+      color: var(--primary);
+    }
+
+    /* Theme Toggle Button */
+    .theme-toggle {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
-      padding: 70px 20px;
-      position: relative;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .theme-toggle:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      transform: scale(1.05);
+    }
+
+    .theme-toggle .icon-sun { display: none; }
+    .theme-toggle .icon-moon { display: block; }
+    [data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+    [data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+    /* ==========================================================================
+       4. HERO SECTION
+       ========================================================================== */
+    .hero {
+      padding: 4.5rem 0 3.5rem;
+      text-align: center;
+      background: linear-gradient(180deg, var(--primary-light) 0%, rgba(0,0,0,0) 100%);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      margin-bottom: 1rem;
+      color: var(--text-main);
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .hero-description {
+      max-width: 680px;
+      margin: 0 auto 2.5rem;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 0.9rem 2rem;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(0, 82, 204, 0.35);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--bg-subtle);
+      border-color: var(--text-muted);
+      transform: translateY(-2px);
+    }
+
+    /* ==========================================================================
+       5. SERVIÇOS / O QUE PODE SER FORMATADO (CARDS)
+       ========================================================================== */
+    .section {
+      padding: 5rem 0;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 3.5rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      display: inline-block;
+      padding: 0.5rem;
+      background: var(--bg-subtle);
+      border-radius: var(--radius-sm);
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-desc {
+      font-size: 0.925rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       6. VEJA UM EXEMPLO (MODELO ABNT)
+       ========================================================================== */
+    .preview-section {
+      background-color: var(--bg-subtle);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .preview-wrapper {
+      max-width: 850px;
+      margin: 0 auto;
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-lg);
       overflow: hidden;
     }
 
-    .background-effect {
-      position: absolute;
-      width: 420px;
-      height: 420px;
-      border-radius: 50%;
-      background: rgba(80, 110, 255, 0.08);
-      filter: blur(80px);
-      top: 10%;
-      left: 50%;
-      transform: translateX(-50%);
-      pointer-events: none;
-    }
-
-    .content {
-      width: min(900px, 100%);
-      text-align: center;
-      position: relative;
-      z-index: 1;
-    }
-
-    .icon {
-      width: 86px;
-      height: 86px;
-      margin: 0 auto 28px;
-      border-radius: 26px;
+    .preview-header {
+      padding: 1.25rem 1.75rem;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 2.4rem;
-      background: #fff;
-      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.09);
-      animation: floating 3.5s ease-in-out infinite;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: rgba(80, 110, 255, 0.09);
-      font-size: 0.82rem;
-      font-weight: 700;
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      font-size: clamp(2.2rem, 6vw, 4.6rem);
-      line-height: 1.05;
-      letter-spacing: -2px;
-      margin-bottom: 20px;
-    }
-
-    .description {
-      max-width: 650px;
-      margin: 0 auto;
-      font-size: 1.08rem;
-      line-height: 1.7;
-      color: #667085;
-    }
-
-    /* =========================
-       FEATURE CARD
-    ========================= */
-
-    .feature {
-      margin: 45px auto 0;
-      max-width: 680px;
-      padding: 28px;
-      border-radius: 24px;
-      background: rgba(255, 255, 255, 0.9);
-      border: 1px solid rgba(0, 0, 0, 0.07);
-      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.08);
-      text-align: left;
-    }
-
-    .feature-title {
-      font-size: 1rem;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-
-    .feature p {
-      color: #667085;
-      line-height: 1.6;
-      font-size: 0.95rem;
-    }
-
-    /* =========================
-       BUTTONS
-    ========================= */
-
-    .actions {
-      margin-top: 30px;
+    .preview-tag {
       display: flex;
-      justify-content: center;
-      gap: 12px;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--primary);
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 0.75rem;
       flex-wrap: wrap;
     }
 
-    .primary-btn,
-    .secondary-btn {
-      display: inline-flex;
+    .preview-body {
+      padding: 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #525659; /* Cor padronizada de fundo para contraste do documento */
+      min-height: 400px;
+    }
+
+    .preview-frame {
+      width: 100%;
+      max-width: 650px;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* SVG Placeholder/Modelo de folha formatada ABNT */
+    .document-mockup {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #ffffff;
+    }
+
+    /* Modal / Lightbox para prévia expandida */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(5px);
+      padding: 1.5rem;
       align-items: center;
       justify-content: center;
-      min-height: 48px;
-      padding: 0 22px;
-      border-radius: 14px;
-      text-decoration: none;
-      font-weight: 700;
-      transition: 0.25s ease;
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
 
-    .primary-btn {
-      background: #172033;
-      color: #fff;
-      box-shadow: 0 12px 30px rgba(23, 32, 51, 0.18);
+    .modal.active {
+      display: flex;
+      opacity: 1;
     }
 
-    .secondary-btn {
-      background: #fff;
-      color: #172033;
-      border: 1px solid rgba(0, 0, 0, 0.09);
+    .modal-content {
+      position: relative;
+      max-width: 90vw;
+      max-height: 90vh;
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      overflow: auto;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+      padding: 1rem;
     }
 
-    .primary-btn:hover,
-    .secondary-btn:hover {
-      transform: translateY(-3px);
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #000000;
+      color: #ffffff;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* =========================
-       FOOTER
-    ========================= */
+    /* ==========================================================================
+       7. COMO FUNCIONA (PASSO A PASSO)
+       ========================================================================== */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      position: relative;
+    }
 
-    footer {
-      padding: 25px 20px;
+    /* Linha conectora no desktop */
+    .steps-grid::before {
+      content: "";
+      position: absolute;
+      top: 35px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: var(--border-color);
+      z-index: 1;
+    }
+
+    .step-card {
+      position: relative;
+      z-index: 2;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
       text-align: center;
-      color: #7a8496;
-      font-size: 0.85rem;
-      border-top: 1px solid rgba(0, 0, 0, 0.06);
-      background: #fff;
     }
 
-    /* =========================
-       ANIMATION
-    ========================= */
+    .step-number {
+      width: 50px;
+      height: 50px;
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 1.1rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      border: 4px solid var(--bg-surface);
+      box-shadow: 0 0 0 1px var(--border-color);
+    }
 
-    @keyframes floating {
-      0%, 100% {
-        transform: translateY(0);
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       8. PREÇO / ORÇAMENTO & AVISO
+       ========================================================================== */
+    .pricing-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 3rem;
+    }
+
+    .price-tag-wrapper {
+      text-align: center;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 2rem;
+    }
+
+    .price-main {
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .price-note {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .addons-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      text-align: center;
+    }
+
+    .addons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .addon-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.25rem;
+      background: var(--bg-subtle);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .addon-badge {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.6rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+
+    /* Caixa de Aviso Importante */
+    .warning-box {
+      background-color: rgba(234, 179, 8, 0.1);
+      border: 1px solid rgba(234, 179, 8, 0.4);
+      border-radius: var(--radius-md);
+      padding: 1.5rem 1.75rem;
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      margin-bottom: 4rem;
+    }
+
+    .warning-icon {
+      font-size: 1.75rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .warning-content h4 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.4rem;
+    }
+
+    .warning-content p {
+      font-size: 0.925rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .warning-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ==========================================================================
+       9. FORMULÁRIO DE SOLICITAÇÃO DE ORÇAMENTO
+       ========================================================================== */
+    .form-section {
+      scroll-margin-top: 90px;
+    }
+
+    .form-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: clamp(1.5rem, 4vw, 3rem);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      transition: var(--transition);
+      outline: none;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    /* Selection Options (Checkboxes Visuais) */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .checkbox-tile {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      user-select: none;
+      transition: var(--transition);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .checkbox-tile:hover {
+      border-color: var(--primary);
+    }
+
+    .checkbox-tile input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    /* File Input Styling */
+    .file-dropzone {
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      text-align: center;
+      background: var(--bg-body);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .file-dropzone:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .file-dropzone-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ==========================================================================
+       10. IMPRESSÃO BANNER (SISTEMA INTEGRADO)
+       ========================================================================== */
+    .print-banner {
+      background: linear-gradient(135deg, var(--primary) 0%, #002b80 100%);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 3rem 2rem;
+      text-align: center;
+      margin-top: 5rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .print-banner h3 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+    }
+
+    .print-banner p {
+      font-size: 1.05rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto 1.75rem;
+    }
+
+    .btn-light {
+      background-color: #ffffff;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .btn-light:hover {
+      background-color: #f0f4f9;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    /* ==========================================================================
+       11. RODAPÉ (FOOTER)
+       ========================================================================== */
+    .footer {
+      background-color: var(--bg-surface);
+      border-top: 1px solid var(--border-color);
+      padding: 4rem 0 2rem;
+      margin-top: 5rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr);
+      gap: 2.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-brand p {
+      color: var(--text-muted);
+      font-size: 0.925rem;
+      margin-top: 0.75rem;
+      max-width: 320px;
+    }
+
+    .footer-column-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 1.25rem;
+      color: var(--text-main);
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .footer-links a {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border-color);
+      padding-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       12. RESPONSIVIDADE (MEDIA QUERIES)
+       ========================================================================== */
+
+    /* Tablet (<= 992px) */
+    @media (max-width: 992px) {
+      .steps-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+      }
+      
+      .steps-grid::before {
+        display: none;
       }
 
-      50% {
-        transform: translateY(-7px);
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
       }
     }
 
-    @media (max-width: 600px) {
-
-      header {
-        padding: 15px 18px;
+    /* Celular (<= 640px) */
+    @media (max-width: 640px) {
+      .header-nav {
+        height: 64px;
       }
 
-      .logo {
-        font-size: 1.15rem;
+      .nav-links {
+        gap: 0.85rem;
       }
 
-      .back-btn {
-        padding: 9px 12px;
-        font-size: 0.85rem;
+      .hero {
+        padding: 3rem 0 2.5rem;
       }
 
-      main {
-        padding: 55px 18px;
-      }
-
-      .icon {
-        width: 72px;
-        height: 72px;
-        border-radius: 22px;
-        font-size: 2rem;
-      }
-
-      h1 {
-        letter-spacing: -1px;
-      }
-
-      .description {
-        font-size: 0.98rem;
-      }
-
-      .feature {
-        padding: 22px;
-        border-radius: 20px;
-      }
-
-      .actions {
-        flex-direction: column;
-      }
-
-      .primary-btn,
-      .secondary-btn {
+      .btn {
         width: 100%;
+      }
+
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .preview-actions {
+        width: 100%;
+      }
+
+      .preview-actions .btn {
+        flex: 1;
+      }
+
+      .warning-box {
+        flex-direction: column;
+        gap: 0.75rem;
       }
     }
   </style>
 </head>
-
 <body>
 
-  <header>
-    <a href="index.html" class="logo">PrintExpress</a>
+  <!-- ==========================================================================
+       CABEÇALHO / NAVEGAÇÃO
+       ========================================================================== -->
+  <header class="header">
+    <div class="container header-nav">
+      <a href="index.html" class="brand-logo" aria-label="PrintExpress Home">
+        🖨️ Print<span>Express</span>
+      </a>
 
-    <a href="index.html" class="back-btn">
-      ← Voltar
-    </a>
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link">Início</a>
+        <a href="impressao.html" class="nav-link">Impressão</a>
+        <a href="documentos.html" class="nav-link">Documentos</a>
+        
+        <!-- Botão de Alternância de Tema -->
+        <button id="themeToggle" class="theme-toggle" aria-label="Alternar tema claro/escuro">
+          <span class="icon-moon">🌙</span>
+          <span class="icon-sun">☀️</span>
+        </button>
+      </nav>
+    </div>
   </header>
 
   <main>
-
-    <div class="background-effect"></div>
-
-    <section class="content">
-
-      <div class="icon">🎓</div>
-
-      <div class="badge">
-        ✨ Em desenvolvimento
-      </div>
-
-      <h1>
-        Formatação ABNT está chegando.
-      </h1>
-
-      <p class="description">
-        Estamos preparando uma nova experiência no PrintExpress
-        para deixar seus documentos e arquivos ainda mais fáceis
-        de criar, organizar e resolver.
-      </p>
-
-      <div class="feature">
-
-        <div class="feature-title">
-          🚀 O que vem por aí?
+    <!-- ==========================================================================
+         1. HERO / APRESENTAÇÃO
+         ========================================================================== -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-badge">
+          <span>📐</span> Serviço Especializado
         </div>
-
-        <p>
-          Esta página fará parte das próximas novidades do
-          PrintExpress. Em breve, você poderá acessar todos os
-          recursos e serviços desta seção.
+        <h1 class="hero-title">Formatação ABNT</h1>
+        <p class="hero-subtitle">Deixe seu trabalho organizado e pronto para entregar.</p>
+        <p class="hero-description">
+          Organizamos a estrutura e a formatação do seu trabalho conforme as orientações solicitadas pela sua instituição.
         </p>
-
+        <div>
+          <a href="#solicitar-orcamento" class="btn btn-primary">
+            📐 Quero formatar meu trabalho
+          </a>
+        </div>
       </div>
-
-      <div class="actions">
-
-        <a href="index.html" class="primary-btn">
-          ← Voltar para o PrintExpress
-        </a>
-
-      </div>
-
     </section>
 
+    <!-- ==========================================================================
+         2. O QUE PODE SER FORMATADO (CARDS)
+         ========================================================================== -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">O que pode ser formatado</h2>
+          <p class="section-subtitle">Adequação completa para cada elemento do seu documento acadêmico ou escolar.</p>
+        </div>
+
+        <div class="cards-grid">
+          <!-- Card 1 -->
+          <article class="card">
+            <div class="card-icon">📄</div>
+            <h3 class="card-title">Capa</h3>
+            <p class="card-desc">Ajuste de margens, alinhamentos, fontes e dados institucionais obrigatórios.</p>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="card">
+            <div class="card-icon">📑</div>
+            <h3 class="card-title">Folha de rosto</h3>
+            <p class="card-desc">Recuo correto da nota de apresentação, nome do orientador e dados essenciais.</p>
+          </article>
+
+          <!-- Card 3 -->
+          <article class="card">
+            <div class="card-icon">📋</div>
+            <h3 class="card-title">Sumário</h3>
+            <p class="card-desc">Geração ou ajuste automatizado de títulos, subtítulos e paginação correspondente.</p>
+          </article>
+
+          <!-- Card 4 -->
+          <article class="card">
+            <div class="card-icon">🔢</div>
+            <h3 class="card-title">Numeração de páginas</h3>
+            <p class="card-desc">Contagem correta a partir da folha de rosto e exibição do número no canto superior direito.</p>
+          </article>
+
+          <!-- Card 5 -->
+          <article class="card">
+            <div class="card-icon">📝</div>
+            <h3 class="card-title">Títulos e subtítulos</h3>
+            <p class="card-desc">Hierarquia numérica (1, 1.1, 1.1.1) com estilização e fontes padronizadas.</p>
+          </article>
+
+          <!-- Card 6 -->
+          <article class="card">
+            <div class="card-icon">↔️</div>
+            <h3 class="card-title">Margens e espaçamento</h3>
+            <p class="card-desc">Margem Superior 3cm, Esquerda 3cm, Inferior 2cm, Direita 2cm e espaçamento 1,5.</p>
+          </article>
+
+          <!-- Card 7 -->
+          <article class="card">
+            <div class="card-icon">💬</div>
+            <h3 class="card-title">Citações</h3>
+            <p class="card-desc">Formatação de citações diretas (curtas e longas com recuo de 4cm) e indiretas.</p>
+          </article>
+
+          <!-- Card 8 -->
+          <article class="card">
+            <div class="card-icon">📚</div>
+            <h3 class="card-title">Referências</h3>
+            <p class="card-desc">Organização em ordem alfabética, espaçamento simples e alinhamento à esquerda.</p>
+          </article>
+
+          <!-- Card 9 -->
+          <article class="card">
+            <div class="card-icon">🖼️</div>
+            <h3 class="card-title">Imagens, tabelas e legendas</h3>
+            <p class="card-desc">Identificação na parte superior e fonte na parte inferior, padronizadas.</p>
+          </article>
+
+          <!-- Card 10 -->
+          <article class="card">
+            <div class="card-icon">📖</div>
+            <h3 class="card-title">Organização geral</h3>
+            <p class="card-desc">Revisão do fluxo visual, quebras de página e consistência tipográfica em todo o arquivo.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         3. ÁREA "VEJA UM EXEMPLO"
+         ========================================================================== -->
+    <section class="section preview-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Veja um exemplo</h2>
+          <p class="section-subtitle">Confira o padrão de excelência e alinhamento visual aplicado aos documentos.</p>
+        </div>
+
+        <div class="preview-wrapper">
+          <div class="preview-header">
+            <div class="preview-tag">
+              <span>📌</span> Modelo demonstrativo — PrintExpress
+            </div>
+            <div class="preview-actions">
+              <button id="btnZoomPreview" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                🔎 Visualizar exemplo
+              </button>
+              <a href="#" id="btnDownloadPDF" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;" onclick="alert('O arquivo de demonstração em PDF será baixado.'); return false;">
+                📥 Ver modelo completo
+              </a>
+            </div>
+          </div>
+
+          <div class="preview-body">
+            <div class="preview-frame">
+              <!-- Renderização visual do modelo ABNT através de vetor limpo -->
+              <svg class="document-mockup" viewBox="0 0 595 842" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="595" height="842" fill="white"/>
+                <!-- Margens ABNT Guia (Superior 3cm, Esquerda 3cm) -> aprox 85px -->
+                
+                <!-- Cabeçalho da Instituição -->
+                <rect x="180" y="85" width="235" height="10" rx="2" fill="#1e293b"/>
+                <rect x="210" y="102" width="175" height="8" rx="2" fill="#64748b"/>
+                
+                <!-- Autor -->
+                <rect x="230" y="220" width="135" height="10" rx="2" fill="#0f172a"/>
+
+                <!-- Título do Trabalho -->
+                <rect x="140" y="380" width="315" height="14" rx="2" fill="#0052cc"/>
+                <rect x="180" y="402" width="235" height="10" rx="2" fill="#0052cc"/>
+
+                <!-- Recuo de Folha de Rosto (Nota de apresentação) -->
+                <rect x="300" y="520" width="210" height="6" rx="1" fill="#94a3b8"/>
+                <rect x="300" y="532" width="210" height="6" rx="1" fill="#94a3b8"/>
+                <rect x="300" y="544" width="180" height="6" rx="1" fill="#94a3b8"/>
+
+                <!-- Local e Ano -->
+                <rect x="245" y="730" width="105" height="8" rx="2" fill="#64748b"/>
+                <rect x="270" y="745" width="55" height="8" rx="2" fill="#94a3b8"/>
+
+                <!-- Paginação -->
+                <rect x="510" y="45" width="20" height="8" rx="1" fill="#cbd5e1"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal para Prévia Ampliada -->
+    <div id="previewModal" class="modal" aria-hidden="true">
+      <div class="modal-content">
+        <button id="btnCloseModal" class="modal-close" aria-label="Fechar prévia">&times;</button>
+        <div style="text-align: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.1rem; color: #0f172a;">Modelo Demonstrativo de Formatação ABNT</h3>
+          <p style="font-size: 0.85rem; color: #64748b;">Padrão visual de capa e estrutura oficial PrintExpress</p>
+        </div>
+        <svg class="document-mockup" style="max-width: 500px; margin: 0 auto; border: 1px solid #e2e8f0;" viewBox="0 0 595 842" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="595" height="842" fill="white"/>
+          <rect x="180" y="85" width="235" height="10" rx="2" fill="#1e293b"/>
+          <rect x="210" y="102" width="175" height="8" rx="2" fill="#64748b"/>
+          <rect x="230" y="220" width="135" height="10" rx="2" fill="#0f172a"/>
+          <rect x="140" y="380" width="315" height="14" rx="2" fill="#0052cc"/>
+          <rect x="180" y="402" width="235" height="10" rx="2" fill="#0052cc"/>
+          <rect x="300" y="520" width="210" height="6" rx="1" fill="#94a3b8"/>
+          <rect x="300" y="532" width="210" height="6" rx="1" fill="#94a3b8"/>
+          <rect x="300" y="544" width="180" height="6" rx="1" fill="#94a3b8"/>
+          <rect x="245" y="730" width="105" height="8" rx="2" fill="#64748b"/>
+          <rect x="270" y="745" width="55" height="8" rx="2" fill="#94a3b8"/>
+          <rect x="510" y="45" width="20" height="8" rx="1" fill="#cbd5e1"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         4. COMO FUNCIONA (PASSO A PASSO)
+         ========================================================================== -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Como funciona</h2>
+          <p class="section-subtitle">Processo simples e rápido para formatar seu trabalho sem complicação.</p>
+        </div>
+
+        <div class="steps-grid">
+          <!-- Passo 1 -->
+          <div class="step-card">
+            <div class="step-number">01</div>
+            <h3 class="step-title">Envie seu arquivo</h3>
+            <p class="step-desc">Envie seu trabalho em Word, PDF ou outro formato compatível.</p>
+          </div>
+
+          <!-- Passo 2 -->
+          <div class="step-card">
+            <div class="step-number">02</div>
+            <h3 class="step-title">Informe o que precisa</h3>
+            <p class="step-desc">Escolha quais partes precisam ser formatadas ou ajustadas.</p>
+          </div>
+
+          <!-- Passo 3 -->
+          <div class="step-card">
+            <div class="step-number">03</div>
+            <h3 class="step-title">Nós organizamos</h3>
+            <p class="step-desc">O documento será organizado conforme o serviço solicitado e as orientações fornecidas.</p>
+          </div>
+
+          <!-- Passo 4 -->
+          <div class="step-card">
+            <div class="step-number">04</div>
+            <h3 class="step-title">Receba seu arquivo</h3>
+            <p class="step-desc">Você recebe o documento preparado para revisão, entrega ou impressão.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         5 & 6. PREÇO / ORÇAMENTO E SERVIÇOS ADICIONAIS
+         ========================================================================== -->
+    <section class="section" style="padding-top: 0;">
+      <div class="container">
+        <div class="pricing-box">
+          <div class="price-tag-wrapper">
+            <span style="font-size: 0.9rem; font-weight: 700; text-transform: uppercase; color: var(--primary); letter-spacing: 1px;">
+              Formatação ABNT
+            </span>
+            <div class="price-main">A partir de R$ 25,00</div>
+            <p class="price-note">
+              O valor pode variar conforme a quantidade de páginas, complexidade do documento e serviços adicionais solicitados.
+            </p>
+          </div>
+
+          <h3 class="addons-title">Opções de serviços e complementos</h3>
+          
+          <div class="addons-grid">
+            <div class="addon-item">
+              <span>Formatação Completa</span>
+              <span class="addon-badge">Sob orçamento</span>
+            </div>
+            <div class="addon-item">
+              <span>Capa e Folha de rosto</span>
+              <span class="addon-badge">A consultar</span>
+            </div>
+            <div class="addon-item">
+              <span>Sumário Automatizado</span>
+              <span class="addon-badge">A consultar</span>
+            </div>
+            <div class="addon-item">
+              <span>Ajuste de Referências</span>
+              <span class="addon-badge">A consultar</span>
+            </div>
+            <div class="addon-item">
+              <span>Digitação e Edição</span>
+              <span class="addon-badge">Sob orçamento</span>
+            </div>
+            <div class="addon-item">
+              <span>Impressão e Encadernação</span>
+              <span class="addon-badge">Sob consulta</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8. AVISO IMPORTANTE -->
+        <div class="warning-box">
+          <div class="warning-icon">⚠️</div>
+          <div class="warning-content">
+            <h4>Antes de enviar seu trabalho</h4>
+            <p>
+              Se sua escola, faculdade ou instituição forneceu regras próprias de formatação, envie essas orientações junto com o arquivo para que o serviço siga o padrão solicitado.
+            </p>
+            <p>
+              <em>Nota: O serviço de formatação organiza o material fornecido pelo cliente. O conteúdo, revisão ortográfica de texto e autoria do trabalho são de inteira responsabilidade do cliente.</em>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         7. SOLICITAR ORÇAMENTO (FORMULÁRIO INDEPENDENTE)
+         ========================================================================== -->
+    <section id="solicitar-orcamento" class="section form-section" style="background: var(--bg-subtle); border-top: 1px solid var(--border-color);">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Solicitar Orçamento</h2>
+          <p class="section-subtitle">Preencha os dados abaixo e entraremos em contato rapidamente com a cotação.</p>
+        </div>
+
+        <div class="form-container">
+          <!-- Formulário isolado, sem afetar outras configurações globais ou dependências -->
+          <form action="https://formsubmit.co/seu-email@printexpress.com.br" method="POST" enctype="multipart/form-data">
+            
+            <!-- Configurações FormSubmit (Substitua o e-mail no action acima quando necessário) -->
+            <input type="hidden" name="_subject" value="Nova solicitação de Formatação ABNT - PrintExpress">
+            <input type="hidden" name="_captcha" value="false">
+
+            <div class="form-grid">
+              <!-- Nome -->
+              <div class="form-group">
+                <label for="nome" class="form-label">Nome completo *</label>
+                <input type="text" id="nome" name="nome" class="form-input" placeholder="Seu nome completo" required>
+              </div>
+
+              <!-- Contato -->
+              <div class="form-group">
+                <label for="contato" class="form-label">E-mail ou WhatsApp *</label>
+                <input type="text" id="contato" name="contato" class="form-input" placeholder="(00) 00000-0000 ou seu@email.com" required>
+              </div>
+
+              <!-- Tipo de Trabalho -->
+              <div class="form-group">
+                <label for="tipo_trabalho" class="form-label">Tipo de trabalho *</label>
+                <select id="tipo_trabalho" name="tipo_trabalho" class="form-select" required>
+                  <option value="" disabled selected>Selecione uma opção</option>
+                  <option value="Trabalho escolar">Trabalho escolar</option>
+                  <option value="Trabalho acadêmico (TCC / Monografia)">Trabalho acadêmico (TCC / Monografia)</option>
+                  <option value="Relatório">Relatório</option>
+                  <option value="Pesquisa / Artigo">Pesquisa / Artigo</option>
+                  <option value="Outro">Outro</option>
+                </select>
+              </div>
+
+              <!-- Quantidade de Páginas -->
+              <div class="form-group">
+                <label for="paginas" class="form-label">Qtd. aproximada de páginas</label>
+                <input type="number" id="paginas" name="quantidade_paginas" min="1" class="form-input" placeholder="Ex: 25">
+              </div>
+
+              <!-- Prazo Desejado -->
+              <div class="form-group full-width">
+                <label for="prazo" class="form-label">Prazo desejado para entrega</label>
+                <input type="date" id="prazo" name="prazo_desejado" class="form-input">
+              </div>
+
+              <!-- O que precisa (Checkboxes Visuais) -->
+              <div class="form-group full-width">
+                <label class="form-label" style="margin-bottom: 0.5rem;">O que você precisa formatar/ajustar?</label>
+                <div class="options-grid">
+                  <label class="checkbox-tile">
+                    <input type="checkbox" name="servicos[]" value="Formatação Geral" checked>
+                    <span>Formatação</span>
+                  </label>
+                  <label class="checkbox-tile">
+                    <input type="checkbox" name="servicos[]" value="Capa">
+                    <span>Capa</span>
+                  </label>
+                  <label class="checkbox-tile">
+                    <input type="checkbox" name="servicos[]" value="Folha de Rosto">
+                    <span>Folha de rosto</span>
+                  </label>
+                  <label class="checkbox-tile">
+                    <input type="checkbox" name="servicos[]" value="Sumário">
+                    <span>Sumário</span>
+                  </label>
+                  <label class="checkbox-tile">
+                    <input type="checkbox" name="servicos[]" value="Referências">
+                    <span>Referências</span>
+                  </label>
+                  <label class="checkbox-tile">
+                    <input type="checkbox" name="servicos[]" value="Paginação">
+                    <span>Paginação</span>
+                  </label>
+                  <label class="checkbox-tile">
+                    <input type="checkbox" name="servicos[]" value="Outros">
+                    <span>Outros</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Campo para Anexo de Arquivo -->
+              <div class="form-group full-width">
+                <label for="arquivo" class="form-label">Anexar arquivo do trabalho ou diretrizes (opcional)</label>
+                <div class="file-dropzone" onclick="document.getElementById('arquivo').click()">
+                  <div class="file-dropzone-icon">📁</div>
+                  <p style="font-size: 0.95rem; font-weight: 600; color: var(--text-main);">Clique aqui para selecionar seu arquivo</p>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Formatos aceitos: DOC, DOCX, PDF (Máx. 10MB)</p>
+                  <input type="file" id="arquivo" name="attachment" style="display: none;" onchange="updateFileName(this)">
+                  <span id="fileNameDisplay" style="display: block; margin-top: 0.5rem; font-size: 0.85rem; font-weight: 700; color: var(--primary);"></span>
+                </div>
+              </div>
+
+              <!-- Observações -->
+              <div class="form-group full-width">
+                <label for="observacoes" class="form-label">Observações e instruções específicas</label>
+                <textarea id="observacoes" name="observacoes" rows="4" class="form-textarea" placeholder="Informe aqui as orientações do professor, instituição ou qualquer detalhe importante."></textarea>
+              </div>
+
+              <!-- Botão Enviar -->
+              <div class="form-group full-width" style="margin-top: 1rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">
+                  📩 Solicitar orçamento
+                </button>
+              </div>
+
+            </div>
+          </form>
+        </div>
+
+        <!-- 9. IMPRESSÃO (SISTEMA DE ENCAMINHAMENTO) -->
+        <div class="print-banner">
+          <h3>🖨️ Quer imprimir depois?</h3>
+          <p>Depois de formatar seu trabalho, você também pode solicitar a impressão com qualidade profissional pelo PrintExpress.</p>
+          <a href="impressao.html" class="btn btn-light">
+            Solicitar impressão →
+          </a>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <footer>
-    © 2026 PrintExpress. Todos os direitos reservados.
+  <!-- ==========================================================================
+       10. RODAPÉ (FOOTER)
+       ========================================================================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Brand Info -->
+        <div class="footer-brand">
+          <a href="index.html" class="brand-logo">
+            🖨️ Print<span>Express</span>
+          </a>
+          <p>Soluções rápidas e profissionais em impressão, formatação de documentos e serviços acadêmicos.</p>
+        </div>
+
+        <!-- Links Rápidos -->
+        <div>
+          <h4 class="footer-column-title">Serviços</h4>
+          <ul class="footer-links">
+            <li><a href="abnt.html">Formatação ABNT</a></li>
+            <li><a href="impressao.html">Impressão de Documentos</a></li>
+            <li><a href="documentos.html">Modelos e Arquivos</a></li>
+          </ul>
+        </div>
+
+        <!-- Institucional -->
+        <div>
+          <h4 class="footer-column-title">Navegação</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Página Inicial</a></li>
+            <li><a href="#solicitar-orcamento">Orçamento ABNT</a></li>
+          </ul>
+        </div>
+
+        <!-- Contato / Info -->
+        <div>
+          <h4 class="footer-column-title">Atendimento</h4>
+          <ul class="footer-links">
+            <li><span style="color: var(--text-muted);">Segunda a Sexta: 08h às 18h</span></li>
+            <li><span style="color: var(--text-muted);">Suporte via WhatsApp e E-mail</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 PrintExpress. Todos os direitos reservados.</p>
+        <p>Serviço independente de formatação de documentos.</p>
+      </div>
+    </div>
   </footer>
 
+  <!-- ==========================================================================
+       11. SCRIPT INTERNO (GERENCIAMENTO DE TEMA, MODAL E ARQUIVOS)
+       ========================================================================== -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- A. GERENCIAMENTO DE TEMA (CLARO / ESCURO) ---
+      const themeToggleBtn = document.getElementById('themeToggle');
+      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+
+      // Recupera a preferência salva ou pega a do sistema
+      const currentTheme = localStorage.getItem('printexpress_theme') || 
+                           (prefersDarkScheme.matches ? 'dark' : 'light');
+
+      if (currentTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+
+      themeToggleBtn.addEventListener('click', () => {
+        let theme = document.documentElement.getAttribute('data-theme');
+        let newTheme = theme === 'dark' ? 'light' : 'dark';
+
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('printexpress_theme', newTheme);
+      });
+
+      // --- B. MODAL / LIGHTBOX DA PRÉVIA ---
+      const previewModal = document.getElementById('previewModal');
+      const btnZoomPreview = document.getElementById('btnZoomPreview');
+      const btnCloseModal = document.getElementById('btnCloseModal');
+
+      if (btnZoomPreview && previewModal && btnCloseModal) {
+        btnZoomPreview.addEventListener('click', () => {
+          previewModal.classList.add('active');
+          previewModal.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden'; // Evita scroll ao fundo
+        });
+
+        const closeModal = () => {
+          previewModal.classList.remove('active');
+          previewModal.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        };
+
+        btnCloseModal.addEventListener('click', closeModal);
+
+        previewModal.addEventListener('click', (e) => {
+          if (e.target === previewModal) {
+            closeModal();
+          }
+        });
+
+        // Fechar com tecla ESC
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && previewModal.classList.contains('active')) {
+            closeModal();
+          }
+        });
+      }
+    });
+
+    // --- C. EXIBIÇÃO DO NOME DO ARQUIVO ANEXADO ---
+    function updateFileName(input) {
+      const display = document.getElementById('fileNameDisplay');
+      if (input.files && input.files.length > 0) {
+        display.textContent = '📄 Arquivo selecionado: ' + input.files[0].name;
+      } else {
+        display.textContent = '';
+      }
+    }
+  </script>
 </body>
 </html>
