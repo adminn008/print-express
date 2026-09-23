@@ -714,7 +714,7 @@
     /* Checkboxes Visuais */
     .options-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: 0.75rem;
     }
 
@@ -742,6 +742,50 @@
       height: 18px;
       accent-color: var(--primary);
       cursor: pointer;
+    }
+
+    /* Subtotal Box */
+    .subtotal-box {
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-top: 0.5rem;
+    }
+
+    .subtotal-header {
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    .subtotal-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px dashed var(--border-color);
+      padding-bottom: 0.75rem;
+    }
+
+    .subtotal-list-item {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+    }
+
+    .subtotal-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-main);
     }
 
     /* Radios e Pagamento Estilizados */
@@ -1441,7 +1485,7 @@
               <!-- Quantidade de Páginas -->
               <div class="form-group">
                 <label for="paginas" class="form-label">Qtd. aproximada de páginas</label>
-                <input type="number" id="paginas" name="quantidade_paginas" min="1" class="form-input" placeholder="Ex: 25" oninput="salvarEstadoPedido()">
+                <input type="number" id="paginas" name="quantidade_paginas" min="1" class="form-input" placeholder="Ex: 25" oninput="calcularSubtotal(); salvarEstadoPedido();">
               </div>
 
               <!-- Prazo Desejado -->
@@ -1455,55 +1499,66 @@
                 <label class="form-label" style="margin-bottom: 0.5rem;">O que você precisa formatar/ajustar?</label>
                 <div class="options-grid">
                   <label class="checkbox-tile">
-                    <input type="checkbox" name="servicos[]" value="Formatação Geral" checked onchange="salvarEstadoPedido()">
-                    <span>Formatação</span>
+                    <input type="checkbox" name="servicos[]" value="Formatação Completa" checked onchange="calcularSubtotal(); salvarEstadoPedido();">
+                    <span>📐 Formatação Completa</span>
                   </label>
                   <label class="checkbox-tile">
-                    <input type="checkbox" name="servicos[]" value="Capa" onchange="salvarEstadoPedido()">
-                    <span>Capa</span>
+                    <input type="checkbox" name="servicos[]" value="Capa e Folha de rosto" onchange="calcularSubtotal(); salvarEstadoPedido();">
+                    <span>🎓 Capa e Folha de rosto</span>
                   </label>
                   <label class="checkbox-tile">
-                    <input type="checkbox" name="servicos[]" value="Folha de Rosto" onchange="salvarEstadoPedido()">
-                    <span>Folha de rosto</span>
+                    <input type="checkbox" name="servicos[]" value="Sumário Automatizado" onchange="calcularSubtotal(); salvarEstadoPedido();">
+                    <span>📋 Sumário Automatizado</span>
                   </label>
                   <label class="checkbox-tile">
-                    <input type="checkbox" name="servicos[]" value="Sumário" onchange="salvarEstadoPedido()">
-                    <span>Sumário</span>
+                    <input type="checkbox" name="servicos[]" value="Ajuste de Referências" onchange="calcularSubtotal(); salvarEstadoPedido();">
+                    <span>📚 Ajuste de Referências</span>
                   </label>
                   <label class="checkbox-tile">
-                    <input type="checkbox" name="servicos[]" value="Referências" onchange="salvarEstadoPedido()">
-                    <span>Referências</span>
+                    <input type="checkbox" name="servicos[]" value="Digitação e Edição" onchange="calcularSubtotal(); salvarEstadoPedido();">
+                    <span>⌨️ Digitação e Edição</span>
                   </label>
                   <label class="checkbox-tile">
-                    <input type="checkbox" name="servicos[]" value="Paginação" onchange="salvarEstadoPedido()">
-                    <span>Paginação</span>
-                  </label>
-                  <label class="checkbox-tile">
-                    <input type="checkbox" name="servicos[]" value="Outros" onchange="salvarEstadoPedido()">
-                    <span>Outros</span>
+                    <input type="checkbox" name="servicos[]" value="Impressão" onchange="calcularSubtotal(); salvarEstadoPedido();">
+                    <span>🖨️ Impressão</span>
                   </label>
                 </div>
               </div>
 
-              <!-- Forma de Envio do Arquivo -->
+              <!-- SUBTOTAL DO PEDIDO -->
+              <div class="form-group full-width">
+                <div class="subtotal-box">
+                  <div class="subtotal-header">📊 Subtotal do Pedido</div>
+                  <ul class="subtotal-list" id="subtotalList">
+                    <!-- Gerado dinamicamente -->
+                  </ul>
+                  <div class="subtotal-total">
+                    <span>Subtotal:</span>
+                    <span id="subtotalValue">R$ 0,00</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Orientação explícita do envio do arquivo -->
               <div class="form-group full-width" style="margin-top: 0.5rem;">
-                <label class="form-label" style="margin-bottom: 0.5rem;">Como você deseja enviar seu arquivo? *</label>
+                <div class="mandatory-payment-notice" style="background-color: var(--bg-body); border-color: var(--border-color); margin: 0;">
+                  <h5>📎 Envio do arquivo</h5>
+                  <p>Se você precisar enviar um arquivo para formatação, ele deverá ser enviado manualmente pelo WhatsApp após o envio do pedido.</p>
+                </div>
+              </div>
+
+              <!-- Forma de Recebimento/Envio das Informações do Pedido -->
+              <div class="form-group full-width" style="margin-top: 0.5rem;">
+                <label class="form-label" style="margin-bottom: 0.5rem;">Como deseja enviar/receber as informações do pedido? *</label>
                 <div class="payment-methods-grid" style="margin-bottom: 0.5rem;">
                   <label class="payment-method-card">
-                    <input type="radio" name="forma_envio_arquivo" value="WhatsApp" checked onchange="alternarEnvioArquivo('WhatsApp'); salvarEstadoPedido();">
+                    <input type="radio" name="forma_envio_info" value="WhatsApp" checked onchange="alternarEnvioInfo('WhatsApp'); salvarEstadoPedido();">
                     <span>📱 WhatsApp</span>
                   </label>
                   <label class="payment-method-card">
-                    <input type="radio" name="forma_envio_arquivo" value="E-mail" onchange="alternarEnvioArquivo('E-mail'); salvarEstadoPedido();">
-                    <span>📧 E-mail</span>
+                    <input type="radio" name="forma_envio_info" value="E-mail" onchange="alternarEnvioInfo('E-mail'); salvarEstadoPedido();">
+                    <span>✉️ E-mail</span>
                   </label>
-                </div>
-
-                <!-- Detalhe Envio WhatsApp -->
-                <div id="msgEnvioWhatsApp" class="payment-details-box" style="margin-top: 0.5rem; text-align: left;">
-                  <p style="font-size: 0.9rem; color: var(--text-muted);">
-                    Após finalizar o pedido, envie o arquivo diretamente pelo WhatsApp.
-                  </p>
                 </div>
 
                 <!-- Detalhe Envio E-mail -->
@@ -1538,7 +1593,7 @@
 
               <div class="payment-details-box" style="margin-bottom: 1.5rem; text-align: center;">
                 <div style="font-size: 0.9rem; color: var(--text-muted);">VALOR TOTAL FINAL DO PEDIDO:</div>
-                <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary);" id="displayValorTotal">A partir de R$ 20,00</div>
+                <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary);" id="displayValorTotal">R$ 0,00</div>
               </div>
 
               <div class="form-group full-width">
@@ -1558,7 +1613,7 @@
                 <div id="areaPix" class="payment-details-box">
                   <div style="font-weight: 700; font-size: 1.05rem;">Pagamento via PIX</div>
                   <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem;">
-                    Valor total a pagar: <strong style="color: var(--primary);" id="displayValorPix">A partir de R$ 20,00</strong>
+                    Valor total a pagar: <strong style="color: var(--primary);" id="displayValorPix">R$ 0,00</strong>
                   </div>
                   
                   <img src="qrcode-pix.jpg" alt="QR Code PIX" class="pix-qr-code">
@@ -1587,19 +1642,19 @@
                 <div class="mandatory-payment-notice">
                   <h5>⚠️ Importante</h5>
                   <p><strong>O pedido só será iniciado após a confirmação do pagamento.</strong></p>
-                  <p>Após realizar o pagamento, clique em "Finalizar pedido" para enviar todas as informações pelo WhatsApp.</p>
+                  <p>Após realizar o pagamento, clique em "Finalizar pedido" para enviar todas as informações.</p>
                 </div>
 
                 <!-- Orientação Manual do Envio do Arquivo -->
                 <div class="mandatory-payment-notice" style="background-color: var(--primary-light); border-color: var(--primary);">
-                  <h5 style="color: var(--primary);">📎 Precisa enviar um arquivo para a formatação?</h5>
-                  <p style="color: var(--text-main);">Se você possui um arquivo para enviar, envie-o pelo WhatsApp após mandar esta mensagem.</p>
+                  <h5 style="color: var(--primary);">📎 Envio do arquivo para formatação</h5>
+                  <p style="color: var(--text-main);">O arquivo deverá ser enviado manualmente pelo WhatsApp após o envio deste pedido.</p>
                 </div>
               </div>
 
               <!-- Botões de Ação na Etapa de Pagamento -->
               <div class="form-group full-width" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
-                <button type="button" class="btn btn-primary" onclick="enviarPedidoWhatsApp()" style="width: 100%; padding: 1rem; background-color: #25D366; color: #ffffff;">
+                <button type="button" class="btn btn-primary" onclick="finalizarPedido()" style="width: 100%; padding: 1rem; background-color: #25D366; color: #ffffff;">
                   ✅ Finalizar pedido
                 </button>
                 <button type="button" class="btn btn-secondary" onclick="voltarParaEtapaPedido()" style="width: 100%; padding: 0.75rem;">
@@ -1690,6 +1745,19 @@
 
     // CHAVE PIX CONFIGURÁVEL
     const PIX_KEY = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
+
+    // TABELA DE PREÇOS REGRAS EXATAS
+    const PRECOS_SERVICOS = {
+      "Formatação Completa": { valor: 20.00, prefixo: "A partir de " },
+      "Capa e Folha de rosto": { valor: 5.00, prefixo: "" },
+      "Sumário Automatizado": { valor: 5.00, prefixo: "" },
+      "Ajuste de Referências": { valor: 8.00, prefixo: "A partir de " },
+      "Digitação e Edição": { valorPorPagina: 2.00, prefixo: "" },
+      "Impressão": { sobreConsulta: true }
+    };
+
+    let valorSubtotalGlobal = 0;
+    let textoSubtotalGlobal = "R$ 0,00";
 
     document.addEventListener('DOMContentLoaded', () => {
       // Exibir chave PIX configurada
@@ -1784,11 +1852,82 @@
         });
       }
 
+      // Inicializar cálculo do subtotal
+      calcularSubtotal();
+
       // Restaurar estado salvo do pedido, se existir
       restaurarEstadoPedido();
     });
 
-    // --- C. FUNÇÃO TIPO DE TRABALHO (OUTRO) ---
+    // --- C. CÁLCULO AUTOMÁTICO DO SUBTOTAL DO PEDIDO ---
+    function calcularSubtotal() {
+      const listElement = document.getElementById('subtotalList');
+      const valueElement = document.getElementById('subtotalValue');
+      if (!listElement || !valueElement) return;
+
+      listElement.innerHTML = '';
+      
+      const checkboxes = document.querySelectorAll('input[name="servicos[]"]:checked');
+      const paginas = parseInt(document.getElementById('paginas').value) || 0;
+
+      let total = 0;
+      let temAPartirDe = false;
+      let algumSelecionado = false;
+
+      checkboxes.forEach(cb => {
+        algumSelecionado = true;
+        const nomeServico = cb.value;
+        const info = PRECOS_SERVICOS[nomeServico];
+
+        let textoItem = '';
+        let valorItem = 0;
+
+        if (info) {
+          if (info.sobreConsulta) {
+            textoItem = 'Sobre consulta';
+          } else if (info.valorPorPagina) {
+            valorItem = paginas * info.valorPorPagina;
+            total += valorItem;
+            textoItem = `R$ ${valorItem.toFixed(2).replace('.', ',')}` + (paginas > 0 ? ` (${paginas} pág.)` : '');
+          } else {
+            valorItem = info.valor;
+            total += valorItem;
+            if (info.prefixo) temAPartirDe = true;
+            textoItem = `${info.prefixo}R$ ${valorItem.toFixed(2).replace('.', ',')}`;
+          }
+        } else {
+          textoItem = 'Incluso';
+        }
+
+        const li = document.createElement('li');
+        li.className = 'subtotal-list-item';
+        li.innerHTML = `<span>${nomeServico}</span> <strong>${textoItem}</strong>`;
+        listElement.appendChild(li);
+      });
+
+      if (!algumSelecionado) {
+        const li = document.createElement('li');
+        li.className = 'subtotal-list-item';
+        li.innerHTML = `<span>Nenhum serviço selecionado</span> <strong>R$ 0,00</strong>`;
+        listElement.appendChild(li);
+        textoSubtotalGlobal = "R$ 0,00";
+        valorSubtotalGlobal = 0;
+      } else {
+        const prefixoFinal = temAPartirDe ? 'A partir de ' : '';
+        textoSubtotalGlobal = `${prefixoFinal}R$ ${total.toFixed(2).replace('.', ',')}`;
+        valorSubtotalGlobal = total;
+      }
+
+      valueElement.textContent = textoSubtotalGlobal;
+
+      // Atualiza exibições na etapa 2
+      const displayTotal = document.getElementById('displayValorTotal');
+      const displayPix = document.getElementById('displayValorPix');
+      if (displayTotal) displayTotal.textContent = textoSubtotalGlobal;
+      if (displayPix) displayPix.textContent = textoSubtotalGlobal;
+    }
+
+    // --- D. FUNÇÃO TIPO DE TRABALHO (OUTRO) ---
     function toggleOutroTrabalho(val) {
       const groupOutro = document.getElementById('group_outro_trabalho');
       const inputOutro = document.getElementById('especificar_outro');
@@ -1802,29 +1941,26 @@
       }
     }
 
-    // --- D. CONTROLE DE ENVIO DO ARQUIVO ---
-    function alternarEnvioArquivo(metodo) {
-      const msgWhatsApp = document.getElementById('msgEnvioWhatsApp');
+    // --- E. CONTROLE DE FORMA DE RECEBIMENTO/ENVIO DAS INFORMAÇÕES DO PEDIDO ---
+    function alternarEnvioInfo(metodo) {
       const msgEmail = document.getElementById('msgEnvioEmail');
       const emailInput = document.getElementById('email_cliente');
 
-      if (metodo === 'WhatsApp') {
-        msgWhatsApp.style.display = 'block';
+      if (metodo === 'E-mail') {
+        msgEmail.style.display = 'block';
+        if (emailInput) {
+          emailInput.setAttribute('required', 'required');
+        }
+      } else {
         msgEmail.style.display = 'none';
         if (emailInput) {
           emailInput.removeAttribute('required');
           emailInput.classList.remove('invalid-input');
         }
-      } else if (metodo === 'E-mail') {
-        msgWhatsApp.style.display = 'none';
-        msgEmail.style.display = 'block';
-        if (emailInput) {
-          emailInput.setAttribute('required', 'required');
-        }
       }
     }
 
-    // --- E. CONTROLE DE FORMA DE PAGAMENTO ---
+    // --- F. CONTROLE DE FORMA DE PAGAMENTO ---
     function alternarPagamento(metodo) {
       const areaPix = document.getElementById('areaPix');
       const areaDinheiro = document.getElementById('areaDinheiro');
@@ -1838,7 +1974,7 @@
       }
     }
 
-    // --- F. COPIAR CHAVE PIX COM CONFIRMAÇÃO VISUAL ---
+    // --- G. COPIAR CHAVE PIX COM CONFIRMAÇÃO VISUAL ---
     function copiarChavePix() {
       const confirmBox = document.getElementById('pixCopyConfirm');
       
@@ -1861,7 +1997,7 @@
       });
     }
 
-    // --- G. FLUXO DE ETAPAS DO FORMULÁRIO ---
+    // --- H. FLUXO DE ETAPAS DO FORMULÁRIO ---
     function irParaEtapaPagamento() {
       const warningElement = document.getElementById('formWarningMsg');
       warningElement.style.display = 'none';
@@ -1870,7 +2006,7 @@
       const nomeInput = document.getElementById('nome');
       const tipoTrabalhoSelect = document.getElementById('tipo_trabalho');
       const especificarOutroInput = document.getElementById('especificar_outro');
-      const formaEnvioSelected = document.querySelector('input[name="forma_envio_arquivo"]:checked');
+      const formaEnvioInfoSelected = document.querySelector('input[name="forma_envio_info"]:checked');
       const emailInput = document.getElementById('email_cliente');
 
       let erros = [];
@@ -1896,9 +2032,9 @@
         especificarOutroInput.classList.remove('invalid-input');
       }
 
-      if (formaEnvioSelected && formaEnvioSelected.value === 'E-mail') {
+      if (formaEnvioInfoSelected && formaEnvioInfoSelected.value === 'E-mail') {
         if (!emailInput.value.trim() || !emailInput.value.includes('@')) {
-          erros.push('E-mail válido para envio do arquivo');
+          erros.push('E-mail válido para receber/enviar informações');
           emailInput.classList.add('invalid-input');
         } else {
           emailInput.classList.remove('invalid-input');
@@ -1929,7 +2065,7 @@
       salvarEstadoPedido();
     }
 
-    // --- H. LOCALSTORAGE: SALVAR, RESTAURAR E LIMPAR PEDIDO ---
+    // --- I. LOCALSTORAGE: SALVAR, RESTAURAR E LIMPAR PEDIDO ---
     const LOCAL_STORAGE_KEY = 'printexpress_abnt_pedido';
 
     function salvarEstadoPedido() {
@@ -1945,8 +2081,8 @@
         servicos.push(cb.value);
       });
 
-      const formaEnvioElement = document.querySelector('input[name="forma_envio_arquivo"]:checked');
-      const formaEnvioArquivo = formaEnvioElement ? formaEnvioElement.value : 'WhatsApp';
+      const formaEnvioElement = document.querySelector('input[name="forma_envio_info"]:checked');
+      const formaEnvioInfo = formaEnvioElement ? formaEnvioElement.value : 'WhatsApp';
       const emailCliente = document.getElementById('email_cliente') ? document.getElementById('email_cliente').value : '';
 
       const formaPagamentoElement = document.querySelector('input[name="forma_pagamento"]:checked');
@@ -1963,7 +2099,7 @@
         prazo,
         observacoes,
         servicos,
-        formaEnvioArquivo,
+        formaEnvioInfo,
         emailCliente,
         formaPagamento,
         etapaPagamentoVisivel,
@@ -1996,11 +2132,11 @@
           });
         }
 
-        if (pedido.formaEnvioArquivo) {
-          const radioEnvio = document.querySelector(`input[name="forma_envio_arquivo"][value="${pedido.formaEnvioArquivo}"]`);
+        if (pedido.formaEnvioInfo) {
+          const radioEnvio = document.querySelector(`input[name="forma_envio_info"][value="${pedido.formaEnvioInfo}"]`);
           if (radioEnvio) {
             radioEnvio.checked = true;
-            alternarEnvioArquivo(pedido.formaEnvioArquivo);
+            alternarEnvioInfo(pedido.formaEnvioInfo);
           }
         }
 
@@ -2016,10 +2152,12 @@
           }
         }
 
+        calcularSubtotal();
+
         if (pedido.estaConcluido) {
           document.getElementById('formContainer').style.display = 'none';
           document.getElementById('thankYouScreen').style.display = 'block';
-          atualizarAvisoAgradecimento(pedido.formaEnvioArquivo);
+          atualizarAvisoAgradecimento();
         } else if (pedido.etapaPagamentoVisivel) {
           document.getElementById('etapaPedido').style.display = 'none';
           document.getElementById('etapaPagamento').style.display = 'block';
@@ -2050,8 +2188,9 @@
       localStorage.removeItem(LOCAL_STORAGE_KEY);
       document.getElementById('abntForm').reset();
       toggleOutroTrabalho('');
-      alternarEnvioArquivo('WhatsApp');
+      alternarEnvioInfo('WhatsApp');
       alternarPagamento('PIX');
+      calcularSubtotal();
       document.getElementById('etapaPagamento').style.display = 'none';
       document.getElementById('etapaPedido').style.display = 'grid';
       document.getElementById('thankYouScreen').style.display = 'none';
@@ -2066,33 +2205,41 @@
       }
     }
 
-    function atualizarAvisoAgradecimento(formaEnvio) {
+    function atualizarAvisoAgradecimento() {
       const containerAviso = document.getElementById('thankYouFileNotice');
       if (!containerAviso) return;
 
-      if (formaEnvio === 'E-mail') {
-        containerAviso.innerHTML = '<h5>📧 Envio do Arquivo por E-mail</h5><p>Envie o arquivo do seu trabalho para o e-mail informado no pedido.</p>';
-      } else {
-        containerAviso.innerHTML = '<h5>📎 Lembre-se de enviar seu arquivo</h5><p>Lembre-se de enviar o arquivo pelo WhatsApp após o envio da mensagem do pedido.</p>';
-      }
+      containerAviso.innerHTML = '<h5>📎 Envio do arquivo para formatação</h5><p>Se você precisar enviar um arquivo para formatação, ele deverá ser enviado manualmente pelo WhatsApp após o envio do pedido.</p>';
     }
 
-    // --- I. ENVIO FINAL PELO WHATSAPP ---
-    function enviarPedidoWhatsApp() {
+    // --- J. ENVIO FINAL DO PEDIDO ---
+    function finalizarPedido() {
       const nomeInput = document.getElementById('nome');
       const tipoTrabalhoSelect = document.getElementById('tipo_trabalho');
       const especificarOutroInput = document.getElementById('especificar_outro');
       const paginasInput = document.getElementById('paginas');
       const prazoInput = document.getElementById('prazo');
       const observacoesInput = document.getElementById('observacoes');
-      const formaEnvioSelected = document.querySelector('input[name="forma_envio_arquivo"]:checked');
+      const formaEnvioInfoSelected = document.querySelector('input[name="forma_envio_info"]:checked');
       const emailInput = document.getElementById('email_cliente');
       const formaPagamentoSelected = document.querySelector('input[name="forma_pagamento"]:checked');
 
-      // Montagem dos serviços selecionados
+      // Montagem dos serviços selecionados com valores
       const checkboxes = document.querySelectorAll('input[name="servicos[]"]:checked');
+      const paginasNum = parseInt(paginasInput.value) || 0;
       let servicosSelecionados = [];
-      checkboxes.forEach(cb => servicosSelecionados.push('• ' + cb.value));
+
+      checkboxes.forEach(cb => {
+        const nomeServico = cb.value;
+        const info = PRECOS_SERVICOS[nomeServico];
+        let valTexto = '';
+        if (info) {
+          if (info.sobreConsulta) valTexto = '— Sobre consulta';
+          else if (info.valorPorPagina) valTexto = `— R$ ${(paginasNum * info.valorPorPagina).toFixed(2).replace('.', ',')}`;
+          else valTexto = `— ${info.prefixo}R$ ${info.valor.toFixed(2).replace('.', ',')}`;
+        }
+        servicosSelecionados.push(`• ${nomeServico} ${valTexto}`);
+      });
 
       let servicosTexto = servicosSelecionados.length > 0 ? servicosSelecionados.join('\n') : 'Nenhum serviço específico selecionado';
 
@@ -2113,29 +2260,29 @@
 
       let paginasTexto = paginasInput.value ? paginasInput.value : 'Não informada';
       let observacoesTexto = observacoesInput.value.trim() ? observacoesInput.value.trim() : 'Nenhuma observação';
-      let formaEnvio = formaEnvioSelected ? formaEnvioSelected.value : 'WhatsApp';
+      let formaEnvioInfo = formaEnvioInfoSelected ? formaEnvioInfoSelected.value : 'WhatsApp';
       let pagamentoTexto = formaPagamentoSelected ? formaPagamentoSelected.value : 'PIX';
 
       // Montagem da mensagem estruturada
       let mensagem = `📐 *NOVO PEDIDO — FORMATAÇÃO ABNT*\n\n`;
-      mensagem += `👤 Nome: ${nomeInput.value.trim()}\n\n`;
-      mensagem += `📚 Tipo de trabalho: ${tipoTrabalhoFinal}\n\n`;
-      mensagem += `📝 Serviços:\n${servicosTexto}\n\n`;
-      mensagem += `📄 Quantidade de páginas:\n${paginasTexto}\n\n`;
-      mensagem += `⏰ Prazo desejado:\n${prazoTexto}\n\n`;
-      mensagem += `💰 Valor da formatação:\nA partir de R$ 20,00\n\n`;
-      mensagem += `💰 TOTAL:\nA partir de R$ 20,00\n\n`;
-      mensagem += `💳 Forma de pagamento:\n${pagamentoTexto}\n\n`;
-      mensagem += `📎 Envio do arquivo:\n${formaEnvio}\n\n`;
+      mensagem += `👤 *Nome:* ${nomeInput.value.trim()}\n`;
+      mensagem += `📚 *Tipo de trabalho:* ${tipoTrabalhoFinal}\n\n`;
+      mensagem += `📝 *Serviços Selecionados:*\n${servicosTexto}\n\n`;
+      mensagem += `📄 *Quantidade de páginas:* ${paginasTexto}\n`;
+      mensagem += `⏰ *Prazo desejado:* ${prazoTexto}\n\n`;
+      mensagem += `💰 *Subtotal do Pedido:* ${textoSubtotalGlobal}\n`;
+      mensagem += `💳 *Forma de pagamento:* ${pagamentoTexto}\n\n`;
+      mensagem += `📱 *Envio/Recebimento de informações:* ${formaEnvioInfo}\n`;
       
-      if (formaEnvio === 'E-mail' && emailInput && emailInput.value.trim()) {
-        mensagem += `📧 E-mail:\n${emailInput.value.trim()}\n\n`;
+      if (formaEnvioInfo === 'E-mail' && emailInput && emailInput.value.trim()) {
+        mensagem += `📧 *E-mail informado:* ${emailInput.value.trim()}\n`;
       }
 
-      mensagem += `📝 Observações:\n${observacoesTexto}`;
+      mensagem += `\n📝 *Observações:*\n${observacoesTexto}\n\n`;
+      mensagem += `📎 *Arquivo para formatação:* Deverá ser enviado manualmente pelo WhatsApp após o envio desta mensagem.`;
 
       // Atualizar tela de agradecimento com orientação do arquivo
-      atualizarAvisoAgradecimento(formaEnvio);
+      atualizarAvisoAgradecimento();
 
       // Salvar estado atual do pedido como concluído
       document.getElementById('formContainer').style.display = 'none';
