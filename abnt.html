@@ -744,27 +744,6 @@
       cursor: pointer;
     }
 
-    /* File Input Styling */
-    .file-dropzone {
-      border: 2px dashed var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 1.5rem;
-      text-align: center;
-      background: var(--bg-body);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .file-dropzone:hover {
-      border-color: var(--primary);
-      background: var(--primary-light);
-    }
-
-    .file-dropzone-icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-
     /* Radios e Pagamento Estilizados */
     .payment-methods-grid {
       display: grid;
@@ -1413,8 +1392,13 @@
         <div id="thankYouScreen" class="thank-you-screen">
           <div style="font-size: 3rem; margin-bottom: 0.5rem;">💙</div>
           <h3 class="thank-you-title">Obrigado por escolher o PrintExpress!</h3>
-          <p class="thank-you-text">Seu pedido foi preparado e está pronto para ser enviado pelo WhatsApp.</p>
-          <p class="thank-you-text" style="font-size: 0.95rem;">Após a confirmação do pagamento, o serviço será iniciado conforme as condições e prazos informados.</p>
+          <p class="thank-you-text">Seu pedido foi preparado e enviado para o atendimento pelo WhatsApp.</p>
+          <p class="thank-you-text" style="font-size: 0.95rem;">Após a confirmação do pagamento e o recebimento do arquivo, quando necessário, o serviço será iniciado conforme as condições e prazos informados.</p>
+          
+          <!-- Mensagem Orientativa Dinâmica do Arquivo -->
+          <div id="thankYouFileNotice" class="mandatory-payment-notice" style="max-width: 600px; margin: 1.5rem auto; text-align: center;">
+          </div>
+
           <div style="margin-top: 2rem;">
             <button type="button" class="btn btn-primary" onclick="resetarEVoltarInicio()">Voltar ao início</button>
           </div>
@@ -1425,8 +1409,9 @@
           <!-- Mensagem visual de erro para campos obrigatórios -->
           <div id="formWarningMsg" class="form-warning-msg"></div>
 
-          <form id="abntForm" name="Formatação ABNT - PrintExpress" onsubmit="event.preventDefault(); enviarPedidoWhatsApp();">
-            <div class="form-grid">
+          <!-- ETAPA 1: PREENCHIMENTO DO PEDIDO -->
+          <form id="abntForm" name="Formatação ABNT - PrintExpress" onsubmit="event.preventDefault(); irParaEtapaPagamento();">
+            <div id="etapaPedido" class="form-grid">
               
               <!-- Nome -->
               <div class="form-group full-width">
@@ -1500,17 +1485,33 @@
                 </div>
               </div>
 
-              <!-- Campo para Anexo de Arquivo -->
-              <!-- <div class="form-group full-width">
-                <label for="arquivo" class="form-label">Anexar arquivo do trabalho ou diretrizes (opcional)</label>
-                <div class="file-dropzone" onclick="document.getElementById('arquivo').click()">
-                  <div class="file-dropzone-icon">📁</div>
-                  <p style="font-size: 0.95rem; font-weight: 600; color: var(--text-main);">Clique aqui para selecionar seu arquivo</p>
-                  <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Formatos aceitos: DOC, DOCX, PDF (Máx. 10MB)</p>
-                  <input type="file" id="arquivo" name="attachment" style="display: none;" onchange="updateFileName(this)">
-                  <span id="fileNameDisplay" style="display: block; margin-top: 0.5rem; font-size: 0.85rem; font-weight: 700; color: var(--primary);"></span>
+              <!-- Forma de Envio do Arquivo -->
+              <div class="form-group full-width" style="margin-top: 0.5rem;">
+                <label class="form-label" style="margin-bottom: 0.5rem;">Como você deseja enviar seu arquivo? *</label>
+                <div class="payment-methods-grid" style="margin-bottom: 0.5rem;">
+                  <label class="payment-method-card">
+                    <input type="radio" name="forma_envio_arquivo" value="WhatsApp" checked onchange="alternarEnvioArquivo('WhatsApp'); salvarEstadoPedido();">
+                    <span>📱 WhatsApp</span>
+                  </label>
+                  <label class="payment-method-card">
+                    <input type="radio" name="forma_envio_arquivo" value="E-mail" onchange="alternarEnvioArquivo('E-mail'); salvarEstadoPedido();">
+                    <span>📧 E-mail</span>
+                  </label>
                 </div>
-              </div> -->
+
+                <!-- Detalhe Envio WhatsApp -->
+                <div id="msgEnvioWhatsApp" class="payment-details-box" style="margin-top: 0.5rem; text-align: left;">
+                  <p style="font-size: 0.9rem; color: var(--text-muted);">
+                    Após finalizar o pedido, envie o arquivo diretamente pelo WhatsApp.
+                  </p>
+                </div>
+
+                <!-- Detalhe Envio E-mail -->
+                <div id="msgEnvioEmail" class="payment-details-box" style="margin-top: 0.5rem; display: none; text-align: left;">
+                  <label for="email_cliente" class="form-label" style="margin-bottom: 0.4rem; display: block;">Digite seu e-mail *</label>
+                  <input type="email" id="email_cliente" name="email_cliente" class="form-input" placeholder="seuemail@exemplo.com" oninput="salvarEstadoPedido()">
+                </div>
+              </div>
 
               <!-- Observações -->
               <div class="form-group full-width">
@@ -1518,9 +1519,30 @@
                 <textarea id="observacoes" name="observacoes" rows="4" class="form-textarea" placeholder="Informe aqui as orientações do professor, instituição ou qualquer detalhe importante." oninput="salvarEstadoPedido()"></textarea>
               </div>
 
-              <!-- Formas de Pagamento -->
-              <div class="form-group full-width" style="margin-top: 1rem;">
-                <label class="form-label" style="margin-bottom: 0.5rem;">Forma de pagamento *</label>
+              <!-- Botão Prosseguir para o Pagamento -->
+              <div class="form-group full-width" style="margin-top: 0.5rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">
+                  Continuar para o pagamento →
+                </button>
+              </div>
+
+            </div>
+
+            <!-- ETAPA 2: PAGAMENTO (INICIALMENTE OCULTA) -->
+            <div id="etapaPagamento" style="display: none;">
+              <div style="text-align: center; margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1.4rem; font-weight: 800; color: var(--primary);">💳 Pagamento do pedido</h3>
+                <p style="font-size: 1rem; font-weight: 700; color: var(--accent); margin-top: 0.25rem;">✓ Seu pedido foi registrado!</p>
+                <p style="font-size: 0.95rem; color: var(--text-muted); margin-top: 0.25rem;">Agora realize o pagamento para que o serviço possa ser iniciado.</p>
+              </div>
+
+              <div class="payment-details-box" style="margin-bottom: 1.5rem; text-align: center;">
+                <div style="font-size: 0.9rem; color: var(--text-muted);">VALOR TOTAL FINAL DO PEDIDO:</div>
+                <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary);" id="displayValorTotal">A partir de R$ 20,00</div>
+              </div>
+
+              <div class="form-group full-width">
+                <label class="form-label" style="margin-bottom: 0.5rem;">Escolha a forma de pagamento *</label>
                 <div class="payment-methods-grid">
                   <label class="payment-method-card">
                     <input type="radio" name="forma_pagamento" value="PIX" checked onchange="alternarPagamento('PIX'); salvarEstadoPedido();">
@@ -1536,7 +1558,7 @@
                 <div id="areaPix" class="payment-details-box">
                   <div style="font-weight: 700; font-size: 1.05rem;">Pagamento via PIX</div>
                   <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem;">
-                    Valor total estimado: <strong style="color: var(--primary);" id="displayValorTotal">A partir de R$ 20,00</strong>
+                    Valor total a pagar: <strong style="color: var(--primary);" id="displayValorPix">A partir de R$ 20,00</strong>
                   </div>
                   
                   <img src="qrcode-pix.jpg" alt="QR Code PIX" class="pix-qr-code">
@@ -1564,15 +1586,24 @@
                 <!-- Aviso Obrigatório de Pagamento -->
                 <div class="mandatory-payment-notice">
                   <h5>⚠️ Importante</h5>
-                  <p><strong>Seu pedido só será iniciado após a confirmação do pagamento.</strong></p>
-                  <p>Após realizar o pagamento, envie o pedido pelo WhatsApp para que possamos confirmar e iniciar o serviço.</p>
+                  <p><strong>O pedido só será iniciado após a confirmação do pagamento.</strong></p>
+                  <p>Após realizar o pagamento, clique em "Finalizar pedido" para enviar todas as informações pelo WhatsApp.</p>
+                </div>
+
+                <!-- Orientação Manual do Envio do Arquivo -->
+                <div class="mandatory-payment-notice" style="background-color: var(--primary-light); border-color: var(--primary);">
+                  <h5 style="color: var(--primary);">📎 Precisa enviar um arquivo para a formatação?</h5>
+                  <p style="color: var(--text-main);">Se você possui um arquivo para enviar, envie-o pelo WhatsApp após mandar esta mensagem.</p>
                 </div>
               </div>
 
-              <!-- Botão Enviar Pedido pelo WhatsApp -->
-              <div class="form-group full-width" style="margin-top: 0.5rem;">
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; background-color: #25D366; color: #ffffff;">
-                  📲 Enviar pedido pelo WhatsApp
+              <!-- Botões de Ação na Etapa de Pagamento -->
+              <div class="form-group full-width" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                <button type="button" class="btn btn-primary" onclick="enviarPedidoWhatsApp()" style="width: 100%; padding: 1rem; background-color: #25D366; color: #ffffff;">
+                  ✅ Finalizar pedido
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="voltarParaEtapaPedido()" style="width: 100%; padding: 0.75rem;">
+                  ← Voltar e editar pedido
                 </button>
               </div>
 
@@ -1771,7 +1802,29 @@
       }
     }
 
-    // --- D. CONTROLE DE FORMA DE PAGAMENTO ---
+    // --- D. CONTROLE DE ENVIO DO ARQUIVO ---
+    function alternarEnvioArquivo(metodo) {
+      const msgWhatsApp = document.getElementById('msgEnvioWhatsApp');
+      const msgEmail = document.getElementById('msgEnvioEmail');
+      const emailInput = document.getElementById('email_cliente');
+
+      if (metodo === 'WhatsApp') {
+        msgWhatsApp.style.display = 'block';
+        msgEmail.style.display = 'none';
+        if (emailInput) {
+          emailInput.removeAttribute('required');
+          emailInput.classList.remove('invalid-input');
+        }
+      } else if (metodo === 'E-mail') {
+        msgWhatsApp.style.display = 'none';
+        msgEmail.style.display = 'block';
+        if (emailInput) {
+          emailInput.setAttribute('required', 'required');
+        }
+      }
+    }
+
+    // --- E. CONTROLE DE FORMA DE PAGAMENTO ---
     function alternarPagamento(metodo) {
       const areaPix = document.getElementById('areaPix');
       const areaDinheiro = document.getElementById('areaDinheiro');
@@ -1785,7 +1838,7 @@
       }
     }
 
-    // --- E. COPIAR CHAVE PIX COM CONFIRMAÇÃO VISUAL ---
+    // --- F. COPIAR CHAVE PIX COM CONFIRMAÇÃO VISUAL ---
     function copiarChavePix() {
       const confirmBox = document.getElementById('pixCopyConfirm');
       
@@ -1808,7 +1861,75 @@
       });
     }
 
-    // --- F. LOCALSTORAGE: SALVAR, RESTAURAR E LIMPAR PEDIDO ---
+    // --- G. FLUXO DE ETAPAS DO FORMULÁRIO ---
+    function irParaEtapaPagamento() {
+      const warningElement = document.getElementById('formWarningMsg');
+      warningElement.style.display = 'none';
+      warningElement.textContent = '';
+
+      const nomeInput = document.getElementById('nome');
+      const tipoTrabalhoSelect = document.getElementById('tipo_trabalho');
+      const especificarOutroInput = document.getElementById('especificar_outro');
+      const formaEnvioSelected = document.querySelector('input[name="forma_envio_arquivo"]:checked');
+      const emailInput = document.getElementById('email_cliente');
+
+      let erros = [];
+
+      if (!nomeInput.value.trim()) {
+        erros.push('Nome completo');
+        nomeInput.classList.add('invalid-input');
+      } else {
+        nomeInput.classList.remove('invalid-input');
+      }
+
+      if (!tipoTrabalhoSelect.value) {
+        erros.push('Tipo de trabalho');
+        tipoTrabalhoSelect.classList.add('invalid-input');
+      } else {
+        tipoTrabalhoSelect.classList.remove('invalid-input');
+      }
+
+      if (tipoTrabalhoSelect.value === 'Outro' && !especificarOutroInput.value.trim()) {
+        erros.push('Especificação do tipo de trabalho');
+        especificarOutroInput.classList.add('invalid-input');
+      } else if (especificarOutroInput) {
+        especificarOutroInput.classList.remove('invalid-input');
+      }
+
+      if (formaEnvioSelected && formaEnvioSelected.value === 'E-mail') {
+        if (!emailInput.value.trim() || !emailInput.value.includes('@')) {
+          erros.push('E-mail válido para envio do arquivo');
+          emailInput.classList.add('invalid-input');
+        } else {
+          emailInput.classList.remove('invalid-input');
+        }
+      }
+
+      if (erros.length > 0) {
+        warningElement.textContent = 'Por favor, preencha o(s) campo(s) obrigatório(s): ' + erros.join(', ') + '.';
+        warningElement.style.display = 'block';
+        warningElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      document.getElementById('etapaPedido').style.display = 'none';
+      document.getElementById('etapaPagamento').style.display = 'block';
+      
+      const sectionForm = document.getElementById('solicitar-orcamento');
+      if (sectionForm) {
+        sectionForm.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      salvarEstadoPedido();
+    }
+
+    function voltarParaEtapaPedido() {
+      document.getElementById('etapaPagamento').style.display = 'none';
+      document.getElementById('etapaPedido').style.display = 'grid';
+      salvarEstadoPedido();
+    }
+
+    // --- H. LOCALSTORAGE: SALVAR, RESTAURAR E LIMPAR PEDIDO ---
     const LOCAL_STORAGE_KEY = 'printexpress_abnt_pedido';
 
     function salvarEstadoPedido() {
@@ -1824,11 +1945,15 @@
         servicos.push(cb.value);
       });
 
+      const formaEnvioElement = document.querySelector('input[name="forma_envio_arquivo"]:checked');
+      const formaEnvioArquivo = formaEnvioElement ? formaEnvioElement.value : 'WhatsApp';
+      const emailCliente = document.getElementById('email_cliente') ? document.getElementById('email_cliente').value : '';
+
       const formaPagamentoElement = document.querySelector('input[name="forma_pagamento"]:checked');
       const formaPagamento = formaPagamentoElement ? formaPagamentoElement.value : 'PIX';
 
-      const thankYouScreen = document.getElementById('thankYouScreen');
-      const estaConcluido = thankYouScreen.style.display === 'block';
+      const etapaPagamentoVisivel = document.getElementById('etapaPagamento').style.display === 'block';
+      const thankYouScreenVisivel = document.getElementById('thankYouScreen').style.display === 'block';
 
       const pedidoData = {
         nome,
@@ -1838,8 +1963,11 @@
         prazo,
         observacoes,
         servicos,
+        formaEnvioArquivo,
+        emailCliente,
         formaPagamento,
-        estaConcluido
+        etapaPagamentoVisivel,
+        estaConcluido: thankYouScreenVisivel
       };
 
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(pedidoData));
@@ -1868,10 +1996,22 @@
           });
         }
 
+        if (pedido.formaEnvioArquivo) {
+          const radioEnvio = document.querySelector(`input[name="forma_envio_arquivo"][value="${pedido.formaEnvioArquivo}"]`);
+          if (radioEnvio) {
+            radioEnvio.checked = true;
+            alternarEnvioArquivo(pedido.formaEnvioArquivo);
+          }
+        }
+
+        if (pedido.emailCliente !== undefined && document.getElementById('email_cliente')) {
+          document.getElementById('email_cliente').value = pedido.emailCliente;
+        }
+
         if (pedido.formaPagamento) {
-          const radio = document.querySelector(`input[name="forma_pagamento"][value="${pedido.formaPagamento}"]`);
-          if (radio) {
-            radio.checked = true;
+          const radioPag = document.querySelector(`input[name="forma_pagamento"][value="${pedido.formaPagamento}"]`);
+          if (radioPag) {
+            radioPag.checked = true;
             alternarPagamento(pedido.formaPagamento);
           }
         }
@@ -1879,6 +2019,10 @@
         if (pedido.estaConcluido) {
           document.getElementById('formContainer').style.display = 'none';
           document.getElementById('thankYouScreen').style.display = 'block';
+          atualizarAvisoAgradecimento(pedido.formaEnvioArquivo);
+        } else if (pedido.etapaPagamentoVisivel) {
+          document.getElementById('etapaPedido').style.display = 'none';
+          document.getElementById('etapaPagamento').style.display = 'block';
         }
       } catch (e) {
         console.error('Erro ao restaurar dados do localStorage', e);
@@ -1906,8 +2050,10 @@
       localStorage.removeItem(LOCAL_STORAGE_KEY);
       document.getElementById('abntForm').reset();
       toggleOutroTrabalho('');
+      alternarEnvioArquivo('WhatsApp');
       alternarPagamento('PIX');
-      document.getElementById('fileNameDisplay').textContent = '';
+      document.getElementById('etapaPagamento').style.display = 'none';
+      document.getElementById('etapaPedido').style.display = 'grid';
       document.getElementById('thankYouScreen').style.display = 'none';
       document.getElementById('formContainer').style.display = 'block';
     }
@@ -1920,50 +2066,28 @@
       }
     }
 
-    // --- G. ENVIO DIRETO PELO WHATSAPP ---
-    function enviarPedidoWhatsApp() {
-      const warningElement = document.getElementById('formWarningMsg');
-      warningElement.style.display = 'none';
-      warningElement.textContent = '';
+    function atualizarAvisoAgradecimento(formaEnvio) {
+      const containerAviso = document.getElementById('thankYouFileNotice');
+      if (!containerAviso) return;
 
+      if (formaEnvio === 'E-mail') {
+        containerAviso.innerHTML = '<h5>📧 Envio do Arquivo por E-mail</h5><p>Envie o arquivo do seu trabalho para o e-mail informado no pedido.</p>';
+      } else {
+        containerAviso.innerHTML = '<h5>📎 Lembre-se de enviar seu arquivo</h5><p>Lembre-se de enviar o arquivo pelo WhatsApp após o envio da mensagem do pedido.</p>';
+      }
+    }
+
+    // --- I. ENVIO FINAL PELO WHATSAPP ---
+    function enviarPedidoWhatsApp() {
       const nomeInput = document.getElementById('nome');
       const tipoTrabalhoSelect = document.getElementById('tipo_trabalho');
       const especificarOutroInput = document.getElementById('especificar_outro');
       const paginasInput = document.getElementById('paginas');
       const prazoInput = document.getElementById('prazo');
       const observacoesInput = document.getElementById('observacoes');
+      const formaEnvioSelected = document.querySelector('input[name="forma_envio_arquivo"]:checked');
+      const emailInput = document.getElementById('email_cliente');
       const formaPagamentoSelected = document.querySelector('input[name="forma_pagamento"]:checked');
-
-      // Validação visual de campos obrigatórios
-      let erros = [];
-
-      if (!nomeInput.value.trim()) {
-        erros.push('Nome completo');
-        nomeInput.classList.add('invalid-input');
-      } else {
-        nomeInput.classList.remove('invalid-input');
-      }
-
-      if (!tipoTrabalhoSelect.value) {
-        erros.push('Tipo de trabalho');
-        tipoTrabalhoSelect.classList.add('invalid-input');
-      } else {
-        tipoTrabalhoSelect.classList.remove('invalid-input');
-      }
-
-      if (tipoTrabalhoSelect.value === 'Outro' && !especificarOutroInput.value.trim()) {
-        erros.push('Especificação do tipo de trabalho');
-        especificarOutroInput.classList.add('invalid-input');
-      } else if (especificarOutroInput) {
-        especificarOutroInput.classList.remove('invalid-input');
-      }
-
-      if (erros.length > 0) {
-        warningElement.textContent = 'Por favor, preencha o(s) campo(s) obrigatório(s): ' + erros.join(', ') + '.';
-        warningElement.style.display = 'block';
-        warningElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-      }
 
       // Montagem dos serviços selecionados
       const checkboxes = document.querySelectorAll('input[name="servicos[]"]:checked');
@@ -1989,18 +2113,29 @@
 
       let paginasTexto = paginasInput.value ? paginasInput.value : 'Não informada';
       let observacoesTexto = observacoesInput.value.trim() ? observacoesInput.value.trim() : 'Nenhuma observação';
+      let formaEnvio = formaEnvioSelected ? formaEnvioSelected.value : 'WhatsApp';
       let pagamentoTexto = formaPagamentoSelected ? formaPagamentoSelected.value : 'PIX';
 
       // Montagem da mensagem estruturada
       let mensagem = `📐 *NOVO PEDIDO — FORMATAÇÃO ABNT*\n\n`;
       mensagem += `👤 Nome: ${nomeInput.value.trim()}\n\n`;
       mensagem += `📚 Tipo de trabalho: ${tipoTrabalhoFinal}\n\n`;
-      mensagem += `📝 Serviço solicitado:\n${servicosTexto}\n\n`;
-      mensagem += `📄 Quantidade aproximada de páginas:\n${paginasTexto}\n\n`;
+      mensagem += `📝 Serviços:\n${servicosTexto}\n\n`;
+      mensagem += `📄 Quantidade de páginas:\n${paginasTexto}\n\n`;
       mensagem += `⏰ Prazo desejado:\n${prazoTexto}\n\n`;
-      mensagem += `💳 Forma de Pagamento Escolhida:\n${pagamentoTexto}\n\n`;
-      mensagem += `📌 Observações:\n${observacoesTexto}\n\n`;
-      mensagem += `💰 Valor base da formatação:\nA partir de R$ 20,00 (A combinar)`;
+      mensagem += `💰 Valor da formatação:\nA partir de R$ 20,00\n\n`;
+      mensagem += `💰 TOTAL:\nA partir de R$ 20,00\n\n`;
+      mensagem += `💳 Forma de pagamento:\n${pagamentoTexto}\n\n`;
+      mensagem += `📎 Envio do arquivo:\n${formaEnvio}\n\n`;
+      
+      if (formaEnvio === 'E-mail' && emailInput && emailInput.value.trim()) {
+        mensagem += `📧 E-mail:\n${emailInput.value.trim()}\n\n`;
+      }
+
+      mensagem += `📝 Observações:\n${observacoesTexto}`;
+
+      // Atualizar tela de agradecimento com orientação do arquivo
+      atualizarAvisoAgradecimento(formaEnvio);
 
       // Salvar estado atual do pedido como concluído
       document.getElementById('formContainer').style.display = 'none';
@@ -2010,16 +2145,6 @@
       // Abrir o WhatsApp
       const urlWhatsApp = `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(mensagem)}`;
       window.open(urlWhatsApp, '_blank');
-    }
-
-    // --- H. EXIBIÇÃO DO NOME DO ARQUIVO ANEXADO ---
-    function updateFileName(input) {
-      const display = document.getElementById('fileNameDisplay');
-      if (input.files && input.files.length > 0) {
-        display.textContent = '📄 Arquivo selecionado: ' + input.files[0].name;
-      } else {
-        display.textContent = '';
-      }
     }
   </script>
 </body>
