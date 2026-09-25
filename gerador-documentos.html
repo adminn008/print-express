@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Documentos - PrintExpress</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- CDN Dependencies for PDF and ZIP generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary-light: rgba(37, 99, 235, 0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+    
+    /* Header */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--surface-border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1.25rem; color: var(--primary); text-decoration: none; }
+    .brand i { font-size: 1.5rem; }
+    .header-actions { display: flex; align-items: center; gap: 1rem; }
+    .btn-icon { background: transparent; border: 1px solid var(--surface-border); color: var(--text); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+    .btn-icon:hover { background: var(--primary-light); color: var(--primary); }
+
+    /* Layout Container */
+    .container { max-width: 1400px; margin: 0 auto; width: 100%; padding: 1.5rem; flex: 1; }
+
+    /* Buttons & UI Controls */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: var(--surface); border-color: var(--surface-border); color: var(--text); }
+    .btn-secondary:hover { background: var(--surface-border); }
+    .btn-outline { background: transparent; border-color: var(--primary); color: var(--primary); }
+    .btn-outline:hover { background: var(--primary-light); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
+
+    /* Hero / Header Section */
+    .hero { text-align: center; margin-bottom: 2rem; padding: 1rem 0; }
+    .hero h1 { font-size: 2rem; margin-bottom: 0.5rem; font-weight: 800; }
+    .hero p { color: var(--text-muted); font-size: 1rem; max-width: 600px; margin: 0 auto; }
+
+    /* Category Nav */
+    .categories { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.75rem; margin-bottom: 1.5rem; scrollbar-width: none; }
+    .categories::-webkit-scrollbar { display: none; }
+    .cat-btn { padding: 0.5rem 1rem; border-radius: 20px; background: var(--surface); border: 1px solid var(--surface-border); color: var(--text-muted); white-space: nowrap; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; }
+    .cat-btn.active, .cat-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    /* Grid Models */
+    .models-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+    .model-card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: all 0.25s;
+      position: relative;
+    }
+    .model-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+    .model-icon { width: 44px; height: 44px; border-radius: 10px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+    .model-badge { position: absolute; top: 1rem; right: 1rem; background: rgba(16, 185, 129, 0.1); color: var(--accent); font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 6px; }
+    .model-title { font-weight: 700; font-size: 1.05rem; }
+    .model-desc { color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; flex: 1; }
+
+    /* Stepper Header */
+    .editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .stepper { display: flex; gap: 1rem; align-items: center; background: var(--surface); padding: 0.5rem 1rem; border-radius: 30px; border: 1px solid var(--surface-border); }
+    .step-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+    .step-item.active { color: var(--primary); }
+    .step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--surface-border); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+    .step-item.active .step-num { background: var(--primary); color: #fff; }
+
+    /* Editor Layout Split (Desktop) */
+    .editor-layout { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+    @media (min-width: 1024px) {
+      .editor-layout { grid-template-columns: 480px 1fr; align-items: start; }
+    }
+
+    /* Editor Workspace & Forms */
+    .form-workspace { background: var(--surface); border: 1px solid var(--surface-border); border-radius: var(--radius); padding: 1.5rem; }
+    .form-section { margin-bottom: 1.5rem; border-bottom: 1px solid var(--surface-border); padding-bottom: 1.25rem; }
+    .form-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .form-section-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; color: var(--primary); }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--text); }
+    .form-control { width: 100%; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--surface-border); background: var(--bg); color: var(--text); font-size: 0.9rem; transition: border-color 0.2s; }
+    .form-control:focus { outline: none; border-color: var(--primary); }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+
+    /* Table Inputs */
+    .table-container { width: 100%; overflow-x: auto; margin-top: 0.5rem; border: 1px solid var(--surface-border); border-radius: 8px; }
+    .input-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .input-table th, .input-table td { border: 1px solid var(--surface-border); padding: 0.35rem; text-align: center; }
+    .input-table th { background: var(--bg); font-weight: 600; }
+    .input-table input { width: 100%; border: none; background: transparent; text-align: center; font-size: 0.8rem; color: var(--text); padding: 0.2rem; }
+    .input-table input:focus { outline: 1px solid var(--primary); background: var(--surface); }
+
+    /* Preview Workspace */
+    .preview-workspace { position: sticky; top: 80px; display: flex; flex-direction: column; items-center: center; gap: 1rem; }
+    .preview-toolbar { width: 100%; background: var(--surface); padding: 0.75rem 1rem; border-radius: var(--radius); border: 1px solid var(--surface-border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+    .preview-viewport {
+      width: 100%;
+      background: #525659;
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+      min-height: 600px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    /* Document Real Page Representation (A4 Sheet strictly force light mode print view) */
+    .a4-page {
+      background: #ffffff !important;
+      color: #000000 !important;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 15mm;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      font-family: 'Inter', Arial, sans-serif;
+      transform-origin: top center;
+    }
+
+    /* Print Template Interior Styling */
+    .doc-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+    .doc-logo { max-height: 50px; max-width: 150px; object-fit: contain; }
+    .doc-title-area { text-align: right; }
+    .doc-title-area h2 { font-size: 16pt; text-transform: uppercase; margin-bottom: 2px; color: #000; }
+    .doc-title-area p { font-size: 9pt; color: #444; }
+    .doc-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: #f1f5f9; padding: 10px; border-radius: 4px; font-size: 8.5pt; margin-bottom: 15px; border: 1px solid #cbd5e1; color: #000; }
+    .doc-meta-item { display: flex; gap: 5px; }
+    .doc-meta-item strong { min-width: 80px; }
+    
+    .doc-table { width: 100%; border-collapse: collapse; font-size: 8pt; margin-bottom: 15px; color: #000; }
+    .doc-table th, .doc-table td { border: 1px solid #000; padding: 4px 6px; text-align: center; }
+    .doc-table th { background-color: #e2e8f0; font-weight: bold; text-transform: uppercase; font-size: 7.5pt; }
+
+    .doc-footer { margin-top: auto; padding-top: 15px; border-top: 1px solid #ccc; display: flex; justify-content: space-between; align-items: flex-end; font-size: 7.5pt; color: #555; }
+    .doc-signatures { display: flex; justify-content: space-around; width: 100%; margin-top: 40px; margin-bottom: 20px; }
+    .sig-box { text-align: center; width: 200px; border-top: 1px solid #000; padding-top: 4px; font-size: 8pt; color: #000; }
+
+    /* Toast Notifications */
+    #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+    .toast { background: var(--surface); color: var(--text); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 8px; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 0.75rem; min-width: 280px; animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .toast.success { border-left-color: var(--accent); }
+    .toast.error { border-left-color: var(--danger); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* Print Specifics Rules */
+    @media print {
+      body * { visibility: hidden; }
+      #printable-area, #printable-area * { visibility: visible; }
+      #printable-area { position: absolute; left: 0; top: 0; width: 100%; }
+      .a4-page { box-shadow: none !important; width: 100% !important; margin: 0 !important; }
+    }
+
+    /* Modal Batch */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 500; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-card { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; max-width: 600px; width: 90%; max-height: 85vh; overflow-y: auto; border: 1px solid var(--surface-border); }
+
+    .batch-row { display: grid; grid-template-columns: 1fr 1fr 1fr 40px; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center; }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header>
+    <a href="#" class="brand" onclick="app.showHome()">
+      <i class="fa-solid fa-print"></i> PrintExpress
+    </a>
+    <div class="header-actions">
+      <button class="btn-icon" id="theme-toggle" onclick="app.toggleTheme()" title="Alternar Tema">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- HOME VIEW: Model Selection -->
+    <section id="view-home">
+      <div class="hero">
+        <h1>📋 Gerador de Documentos</h1>
+        <p>Crie, personalize e baixe seus documentos prontos para impressão em instantes.</p>
+      </div>
+
+      <!-- Categories -->
+      <div class="categories" id="category-nav">
+        <button class="cat-btn active" onclick="app.filterCategory('all')">Todos</button>
+        <button class="cat-btn" onclick="app.filterCategory('Folhas de Ponto')">📋 Folhas de Ponto</button>
+        <button class="cat-btn" onclick="app.filterCategory('Relatórios')">📊 Relatórios</button>
+        <button class="cat-btn" onclick="app.filterCategory('Controle de Horas')">🕐 Controle de Horas</button>
+        <button class="cat-btn" onclick="app.filterCategory('Atividades')">📝 Atividades</button>
+        <button class="cat-btn" onclick="app.filterCategory('Outros')">📁 Outros</button>
+      </div>
+
+      <!-- Models Grid -->
+      <div class="models-grid" id="models-grid"></div>
+
+      <!-- Footer CTA Integration -->
+      <div style="margin-top: 4rem; text-align: center; padding: 2rem; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--surface-border);">
+        <h3>🖨️ Precisa imprimir seu documento?</h3>
+        <p style="color: var(--text-muted); margin: 0.5rem 0 1.25rem 0; font-size: 0.9rem;">Depois de gerar seu arquivo, você também pode solicitar a impressão física de alta qualidade pelo PrintExpress.</p>
+        <a href="impressao.html" class="btn btn-outline"><i class="fa-solid fa-paper-plane"></i> Solicitar impressão</a>
+      </div>
+
+      <div style="text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.75rem;">
+        Os modelos disponibilizados são modelos de preenchimento e organização. Verifique as exigências específicas do uso pretendido antes de utilizar o documento.
+      </div>
+    </section>
+
+    <!-- EDITOR VIEW -->
+    <section id="view-editor" style="display: none;">
+      <div class="editor-header">
+        <button class="btn btn-secondary btn-sm" onclick="app.showHome()">
+          <i class="fa-solid fa-arrow-left"></i> Voltar para modelos
+        </button>
+        
+        <div class="stepper">
+          <div class="step-item active" id="st-1"><span class="step-num">1</span> Dados</div>
+          <div class="step-item" id="st-2"><span class="step-num">2</span> Tabela/Texto</div>
+          <div class="step-item" id="st-3"><span class="step-num">3</span> Revisão</div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-secondary btn-sm" onclick="app.clearDraft()"><i class="fa-solid fa-trash"></i> Rascunho</button>
+          <button class="btn btn-primary btn-sm" onclick="app.showHome()"><i class="fa-solid fa-plus"></i> Novo Documento</button>
+        </div>
+      </div>
+
+      <div class="editor-layout">
+        
+        <!-- Controls & Input Workspace -->
+        <div class="form-workspace">
+          
+          <!-- Customization Section -->
+          <div class="form-section">
+            <div class="form-section-title"><i class="fa-solid fa-palette"></i> Personalização & Logo</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Nome / Empresa Header</label>
+                <input type="text" id="cfg-empresa" class="form-control" placeholder="Sua Empresa Ltda" oninput="app.updateData()">
+              </div>
+              <div class="form-group">
+                <label>Logo da Empresa</label>
+                <input type="file" id="cfg-logo" accept="image/*" class="form-control" onchange="app.handleLogoUpload(event)">
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Metadata Section -->
+          <div class="form-section">
+            <div class="form-section-title"><i class="fa-solid fa-id-card"></i> Informações do Documento</div>
+            <div id="dynamic-fields" class="form-grid"></div>
+          </div>
+
+          <!-- Table or Details Input Section -->
+          <div class="form-section">
+            <div class="form-section-title" id="section-table-title"><i class="fa-solid fa-table"></i> Registros e Lançamentos</div>
+            <div id="dynamic-table-container"></div>
+          </div>
+
+          <!-- Batch & Multi Generation -->
+          <div class="form-section">
+            <div class="form-section-title"><i class="fa-solid fa-copy"></i> Quantidade & Geração em Lote</div>
+            <div class="form-group">
+              <label>Quantidade de cópias idênticas</label>
+              <input type="number" id="cfg-qty" class="form-control" value="1" min="1" max="100" style="max-width: 120px;" oninput="app.updateBatchMode()">
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="app.openBatchModal()">
+              <i class="fa-solid fa-users"></i> Gerar para múltiplos funcionários / registros (Lote)
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Realtime Preview Workspace -->
+        <div class="preview-workspace">
+          <div class="preview-toolbar">
+            <span style="font-size: 0.85rem; font-weight: 600;" id="preview-filename">prévia-documento.pdf</span>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <button class="btn btn-secondary btn-sm" onclick="app.printDoc()"><i class="fa-solid fa-print"></i> Imprimir</button>
+              <button class="btn btn-primary btn-sm" id="btn-download-single" onclick="app.downloadPDF()"><i class="fa-solid fa-download"></i> Baixar PDF</button>
+            </div>
+          </div>
+
+          <div class="preview-viewport">
+            <!-- Target A4 Sheet Render -->
+            <div class="a4-page" id="printable-area">
+              <div class="doc-header">
+                <div>
+                  <img id="render-logo" src="" class="doc-logo" style="display:none;" alt="Logo">
+                  <h3 id="render-empresa" style="font-size: 11pt; color: #333; margin-top:2px;">Sua Empresa</h3>
+                </div>
+                <div class="doc-title-area">
+                  <h2 id="render-doc-title">TITULO DO DOCUMENTO</h2>
+                  <p id="render-doc-subtitle">Comprovante de Registro</p>
+                </div>
+              </div>
+
+              <!-- Metadata Grid render -->
+              <div class="doc-meta-grid" id="render-meta-grid"></div>
+
+              <!-- Main Table or Body content -->
+              <div id="render-body-content" style="flex:1;"></div>
+
+              <!-- Signatures & Footer -->
+              <div class="doc-signatures" id="render-signatures">
+                <div class="sig-box">Assinatura do Responsável</div>
+                <div class="sig-box">Assinatura do Funcionário/Atendido</div>
+              </div>
+
+              <div class="doc-footer">
+                <span>Gerado por PrintExpress Documentos</span>
+                <span id="render-footer-date">Data: --/--/----</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Batch Modal -->
+  <div class="modal-overlay" id="batch-modal">
+    <div class="modal-card">
+      <h3 style="margin-bottom: 0.5rem;"><i class="fa-solid fa-boxes-stacked"></i> Gerar Vários Documentos em Lote</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Adicione nome/dados de cada pessoa para gerar um arquivo individual para cada uma em um pacote ZIP.</p>
+
+      <div id="batch-rows-container"></div>
+
+      <button class="btn btn-secondary btn-sm" onclick="app.addBatchRow()" style="margin-bottom: 1.5rem;"><i class="fa-solid fa-plus"></i> Adicionar pessoa</button>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <button class="btn btn-secondary" onclick="app.closeBatchModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="app.generateBatchZIP()"><i class="fa-solid fa-file-zipper"></i> Gerar Pacote ZIP</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* Global Templates System Architecture */
+    const documentModels = [
+      {
+        id: "folha-ponto-mensal",
+        nome: "Folha de Ponto Mensal",
+        categoria: "Folhas de Ponto",
+        icon: "fa-regular fa-calendar-check",
+        descricao: "Controle mensal completo com entrada, almoço, saída e cálculo de horas.",
+        campos: [
+          { id: "funcionario", label: "Nome do Funcionário", type: "text", default: "João da Silva" },
+          { id: "cargo", label: "Cargo", type: "text", default: "Auxiliar Administrativo" },
+          { id: "setor", label: "Setor / Depto", type: "text", default: "Operações" },
+          { id: "matricula", label: "Matrícula/ID", type: "text", default: "00104" },
+          { id: "mes_ano", label: "Mês/Ano", type: "month", default: "2026-09" }
+        ],
+        type: "ponto",
+        days: 30
+      },
+      {
+        id: "folha-ponto-semanal",
+        nome: "Folha de Ponto Semanal",
+        categoria: "Folhas de Ponto",
+        icon: "fa-solid fa-calendar-week",
+        descricao: "Ideal para acompanhamento semanal simplificado de horistas ou freelancers.",
+        campos: [
+          { id: "funcionario", label: "Nome do Colaborador", type: "text", default: "Maria Oliveira" },
+          { id: "cargo", label: "Função", type: "text", default: "Atendente" },
+          { id: "semana", label: "Semana De/Até", type: "text", default: "20/09 a 26/09" }
+        ],
+        type: "ponto",
+        days: 7
+      },
+      {
+        id: "folha-ponto-basica",
+        nome: "Folha de Ponto Básica",
+        categoria: "Folhas de Ponto",
+        icon: "fa-solid fa-file-lines",
+        descricao: "Modelo direto para registros rápidos de ponto sem campos adicionais.",
+        campos: [
+          { id: "funcionario", label: "Nome do Funcionário", type: "text", default: "Carlos Santos" },
+          { id: "periodo", label: "Período", type: "text", default: "Setembro / 2026" }
+        ],
+        type: "ponto",
+        days: 15
+      },
+      {
+        id: "folha-ponto-horistas",
+        nome: "Folha de Ponto para Horistas",
+        categoria: "Folhas de Ponto",
+        icon: "fa-solid fa-business-time",
+        descricao: "Apropriado para cálculo exato de horas prestadas por prestadores autônomos.",
+        campos: [
+          { id: "funcionario", label: "Prestador", type: "text", default: "Roberto Rocha" },
+          { id: "valor_hora", label: "Valor da Hora (R$)", type: "text", default: "45,00" },
+          { id: "mes_ano", label: "Mês de Referência", type: "month", default: "2026-09" }
+        ],
+        type: "ponto",
+        days: 20
+      },
+      {
+        id: "relatorio-mensal",
+        nome: "Relatório Mensal",
+        categoria: "Relatórios",
+        icon: "fa-solid fa-chart-line",
+        descricao: "Relatório executivo para alinhamento de metas, conquistas e pendências.",
+        campos: [
+          { id: "responsavel", label: "Responsável", type: "text", default: "Ana Paula" },
+          { id: "setor", label: "Setor", type: "text", default: "Marketing" },
+          { id: "periodo", label: "Período", type: "text", default: "Setembro 2026" }
+        ],
+        type: "relatorio"
+      },
+      {
+        id: "relatorio-atividades",
+        nome: "Relatório de Atividades",
+        categoria: "Relatórios",
+        icon: "fa-solid fa-list-check",
+        descricao: "Detalhamento de tarefas executadas por projeto ou cliente.",
+        campos: [
+          { id: "projeto", label: "Projeto/Cliente", type: "text", default: "PrintExpress Redesign" },
+          { id: "executor", label: "Executor", type: "text", default: "Lucas Mendes" },
+          { id: "data", label: "Data", type: "date", default: "2026-09-25" }
+        ],
+        type: "relatorio"
+      },
+      {
+        id: "relatorio-servico",
+        nome: "Relatório de Serviço",
+        categoria: "Relatórios",
+        icon: "fa-solid fa-wrench",
+        descricao: "Ficha de atendimento técnico, ordens efetuadas e materiais aplicados.",
+        campos: [
+          { id: "cliente", label: "Cliente", type: "text", default: "Empresa ABC" },
+          { id: "tecnico", label: "Técnico Responsável", type: "text", default: "Fernando Dias" },
+          { id: "equipamento", label: "Equipamento/Ativo", type: "text", default: "Impressora Industrial X" }
+        ],
+        type: "relatorio"
+      },
+      {
+        id: "relatorio-ocorrencia",
+        nome: "Relatório de Ocorrência",
+        categoria: "Relatórios",
+        icon: "fa-solid fa-triangle-exclamation",
+        descricao: "Registro formal para imprevistos, incidentes operacionais ou desvios.",
+        campos: [
+          { id: "envolvido", label: "Envolvido/Notificante", type: "text", default: "Marcos Lima" },
+          { id: "local", label: "Local do Evento", type: "text", default: "Galpão 02" },
+          { id: "data_hora", label: "Data/Hora", type: "text", default: "25/09/2026 as 14:30" }
+        ],
+        type: "relatorio"
+      },
+      {
+        id: "controle-horas",
+        nome: "Controle de Horas",
+        categoria: "Controle de Horas",
+        icon: "fa-solid fa-clock",
+        descricao: "Acompanhamento direto de banco de horas e saldo de horas acumuladas.",
+        campos: [
+          { id: "colaborador", label: "Colaborador", type: "text", default: "Juliana Silva" },
+          { id: "saldo_anterior", label: "Saldo Anterior (Horas)", type: "text", default: "+04:00" }
+        ],
+        type: "ponto",
+        days: 10
+      },
+      {
+        id: "ficha-acompanhamento",
+        nome: "Ficha de Acompanhamento",
+        categoria: "Atividades",
+        icon: "fa-solid fa-clipboard-user",
+        descricao: "Ficha geral para instrução, estágio ou acompanhamento contínuo.",
+        campos: [
+          { id: "aluno_func", label: "Nome do Avaliado/Estagiário", type: "text", default: "Gabriel Souza" },
+          { id: "supervisor", label: "Supervisor", type: "text", default: "Patrícia Luz" }
+        ],
+        type: "relatorio"
+      }
+    ];
+
+    /* App State Controller */
+    class DocumentGeneratorApp {
+      constructor() {
+        this.currentModel = null;
+        this.formData = {};
+        this.tableRows = [];
+        this.logoBase64 = "";
+        this.batchData = [];
+
+        this.initTheme();
+        this.renderModels(documentModels);
+        this.checkSavedDraft();
+      }
+
+      initTheme() {
+        const theme = localStorage.getItem('pe_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+        this.updateThemeIcon(theme);
+      }
+
+      toggleTheme() {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('pe_theme', next);
+        this.updateThemeIcon(next);
+      }
+
+      updateThemeIcon(theme) {
+        const icon = document.querySelector('#theme-toggle i');
+        if(icon) icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      }
+
+      showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'}"></i> <span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3500);
+      }
+
+      renderModels(models) {
+        const grid = document.getElementById('models-grid');
+        grid.innerHTML = models.map(m => `
+          <div class="model-card">
+            <span class="model-badge">Grátis</span>
+            <div class="model-icon"><i class="${m.icon}"></i></div>
+            <div class="model-title">${m.nome}</div>
+            <div class="model-desc">${m.descricao}</div>
+            <button class="btn btn-primary btn-sm" onclick="app.selectModel('${m.id}')">
+              <i class="fa-solid fa-pen-to-square"></i> Criar documento
+            </button>
+          </div>
+        `).join('');
+
+        // Card button for Coming Soon
+        grid.innerHTML += `
+          <div class="model-card" style="opacity: 0.75; border-style: dashed;">
+            <div class="model-icon" style="background:#e2e8f0; color:#64748b;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+            <div class="model-title">Em breve: novos modelos</div>
+            <div class="model-desc">Recibos, contratos, ordens de serviço e declarações em breve.</div>
+            <button class="btn btn-secondary btn-sm" disabled>🚧 Em breve</button>
+          </div>
+        `;
+      }
+
+      filterCategory(cat) {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        if (cat === 'all') {
+          this.renderModels(documentModels);
+        } else {
+          const filtered = documentModels.filter(m => m.categoria === cat);
+          this.renderModels(filtered);
+        }
+      }
+
+      showHome() {
+        document.getElementById('view-home').style.display = 'block';
+        document.getElementById('view-editor').style.display = 'none';
+      }
+
+      selectModel(modelId) {
+        this.currentModel = documentModels.find(m => m.id === modelId);
+        if (!this.currentModel) return;
+
+        document.getElementById('view-home').style.display = 'none';
+        document.getElementById('view-editor').style.display = 'block';
+
+        this.setupForm();
+        this.showToast(`Modelo "${this.currentModel.nome}" carregado.`);
+      }
+
+      setupForm() {
+        const fieldsContainer = document.getElementById('dynamic-fields');
+        fieldsContainer.innerHTML = '';
+        this.formData = {};
+
+        // Render Field Inputs
+        this.currentModel.campos.forEach(c => {
+          this.formData[c.id] = c.default || '';
+          const div = document.createElement('div');
+          div.className = 'form-group';
+          div.innerHTML = `
+            <label>${c.label}</label>
+            <input type="${c.type}" id="input-${c.id}" class="form-control" value="${c.default || ''}" oninput="app.updateData()">
+          `;
+          fieldsContainer.appendChild(div);
+        });
+
+        // Setup Table vs Text Body
+        const tableContainer = document.getElementById('dynamic-table-container');
+        tableContainer.innerHTML = '';
+
+        if (this.currentModel.type === 'ponto') {
+          document.getElementById('section-table-title').innerHTML = `<i class="fa-solid fa-clock"></i> Espelho de Horários`;
+          this.buildPontoTable(tableContainer);
+        } else {
+          document.getElementById('section-table-title').innerHTML = `<i class="fa-solid fa-align-left"></i> Conteúdo do Relatório`;
+          this.buildReportForm(tableContainer);
+        }
+
+        this.updateData();
+      }
+
+      buildPontoTable(container) {
+        const days = this.currentModel.days || 30;
+        this.tableRows = [];
+
+        let tableHtml = `
+          <div class="table-container">
+            <table class="input-table">
+              <thead>
+                <tr>
+                  <th>Dia</th>
+                  <th>Entrada</th>
+                  <th>Almoço Saída</th>
+                  <th>Almoço Retorno</th>
+                  <th>Saída</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody id="ponto-tbody">
+        `;
+
+        for (let i = 1; i <= days; i++) {
+          const diaStr = String(i).padStart(2, '0');
+          // Default mock times
+          const ent = "08:00", sAlm = "12:00", rAlm = "13:00", sai = "17:00";
+          const tot = this.calcHours(ent, sAlm, rAlm, sai);
+
+          this.tableRows.push({ dia: diaStr, ent, sAlm, rAlm, sai, tot });
+
+          tableHtml += `
+            <tr>
+              <td><strong>${diaStr}</strong></td>
+              <td><input type="time" value="${ent}" onchange="app.updateTableRow(${i-1}, 'ent', this.value)"></td>
+              <td><input type="time" value="${sAlm}" onchange="app.updateTableRow(${i-1}, 'sAlm', this.value)"></td>
+              <td><input type="time" value="${rAlm}" onchange="app.updateTableRow(${i-1}, 'rAlm', this.value)"></td>
+              <td><input type="time" value="${sai}" onchange="app.updateTableRow(${i-1}, 'sai', this.value)"></td>
+              <td id="tot-row-${i-1}"><strong>${tot}</strong></td>
+            </tr>
+          `;
+        }
+
+        tableHtml += `</tbody></table></div>`;
+        container.innerHTML = tableHtml;
+      }
+
+      buildReportForm(container) {
+        container.innerHTML = `
+          <div class="form-group">
+            <label>Descrição das Atividades Executadas</label>
+            <textarea id="report-act" class="form-control" rows="4" oninput="app.updateData()">1. Planejamento do escopo inicial executado.\n2. Revisão das metas e especificações técnicas de impressão.\n3. Alinhamento de equipe finalizado com sucesso.</textarea>
+          </div>
+          <div class="form-group">
+            <label>Resultados / Conclusão</label>
+            <textarea id="report-res" class="form-control" rows="3" oninput="app.updateData()">Objetivos atingidos conforme esperado dentro do cronograma estabelecido.</textarea>
+          </div>
+          <div class="form-group">
+            <label>Pendências / Observações</label>
+            <textarea id="report-obs" class="form-control" rows="2" oninput="app.updateData()">Nenhuma pendência crítica até o momento.</textarea>
+          </div>
+        `;
+      }
+
+      calcHours(e1, s1, e2, s2) {
+        if (!e1 || !s1 || !e2 || !s2) return "00:00";
+        try {
+          const toMin = t => {
+            const [h, m] = t.split(':').map(Number);
+            return h * 60 + m;
+          };
+          let m1 = toMin(s1) - toMin(e1);
+          let m2 = toMin(s2) - toMin(e2);
+          if (m1 < 0) m1 += 1440;
+          if (m2 < 0) m2 += 1440;
+          const totalMin = m1 + m2;
+          const h = Math.floor(totalMin / 60);
+          const m = totalMin % 60;
+          return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        } catch (e) {
+          return "00:00";
+        }
+      }
+
+      updateTableRow(idx, field, val) {
+        this.tableRows[idx][field] = val;
+        const row = this.tableRows[idx];
+        row.tot = this.calcHours(row.ent, row.sAlm, row.rAlm, row.sai);
+        document.getElementById(`tot-row-${idx}`).innerHTML = `<strong>${row.tot}</strong>`;
+        this.updateData();
+      }
+
+      updateData() {
+        // Read Field Values
+        this.currentModel.campos.forEach(c => {
+          const el = document.getElementById(`input-${c.id}`);
+          if (el) this.formData[c.id] = el.value;
+        });
+
+        // Header Customization
+        const emp = document.getElementById('cfg-empresa').value || "PrintExpress Serviços";
+        document.getElementById('render-empresa').innerText = emp;
+        document.getElementById('render-doc-title').innerText = this.currentModel.nome;
+        document.getElementById('render-doc-subtitle').innerText = `Documento - ${emp}`;
+        document.getElementById('render-footer-date').innerText = `Gerado em: ${new Date().toLocaleDateString('pt-BR')}`;
+
+        // Render Metadata Box
+        const metaGrid = document.getElementById('render-meta-grid');
+        metaGrid.innerHTML = Object.entries(this.formData).map(([k, v]) => `
+          <div class="doc-meta-item"><strong>${k.toUpperCase()}:</strong> <span>${v || '-'}</span></div>
+        `).join('');
+
+        // Render Document Content
+        const bodyContent = document.getElementById('render-body-content');
+        if (this.currentModel.type === 'ponto') {
+          let sumMinutes = 0;
+          let tableRowsHtml = this.tableRows.map(r => {
+            const [h, m] = r.tot.split(':').map(Number);
+            sumMinutes += (h * 60 + m);
+            return `<tr><td>${r.dia}</td><td>${r.ent}</td><td>${r.sAlm}</td><td>${r.rAlm}</td><td>${r.sai}</td><td><strong>${r.tot}</strong></td></tr>`;
+          }).join('');
+
+          const totH = Math.floor(sumMinutes / 60);
+          const totM = sumMinutes % 60;
+
+          bodyContent.innerHTML = `
+            <table class="doc-table">
+              <thead>
+                <tr><th>Dia</th><th>Entrada</th><th>Saída Almoço</th><th>Retorno Almoço</th><th>Saída</th><th>Total</th></tr>
+              </thead>
+              <tbody>
+                ${tableRowsHtml}
+                <tr style="background:#f8fafc; font-weight:bold;">
+                  <td colspan="5" style="text-align:right;">TOTAL ACUMULADO:</td>
+                  <td>${String(totH).padStart(2, '0')}:${String(totM).padStart(2, '0')} h</td>
+                </tr>
+              </tbody>
+            </table>
+          `;
+        } else {
+          const act = document.getElementById('report-act')?.value || "";
+          const res = document.getElementById('report-res')?.value || "";
+          const obs = document.getElementById('report-obs')?.value || "";
+
+          bodyContent.innerHTML = `
+            <div style="font-size: 9pt; line-height: 1.5; color: #000;">
+              <h4 style="margin: 10px 0 5px 0; border-bottom: 1px solid #ccc;">1. DESCRIÇÃO DAS ATIVIDADES</h4>
+              <p style="white-space: pre-line; background: #fafafa; padding: 8px; border: 1px solid #eee;">${act}</p>
+              
+              <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">2. RESULTADOS OBTIDOS</h4>
+              <p style="white-space: pre-line; background: #fafafa; padding: 8px; border: 1px solid #eee;">${res}</p>
+
+              <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">3. PENDÊNCIAS E OBSERVAÇÕES</h4>
+              <p style="white-space: pre-line; background: #fafafa; padding: 8px; border: 1px solid #eee;">${obs}</p>
+            </div>
+          `;
+        }
+
+        this.saveDraft();
+      }
+
+      handleLogoUpload(evt) {
+        const file = evt.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = e => {
+            this.logoBase64 = e.target.result;
+            const logoImg = document.getElementById('render-logo');
+            logoImg.src = this.logoBase64;
+            logoImg.style.display = 'block';
+            this.updateData();
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      saveDraft() {
+        const draft = {
+          modelId: this.currentModel.id,
+          formData: this.formData,
+          empresa: document.getElementById('cfg-empresa').value
+        };
+        localStorage.setItem('pe_doc_draft', JSON.stringify(draft));
+      }
+
+      checkSavedDraft() {
+        const saved = localStorage.getItem('pe_doc_draft');
+        if (saved) {
+          try {
+            const data = JSON.parse(saved);
+            this.showToast('Rascunho anterior encontrado.', 'success');
+          } catch (e) {}
+        }
+      }
+
+      clearDraft() {
+        localStorage.removeItem('pe_doc_draft');
+        this.showToast('Rascunho limpo com sucesso.');
+        this.setupForm();
+      }
+
+      async downloadPDF() {
+        const element = document.getElementById('printable-area');
+        this.showToast('Gerando documento PDF...');
+
+        try {
+          const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+          const imgData = canvas.toDataURL('image/jpeg', 0.95);
+          
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF('p', 'mm', 'a4');
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+          
+          const primaryName = Object.values(this.formData)[0] || 'documento';
+          const fileName = `${this.currentModel.id}-${primaryName.toLowerCase().replace(/\s+/g, '-')}.pdf`;
+          
+          pdf.save(fileName);
+          this.showToast('✓ PDF baixado com sucesso!');
+        } catch (err) {
+          this.showToast('Erro ao gerar PDF.', 'error');
+        }
+      }
+
+      printDoc() {
+        window.print();
+      }
+
+      /* Batch Functionality */
+      openBatchModal() {
+        document.getElementById('batch-modal').classList.add('active');
+        this.batchData = [
+          { nome: "João Silva", cargo: "Operador", id: "001" },
+          { nome: "Maria Souza", cargo: "Analista", id: "002" }
+        ];
+        this.renderBatchRows();
+      }
+
+      closeBatchModal() {
+        document.getElementById('batch-modal').classList.remove('active');
+      }
+
+      renderBatchRows() {
+        const container = document.getElementById('batch-rows-container');
+        container.innerHTML = this.batchData.map((b, idx) => `
+          <div class="batch-row">
+            <input type="text" class="form-control" value="${b.nome}" placeholder="Nome" oninput="app.batchData[${idx}].nome = this.value">
+            <input type="text" class="form-control" value="${b.cargo}" placeholder="Cargo" oninput="app.batchData[${idx}].cargo = this.value">
+            <input type="text" class="form-control" value="${b.id}" placeholder="Matrícula" oninput="app.batchData[${idx}].id = this.value">
+            <button class="btn btn-danger btn-sm" onclick="app.removeBatchRow(${idx})"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        `).join('');
+      }
+
+      addBatchRow() {
+        this.batchData.push({ nome: "", cargo: "", id: "" });
+        this.renderBatchRows();
+      }
+
+      removeBatchRow(idx) {
+        this.batchData.splice(idx, 1);
+        this.renderBatchRows();
+      }
+
+      async generateBatchZIP() {
+        if (this.batchData.length === 0) {
+          this.showToast('Adicione ao menos uma pessoa.', 'error');
+          return;
+        }
+
+        this.showToast('Processando lote de PDFs...');
+        const zip = new JSZip();
+        const element = document.getElementById('printable-area');
+        const { jsPDF } = window.jspdf;
+
+        for (let i = 0; i < this.batchData.length; i++) {
+          const person = this.batchData[i];
+          
+          // Inject temp person values to meta grid
+          if (this.currentModel.campos[0]) this.formData[this.currentModel.campos[0].id] = person.nome;
+          if (this.currentModel.campos[1]) this.formData[this.currentModel.campos[1].id] = person.cargo;
+          this.updateData();
+
+          const canvas = await html2canvas(element, { scale: 1.5 });
+          const imgData = canvas.toDataURL('image/jpeg', 0.85);
+          
+          const pdf = new jsPDF('p', 'mm', 'a4');
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+          const pdfBlob = pdf.output('blob');
+          const safeName = (person.nome || `doc-${i+1}`).toLowerCase().replace(/\s+/g, '-');
+          zip.file(`${this.currentModel.id}-${safeName}.zip.pdf`, pdfBlob);
+        }
+
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(zipBlob);
+        link.download = `documentos-printexpress-${Date.now()}.zip`;
+        link.click();
+
+        this.closeBatchModal();
+        this.showToast('✓ Pacote ZIP baixado com sucesso!');
+      }
+    }
+
+    // Initialize App Globally
+    const app = new DocumentGeneratorApp();
+  </script>
+</body>
+</html>
