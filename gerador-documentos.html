@@ -145,6 +145,24 @@
     .form-control:focus { outline: none; border-color: var(--primary); }
     .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
 
+    /* Output Type Radio Group */
+    .pdf-type-group { display: flex; flex-direction: column; gap: 0.6rem; }
+    .pdf-type-option {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pdf-type-option:hover { border-color: var(--primary); background: var(--primary-light); }
+    .pdf-type-option input[type="radio"] { accent-color: var(--primary); width: 18px; height: 18px; }
+    .pdf-type-text { display: flex; flex-direction: column; }
+    .pdf-type-text strong { font-size: 0.9rem; color: var(--text); }
+    .pdf-type-text span { font-size: 0.75rem; color: var(--text-muted); }
+
     /* Table Inputs */
     .table-container { width: 100%; overflow-x: auto; margin-top: 0.5rem; border: 1px solid var(--surface-border); border-radius: 8px; }
     .input-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
@@ -154,7 +172,7 @@
     .input-table input:focus { outline: 1px solid var(--primary); background: var(--surface); }
 
     /* Preview Workspace */
-    .preview-workspace { position: sticky; top: 80px; display: flex; flex-direction: column; items-center: center; gap: 1rem; }
+    .preview-workspace { position: sticky; top: 80px; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
     .preview-toolbar { width: 100%; background: var(--surface); padding: 0.75rem 1rem; border-radius: var(--radius); border: 1px solid var(--surface-border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
     .preview-viewport {
       width: 100%;
@@ -183,6 +201,27 @@
       transform-origin: top center;
     }
 
+    /* Printable/Editable Simulated Boxes */
+    .field-box-simulated {
+      display: inline-block;
+      width: 100%;
+      min-height: 22px;
+      border: 1px solid #94a3b8;
+      background: #f8fafc;
+      border-radius: 3px;
+      padding: 2px 4px;
+      font-size: 8pt;
+      color: #2563eb;
+      box-sizing: border-box;
+    }
+    .table-cell-simulated {
+      width: 100%;
+      height: 18px;
+      border: 1px dashed #cbd5e1;
+      background: #f1f5f9;
+      display: block;
+    }
+
     /* Print Template Interior Styling */
     .doc-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
     .doc-logo { max-height: 50px; max-width: 150px; object-fit: contain; }
@@ -190,7 +229,7 @@
     .doc-title-area h2 { font-size: 16pt; text-transform: uppercase; margin-bottom: 2px; color: #000; }
     .doc-title-area p { font-size: 9pt; color: #444; }
     .doc-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: #f1f5f9; padding: 10px; border-radius: 4px; font-size: 8.5pt; margin-bottom: 15px; border: 1px solid #cbd5e1; color: #000; }
-    .doc-meta-item { display: flex; gap: 5px; }
+    .doc-meta-item { display: flex; gap: 5px; align-items: center; }
     .doc-meta-item strong { min-width: 80px; }
     
     .doc-table { width: 100%; border-collapse: collapse; font-size: 8pt; margin-bottom: 15px; color: #000; }
@@ -300,6 +339,34 @@
         <!-- Controls & Input Workspace -->
         <div class="form-workspace">
           
+          <!-- SELETOR DE TIPO DE SAÍDA DE PDF -->
+          <div class="form-section">
+            <div class="form-section-title"><i class="fa-solid fa-file-export"></i> Tipo de PDF</div>
+            <div class="pdf-type-group">
+              <label class="pdf-type-option">
+                <input type="radio" name="pdfType" value="impressao" onchange="app.setPdfType('impressao')">
+                <div class="pdf-type-text">
+                  <strong>🖊️ Para imprimir e preencher à mão</strong>
+                  <span>Modelo em branco com linhas e caixas físicas.</span>
+                </div>
+              </label>
+              <label class="pdf-type-option">
+                <input type="radio" name="pdfType" value="preenchivel" checked onchange="app.setPdfType('preenchivel')">
+                <div class="pdf-type-text">
+                  <strong>💻 PDF preenchível/editável</strong>
+                  <span>Contém campos digitais reais para digitação no leitor de PDF.</span>
+                </div>
+              </label>
+              <label class="pdf-type-option">
+                <input type="radio" name="pdfType" value="preenchido" onchange="app.setPdfType('preenchido')">
+                <div class="pdf-type-text">
+                  <strong>📝 PDF já preenchido</strong>
+                  <span>Documento final impresso estaticamente com os dados inseridos.</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
           <!-- Customization Section -->
           <div class="form-section">
             <div class="form-section-title"><i class="fa-solid fa-palette"></i> Personalização & Logo</div>
@@ -316,13 +383,13 @@
           </div>
 
           <!-- Dynamic Metadata Section -->
-          <div class="form-section">
+          <div class="form-section" id="section-meta-inputs">
             <div class="form-section-title"><i class="fa-solid fa-id-card"></i> Informações do Documento</div>
             <div id="dynamic-fields" class="form-grid"></div>
           </div>
 
           <!-- Table or Details Input Section -->
-          <div class="form-section">
+          <div class="form-section" id="section-table-inputs">
             <div class="form-section-title" id="section-table-title"><i class="fa-solid fa-table"></i> Registros e Lançamentos</div>
             <div id="dynamic-table-container"></div>
           </div>
@@ -554,6 +621,7 @@
         this.tableRows = [];
         this.logoBase64 = "";
         this.batchData = [];
+        this.selectedPdfType = "preenchivel"; // "impressao" | "preenchivel" | "preenchido"
 
         this.initTheme();
         this.renderModels(documentModels);
@@ -638,6 +706,24 @@
 
         this.setupForm();
         this.showToast(`Modelo "${this.currentModel.nome}" carregado.`);
+      }
+
+      setPdfType(type) {
+        this.selectedPdfType = type;
+        
+        // Habilita/desabilita áreas de edição dependendo do tipo selecionado
+        const metaSection = document.getElementById('section-meta-inputs');
+        const tableSection = document.getElementById('section-table-inputs');
+
+        if (type === 'impressao') {
+          if (metaSection) metaSection.style.opacity = '0.5';
+          if (tableSection) tableSection.style.opacity = '0.5';
+        } else {
+          if (metaSection) metaSection.style.opacity = '1';
+          if (tableSection) tableSection.style.opacity = '1';
+        }
+
+        this.updateData();
       }
 
       setupForm() {
@@ -775,56 +861,165 @@
         document.getElementById('render-doc-subtitle').innerText = `Documento - ${emp}`;
         document.getElementById('render-footer-date').innerText = `Gerado em: ${new Date().toLocaleDateString('pt-BR')}`;
 
-        // Render Metadata Box
+        // Render Metadata Box conforme o tipo
         const metaGrid = document.getElementById('render-meta-grid');
-        metaGrid.innerHTML = Object.entries(this.formData).map(([k, v]) => `
-          <div class="doc-meta-item"><strong>${k.toUpperCase()}:</strong> <span>${v || '-'}</span></div>
-        `).join('');
+        metaGrid.setAttribute('data-fields-count', this.currentModel.campos.length);
+        
+        if (this.selectedPdfType === 'impressao') {
+          // 🖊️ PDF para impressão (Linhas/Espaços para escrita manual)
+          metaGrid.innerHTML = this.currentModel.campos.map(c => `
+            <div class="doc-meta-item">
+              <strong>${c.label.toUpperCase()}:</strong>
+              <span style="border-bottom: 1px solid #000; flex: 1; display: inline-block; height: 16px;"></span>
+            </div>
+          `).join('');
+        } else if (this.selectedPdfType === 'preenchivel') {
+          // 💻 PDF preenchível (Campos simulados visivelmente para a prévia com AcroForm ID)
+          metaGrid.innerHTML = this.currentModel.campos.map((c, idx) => `
+            <div class="doc-meta-item">
+              <strong>${c.label.toUpperCase()}:</strong>
+              <div class="field-box-simulated" data-acrofield="meta_${idx}">${this.formData[c.id] || '[ Campo Digitável ]'}</div>
+            </div>
+          `).join('');
+        } else {
+          // 📝 PDF já preenchido (Dados estáticos normais)
+          metaGrid.innerHTML = Object.entries(this.formData).map(([k, v]) => {
+            const fieldObj = this.currentModel.campos.find(c => c.id === k);
+            const label = fieldObj ? fieldObj.label : k;
+            return `<div class="doc-meta-item"><strong>${label.toUpperCase()}:</strong> <span>${v || '-'}</span></div>`;
+          }).join('');
+        }
 
         // Render Document Content
         const bodyContent = document.getElementById('render-body-content');
         if (this.currentModel.type === 'ponto') {
-          let sumMinutes = 0;
-          let tableRowsHtml = this.tableRows.map(r => {
-            const [h, m] = r.tot.split(':').map(Number);
-            sumMinutes += (h * 60 + m);
-            return `<tr><td>${r.dia}</td><td>${r.ent}</td><td>${r.sAlm}</td><td>${r.rAlm}</td><td>${r.sai}</td><td><strong>${r.tot}</strong></td></tr>`;
-          }).join('');
+          if (this.selectedPdfType === 'impressao') {
+            // Tabela em branco com linhas
+            let tableRowsHtml = this.tableRows.map(r => `
+              <tr>
+                <td>${r.dia}</td>
+                <td></td><td></td><td></td><td></td><td></td>
+              </tr>
+            `).join('');
 
-          const totH = Math.floor(sumMinutes / 60);
-          const totM = sumMinutes % 60;
+            bodyContent.innerHTML = `
+              <table class="doc-table">
+                <thead>
+                  <tr><th>Dia</th><th>Entrada</th><th>Saída Almoço</th><th>Retorno Almoço</th><th>Saída</th><th>Total</th></tr>
+                </thead>
+                <tbody>
+                  ${tableRowsHtml}
+                  <tr style="background:#f8fafc; font-weight:bold;">
+                    <td colspan="5" style="text-align:right;">TOTAL ACUMULADO:</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            `;
+          } else if (this.selectedPdfType === 'preenchivel') {
+            // Tabela com campos AcroForm
+            let tableRowsHtml = this.tableRows.map((r, idx) => `
+              <tr>
+                <td>${r.dia}</td>
+                <td><span class="table-cell-simulated" data-acrofield="table_${idx}_ent">${r.ent}</span></td>
+                <td><span class="table-cell-simulated" data-acrofield="table_${idx}_salm">${r.sAlm}</span></td>
+                <td><span class="table-cell-simulated" data-acrofield="table_${idx}_ralm">${r.rAlm}</span></td>
+                <td><span class="table-cell-simulated" data-acrofield="table_${idx}_sai">${r.sai}</span></td>
+                <td><span class="table-cell-simulated" data-acrofield="table_${idx}_tot">${r.tot}</span></td>
+              </tr>
+            `).join('');
 
-          bodyContent.innerHTML = `
-            <table class="doc-table">
-              <thead>
-                <tr><th>Dia</th><th>Entrada</th><th>Saída Almoço</th><th>Retorno Almoço</th><th>Saída</th><th>Total</th></tr>
-              </thead>
-              <tbody>
-                ${tableRowsHtml}
-                <tr style="background:#f8fafc; font-weight:bold;">
-                  <td colspan="5" style="text-align:right;">TOTAL ACUMULADO:</td>
-                  <td>${String(totH).padStart(2, '0')}:${String(totM).padStart(2, '0')} h</td>
-                </tr>
-              </tbody>
-            </table>
-          `;
+            bodyContent.innerHTML = `
+              <table class="doc-table">
+                <thead>
+                  <tr><th>Dia</th><th>Entrada</th><th>Saída Almoço</th><th>Retorno Almoço</th><th>Saída</th><th>Total</th></tr>
+                </thead>
+                <tbody>
+                  ${tableRowsHtml}
+                  <tr style="background:#f8fafc; font-weight:bold;">
+                    <td colspan="5" style="text-align:right;">TOTAL ACUMULADO:</td>
+                    <td><span class="table-cell-simulated" data-acrofield="table_tot_acc"></span></td>
+                  </tr>
+                </tbody>
+              </table>
+            `;
+          } else {
+            // Tabela preenchida
+            let sumMinutes = 0;
+            let tableRowsHtml = this.tableRows.map(r => {
+              const [h, m] = r.tot.split(':').map(Number);
+              sumMinutes += (h * 60 + m);
+              return `<tr><td>${r.dia}</td><td>${r.ent}</td><td>${r.sAlm}</td><td>${r.rAlm}</td><td>${r.sai}</td><td><strong>${r.tot}</strong></td></tr>`;
+            }).join('');
+
+            const totH = Math.floor(sumMinutes / 60);
+            const totM = sumMinutes % 60;
+
+            bodyContent.innerHTML = `
+              <table class="doc-table">
+                <thead>
+                  <tr><th>Dia</th><th>Entrada</th><th>Saída Almoço</th><th>Retorno Almoço</th><th>Saída</th><th>Total</th></tr>
+                </thead>
+                <tbody>
+                  ${tableRowsHtml}
+                  <tr style="background:#f8fafc; font-weight:bold;">
+                    <td colspan="5" style="text-align:right;">TOTAL ACUMULADO:</td>
+                    <td>${String(totH).padStart(2, '0')}:${String(totM).padStart(2, '0')} h</td>
+                  </tr>
+                </tbody>
+              </table>
+            `;
+          }
         } else {
-          const act = document.getElementById('report-act')?.value || "";
-          const res = document.getElementById('report-res')?.value || "";
-          const obs = document.getElementById('report-obs')?.value || "";
+          // Relatórios
+          if (this.selectedPdfType === 'impressao') {
+            bodyContent.innerHTML = `
+              <div style="font-size: 9pt; line-height: 1.5; color: #000;">
+                <h4 style="margin: 10px 0 5px 0; border-bottom: 1px solid #ccc;">1. DESCRIÇÃO DAS ATIVIDADES</h4>
+                <div style="height: 120px; border: 1px solid #ccc; background: #fff; margin-bottom: 15px;"></div>
+                
+                <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">2. RESULTADOS OBTIDOS</h4>
+                <div style="height: 90px; border: 1px solid #ccc; background: #fff; margin-bottom: 15px;"></div>
 
-          bodyContent.innerHTML = `
-            <div style="font-size: 9pt; line-height: 1.5; color: #000;">
-              <h4 style="margin: 10px 0 5px 0; border-bottom: 1px solid #ccc;">1. DESCRIÇÃO DAS ATIVIDADES</h4>
-              <p style="white-space: pre-line; background: #fafafa; padding: 8px; border: 1px solid #eee;">${act}</p>
-              
-              <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">2. RESULTADOS OBTIDOS</h4>
-              <p style="white-space: pre-line; background: #fafafa; padding: 8px; border: 1px solid #eee;">${res}</p>
+                <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">3. PENDÊNCIAS E OBSERVAÇÕES</h4>
+                <div style="height: 70px; border: 1px solid #ccc; background: #fff;"></div>
+              </div>
+            `;
+          } else if (this.selectedPdfType === 'preenchivel') {
+            const act = document.getElementById('report-act')?.value || "";
+            const res = document.getElementById('report-res')?.value || "";
+            const obs = document.getElementById('report-obs')?.value || "";
 
-              <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">3. PENDÊNCIAS E OBSERVAÇÕES</h4>
-              <p style="white-space: pre-line; background: #fafafa; padding: 8px; border: 1px solid #eee;">${obs}</p>
-            </div>
-          `;
+            bodyContent.innerHTML = `
+              <div style="font-size: 9pt; line-height: 1.5; color: #000;">
+                <h4 style="margin: 10px 0 5px 0; border-bottom: 1px solid #ccc;">1. DESCRIÇÃO DAS ATIVIDADES</h4>
+                <div class="field-box-simulated" data-acrofield="report_act" style="min-height: 100px; white-space: pre-line;">${act}</div>
+                
+                <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">2. RESULTADOS OBTIDOS</h4>
+                <div class="field-box-simulated" data-acrofield="report_res" style="min-height: 80px; white-space: pre-line;">${res}</div>
+
+                <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">3. PENDÊNCIAS E OBSERVAÇÕES</h4>
+                <div class="field-box-simulated" data-acrofield="report_obs" style="min-height: 60px; white-space: pre-line;">${obs}</div>
+              </div>
+            `;
+          } else {
+            const act = document.getElementById('report-act')?.value || "";
+            const res = document.getElementById('report-res')?.value || "";
+            const obs = document.getElementById('report-obs')?.value || "";
+
+            bodyContent.innerHTML = `
+              <div style="font-size: 9pt; line-height: 1.5; color: #000;">
+                <h4 style="margin: 10px 0 5px 0; border-bottom: 1px solid #ccc;">1. DESCRIÇÃO DAS ATIVIDADES</h4>
+                <p style="white-space: pre-line; background: #fafafa; padding: 8px; border: 1px solid #eee;">${act}</p>
+                
+                <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">2. RESULTADOS OBTIDOS</h4>
+                <p style="white-space: pre-line; background: #fafafa; padding: 8px; border: 1px solid #eee;">${res}</p>
+
+                <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">3. PENDÊNCIAS E OBSERVAÇÕES</h4>
+                <p style="white-space: pre-line; background: #fafafa; padding: 8px; border: 1px solid #eee;">${obs}</p>
+              </div>
+            `;
+          }
         }
 
         this.saveDraft();
@@ -849,7 +1044,8 @@
         const draft = {
           modelId: this.currentModel.id,
           formData: this.formData,
-          empresa: document.getElementById('cfg-empresa').value
+          empresa: document.getElementById('cfg-empresa').value,
+          pdfType: this.selectedPdfType
         };
         localStorage.setItem('pe_doc_draft', JSON.stringify(draft));
       }
@@ -859,6 +1055,11 @@
         if (saved) {
           try {
             const data = JSON.parse(saved);
+            if (data.pdfType) {
+              this.selectedPdfType = data.pdfType;
+              const radio = document.querySelector(`input[name="pdfType"][value="${data.pdfType}"]`);
+              if (radio) radio.checked = true;
+            }
             this.showToast('Rascunho anterior encontrado.', 'success');
           } catch (e) {}
         }
@@ -870,27 +1071,66 @@
         this.setupForm();
       }
 
+      /* GERAÇÃO DE PDF DE ALTA QUALIDADE COM SUPORTE A ACROFORM REAIS */
       async downloadPDF() {
         const element = document.getElementById('printable-area');
         this.showToast('Gerando documento PDF...');
 
         try {
-          const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-          const imgData = canvas.toDataURL('image/jpeg', 0.95);
-          
           const { jsPDF } = window.jspdf;
           const pdf = new jsPDF('p', 'mm', 'a4');
           const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+          const pdfHeight = pdf.internal.pageSize.getHeight();
 
-          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-          
+          // Converte o elemento HTML visual para Canvas de alta definição
+          const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+          const imgData = canvas.toDataURL('image/jpeg', 0.95);
+          const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+          // Adiciona a imagem de fundo do layout
+          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
+
+          // Se o tipo for "💻 PDF PREENCHÍVEL / EDITÁVEL", adiciona campos interativos reais AcroForm
+          if (this.selectedPdfType === 'preenchivel') {
+            const pageRect = element.getBoundingClientRect();
+            const scaleX = pdfWidth / pageRect.width;
+            const scaleY = imgHeight / pageRect.height;
+
+            const fields = element.querySelectorAll('[data-acrofield]');
+            const { AcroFormTextField } = jsPDF;
+
+            fields.forEach((el, idx) => {
+              const rect = el.getBoundingClientRect();
+              const fieldName = el.getAttribute('data-acrofield') || `field_${idx}`;
+
+              // Converte coordenadas da tela (px) para coordenadas de milímetros (mm) no PDF
+              const x = (rect.left - pageRect.left) * scaleX;
+              const y = (rect.top - pageRect.top) * scaleY;
+              const w = rect.width * scaleX;
+              const h = rect.height * scaleY;
+
+              const textField = new AcroFormTextField();
+              textField.Rect = [x, y, w, h];
+              textField.fieldName = fieldName;
+              
+              // Se possuir texto inicial, define como valor padrão do campo editável
+              const val = el.innerText.trim();
+              if (val && !val.includes('[ Campo Digitável ]')) {
+                textField.value = val;
+              }
+
+              pdf.addField(textField);
+            });
+          }
+
           const primaryName = Object.values(this.formData)[0] || 'documento';
-          const fileName = `${this.currentModel.id}-${primaryName.toLowerCase().replace(/\s+/g, '-')}.pdf`;
+          const typeSuffix = this.selectedPdfType === 'impressao' ? '-impressao' : (this.selectedPdfType === 'preenchivel' ? '-editavel' : '-preenchido');
+          const fileName = `${this.currentModel.id}${typeSuffix}-${primaryName.toLowerCase().replace(/\s+/g, '-')}.pdf`;
           
           pdf.save(fileName);
           this.showToast('✓ PDF baixado com sucesso!');
         } catch (err) {
+          console.error(err);
           this.showToast('Erro ao gerar PDF.', 'error');
         }
       }
@@ -899,7 +1139,7 @@
         window.print();
       }
 
-      /* Batch Functionality */
+      /* Batch Functionality com suporte aos 3 tipos */
       openBatchModal() {
         document.getElementById('batch-modal').classList.add('active');
         this.batchData = [
@@ -944,12 +1184,11 @@
         this.showToast('Processando lote de PDFs...');
         const zip = new JSZip();
         const element = document.getElementById('printable-area');
-        const { jsPDF } = window.jspdf;
+        const { jsPDF, AcroFormTextField } = window.jspdf;
 
         for (let i = 0; i < this.batchData.length; i++) {
           const person = this.batchData[i];
           
-          // Inject temp person values to meta grid
           if (this.currentModel.campos[0]) this.formData[this.currentModel.campos[0].id] = person.nome;
           if (this.currentModel.campos[1]) this.formData[this.currentModel.campos[1].id] = person.cargo;
           this.updateData();
@@ -959,12 +1198,43 @@
           
           const pdf = new jsPDF('p', 'mm', 'a4');
           const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+          const pdfHeight = pdf.internal.pageSize.getHeight();
+          const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
+
+          // Se for tipo preenchível no Lote
+          if (this.selectedPdfType === 'preenchivel') {
+            const pageRect = element.getBoundingClientRect();
+            const scaleX = pdfWidth / pageRect.width;
+            const scaleY = imgHeight / pageRect.height;
+            const fields = element.querySelectorAll('[data-acrofield]');
+
+            fields.forEach((el, idx) => {
+              const rect = el.getBoundingClientRect();
+              const fieldName = el.getAttribute('data-acrofield') || `field_${idx}`;
+
+              const x = (rect.left - pageRect.left) * scaleX;
+              const y = (rect.top - pageRect.top) * scaleY;
+              const w = rect.width * scaleX;
+              const h = rect.height * scaleY;
+
+              const textField = new AcroFormTextField();
+              textField.Rect = [x, y, w, h];
+              textField.fieldName = fieldName;
+
+              const val = el.innerText.trim();
+              if (val && !val.includes('[ Campo Digitável ]')) {
+                textField.value = val;
+              }
+
+              pdf.addField(textField);
+            });
+          }
 
           const pdfBlob = pdf.output('blob');
           const safeName = (person.nome || `doc-${i+1}`).toLowerCase().replace(/\s+/g, '-');
-          zip.file(`${this.currentModel.id}-${safeName}.zip.pdf`, pdfBlob);
+          zip.file(`${this.currentModel.id}-${safeName}.pdf`, pdfBlob);
         }
 
         const zipBlob = await zip.generateAsync({ type: "blob" });
