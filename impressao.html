@@ -1185,7 +1185,7 @@
                 </div>
                 <div class="summary-item">
                     <span class="label">Folhas Estimadas</span>
-                    <span class="value" id="resumoFolhas">📃 Aproximadamente 1 folhas</span>
+                    <span class="value" id="resumoFolhas">Aproximadamente 1 folhas</span>
                 </div>
                 <div class="summary-item">
                     <span class="label">Acabamento</span>
@@ -1304,7 +1304,7 @@
         const nome = document.getElementById("nome").value.trim();    
         const tel = document.getElementById("telefone").value.trim();    
         const arqA4 = document.getElementById("arquivo").files.length;    
-        const arqDoc = document.getElementById("arquivo_doc").files.length;    
+        const arqDoc = document.getElementById("arquivo_doc") ? document.getElementById("arquivo_doc").files.length : 0;    
         const texto = document.getElementById("textoDireto").value.trim();    
         const obs = document.getElementById("observacoes").value.trim();    
         return (nome.length > 0 || tel.length > 0 || arqA4 > 0 || arqDoc > 0 || texto.length > 0 || obs.length > 0);    
@@ -1404,47 +1404,58 @@
         if (cardDoc) cardDoc.classList.remove("selected");    
         if (cardDig) cardDig.classList.remove("selected");    
 
-        document.getElementById("blocoA4").classList.add("hidden");    
-        document.getElementById("blocoDoc").classList.add("hidden");    
-        document.getElementById("blocoDig").classList.add("hidden");    
+        const blocoA4 = document.getElementById("blocoA4");
+        const blocoDoc = document.getElementById("blocoDoc");
+        const blocoDig = document.getElementById("blocoDig");
+
+        if (blocoA4) blocoA4.classList.add("hidden");    
+        if (blocoDoc) blocoDoc.classList.add("hidden");    
+        if (blocoDig) blocoDig.classList.add("hidden");    
 
         const inputArqA4 = document.getElementById("arquivo");    
         const inputArqDoc = document.getElementById("arquivo_doc");    
 
         if (servico === 'a4') {    
             if (cardA4) cardA4.classList.add("selected");    
-            document.getElementById("blocoA4").classList.remove("hidden");    
+            if (blocoA4) blocoA4.classList.remove("hidden");    
             document.getElementById("hidden_servico_nome").value = "Impressao / Xerox A4";    
             
-            inputArqA4.disabled = false;
-            inputArqDoc.disabled = true;
-            inputArqDoc.value = "";
+            if (inputArqA4) inputArqA4.disabled = false;
+            if (inputArqDoc) {
+                inputArqDoc.disabled = true;
+                inputArqDoc.value = "";
+                inputArqDoc.removeAttribute("required");
+            }
 
-            if(!modoTextoAtivo) inputArqA4.setAttribute("required", "required");    
-            inputArqDoc.removeAttribute("required");    
+            if (!modoTextoAtivo && inputArqA4) inputArqA4.setAttribute("required", "required");    
         } else if (servico === 'doc') {    
             if (cardDoc) cardDoc.classList.add("selected");    
-            document.getElementById("blocoDoc").classList.remove("hidden");    
+            if (blocoDoc) blocoDoc.classList.remove("hidden");    
             document.getElementById("hidden_servico_nome").value = "Documentos Oficiais";    
             
-            inputArqDoc.disabled = false;
-            inputArqA4.disabled = true;
-            inputArqA4.value = "";
+            if (inputArqDoc) inputArqDoc.disabled = false;
+            if (inputArqA4) {
+                inputArqA4.disabled = true;
+                inputArqA4.value = "";
+                inputArqA4.removeAttribute("required");
+            }
 
-            inputArqA4.removeAttribute("required");    
-            inputArqDoc.setAttribute("required", "required");    
+            if (inputArqDoc) inputArqDoc.setAttribute("required", "required");    
         } else if (servico === 'dig') {    
             if (cardDig) cardDig.classList.add("selected");    
-            document.getElementById("blocoDig").classList.remove("hidden");    
+            if (blocoDig) blocoDig.classList.remove("hidden");    
             document.getElementById("hidden_servico_nome").value = "Digitalização / Escaneamento";    
             
-            inputArqA4.disabled = true;
-            inputArqDoc.disabled = true;
-            inputArqA4.value = "";
-            inputArqDoc.value = "";
-
-            inputArqA4.removeAttribute("required");    
-            inputArqDoc.removeAttribute("required");    
+            if (inputArqA4) {
+                inputArqA4.disabled = true;
+                inputArqA4.value = "";
+                inputArqA4.removeAttribute("required");
+            }
+            if (inputArqDoc) {
+                inputArqDoc.disabled = true;
+                inputArqDoc.value = "";
+                inputArqDoc.removeAttribute("required");
+            }
         }    
 
         calcularValor();    
@@ -1452,20 +1463,24 @@
 
     // CÁLCULO E PROCESSAMENTO DAS PÁGINAS A IMPRIMIR
     function processarSelecaoPaginas(totalPaginasDoc) {
-        const modoSelecao = document.querySelector('input[name="Opcao Selecao Paginas"]:checked').value;
+        const elemRadioChecked = document.querySelector('input[name="Opcao Selecao Paginas"]:checked');
+        const modoSelecao = elemRadioChecked ? elemRadioChecked.value : "todas";
         const divErro = document.getElementById("erroPaginasEspecificas");
-        divErro.style.display = "none";
-        divErro.innerText = "";
+        if (divErro) {
+            divErro.style.display = "none";
+            divErro.innerText = "";
+        }
 
         if (modoSelecao === "todas") {
             return {
                 qtdSelecionada: totalPaginasDoc,
-                textoExibicao: "Todas",
+                textoExibicao: "Todas as páginas",
                 valido: true
             };
         }
 
-        const textoDigitado = document.getElementById("input_paginas_especificas").value.trim();
+        const inputEsp = document.getElementById("input_paginas_especificas");
+        const textoDigitado = inputEsp ? inputEsp.value.trim() : "";
         if (!textoDigitado) {
             return {
                 qtdSelecionada: totalPaginasDoc,
@@ -1496,6 +1511,8 @@
                             }
                             paginasSet.add(p);
                         }
+                    } else {
+                        paginaInvalida = parte;
                     }
                 }
             } else {
@@ -1514,8 +1531,10 @@
 
         if (paginaInvalida !== null) {
             const msgErro = `⚠️ A página ${paginaInvalida} não existe neste documento. Escolha páginas entre 1 e ${totalPaginasDoc}.`;
-            divErro.innerText = msgErro;
-            divErro.style.display = "block";
+            if (divErro) {
+                divErro.innerText = msgErro;
+                divErro.style.display = "block";
+            }
             return {
                 qtdSelecionada: 0,
                 textoExibicao: textoDigitado,
@@ -1560,49 +1579,64 @@
         let textoCalculo = "";
 
         if (servicoAtivo === 'a4') {    
-            let precoUnitario = 0.50;    
-            switch(selectTipo.value) {    
-                case "pb_cobertura_alta": precoUnitario = 1.00; break;
-                case "pouca_cor": precoUnitario = 1.00; break;    
-                case "media_cor": precoUnitario = 1.35; break;    
-                case "cobertura_total": precoUnitario = 2.00; break;    
-                case "pb": default: precoUnitario = 0.50; break;    
-            }    
+            let valPaginasDoc = parseInt(inputQtdPaginas ? inputQtdPaginas.value : 1);
+            if (isNaN(valPaginasDoc) || valPaginasDoc < 1) valPaginasDoc = 1;
 
-            const paginasDoc = parseInt(inputQtdPaginas.value) || 1;
-            const resSelecao = processarSelecaoPaginas(paginasDoc);
+            const resSelecao = processarSelecaoPaginas(valPaginasDoc);
             const paginasEfetivas = resSelecao.qtdSelecionada;
 
-            const copias = parseInt(inputQtd.value) || 1;    
-            const totalPaginasImpressas = paginasEfetivas * copias;
+            let copias = parseInt(inputQtd ? inputQtd.value : 1);
+            if (isNaN(copias) || copias < 1) copias = 1;
 
-            // Atualiza explicação dinâmica do badge
-            const badge = document.getElementById("badgeCalculoPaginas");
             const ladoOpcaoObj = document.querySelector('input[name="Lado da Impressao"]:checked');
             const ehFrenteVerso = ladoOpcaoObj && ladoOpcaoObj.value === "Frente e verso";
 
-            let textoBadge = `💡 <strong>Cálculo:</strong> ${paginasEfetivas} página(s) selecionada(s) × ${copias} cópia(s) = ${totalPaginasImpressas} páginas impressas.`;
-            if (ehFrenteVerso) {
-                const folhasEstimadas = Math.ceil(totalPaginasImpressas / 2);
-                textoBadge += `<br>📄 <em>${totalPaginasImpressas} páginas impressas correspondem a aproximadamente ${folhasEstimadas} folhas.</em>`;
-            }
-            if(badge) badge.innerHTML = textoBadge;
+            // 1. Folhas por cópia (arredonda para cima em Frente e Verso)
+            const folhasPorCopia = ehFrenteVerso ? Math.ceil(paginasEfetivas / 2) : paginasEfetivas;
 
-            // O preço é aplicado por folha/página impressa
-            subtotal = precoUnitario * totalPaginasImpressas;    
-            
-            if (selectTipo.value === "media_cor" && totalPaginasImpressas >= 6) {    
-                desconto = (1.35 - 1.20) * totalPaginasImpressas;    
+            // 2. Total real de folhas físicas cobradas
+            const folhasTotais = folhasPorCopia * copias;
+
+            // 3. Preço base por folha segundo a tabela
+            let precoUnitario = 0.50;
+            const tipoSelecionado = selectTipo ? selectTipo.value : "pb";
+
+            if (tipoSelecionado === "pb_cobertura_alta") {
+                precoUnitario = 1.00;
+            } else if (tipoSelecionado === "pouca_cor") {
+                precoUnitario = 1.00;
+            } else if (tipoSelecionado === "media_cor") {
+                precoUnitario = folhasTotais >= 6 ? 1.20 : 1.35;
+            } else if (tipoSelecionado === "cobertura_total") {
+                precoUnitario = 2.00;
+            } else {
+                precoUnitario = 0.50;
             }
-            textoCalculo = `${totalPaginasImpressas} página(s) × R$ ${precoUnitario.toFixed(2).replace('.', ',')}`;
+
+            // 4. Subtotal da Impressão
+            subtotal = folhasTotais * precoUnitario;
+
+            // Atualiza explicação dinâmica do badge
+            const badge = document.getElementById("badgeCalculoPaginas");
+            let textoBadge = `💡 <strong>Cálculo:</strong> ${paginasEfetivas} página(s) selecionada(s) por cópia`;
+            if (ehFrenteVerso) {
+                textoBadge += ` (${folhasPorCopia} folha(s) por cópia em frente e verso)`;
+            }
+            textoBadge += ` × ${copias} cópia(s) = ${folhasTotais} folha(s) no total.`;
+            if (badge) badge.innerHTML = textoBadge;
+
+            textoCalculo = `${folhasTotais} folha(s) × R$ ${precoUnitario.toFixed(2).replace('.', ',')}`;
+
         } else if (servicoAtivo === 'doc') {    
             let precoDoc = 1.00;    
-            if (selectDocOficial.value === 'boleto') precoDoc = 0.50;    
-            const qtd = parseInt(inputQtdDoc.value) || 1;    
+            if (selectDocOficial && selectDocOficial.value === 'boleto') precoDoc = 0.50;    
+            let qtd = parseInt(inputQtdDoc ? inputQtdDoc.value : 1);    
+            if (isNaN(qtd) || qtd < 1) qtd = 1;
             subtotal = precoDoc * qtd;    
             textoCalculo = `${qtd} via(s) × R$ ${precoDoc.toFixed(2).replace('.', ',')}`;
         } else if (servicoAtivo === 'dig') {    
-            const qtd = parseInt(inputQtdDig.value) || 1;    
+            let qtd = parseInt(inputQtdDig ? inputQtdDig.value : 1);    
+            if (isNaN(qtd) || qtd < 1) qtd = 1;
             subtotal = 2.00 * qtd;    
                 
             let precoEfetivo = 2.00;    
@@ -1617,41 +1651,41 @@
         // Cálculo dos serviços adicionais acrescentados
         if (optRedimensionamento && optRedimensionamento.checked) {
             extras += 2.00;
-            document.getElementById("hidden_redimensionamento").value = "Sim (R$ 2,00)";
+            const elemRedim = document.getElementById("hidden_redimensionamento");
+            if (elemRedim) elemRedim.value = "Sim (R$ 2,00)";
         } else {
-            document.getElementById("hidden_redimensionamento").value = "Nao";
+            const elemRedim = document.getElementById("hidden_redimensionamento");
+            if (elemRedim) elemRedim.value = "Nao";
         }
 
         if (optConferencia && optConferencia.checked) {
-            document.getElementById("hidden_conferencia").value = "Sim (Gratis)";
+            const elemConf = document.getElementById("hidden_conferencia");
+            if (elemConf) elemConf.value = "Sim (Gratis)";
         } else {
-            document.getElementById("hidden_conferencia").value = "Nao";
+            const elemConf = document.getElementById("hidden_conferencia");
+            if (elemConf) elemConf.value = "Nao";
         }
-
-        if (optAmostra && optAmostra.checked) {    
-            // se houver extras no futuro    
-        }    
 
         total = (subtotal - desconto) + extras;    
 
-        subtotalExibicao.innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;    
-        calculoDetalhadoExibicao.innerText = textoCalculo;
+        if (subtotalExibicao) subtotalExibicao.innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;    
+        if (calculoDetalhadoExibicao) calculoDetalhadoExibicao.innerText = textoCalculo;
 
-        if (desconto > 0) {    
+        if (desconto > 0 && rowDesconto && descontoExibicao) {    
             rowDesconto.style.display = "flex";    
             descontoExibicao.innerText = `- R$ ${desconto.toFixed(2).replace('.', ',')}`;    
-        } else {    
+        } else if (rowDesconto) {    
             rowDesconto.style.display = "none";    
         }    
 
-        if (extras > 0) {    
+        if (extras > 0 && rowExtra && extraExibicao) {    
             rowExtra.style.display = "flex";    
             extraExibicao.innerText = `+ R$ ${extras.toFixed(2).replace('.', ',')}`;    
-        } else {    
+        } else if (rowExtra) {    
             rowExtra.style.display = "none";    
         }    
 
-        valorExibicao.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;    
+        if (valorExibicao) valorExibicao.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;    
         
         atualizarResumoConferencia();
         return total;    
@@ -1673,7 +1707,7 @@
         const inputAcabamentoHidden = document.getElementById("acabamento_grampo");
 
         if (servicoAtivo === 'a4') {
-            resumoServico.innerText = "Impressão A4";
+            if (resumoServico) resumoServico.innerText = "Impressão A4";
             const tipoMap = {
                 'pb': 'P&B',
                 'pb_cobertura_alta': 'P&B Cobertura Alta',
@@ -1681,74 +1715,83 @@
                 'media_cor': 'Colorida Média Cor',
                 'cobertura_total': 'Colorida Cobertura Total'
             };
-            resumoTipo.innerText = tipoMap[selectTipo.value] || 'P&B';
+            if (resumoTipo) resumoTipo.innerText = tipoMap[selectTipo ? selectTipo.value : 'pb'] || 'P&B';
             
-            const pDoc = parseInt(inputQtdPaginas.value) || 1;
+            let pDoc = parseInt(inputQtdPaginas ? inputQtdPaginas.value : 1);
+            if (isNaN(pDoc) || pDoc < 1) pDoc = 1;
+
             const resSelecao = processarSelecaoPaginas(pDoc);
             const pSel = resSelecao.qtdSelecionada;
             const strPaginasTexto = resSelecao.textoExibicao;
 
-            const cCop = parseInt(inputQtd.value) || 1;
+            let cCop = parseInt(inputQtd ? inputQtd.value : 1);
+            if (isNaN(cCop) || cCop < 1) cCop = 1;
+
             const totPag = pSel * cCop;
 
             const ladoOpcao = document.querySelector('input[name="Lado da Impressao"]:checked');
             const strLado = ladoOpcao ? ladoOpcao.value : 'Frente';
             
-            let numFolhas = totPag;
-            if (strLado === "Frente e verso") {
-                numFolhas = Math.ceil(totPag / 2);
-            }
+            const folhasPorCopia = strLado === "Frente e verso" ? Math.ceil(pSel / 2) : pSel;
+            const numFolhas = folhasPorCopia * cCop;
 
-            resumoDocPaginas.innerText = `📄 Documento: ${pDoc} páginas`;
-            resumoPaginasSelecionadas.innerText = `📑 Páginas selecionadas: ${strPaginasTexto}`;
-            resumoTotalSelecionado.innerText = `📊 Total selecionado: ${pSel} páginas`;
-            resumoCopias.innerText = `🔄 Cópias: ${cCop}`;
-            resumoTotalPaginas.innerText = `🖨️ Total de páginas impressas: ${totPag}`;
-            resumoLado.innerText = strLado;
-            resumoFolhas.innerText = `📃 Aproximadamente ${numFolhas} folhas`;
+            if (resumoDocPaginas) resumoDocPaginas.innerText = `📄 Documento: ${pDoc} páginas`;
+            if (resumoPaginasSelecionadas) resumoPaginasSelecionadas.innerText = `📑 Páginas selecionadas: ${strPaginasTexto}`;
+            if (resumoTotalSelecionado) resumoTotalSelecionado.innerText = `📊 Total selecionado: ${pSel} páginas`;
+            if (resumoCopias) resumoCopias.innerText = `🔄 Cópias: ${cCop}`;
+            if (resumoTotalPaginas) resumoTotalPaginas.innerText = `🖨️ Total de páginas impressas: ${totPag}`;
+            if (resumoLado) resumoLado.innerText = strLado;
+            if (resumoFolhas) resumoFolhas.innerText = `Aproximadamente ${numFolhas} folhas`;
 
             // Atualiza campos ocultos adicionais para envio do FormSubmit
-            document.getElementById("hidden_qtd_paginas").value = pDoc;
-            document.getElementById("hidden_paginas_selecionadas_texto").value = strPaginasTexto;
-            document.getElementById("hidden_total_paginas_impressas").value = totPag;
-            document.getElementById("hidden_folhas_utilizadas").value = numFolhas;
+            const hQtd = document.getElementById("hidden_qtd_paginas");
+            const hPagSel = document.getElementById("hidden_paginas_selecionadas_texto");
+            const hTotPag = document.getElementById("hidden_total_paginas_impressas");
+            const hFolhas = document.getElementById("hidden_folhas_utilizadas");
 
-            const acabTexto = selectAcabamento.value === 'grampeado' ? 'Grampeado' : 'Sem acabamento';
-            resumoAcabamento.innerText = acabTexto;
-            if(inputAcabamentoHidden) inputAcabamentoHidden.value = acabTexto;
+            if (hQtd) hQtd.value = pDoc;
+            if (hPagSel) hPagSel.value = strPaginasTexto;
+            if (hTotPag) hTotPag.value = totPag;
+            if (hFolhas) hFolhas.value = numFolhas;
+
+            const acabTexto = (selectAcabamento && selectAcabamento.value === 'grampeado') ? 'Grampeado' : 'Sem acabamento';
+            if (resumoAcabamento) resumoAcabamento.innerText = acabTexto;
+            if (inputAcabamentoHidden) inputAcabamentoHidden.value = acabTexto;
 
             if (modoTextoAtivo) {
-                const txt = document.getElementById("textoDireto").value.trim();
-                resumoArquivo.innerText = txt ? 'Texto Colado' : 'Texto não informado';
+                const txt = document.getElementById("textoDireto") ? document.getElementById("textoDireto").value.trim() : "";
+                if (resumoArquivo) resumoArquivo.innerText = txt ? 'Texto Colado' : 'Texto não informado';
             } else {
-                const arq = inputArquivo.files[0];
-                resumoArquivo.innerText = arq ? arq.name : 'Nenhum selecionado';
+                const arq = inputArquivo && inputArquivo.files ? inputArquivo.files[0] : null;
+                if (resumoArquivo) resumoArquivo.innerText = arq ? arq.name : 'Nenhum selecionado';
             }
         } else if (servicoAtivo === 'doc') {
-            resumoServico.innerText = "Documentos Oficiais";
-            resumoTipo.innerText = selectDocOficial.options[selectDocOficial.selectedIndex].text;
-            resumoDocPaginas.innerText = "N/A";
-            resumoPaginasSelecionadas.innerText = "N/A";
-            resumoTotalSelecionado.innerText = "N/A";
-            resumoCopias.innerText = `Vias: ${inputQtdDoc.value}`;
-            resumoTotalPaginas.innerText = `Vias: ${inputQtdDoc.value}`;
-            resumoLado.innerText = "Padrão Doc";
-            resumoFolhas.innerText = `${inputQtdDoc.value} folha(s)`;
-            resumoAcabamento.innerText = "Sem acabamento";
-            const arqDoc = document.getElementById("arquivo_doc").files[0];
-            resumoArquivo.innerText = arqDoc ? arqDoc.name : 'Nenhum selecionado';
+            const valQtdDoc = inputQtdDoc ? inputQtdDoc.value : 1;
+            if (resumoServico) resumoServico.innerText = "Documentos Oficiais";
+            if (resumoTipo && selectDocOficial) resumoTipo.innerText = selectDocOficial.options[selectDocOficial.selectedIndex].text;
+            if (resumoDocPaginas) resumoDocPaginas.innerText = "N/A";
+            if (resumoPaginasSelecionadas) resumoPaginasSelecionadas.innerText = "N/A";
+            if (resumoTotalSelecionado) resumoTotalSelecionado.innerText = "N/A";
+            if (resumoCopias) resumoCopias.innerText = `Vias: ${valQtdDoc}`;
+            if (resumoTotalPaginas) resumoTotalPaginas.innerText = `Vias: ${valQtdDoc}`;
+            if (resumoLado) resumoLado.innerText = "Padrão Doc";
+            if (resumoFolhas) resumoFolhas.innerText = `${valQtdDoc} folha(s)`;
+            if (resumoAcabamento) resumoAcabamento.innerText = "Sem acabamento";
+            const arqDoc = document.getElementById("arquivo_doc") ? document.getElementById("arquivo_doc").files[0] : null;
+            if (resumoArquivo) resumoArquivo.innerText = arqDoc ? arqDoc.name : 'Nenhum selecionado';
         } else if (servicoAtivo === 'dig') {
-            resumoServico.innerText = "Digitalização";
-            resumoTipo.innerText = "Escaneamento";
-            resumoDocPaginas.innerText = `Estimado: ${inputQtdDig.value} págs`;
-            resumoPaginasSelecionadas.innerText = "Todas";
-            resumoTotalSelecionado.innerText = `${inputQtdDig.value} págs`;
-            resumoCopias.innerText = "1 via digital";
-            resumoTotalPaginas.innerText = `${inputQtdDig.value} págs`;
-            resumoLado.innerText = "Digital";
-            resumoFolhas.innerText = "N/A (Digital)";
-            resumoAcabamento.innerText = "Digital (PDF/Imagem)";
-            resumoArquivo.innerText = "Envio Físico";
+            const valQtdDig = inputQtdDig ? inputQtdDig.value : 1;
+            if (resumoServico) resumoServico.innerText = "Digitalização";
+            if (resumoTipo) resumoTipo.innerText = "Escaneamento";
+            if (resumoDocPaginas) resumoDocPaginas.innerText = `Estimado: ${valQtdDig} págs`;
+            if (resumoPaginasSelecionadas) resumoPaginasSelecionadas.innerText = "Todas";
+            if (resumoTotalSelecionado) resumoTotalSelecionado.innerText = `${valQtdDig} págs`;
+            if (resumoCopias) resumoCopias.innerText = "1 via digital";
+            if (resumoTotalPaginas) resumoTotalPaginas.innerText = `${valQtdDig} págs`;
+            if (resumoLado) resumoLado.innerText = "Digital";
+            if (resumoFolhas) resumoFolhas.innerText = "N/A (Digital)";
+            if (resumoAcabamento) resumoAcabamento.innerText = "Digital (PDF/Imagem)";
+            if (resumoArquivo) resumoArquivo.innerText = "Envio Físico";
         }
     }
 
@@ -1764,20 +1807,24 @@
         btnToggleModo.addEventListener("click", function () {
             modoTextoAtivo = !modoTextoAtivo;
             if (modoTextoAtivo) {
-                campoArquivoContainer.classList.add("hidden");
-                campoTextoContainer.classList.remove("hidden");
+                if (campoArquivoContainer) campoArquivoContainer.classList.add("hidden");
+                if (campoTextoContainer) campoTextoContainer.classList.remove("hidden");
                 btnToggleModo.innerText = "📎 Prefiro anexar um arquivo";
-                inputArquivo.removeAttribute("required");
-                inputTexto.setAttribute("required", "required");
-                inputArquivo.value = "";
+                if (inputArquivo) {
+                    inputArquivo.removeAttribute("required");
+                    inputArquivo.value = "";
+                }
+                if (inputTexto) inputTexto.setAttribute("required", "required");
                 ocultarPreviewA4();
             } else {
-                campoTextoContainer.classList.add("hidden");
-                campoArquivoContainer.classList.remove("hidden");
+                if (campoTextoContainer) campoTextoContainer.classList.add("hidden");
+                if (campoArquivoContainer) campoArquivoContainer.classList.remove("hidden");
                 btnToggleModo.innerText = "✏️ Prefiro colar um texto";
-                inputTexto.removeAttribute("required");
-                if (servicoAtivo === 'a4') inputArquivo.setAttribute("required", "required");
-                inputTexto.value = "";
+                if (inputTexto) {
+                    inputTexto.removeAttribute("required");
+                    inputTexto.value = "";
+                }
+                if (servicoAtivo === 'a4' && inputArquivo) inputArquivo.setAttribute("required", "required");
             }
             calcularValor();
         });
@@ -1824,15 +1871,15 @@
     if (radioPagTodas && radioPagEspecificas) {
         radioPagTodas.addEventListener("change", function() {
             if (this.checked) {
-                containerPagEspecificas.classList.add("hidden");
+                if (containerPagEspecificas) containerPagEspecificas.classList.add("hidden");
                 calcularValor();
             }
         });
 
         radioPagEspecificas.addEventListener("change", function() {
             if (this.checked) {
-                containerPagEspecificas.classList.remove("hidden");
-                if(inputPagEspecificas) inputPagEspecificas.focus();
+                if (containerPagEspecificas) containerPagEspecificas.classList.remove("hidden");
+                if (inputPagEspecificas) inputPagEspecificas.focus();
                 calcularValor();
             }
         });
@@ -1845,13 +1892,13 @@
     }
 
     // LISTENERS PARA RECALCULAR AUTOMATICAMENTE
-    selectTipo.addEventListener("change", calcularValor);
-    inputQtd.addEventListener("input", calcularValor);
-    inputQtdPaginas.addEventListener("input", calcularValor);
-    selectDocOficial.addEventListener("change", calcularValor);
-    inputQtdDoc.addEventListener("input", calcularValor);
-    inputQtdDig.addEventListener("input", calcularValor);
-    selectAcabamento.addEventListener("change", calcularValor);
+    if (selectTipo) selectTipo.addEventListener("change", calcularValor);
+    if (inputQtd) inputQtd.addEventListener("input", calcularValor);
+    if (inputQtdPaginas) inputQtdPaginas.addEventListener("input", calcularValor);
+    if (selectDocOficial) selectDocOficial.addEventListener("change", calcularValor);
+    if (inputQtdDoc) inputQtdDoc.addEventListener("input", calcularValor);
+    if (inputQtdDig) inputQtdDig.addEventListener("input", calcularValor);
+    if (selectAcabamento) selectAcabamento.addEventListener("change", calcularValor);
 
     if (optRedimensionamento) optRedimensionamento.addEventListener("change", calcularValor);
     if (optConferencia) optConferencia.addEventListener("change", calcularValor);
@@ -1881,7 +1928,9 @@
     const btnNotificarWhats = document.getElementById("btnNotificarWhats");
 
     formImpressao.addEventListener("submit", function (e) {
-        const paginasDoc = parseInt(inputQtdPaginas.value) || 1;
+        let paginasDoc = parseInt(inputQtdPaginas ? inputQtdPaginas.value : 1);
+        if (isNaN(paginasDoc) || paginasDoc < 1) paginasDoc = 1;
+
         const resSelecao = processarSelecaoPaginas(paginasDoc);
         
         if (!resSelecao.valido && servicoAtivo === 'a4') {
@@ -1891,10 +1940,12 @@
         }
 
         const totalCalculado = calcularValor();
-        document.getElementById("hidden_total").value = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
+        const elemHiddenTotal = document.getElementById("hidden_total");
+        if (elemHiddenTotal) elemHiddenTotal.value = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
 
-        const tipoTextoObj = selectTipo.options[selectTipo.selectedIndex];
-        document.getElementById("hidden_tipo_texto").value = tipoTextoObj ? tipoTextoObj.text : "";
+        const tipoTextoObj = selectTipo ? selectTipo.options[selectTipo.selectedIndex] : null;
+        const elemHiddenTipoText = document.getElementById("hidden_tipo_texto");
+        if (elemHiddenTipoText) elemHiddenTipoText.value = tipoTextoObj ? tipoTextoObj.text : "";
 
         naAbaPagamento = true;
 
@@ -1907,53 +1958,46 @@
             if (secaoCardChamativo) secaoCardChamativo.classList.add("hidden");
             if (tabelaCard) tabelaCard.classList.add("hidden");
 
-            const formaPagamento = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
-            const nomeCliente = document.getElementById("nome").value.trim();
+            const radioPagamento = document.querySelector('input[name="Forma de Pagamento"]:checked');
+            const formaPagamento = radioPagamento ? radioPagamento.value : "PIX";
+            const nomeCliente = document.getElementById("nome") ? document.getElementById("nome").value.trim() : "";
             const valorFormatado = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
 
             if (formaPagamento === "PIX") {
-                boxDetalhesPagamento.innerHTML = `
-                    <div class="pix-box-novo">
-                        <div style="font-size: 14px; font-weight: 700; color: var(--text-main);">Pagamento via Chave PIX (Copia e Cola)</div>
-                        <div class="valor-destaque">${valorFormatado}</div>
-                        <p style="font-size: 12px; color: var(--text-muted); text-align: center;">Copie a chave abaixo e realize o pagamento no seu aplicativo de banco.</p>
-                        <input type="text" value="${CHAVE_PIX_TEXTO}" readonly id="inputPixChave" style="font-size: 11px; text-align: center; background: var(--bg-card);">
-                        <button type="button" class="btn-copiar-pix" onclick="copiarChavePix()">📋 Copiar Chave PIX</button>
-                    </div>
-                `;
+                if (boxDetalhesPagamento) {
+                    boxDetalhesPagamento.innerHTML = `
+                        <div class="pix-box-novo">
+                            <div style="font-size: 14px; font-weight: 700; color: var(--text-main);">Valor a pagar:</div>
+                            <div class="valor-destaque">${valorFormatado}</div>
+                            <button type="button" class="btn-copiar-pix" onclick="navigator.clipboard.writeText('${CHAVE_PIX_TEXTO}'); alert('Chave PIX copiada!');">📋 Copiar Chave PIX</button>
+                        </div>
+                    `;
+                }
             } else {
-                boxDetalhesPagamento.innerHTML = `
-                    <div class="dinheiro-box-novo">
-                        <div style="font-size: 14px; font-weight: 700; color: var(--text-main);">Pagamento em Dinheiro na Retirada</div>
-                        <div class="valor-destaque">${valorFormatado}</div>
-                        <p style="font-size: 13px; color: var(--text-muted); text-align: center;">Traga o valor exato ou informe nas observações se precisará de troco!</p>
-                    </div>
-                `;
+                if (boxDetalhesPagamento) {
+                    boxDetalhesPagamento.innerHTML = `
+                        <div class="dinheiro-box-novo">
+                            <div style="font-size: 14px; font-weight: 700; color: var(--text-main);">Valor a pagar na retirada:</div>
+                            <div class="valor-destaque">${valorFormatado}</div>
+                        </div>
+                    `;
+                }
             }
 
-            const msgWhats = encodeURIComponent(`Olá! Sou *${nomeCliente}* e acabei de fazer um pedido pelo site.\n\n*Serviço:* ${document.getElementById("hidden_servico_nome").value}\n*Valor Estimado:* ${valorFormatado}\n*Forma de Pagamento:* ${formaPagamento}\n\nAgardo confirmação!`);
-            btnNotificarWhats.href = `https://wa.me/5541999682836?text=${msgWhats}`;
+            if (btnNotificarWhats) {
+                const msgWhats = encodeURIComponent(`Olá! Fiz um pedido no site PrintExpress no valor de ${valorFormatado} em nome de ${nomeCliente}.`);
+                btnNotificarWhats.href = `https://wa.me/5541999682836?text=${msgWhats}`;
+            }
 
-            telaSucesso.classList.remove("hidden");
+            if (telaSucesso) telaSucesso.classList.remove("hidden");
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 1000);
+        }, 800);
     });
 
-    function copiarChavePix() {
-        const inputPix = document.getElementById("inputPixChave");
-        if (inputPix) {
-            inputPix.select();
-            inputPix.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(inputPix.value).then(() => {
-                alert("✅ Chave PIX copiada com sucesso!");
-            }).catch(() => {
-                alert("⚠️ Não foi possível copiar automaticamente. Copie o texto do campo manualmente.");
-            });
-        }
-    }
-
-    // INICIALIZAÇÃO DOS CÁLCULOS
-    calcularValor();
+    // Inicializa cálculo no carregamento da página
+    document.addEventListener("DOMContentLoaded", function() {
+        calcularValor();
+    });
 </script>
 </body>
 </html>
