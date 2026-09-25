@@ -77,7 +77,7 @@
             line-height: 1.6;
             transition: background-color 0.3s ease, color 0.3s ease;
             overflow-x: hidden;
-            padding-bottom: 80px; /* Espaço para carrinho fixo mobile se necessário */
+            padding-bottom: 80px;
         }
 
         a {
@@ -106,7 +106,6 @@
             border: 0;
         }
 
-        /* Focus Style for Accessibility */
         :focus-visible {
             outline: 3px solid var(--primary);
             outline-offset: 2px;
@@ -351,79 +350,97 @@
         }
 
         /* ==========================================================================
-           4. CARROSSEL DE AVISOS
+           4. CARROSSEL DE AVISOS (AMPLIADO & SEM SETAS)
            ========================================================================== */
         .notices-section {
-            padding: 1.5rem 0;
+            padding: 2rem 0;
             background-color: var(--bg-card);
             border-bottom: 1px solid var(--border);
         }
 
-        .notice-carousel {
+        .notice-carousel-panel {
             position: relative;
-            overflow: hidden;
-            border-radius: var(--radius-md);
-            background-color: var(--bg-secondary);
+            width: 100%;
+            min-height: 130px;
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
             border: 1px solid var(--border);
-            padding: 1.25rem 3rem;
-            min-height: 80px;
+            border-radius: var(--radius-lg);
+            padding: 2rem 2.5rem;
+            box-shadow: var(--shadow-md);
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
         }
 
         .notice-slide {
             display: none;
             width: 100%;
-            animation: fadeIn 0.4s ease;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
         }
 
         .notice-slide.active {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
+            opacity: 1;
         }
 
         .notice-badge {
             background-color: var(--primary);
             color: white;
-            padding: 0.25rem 0.65rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
             font-weight: 700;
             white-space: nowrap;
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .notice-content-body {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            flex: 1;
+        }
+
+        .notice-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.3px;
         }
 
         .notice-text {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: var(--text-main);
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            line-height: 1.5;
         }
 
-        .carousel-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+        .carousel-indicators {
             display: flex;
-            align-items: center;
             justify-content: center;
-            cursor: pointer;
-            z-index: 2;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .indicator-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--border);
             transition: var(--transition);
+            cursor: pointer;
         }
 
-        .carousel-btn:hover {
-            background-color: var(--primary-light);
-            color: var(--primary);
+        .indicator-dot.active {
+            background-color: var(--primary);
+            width: 24px;
+            border-radius: 12px;
         }
-
-        .carousel-btn.prev { left: 0.75rem; }
-        .carousel-btn.next { right: 0.75rem; }
 
         /* ==========================================================================
            5. FILTROS & CATEGORIAS
@@ -587,7 +604,6 @@
             gap: 0.25rem;
         }
 
-        /* Selector Fill Type */
         .fill-type-selector {
             margin-bottom: 1.25rem;
         }
@@ -709,7 +725,7 @@
         }
 
         /* ==========================================================================
-           8. DESTAQUES CARROSSEL
+           8. DESTAQUES CARROSSEL AUTOMÁTICO
            ========================================================================== */
         .featured-section {
             padding: 3rem 0;
@@ -722,12 +738,14 @@
             position: relative;
             overflow: hidden;
             padding: 0.5rem 0;
+            width: 100%;
         }
 
         .featured-track {
             display: flex;
             gap: 1.5rem;
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: transform 0.8s ease-in-out;
+            will-change: transform;
         }
 
         /* ==========================================================================
@@ -923,9 +941,9 @@
         .cart-panel {
             position: fixed;
             top: 0;
-            right: -420px;
+            right: -450px;
             width: 100%;
-            max-width: 400px;
+            max-width: 440px;
             height: 100vh;
             background-color: var(--bg-card);
             border-left: 1px solid var(--border);
@@ -959,11 +977,16 @@
 
         .cart-item {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+            flex-direction: column;
             padding-bottom: 1rem;
             border-bottom: 1px solid var(--border);
-            gap: 0.75rem;
+            gap: 0.5rem;
+        }
+
+        .cart-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
         .cart-item-info h4 {
@@ -974,6 +997,18 @@
         .cart-item-info p {
             font-size: 0.8rem;
             color: var(--text-muted);
+        }
+
+        .print-options-box {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
         .cart-controls {
@@ -1008,6 +1043,29 @@
             font-size: 1.2rem;
             font-weight: 800;
             margin-bottom: 1rem;
+        }
+
+        /* Status de Envio Alert Box */
+        .status-alert {
+            display: none;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .status-alert.success {
+            display: block;
+            background-color: var(--accent-light);
+            border: 1px solid var(--accent);
+            color: var(--accent-hover);
+        }
+
+        .status-alert.error {
+            display: block;
+            background-color: #fef2f2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
         }
 
         /* ==========================================================================
@@ -1085,8 +1143,14 @@
                 font-size: 2.1rem;
             }
 
-            .notice-carousel {
-                padding: 1rem 2.5rem;
+            .notice-carousel-panel {
+                padding: 1.5rem 1.25rem;
+            }
+
+            .notice-slide.active {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
             }
 
             .cart-panel {
@@ -1172,13 +1236,12 @@
         </div>
     </section>
 
-    <!-- CARROSSEL DE AVISOS -->
+    <!-- CARROSSEL DE AVISOS (AMPLIADO & AUTOMÁTICO) -->
     <section class="notices-section">
         <div class="container">
-            <div class="notice-carousel" id="noticeCarousel">
-                <button class="carousel-btn prev" id="prevNotice"><i data-lucide="chevron-left"></i></button>
+            <div class="notice-carousel-panel" id="noticeCarousel">
                 <div id="noticeContainer" style="width: 100%;"></div>
-                <button class="carousel-btn next" id="nextNotice"><i data-lucide="chevron-right"></i></button>
+                <div class="carousel-indicators" id="noticeIndicators"></div>
             </div>
         </div>
     </section>
@@ -1315,11 +1378,11 @@
             <div class="faq-accordion" id="faqAccordion">
                 <div class="faq-item">
                     <button class="faq-question">
-                        Os modelos são físicos?
+                        Os modelos são digitais?
                         <i data-lucide="chevron-down"></i>
                     </button>
                     <div class="faq-answer">
-                        Não. Os produtos desta página são modelos exclusivamente digitais fornecidos em formato PDF.
+                        Sim. Os modelos são fornecidos em formato digital, mas você também pode solicitar a impressão durante o pedido, quando essa opção estiver disponível.
                     </div>
                 </div>
                 <div class="faq-item">
@@ -1328,25 +1391,70 @@
                         <i data-lucide="chevron-down"></i>
                     </button>
                     <div class="faq-answer">
-                        Sim! Você pode imprimir o arquivo em qualquer impressora. Caso queira utilizar o serviço de impressão profissional do PrintExpress, consulte a página dedicada de impressão.
+                        Sim. Você pode imprimir o arquivo por conta própria ou solicitar a impressão junto ao pedido, conforme as opções disponíveis.
                     </div>
                 </div>
                 <div class="faq-item">
                     <button class="faq-question">
-                        Posso preencher pelo celular ou computador?
+                        Posso escolher somente o arquivo digital?
                         <i data-lucide="chevron-down"></i>
                     </button>
                     <div class="faq-answer">
-                        Alguns modelos contam com campos editáveis prontos para preenchimento digital em leitores de PDF compatíveis no celular ou computador.
+                        Sim. A impressão é opcional.
                     </div>
                 </div>
                 <div class="faq-item">
                     <button class="faq-question">
-                        Os modelos substituem documentos oficiais?
+                        Posso pedir o modelo já impresso?
                         <i data-lucide="chevron-down"></i>
                     </button>
                     <div class="faq-answer">
-                        Não necessariamente. Nossos modelos são ferramentas de organização e apoio ao controle interno, e não substituem sistemas homologados ou oficiais quando estes forem exigidos por lei.
+                        Sim. Durante o pedido, selecione a opção de impressão e informe as configurações desejadas.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Posso preencher o modelo manualmente?
+                        <i data-lucide="chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Sim. Nos modelos compatíveis, você pode escolher a versão para preenchimento manual e depois imprimir.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Posso preencher o modelo digitalmente?
+                        <i data-lucide="chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Sim. Nos modelos compatíveis, existe opção de preenchimento digital.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Posso pedir um modelo personalizado?
+                        <i data-lucide="chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Sim. Modelos personalizados podem ser solicitados e estão sujeitos à análise e orçamento.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Os modelos são documentos oficiais?
+                        <i data-lucide="chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Não necessariamente. São modelos para organização e registro. A validade ou aceitação depende da finalidade e das exigências do órgão ou empresa responsável.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Como recebo meu arquivo?
+                        <i data-lucide="chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        O arquivo digital será disponibilizado conforme as condições do pedido. Caso você solicite impressão, também poderá receber a versão impressa.
                     </div>
                 </div>
             </div>
@@ -1368,8 +1476,8 @@
                         <p style="color:var(--text-muted); margin-top:0.25rem;">Preenchimento digital depende de leitor PDF compatível.</p>
                     </div>
                     <div class="notice-card">
-                        <strong>🖨️ Impressão Separada</strong>
-                        <p style="color:var(--text-muted); margin-top:0.25rem;">Serviço de impressão física vendido separadamente.</p>
+                        <strong>🖨️ Opção de Impressão</strong>
+                        <p style="color:var(--text-muted); margin-top:0.25rem;">Serviço de impressão física opcional no mesmo pedido.</p>
                     </div>
                 </div>
             </div>
@@ -1402,7 +1510,7 @@
                     <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">
                         <li><a href="#">Privacidade</a></li>
                         <li><a href="#">Termos de Uso</a></li>
-                        <li><a href="#">Atendimento</a></li>
+                        <li><a href="#">Atendimento: (41) 99968-2836</a></li>
                     </ul>
                 </div>
             </div>
@@ -1421,7 +1529,7 @@
             </div>
             <div class="modal-body">
                 <div class="preview-img-container" id="modalPreviewBox">
-                    <!-- Placeholder ou Imagem real -->
+                    <!-- Placeholder ou Imagem real / PDF -->
                 </div>
                 <p id="modalDesc" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;"></p>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1446,51 +1554,76 @@
         </div>
 
         <div class="cart-footer">
+            <!-- Alertas de Status do Envio -->
+            <div class="status-alert" id="statusAlert"></div>
+
             <div class="cart-total">
-                <span>Total Estimado:</span>
+                <span>Total do Pedido:</span>
                 <span id="cartTotalValue">R$ 0,00</span>
             </div>
 
-            <!-- Dados do Cliente -->
-            <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem;">
-                <input type="text" id="clientName" class="form-input" placeholder="Seu nome" required>
-                
-                <div class="form-group">
-                    <label class="form-label">Forma de Contato:</label>
-                    <select id="contactMethod" class="form-select" onchange="toggleContactInput()">
-                        <option value="whatsapp">📱 WhatsApp</option>
-                        <option value="email">✉️ E-mail</option>
-                    </select>
+            <!-- FormSubmit Form Integrado -->
+            <form id="orderForm" onsubmit="submitFormSubmit(event)">
+                <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem;">
+                    <input type="text" id="clientName" name="Nome" class="form-input" placeholder="Seu nome completo" required>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Forma de Contato:</label>
+                        <select id="contactMethod" class="form-select" onchange="toggleContactInput()">
+                            <option value="whatsapp">📱 WhatsApp</option>
+                            <option value="email">✉️ E-mail</option>
+                        </select>
+                    </div>
+
+                    <input type="text" id="clientContact" name="WhatsApp / Contato" class="form-input" placeholder="Número do WhatsApp com DDD Ex: (41) 99968-2836" required>
+                    <input type="email" id="clientEmail" name="E-mail" class="form-input" placeholder="Seu E-mail (Opcional)">
+                    <textarea id="orderNotes" name="Observações" class="form-textarea" rows="2" placeholder="Observações do pedido (opcional)"></textarea>
                 </div>
 
-                <input type="text" id="clientContact" class="form-input" placeholder="Número do WhatsApp (com DDD)" required>
-                <textarea id="orderNotes" class="form-textarea" rows="2" placeholder="Observações do pedido (opcional)"></textarea>
-            </div>
-
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem;">
-                * Valores e detalhes serão confirmados antes da finalização.
-            </p>
-
-            <button class="btn btn-primary" style="width: 100%;" onclick="finalizeOrder()">
-                <i data-lucide="check-circle"></i> Finalizar Pedido
-            </button>
+                <button type="submit" class="btn btn-primary" id="btnSubmitOrder" style="width: 100%;">
+                    <i data-lucide="check-circle"></i> Finalizar Pedido
+                </button>
+            </form>
         </div>
     </div>
 
     <!-- ==========================================================================
        LÓGICA JAVASCRIPT CENTRALIZADA E EDITÁVEL
-       ========================================================================== -->
+       ========================================================================== */ -->
     <script>
         /* --------------------------------------------------------------------------
-           1. CONFIGURAÇÕES & DADOS CENTRALIZADOS (EDITÁVEIS)
+           1. CONFIGURAÇÕES & DADOS CENTRALIZADOS
            -------------------------------------------------------------------------- */
-        const WHATSAPP_CONTATO = "5500000000000"; // INSIRA O NÚMERO DO WHATSAPP DO PRINTEXPRESS AQUI
+        const WHATSAPP_CONTATO = "5541999682836"; 
+        const TELEFONE_FORMATADO = "(41) 99968-2836";
+        const FORMSUBMIT_EMAIL = "ws8530135@gmail.com";
+
+        // TABELA DE PREÇOS INTERNA DA IMPRESSÃO (NÃO REVELADA AO CLIENTE)
+        const CUSTOS_IMPRESSAO = {
+            custoFolhaPB: 0.35,
+            custoFolhaColor: 0.75,
+            paginasPadraoPorPDF: 1 
+        };
 
         const AVISOS = [
-            { id: 1, badge: "📢 NOVO", texto: "Novos modelos de folhas de ponto disponíveis no catálogo." },
-            { id: 2, badge: "💻 DIGITAL", texto: "Alguns modelos podem ser preenchidos diretamente no computador ou celular." },
-            { id: 3, badge: "📄 PRÁTICO", texto: "Modelos prontos para você não começar seus documentos do zero." },
-            { id: 4, badge: "🖨️ IMPRESSÃO?", texto: "Caso precise imprimir, utilize o serviço de impressão física do PrintExpress." }
+            { 
+                id: 1, 
+                badge: "📢 NOVO", 
+                titulo: "Modelos Padronizados & Práticos", 
+                texto: "Novas folhas de ponto e relatórios prontos para utilização rápida e organização da sua rotina." 
+            },
+            { 
+                id: 2, 
+                badge: "💻 DIGITAL & MANUAL", 
+                titulo: "Escolha como Deseja Preencher", 
+                texto: "Disponibilizamos modelos otimizados para preenchimento manual impresso ou digital no computador e celular." 
+            },
+            { 
+                id: 3, 
+                badge: "🖨️ IMPRESSÃO OPCIONAL", 
+                titulo: "Receba Também Impresso", 
+                texto: "Agora você pode solicitar tanto o arquivo digital quanto a impressão física direta no seu pedido." 
+            }
         ];
 
         const CATEGORIAS = [
@@ -1500,6 +1633,7 @@
             { id: "admin", nome: "🏢 Administrativos" }
         ];
 
+        // ESTRUTURA CENTRALIZADA DE PRODUTOS COM CAMINHOS PARA A PASTA pdfs/
         const PRODUTOS = [
             // FOLHAS DE PONTO
             {
@@ -1509,6 +1643,8 @@
                 descricao: "Modelo simples para registrar horários de entrada, saída e intervalo.",
                 preco: 3.00,
                 formato: "PDF",
+                paginas: 1,
+                pdf: "pdfs/folha-ponto-basica.pdf",
                 preenchimentoPermitido: ["manual", "digital"],
                 badge: "Mais simples",
                 imagem: "",
@@ -1521,6 +1657,8 @@
                 descricao: "Modelo organizado para controle mensal de jornada, horários e observações.",
                 preco: 5.00,
                 formato: "PDF",
+                paginas: 1,
+                pdf: "pdfs/folha-ponto-completa.pdf",
                 preenchimentoPermitido: ["manual", "digital"],
                 badge: "Completa",
                 imagem: "",
@@ -1533,6 +1671,8 @@
                 descricao: "Controle de entrada, saída, intervalo e retorno durante o expediente.",
                 preco: 5.00,
                 formato: "PDF",
+                paginas: 1,
+                pdf: "pdfs/folha-ponto-intervalos.pdf",
                 preenchimentoPermitido: ["manual", "digital"],
                 badge: "",
                 imagem: "",
@@ -1545,6 +1685,8 @@
                 descricao: "Modelo compacto para controle de horários durante a semana.",
                 preco: 3.00,
                 formato: "PDF",
+                paginas: 1,
+                pdf: "pdfs/folha-ponto-semanal.pdf",
                 preenchimentoPermitido: ["manual", "digital"],
                 badge: "",
                 imagem: "",
@@ -1557,6 +1699,8 @@
                 descricao: "Modelo organizado para identificação do funcionário e registro dos horários.",
                 preco: 5.00,
                 formato: "PDF",
+                paginas: 1,
+                pdf: "pdfs/folha-ponto-funcionarios.pdf",
                 preenchimentoPermitido: ["manual", "digital"],
                 badge: "",
                 imagem: "",
@@ -1569,6 +1713,8 @@
                 descricao: "Modelo para registrar horários e acompanhar saldo de horas. *Modelo de controle interno.",
                 preco: 7.00,
                 formato: "PDF",
+                paginas: 1,
+                pdf: "pdfs/folha-ponto-banco-horas.pdf",
                 preenchimentoPermitido: ["digital"],
                 badge: "Digital",
                 imagem: "",
@@ -1583,6 +1729,8 @@
                 descricao: "Modelo básico para registrar informações, atividades, resultados e observações.",
                 preco: 5.00,
                 formato: "PDF",
+                paginas: 1,
+                pdf: "pdfs/relatorio-simples.pdf",
                 preenchimentoPermitido: ["manual", "digital"],
                 badge: "",
                 imagem: "",
@@ -1595,6 +1743,8 @@
                 descricao: "Modelo para registrar atividades realizadas, períodos, responsáveis e observações.",
                 preco: 7.00,
                 formato: "PDF",
+                paginas: 1,
+                pdf: "pdfs/relatorio-atividades.pdf",
                 preenchimentoPermitido: ["manual", "digital"],
                 badge: "",
                 imagem: "",
@@ -1607,6 +1757,8 @@
                 descricao: "Modelo organizado para acompanhamento mensal de atividades e resultados.",
                 preco: 8.00,
                 formato: "PDF",
+                paginas: 2,
+                pdf: "pdfs/relatorio-mensal.pdf",
                 preenchimentoPermitido: ["manual", "digital"],
                 badge: "Popular",
                 imagem: "",
@@ -1619,6 +1771,8 @@
                 descricao: "Modelo para registrar serviços realizados, datas, responsáveis e observações.",
                 preco: 7.00,
                 formato: "PDF",
+                paginas: 1,
+                pdf: "pdfs/relatorio-servicos.pdf",
                 preenchimentoPermitido: ["manual", "digital"],
                 badge: "",
                 imagem: "",
@@ -1631,6 +1785,8 @@
                 descricao: "Modelo para registrar ocorrências, datas, descrição e providências.",
                 preco: 7.00,
                 formato: "PDF",
+                paginas: 1,
+                pdf: "pdfs/relatorio-ocorrencias.pdf",
                 preenchimentoPermitido: ["manual", "digital"],
                 badge: "",
                 imagem: "",
@@ -1638,14 +1794,14 @@
             },
 
             // ADMINISTRATIVOS
-            { id: "adm-entregas", categoria: "admin", nome: "Controle de Entregas", descricao: "Registro de entregas e protocolo.", preco: 5.00, formato: "PDF", preenchimentoPermitido: ["manual", "digital"], badge: "", imagem: "", destaque: false },
-            { id: "adm-servicos", categoria: "admin", nome: "Controle de Serviços", descricao: "Acompanhamento de ordens de serviço.", preco: 5.00, formato: "PDF", preenchimentoPermitido: ["manual", "digital"], badge: "", imagem: "", destaque: false },
-            { id: "adm-materiais", categoria: "admin", nome: "Controle de Materiais", descricao: "Entrada e saída de insumos/estoque.", preco: 5.00, formato: "PDF", preenchimentoPermitido: ["manual", "digital"], badge: "", imagem: "", destaque: false },
-            { id: "adm-atividades", categoria: "admin", nome: "Registro de Atividades", descricao: "Quadro simplificado de tarefas diárias.", preco: 5.00, formato: "PDF", preenchimentoPermitido: ["manual", "digital"], badge: "", imagem: "", destaque: false },
-            { id: "adm-visitas", categoria: "admin", nome: "Controle de Visitas", descricao: "Registro de visitantes e horários.", preco: 5.00, formato: "PDF", preenchimentoPermitido: ["manual", "digital"], badge: "", imagem: "", destaque: false },
-            { id: "adm-presenca", categoria: "admin", nome: "Lista de Presença", descricao: "Lista padronizada para reuniões ou eventos.", preco: 4.00, formato: "PDF", preenchimentoPermitido: ["manual"], badge: "", imagem: "", destaque: true },
-            { id: "adm-horarios", categoria: "admin", nome: "Controle de Horários", descricao: "Grade genérica para turnos de trabalho.", preco: 5.00, formato: "PDF", preenchimentoPermitido: ["manual", "digital"], badge: "", imagem: "", destaque: false },
-            { id: "adm-checklist", categoria: "admin", nome: "Checklist de Atividades", descricao: "Lista de verificação para rotinas diárias.", preco: 5.00, formato: "PDF", preenchimentoPermitido: ["manual", "digital"], badge: "", imagem: "", destaque: false }
+            { id: "adm-entregas", categoria: "admin", nome: "Controle de Entregas", descricao: "Registro de entregas e protocolo.", preco: 5.00, formato: "PDF", paginas: 1, pdf: "pdfs/adm-entregas.pdf", preenchimentoPermitido: ["manual", "digital"], badge: "", imagem: "", destaque: false },
+            { id: "adm-servicos", categoria: "admin", nome: "Controle de Serviços", descricao: "Acompanhamento de ordens de serviço.", preco: 5.00, formato: "PDF", paginas: 1, pdf: "pdfs/adm-servicos.pdf", preenchimentoPermitido: ["manual", "digital"], badge: "", imagem: "", destaque: false },
+            { id: "adm-materiais", categoria: "admin", nome: "Controle de Materiais", descricao: "Entrada e saída de insumos/estoque.", preco: 5.00, formato: "PDF", paginas: 1, pdf: "pdfs/adm-materiais.pdf", preenchimentoPermitido: ["manual", "digital"], badge: "", imagem: "", destaque: false },
+            { id: "adm-atividades", categoria: "admin", nome: "Registro de Atividades", descricao: "Quadro simplificado de tarefas diárias.", preco: 5.00, formato: "PDF", paginas: 1, pdf: "pdfs/adm-atividades.pdf", preenchimentoPermitido: ["manual", "digital"], badge: "", imagem: "", destaque: false },
+            { id: "adm-visitas", categoria: "admin", nome: "Controle de Visitas", descricao: "Registro de visitantes e horários.", preco: 5.00, formato: "PDF", paginas: 1, pdf: "pdfs/adm-visitas.pdf", preenchimentoPermitido: ["manual", "digital"], badge: "", imagem: "", destaque: false },
+            { id: "adm-presenca", categoria: "admin", nome: "Lista de Presença", descricao: "Lista padronizada para reuniões ou eventos.", preco: 4.00, formato: "PDF", paginas: 1, pdf: "pdfs/adm-presenca.pdf", preenchimentoPermitido: ["manual"], badge: "", imagem: "", destaque: true },
+            { id: "adm-horarios", categoria: "admin", nome: "Controle de Horários", descricao: "Grade genérica para turnos de trabalho.", preco: 5.00, formato: "PDF", paginas: 1, pdf: "pdfs/adm-horarios.pdf", preenchimentoPermitido: ["manual", "digital"], badge: "", imagem: "", destaque: false },
+            { id: "adm-checklist", categoria: "admin", nome: "Checklist de Atividades", descricao: "Lista de verificação para rotinas diárias.", preco: 5.00, formato: "PDF", paginas: 1, pdf: "pdfs/adm-checklist.pdf", preenchimentoPermitido: ["manual", "digital"], badge: "", imagem: "", destaque: false }
         ];
 
         /* --------------------------------------------------------------------------
@@ -1654,7 +1810,8 @@
         let carrinho = [];
         let categoriaAtiva = "todos";
         let noticeIndex = 0;
-        let selecaoPreenchimento = {}; // Guarda a escolha do usuário por produto
+        let selecaoPreenchimento = {}; 
+        let featuredInterval = null;
 
         /* --------------------------------------------------------------------------
            3. INICIALIZAÇÃO & TEMA
@@ -1666,12 +1823,12 @@
             renderProducts();
             renderFeatured();
             setupCarouselEvents();
+            setupFeaturedCarousel();
             setupFaqEvents();
             setupMobileMenu();
             lucide.createIcons();
         });
 
-        // Tema Claro / Escuro com LocalStorage
         function initTheme() {
             const savedTheme = localStorage.getItem("printexpress_theme") || "light";
             document.documentElement.setAttribute("data-theme", savedTheme);
@@ -1697,32 +1854,59 @@
         }
 
         /* --------------------------------------------------------------------------
-           4. CARROSSEL DE AVISOS
+           4. CARROSSEL DE AVISOS (AMPLIADO, AUTOMÁTICO & SEM SETAS)
            -------------------------------------------------------------------------- */
         function renderNotices() {
             const container = document.getElementById("noticeContainer");
+            const indicators = document.getElementById("noticeIndicators");
+
             container.innerHTML = AVISOS.map((a, index) => `
-                <div class="notice-slide ${index === 0 ? 'active' : ''}">
+                <div class="notice-slide ${index === 0 ? 'active' : ''}" data-index="${index}">
                     <span class="notice-badge">${a.badge}</span>
-                    <span class="notice-text">${a.texto}</span>
+                    <div class="notice-content-body">
+                        <h3 class="notice-title">${a.titulo}</h3>
+                        <p class="notice-text">${a.texto}</p>
+                    </div>
                 </div>
+            `).join('');
+
+            indicators.innerHTML = AVISOS.map((_, index) => `
+                <span class="indicator-dot ${index === 0 ? 'active' : ''}" onclick="goToNotice(${index})"></span>
             `).join('');
         }
 
         function setupCarouselEvents() {
-            document.getElementById("prevNotice").addEventListener("click", () => moveNotice(-1));
-            document.getElementById("nextNotice").addEventListener("click", () => moveNotice(1));
-
-            // Auto-play
-            setInterval(() => moveNotice(1), 5000);
+            setInterval(() => {
+                moveNotice(1);
+            }, 6000); 
         }
 
         function moveNotice(direction) {
             const slides = document.querySelectorAll(".notice-slide");
+            const dots = document.querySelectorAll(".indicator-dot");
             if (!slides.length) return;
+
             slides[noticeIndex].classList.remove("active");
+            if (dots[noticeIndex]) dots[noticeIndex].classList.remove("active");
+
             noticeIndex = (noticeIndex + direction + slides.length) % slides.length;
+
             slides[noticeIndex].classList.add("active");
+            if (dots[noticeIndex]) dots[noticeIndex].classList.add("active");
+        }
+
+        function goToNotice(index) {
+            const slides = document.querySelectorAll(".notice-slide");
+            const dots = document.querySelectorAll(".indicator-dot");
+            if (!slides[index]) return;
+
+            slides[noticeIndex].classList.remove("active");
+            if (dots[noticeIndex]) dots[noticeIndex].classList.remove("active");
+
+            noticeIndex = index;
+
+            slides[noticeIndex].classList.add("active");
+            if (dots[noticeIndex]) dots[noticeIndex].classList.add("active");
         }
 
         /* --------------------------------------------------------------------------
@@ -1750,7 +1934,6 @@
                 : PRODUTOS.filter(p => p.categoria === categoriaAtiva);
 
             grid.innerHTML = filtrados.map(p => {
-                // Definir opção default de preenchimento
                 if (!selecaoPreenchimento[p.id]) {
                     selecaoPreenchimento[p.id] = p.preenchimentoPermitido[0];
                 }
@@ -1821,27 +2004,61 @@
             renderProducts();
         }
 
+        /* --------------------------------------------------------------------------
+           6. CARROSSEL DE DESTAQUES (AUTOMÁTICO & CONTÍNUO)
+           -------------------------------------------------------------------------- */
         function renderFeatured() {
             const track = document.getElementById("featuredTrack");
             const destaques = PRODUTOS.filter(p => p.destaque);
 
             track.innerHTML = destaques.map(p => `
-                <div class="product-card" style="min-width: 260px; max-width: 280px;">
+                <div class="product-card" style="min-width: 270px; max-width: 280px; flex-shrink: 0;">
                     <div class="product-content">
                         <h4 style="font-size: 1rem; margin-bottom: 0.3rem;">${p.nome}</h4>
                         <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">${p.descricao}</p>
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto;">
                             <strong style="color:var(--primary);">R$ ${p.preco.toFixed(2).replace('.', ',')}</strong>
-                            <button class="btn btn-outline" style="padding: 0.35rem 0.65rem; font-size: 0.75rem;" onclick="openModal('${p.id}')">Ver modelo</button>
+                            <div style="display:flex; gap:0.25rem;">
+                                <button class="btn btn-outline" style="padding: 0.35rem 0.5rem; font-size: 0.75rem;" onclick="openModal('${p.id}')"><i data-lucide="eye" style="width:12px;"></i></button>
+                                <button class="btn btn-primary" style="padding: 0.35rem 0.65rem; font-size: 0.75rem;" onclick="addToCart('${p.id}')">Adicionar</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             `).join('');
+            
+            lucide.createIcons();
+        }
+
+        function setupFeaturedCarousel() {
+            const track = document.getElementById("featuredTrack");
+            let offset = 0;
+            const itemWidth = 294; 
+
+            if (featuredInterval) clearInterval(featuredInterval);
+
+            featuredInterval = setInterval(() => {
+                const totalItems = track.children.length;
+                const maxOffset = (totalItems - 1) * itemWidth;
+                
+                offset += itemWidth;
+                if (offset > maxOffset) {
+                    offset = 0;
+                }
+                track.style.transform = `translateX(-${offset}px)`;
+            }, 4500);
         }
 
         /* --------------------------------------------------------------------------
-           6. GERENCIAMENTO DO CARRINHO DE PEDIDOS
+           7. CÁLCULO DE IMPRESSÃO & GERENCIAMENTO DO CARRINHO
            -------------------------------------------------------------------------- */
+        function calcularValorImpressao(paginasPdf, copias, tipoColor, frenteVerso) {
+            let paginasTotais = paginasPdf * copias;
+            let folhas = frenteVerso ? Math.ceil(paginasTotais / 2) : paginasTotais;
+            let precoPorFolha = (tipoColor === 'color') ? CUSTOS_IMPRESSAO.custoFolhaColor : CUSTOS_IMPRESSAO.custoFolhaPB;
+            return folhas * precoPorFolha;
+        }
+
         function addToCart(productId) {
             const prod = PRODUTOS.find(p => p.id === productId);
             if (!prod) return;
@@ -1859,8 +2076,15 @@
                     id: prod.id,
                     nome: prod.nome,
                     preco: prod.preco,
+                    paginas: prod.paginas || 1,
+                    pdf: prod.pdf,
                     modalidade: modalidade,
-                    quantidade: 1
+                    quantidade: 1,
+                    // Opções de Impressão
+                    querImpressao: false,
+                    imprCopias: 1,
+                    imprTipo: "pb", // pb ou color
+                    imprFrenteVerso: true
                 });
             }
 
@@ -1868,12 +2092,20 @@
             openCart();
         }
 
+        function toggleCartItemImpressao(index, checked) {
+            carrinho[index].querImpressao = checked;
+            updateCartUI();
+        }
+
+        function updateCartItemImpressaoOpt(index, field, value) {
+            carrinho[index][field] = value;
+            updateCartUI();
+        }
+
         function updateCartUI() {
-            // Badge
             const totalItens = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
             document.getElementById("cartBadge").innerText = totalItens;
 
-            // Container
             const container = document.getElementById("cartItemsContainer");
 
             if (carrinho.length === 0) {
@@ -1884,33 +2116,94 @@
                     </div>
                 `;
             } else {
-                container.innerHTML = carrinho.map((item, idx) => `
+                container.innerHTML = carrinho.map((item, idx) => {
+                    let valorDigitalSubtotal = item.preco * item.quantidade;
+                    let valorImpressaoSubtotal = 0;
+
+                    if (item.querImpressao) {
+                        valorImpressaoSubtotal = calcularValorImpressao(
+                            item.paginas,
+                            item.imprCopias,
+                            item.imprTipo,
+                            item.imprFrenteVerso
+                        );
+                    }
+
+                    let subtotalItemTotal = valorDigitalSubtotal + valorImpressaoSubtotal;
+
+                    return `
                     <div class="cart-item">
-                        <div class="cart-item-info" style="flex:1;">
-                            <h4>${item.nome}</h4>
-                            <p>Preenchimento: <strong>${item.modalidade === 'digital' ? 'Digital' : 'Manual'}</strong></p>
-                            <p>Unidade: R$ ${item.preco.toFixed(2).replace('.', ',')}</p>
-                            
-                            <div class="cart-controls">
-                                <button class="qty-btn" onclick="changeQty(${idx}, -1)">-</button>
-                                <span style="font-size:0.85rem; font-weight:600;">${item.quantidade}</span>
-                                <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
+                        <div class="cart-item-header">
+                            <div class="cart-item-info">
+                                <h4>${item.nome}</h4>
+                                <p>Preenchimento: <strong>${item.modalidade === 'digital' ? 'Digital' : 'Manual'}</strong></p>
+                                <p>Digital: R$ ${item.preco.toFixed(2).replace('.', ',')}</p>
                             </div>
-                        </div>
-                        <div style="text-align:right;">
-                            <span style="font-weight:700; font-size:0.95rem;">R$ ${(item.preco * item.quantidade).toFixed(2).replace('.', ',')}</span>
-                            <button style="background:none; border:none; color:#ef4444; cursor:pointer; display:block; margin-top:0.5rem; margin-left:auto;" onclick="removeItem(${idx})">
+                            <button style="background:none; border:none; color:#ef4444; cursor:pointer;" onclick="removeItem(${idx})">
                                 <i data-lucide="trash-2" style="width:16px;"></i>
                             </button>
                         </div>
+
+                        <!-- Opção de Impressão Adicional -->
+                        <div style="margin-top: 0.25rem;">
+                            <label style="font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
+                                <input type="checkbox" ${item.querImpressao ? 'checked' : ''} onchange="toggleCartItemImpressao(${idx}, this.checked)">
+                                🖨️ Deseja imprimir este modelo?
+                            </label>
+
+                            ${item.querImpressao ? `
+                                <div class="print-options-box">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <span>Cópias impressas:</span>
+                                        <select class="form-select" style="padding: 0.2rem 0.4rem; font-size:0.75rem;" onchange="updateCartItemImpressaoOpt(${idx}, 'imprCopias', parseInt(this.value))">
+                                            ${[1,2,3,4,5,10,20,50].map(c => `<option value="${c}" ${item.imprCopias === c ? 'selected' : ''}>${c} ${c === 1 ? 'cópia' : 'cópias'}</option>`).join('')}
+                                        </select>
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <span>Impressão:</span>
+                                        <select class="form-select" style="padding: 0.2rem 0.4rem; font-size:0.75rem;" onchange="updateCartItemImpressaoOpt(${idx}, 'imprTipo', this.value)">
+                                            <option value="pb" ${item.imprTipo === 'pb' ? 'selected' : ''}>Preto & Branco</option>
+                                            <option value="color" ${item.imprTipo === 'color' ? 'selected' : ''}>Colorida</option>
+                                        </select>
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <span>Formato das folhas:</span>
+                                        <select class="form-select" style="padding: 0.2rem 0.4rem; font-size:0.75rem;" onchange="updateCartItemImpressaoOpt(${idx}, 'imprFrenteVerso', this.value === 'true')">
+                                            <option value="true" ${item.imprFrenteVerso ? 'selected' : ''}>Frente e Verso</option>
+                                            <option value="false" ${!item.imprFrenteVerso ? 'selected' : ''}>Apenas Frente</option>
+                                        </select>
+                                    </div>
+
+                                    <div style="text-align:right; border-top:1px dashed var(--border); padding-top:0.3rem; margin-top:0.2rem; font-weight:600; color:var(--primary);">
+                                        Impressão: R$ ${valorImpressaoSubtotal.toFixed(2).replace('.', ',')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.4rem; padding-top:0.4rem; border-top:1px solid var(--border);">
+                            <div class="cart-controls">
+                                <button class="qty-btn" onclick="changeQty(${idx}, -1)">-</button>
+                                <span style="font-size:0.85rem; font-weight:600;">${item.quantidade}x (digital)</span>
+                                <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
+                            </div>
+                            <span style="font-weight:800; font-size:1rem;">Subtotal: R$ ${subtotalItemTotal.toFixed(2).replace('.', ',')}</span>
+                        </div>
                     </div>
-                `).join('');
+                    `;
+                }).join('');
             }
 
-            // Total
-            const totalVal = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
-            document.getElementById("cartTotalValue").innerText = `R$ ${totalVal.toFixed(2).replace('.', ',')}`;
+            // Total Geral
+            let totalGeral = carrinho.reduce((sum, item) => {
+                let digitalVal = item.preco * item.quantidade;
+                let imprVal = item.querImpressao ? calcularValorImpressao(item.paginas, item.imprCopias, item.imprTipo, item.imprFrenteVerso) : 0;
+                return sum + digitalVal + imprVal;
+            }, 0);
 
+            document.getElementById("cartTotalValue").innerText = `R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
             lucide.createIcons();
         }
 
@@ -1944,13 +2237,13 @@
                 input.placeholder = "Seu melhor E-mail";
                 input.type = "email";
             } else {
-                input.placeholder = "Número do WhatsApp (com DDD)";
+                input.placeholder = "Número do WhatsApp com DDD Ex: (99) 99999-9999";
                 input.type = "text";
             }
         }
 
         /* --------------------------------------------------------------------------
-           7. MODAL DE PRÉVIA
+           8. MODAL DE PRÉVIA DOS MODELOS (PASTA pdfs/)
            -------------------------------------------------------------------------- */
         function openModal(productId) {
             const prod = PRODUTOS.find(p => p.id === productId);
@@ -1961,14 +2254,20 @@
             document.getElementById("modalPrice").innerText = `R$ ${prod.preco.toFixed(2).replace('.', ',')}`;
 
             const box = document.getElementById("modalPreviewBox");
+            
+            // Tenta carregar imagem ou verifica se existe caminho de PDF
             if (prod.imagem) {
                 box.innerHTML = `<img src="${prod.imagem}" alt="${prod.nome}" style="max-width:100%; max-height:100%; border-radius:8px;">`;
             } else {
+                // Tratamento gracioso se o PDF ainda não estiver presente na pasta pdfs/
                 box.innerHTML = `
-                    <div style="text-align:center; color:var(--text-muted);">
-                        <i data-lucide="file-text" style="width:56px; height:56px; margin-bottom:0.5rem;"></i>
-                        <p style="font-weight:600;">Prévia do Modelo Digital</p>
-                        <span style="font-size:0.75rem;">Formato PDF - Próprio para uso em A4</span>
+                    <div style="text-align:center; color:var(--text-muted); padding:1rem;">
+                        <i data-lucide="file-text" style="width:56px; height:56px; margin-bottom:0.5rem; color:var(--primary);"></i>
+                        <p style="font-weight:700; color:var(--text-main); font-size:1rem;">${prod.nome}</p>
+                        <p style="font-size:0.85rem; margin-top:0.25rem;">Este modelo ainda não possui arquivo de demonstração em prévia.</p>
+                        <span style="display:inline-block; margin-top:0.75rem; font-size:0.75rem; padding:0.25rem 0.65rem; background:var(--primary-light); color:var(--primary); border-radius:12px; font-weight:600;">
+                            Caminho preparado: ${prod.pdf}
+                        </span>
                     </div>
                 `;
             }
@@ -1988,9 +2287,13 @@
         }
 
         /* --------------------------------------------------------------------------
-           8. ENVIO DO PEDIDO & WHATSAPP
+           9. ENVIO DO PEDIDO VIA FORMSUBMIT & TRATAMENTO DE ERROS / REDIRECIONAMENTO
            -------------------------------------------------------------------------- */
-        function finalizeOrder() {
+        let fallbackCountdownTimer = null;
+
+        function submitFormSubmit(event) {
+            event.preventDefault();
+
             if (carrinho.length === 0) {
                 alert("Seu carrinho está vazio. Adicione modelos antes de finalizar.");
                 return;
@@ -1998,44 +2301,138 @@
 
             const nome = document.getElementById("clientName").value.trim();
             const contato = document.getElementById("clientContact").value.trim();
+            const email = document.getElementById("clientEmail").value.trim();
             const meioContato = document.getElementById("contactMethod").value;
             const obs = document.getElementById("orderNotes").value.trim();
 
             if (!nome || !contato) {
-                alert("Por favor, preencha seu nome e informação de contato.");
+                alert("Por favor, preencha seu nome e contato.");
                 return;
             }
 
-            const total = carrinho.reduce((sum, i) => sum + (i.preco * i.quantidade), 0);
+            const alertBox = document.getElementById("statusAlert");
+            const btnSubmit = document.getElementById("btnSubmitOrder");
 
-            let mensagem = `📋 *PEDIDO PRINTEXPRESS - MODELOS DIGITAIS*\n\n`;
-            mensagem += `*Cliente:* ${nome}\n`;
-            mensagem += `*Contato (${meioContato}):* ${contato}\n\n`;
-            mensagem += `*ITENS SOLICITADOS:*\n`;
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = `<i data-lucide="loader" class="animate-spin"></i> Enviando pedido...`;
+            lucide.createIcons();
+
+            // Montagem dos Dados Resumidos
+            let totalPedido = 0;
+            let itensDetalhados = [];
 
             carrinho.forEach(item => {
-                mensagem += `• ${item.nome}\n  Preenchimento: ${item.modalidade === 'digital' ? 'Digital' : 'Manual'}\n  Qtd: ${item.quantidade}x | Subtotal: R$ ${(item.preco * item.quantidade).toFixed(2).replace('.', ',')}\n\n`;
+                let digitalVal = item.preco * item.quantidade;
+                let imprVal = item.querImpressao ? calcularValorImpressao(item.paginas, item.imprCopias, item.imprTipo, item.imprFrenteVerso) : 0;
+                let subTotal = digitalVal + imprVal;
+                totalPedido += subTotal;
+
+                let det = `${item.nome} (${item.quantidade}x digital - R$ ${digitalVal.toFixed(2)})`;
+                if (item.querImpressao) {
+                    det += ` + IMPRESSÃO: ${item.imprCopias}x cópia(s), ${item.imprTipo === 'pb' ? 'P&B' : 'Colorida'}, ${item.imprFrenteVerso ? 'Frente/Verso' : 'Frente'} (R$ ${imprVal.toFixed(2)})`;
+                }
+                itensDetalhados.push(det);
             });
 
-            if (obs) {
-                mensagem += `*Observações:* ${obs}\n\n`;
-            }
+            // Payload para FormSubmit
+            const formData = new FormData();
+            formData.append("Cliente", nome);
+            formData.append("Forma de Contato", meioContato);
+            formData.append("Contato Informado", contato);
+            if (email) formData.append("E-mail", email);
+            formData.append("Itens do Pedido", itensDetalhados.join("\n\n"));
+            if (obs) formData.append("Observações", obs);
+            formData.append("Valor Total", `R$ ${totalPedido.toFixed(2).replace('.', ',')}`);
+            formData.append("_subject", `Novo Pedido PrintExpress - ${nome}`);
+            formData.append("_template", "table");
+            formData.append("_captcha", "false");
 
-            mensagem += `*TOTAL ESTIMADO:* R$ ${total.toFixed(2).replace('.', ',')}\n\n`;
-            mensagem += `_Mensagem gerada pelo catálogo de modelos digitais PrintExpress._`;
+            // Envio via Fetch para o endpoint do FormSubmit
+            fetch(`https://formsubmit.co/ajax/${FORMSUBMIT_EMAIL}`, {
+                method: "POST",
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Falha na resposta do servidor.");
+                }
+            })
+            .then(data => {
+                // SUCESSO NO ENVIO
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = `<i data-lucide="check-circle"></i> Finalizar Pedido`;
+                
+                alertBox.className = "status-alert success";
+                alertBox.innerHTML = `
+                    <strong>✅ Pedido enviado com sucesso!</strong><br>
+                    Recebemos as informações do seu pedido. Em breve, entraremos em contato para confirmar os detalhes.
+                `;
 
-            if (meioContato === "whatsapp") {
-                const encodedMsg = encodeURIComponent(mensagem);
-                window.open(`https://wa.me/${WHATSAPP_CONTATO}?text=${encodedMsg}`, '_blank');
-            } else {
-                alert("Pedido gerado com sucesso! Em breve entraremos em contato via E-mail.");
-                console.log("Pedido E-mail:", mensagem);
-            }
+                carrinho = [];
+                updateCartUI();
+                document.getElementById("orderForm").reset();
+            })
+            .catch(error => {
+                // ERRO NO ENVIO - ACIONA FALLBACK PARA WHATSAPP
+                console.error("Erro ao enviar pelo Servidor:", error);
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = `<i data-lucide="check-circle"></i> Tentar Novamente`;
 
-            // Opcional: Limpar carrinho após finalização
-            carrinho = [];
-            updateCartUI();
-            closeCart();
+                // Montar Mensagem para WhatsApp
+                let msgWhats = `📋 *SOLICITAÇÃO DE PEDIDO (PRINTEXPRESS)*\n\n`;
+                msgWhats += `*Cliente:* ${nome}\n`;
+                msgWhats += `*Contato:* ${contato}\n`;
+                if (email) msgWhats += `*E-mail:* ${email}\n`;
+                msgWhats += `\n*ITENS:* \n`;
+
+                carrinho.forEach(item => {
+                    let digitalVal = item.preco * item.quantidade;
+                    let imprVal = item.querImpressao ? calcularValorImpressao(item.paginas, item.imprCopias, item.imprTipo, item.imprFrenteVerso) : 0;
+                    
+                    msgWhats += `• *${item.nome}*\n  Modo: ${item.modalidade === 'digital' ? 'Digital' : 'Manual'} (${item.quantidade}x)\n`;
+                    if (item.querImpressao) {
+                        msgWhats += `  🖨️ Impressão: ${item.imprCopias}x, ${item.imprTipo === 'pb' ? 'P&B' : 'Colorida'}, ${item.imprFrenteVerso ? 'Frente/Verso' : 'Frente'}\n`;
+                    }
+                    msgWhats += `  Subtotal: R$ ${(digitalVal + imprVal).toFixed(2).replace('.', ',')}\n\n`;
+                });
+
+                if (obs) msgWhats += `*Obs:* ${obs}\n\n`;
+                msgWhats += `*TOTAL:* R$ ${totalPedido.toFixed(2).replace('.', ',')}\n`;
+
+                const encodedWhats = encodeURIComponent(msgWhats);
+                const whatsUrl = `https://wa.me/${WHATSAPP_CONTATO}?text=${encodedWhats}`;
+
+                let segundos = 5;
+                alertBox.className = "status-alert error";
+                
+                function updateErrorText() {
+                    alertBox.innerHTML = `
+                        <strong>Não foi possível enviar seu pedido automaticamente.</strong><br>
+                        Você será direcionado para o WhatsApp em alguns segundos para que possamos receber sua solicitação.<br><br>
+                        <strong>Redirecionando em ${segundos}...</strong><br><br>
+                        <a href="${whatsUrl}" target="_blank" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; display: inline-block; margin-top: 0.3rem;">
+                            Enviar pelo WhatsApp agora
+                        </a>
+                    `;
+                    lucide.createIcons();
+                }
+
+                updateErrorText();
+
+                if (fallbackCountdownTimer) clearInterval(fallbackCountdownTimer);
+
+                fallbackCountdownTimer = setInterval(() => {
+                    segundos--;
+                    if (segundos <= 0) {
+                        clearInterval(fallbackCountdownTimer);
+                        window.open(whatsUrl, '_blank');
+                    } else {
+                        updateErrorText();
+                    }
+                }, 1000);
+            });
         }
 
         function handleCustomSubmit(e) {
@@ -2055,7 +2452,7 @@
         }
 
         /* --------------------------------------------------------------------------
-           9. DEMAIS EVENTOS (FAQ, MENU MOBILE)
+           10. DEMAIS EVENTOS (FAQ, MENU MOBILE)
            -------------------------------------------------------------------------- */
         function setupFaqEvents() {
             document.querySelectorAll(".faq-question").forEach(btn => {
