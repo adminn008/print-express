@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- CDN Dependencies for PDF and ZIP generation -->
+  <!-- CDN Dependencies for Static PDF and ZIP generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -224,7 +224,7 @@
       box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
     }
 
-    /* Document Real Page Representation (A4 Sheet strictly force light mode print view) */
+    /* Document Real Page Representation (A4 Sheet strictly forced light mode print view) */
     .a4-page {
       background: #ffffff !important;
       color: #000000 !important;
@@ -251,7 +251,7 @@
     .doc-meta-item strong { min-width: 75px; text-transform: uppercase; }
     
     .doc-table { width: 100%; border-collapse: collapse; font-size: 7.5pt; margin-bottom: 12px; color: #000; }
-    .doc-table th, .doc-table td { border: 1px solid #000; padding: 3px 5px; text-align: center; }
+    .doc-table th, .doc-table td { border: 1px solid #000; padding: 4px 5px; text-align: center; }
     .doc-table th { background-color: #e2e8f0; font-weight: bold; text-transform: uppercase; font-size: 7pt; }
 
     .doc-footer { margin-top: auto; padding-top: 10px; border-top: 1px solid #ccc; display: flex; justify-content: space-between; align-items: flex-end; font-size: 7pt; color: #555; }
@@ -307,13 +307,13 @@
     <!-- HOME VIEW: Model Selection -->
     <section id="view-home">
       <div class="hero">
-        <h1>📋 Gerador de Documentos Estáticos</h1>
-        <p>Painel administrativo para preenchimento, personalização e emissão de PDFs finais prontos para impressão ou envio.</p>
+        <h1>📋 Gerador Interno de Documentos Estáticos</h1>
+        <p>Selecione um modelo, defina as informações, gere o PDF não editável final e faça o download para enviar ao cliente ou imprimir.</p>
       </div>
 
       <!-- Categories -->
       <div class="categories" id="category-nav">
-        <button class="cat-btn active" onclick="app.filterCategory('all')">Todos (+25)</button>
+        <button class="cat-btn active" onclick="app.filterCategory('all')">Todos (25)</button>
         <button class="cat-btn" onclick="app.filterCategory('Folhas de Ponto')">📋 Folhas de Ponto</button>
         <button class="cat-btn" onclick="app.filterCategory('Controle & Horas')">⏱️ Controle & Banco de Horas</button>
         <button class="cat-btn" onclick="app.filterCategory('Relatórios')">📊 Relatórios</button>
@@ -372,16 +372,16 @@
 
           <!-- Employee Capacity Controller (For Employee-related Models) -->
           <div class="form-section" id="section-emp-capacity" style="display: none;">
-            <div class="form-section-title"><i class="fa-solid fa-users-gear"></i> Capacidade de Funcionários (Até 50)</div>
+            <div class="form-section-title"><i class="fa-solid fa-users-gear"></i> Quantidade de Funcionários (Até 50)</div>
             <div class="form-group">
-              <label>Quantidade de funcionários no documento:</label>
+              <label>Escolha a quantidade exata para o PDF:</label>
               <div class="emp-counter">
                 <button onclick="app.changeEmpCount(-1)">-</button>
                 <input type="number" id="cfg-emp-count" value="1" min="1" max="50" readonly onchange="app.updateEmpCount()">
                 <button onclick="app.changeEmpCount(1)">+</button>
               </div>
               <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 0.3rem;">
-                O PDF adaptará o layout para exibir somente os funcionários selecionados.
+                O PDF gerará rigorosamente a quantidade informada (ex: 32 trará 32 funcionários).
               </small>
             </div>
           </div>
@@ -406,7 +406,7 @@
 
           <!-- Batch Generation -->
           <div class="form-section">
-            <div class="form-section-title"><i class="fa-solid fa-copy"></i> Emissão em Lote (Vários PDFs)</div>
+            <div class="form-section-title"><i class="fa-solid fa-copy"></i> Emissão em Lote (Vários PDFs Estáticos)</div>
             <button class="btn btn-outline btn-sm" style="width: 100%;" onclick="app.openBatchModal()">
               <i class="fa-solid fa-file-zipper"></i> Gerar lote para múltiplos funcionários / clientes (ZIP)
             </button>
@@ -433,7 +433,7 @@
                   <h3 id="render-empresa" style="font-size: 11pt; color: #333; margin-top:2px;">PrintExpress Serviços</h3>
                 </div>
                 <div class="doc-title-area">
-                  <h2 id="render-doc-title">TITULO DO DOCUMENTO</h2>
+                  <h2 id="render-doc-title">TÍTULO DO DOCUMENTO</h2>
                   <p id="render-doc-subtitle">Documento Interno - Final Estático</p>
                 </div>
               </div>
@@ -481,47 +481,47 @@
   </div>
 
   <script>
-    /* Sistema de Mais de 20 Modelos Específicos */
+    /* Sistema com 25 Modelos Exclusivos solicitados */
     const documentModels = [
-      // 1 a 7: Folhas de Ponto
-      { id: "folha-ponto-mensal", nome: "Folha de Ponto Mensal", categoria: "Folhas de Ponto", icon: "fa-regular fa-calendar-check", descricao: "Controle mensal completo para até 50 funcionários.", maxEmp: 50, isPonto: true, days: 30, campos: [{ id: "periodo", label: "Período Mês/Ano", type: "month", default: "2026-09" }] },
-      { id: "folha-ponto-semanal", nome: "Folha de Ponto Semanal", categoria: "Folhas de Ponto", icon: "fa-solid fa-calendar-week", descricao: "Acompanhamento semanal de horários com controle até 50 funcionários.", maxEmp: 50, isPonto: true, days: 7, campos: [{ id: "semana", label: "Semana De/Até", type: "text", default: "21/09 a 27/09/2026" }] },
-      { id: "folha-ponto-diaria", nome: "Folha de Ponto Diária", categoria: "Folhas de Ponto", icon: "fa-solid fa-calendar-day", descricao: "Registro de presença diário de equipe no local.", maxEmp: 50, isPonto: true, days: 1, campos: [{ id: "data", label: "Data do Dia", type: "date", default: "2026-09-26" }] },
-      { id: "folha-ponto-intervalo", nome: "Folha de Ponto com Intervalo", categoria: "Folhas de Ponto", icon: "fa-solid fa-utensils", descricao: "Folha focada no cumprimento rígido do intervalo intrajornada.", maxEmp: 50, isPonto: true, days: 22, campos: [{ id: "periodo", label: "Mês/Ano", type: "month", default: "2026-09" }] },
-      { id: "folha-ponto-hora-extra", nome: "Folha de Ponto com Hora Extra", categoria: "Folhas de Ponto", icon: "fa-solid fa-clock-rotate-left", descricao: "Controle de jornadas estendidas e adicionais de hora extra.", maxEmp: 50, isPonto: true, days: 22, campos: [{ id: "periodo", label: "Período", type: "month", default: "2026-09" }] },
-      { id: "folha-ponto-simples", nome: "Folha de Ponto Simples", categoria: "Folhas de Ponto", icon: "fa-solid fa-file-lines", descricao: "Modelo enxuto de entrada e saída diária.", maxEmp: 50, isPonto: true, days: 22, campos: [{ id: "periodo", label: "Mês/Ano", type: "month", default: "2026-09" }] },
-      { id: "folha-ponto-funcionarios", nome: "Folha de Ponto de Funcionários", categoria: "Folhas de Ponto", icon: "fa-solid fa-users-viewfinder", descricao: "Visão consolidada para lista de colaboradores.", maxEmp: 50, isPonto: true, days: 30, campos: [{ id: "setor", label: "Setor / Depto", type: "text", default: "Geral" }] },
+      // 1 a 6: Folhas de Ponto Específicas
+      { id: "folha-ponto-mensal", nome: "1. Folha de Ponto Mensal", categoria: "Folhas de Ponto", icon: "fa-regular fa-calendar-check", descricao: "Controle mensal individual ou coletivo com quadro de registros.", hasEmp: true, isPonto: true, days: 30, campos: [{ id: "periodo", label: "Mês/Ano", type: "month", default: "2026-09" }] },
+      { id: "folha-ponto-semanal", nome: "2. Folha de Ponto Semanal", categoria: "Folhas de Ponto", icon: "fa-solid fa-calendar-week", descricao: "Acompanhamento de ponto por semana para jornadas específicas.", hasEmp: true, isPonto: true, days: 7, campos: [{ id: "semana", label: "Semana De/Até", type: "text", default: "21/09 a 27/09/2026" }] },
+      { id: "folha-ponto-intervalo", nome: "3. Folha de Ponto com Intervalo", categoria: "Folhas de Ponto", icon: "fa-solid fa-utensils", descricao: "Detalhamento estrito para horários de almoço e descanso.", hasEmp: true, isPonto: true, days: 22, campos: [{ id: "periodo", label: "Mês/Ano", type: "month", default: "2026-09" }] },
+      { id: "folha-ponto-hora-extra", nome: "4. Folha de Ponto com Hora Extra", categoria: "Folhas de Ponto", icon: "fa-solid fa-clock-rotate-left", descricao: "Registro de horários normais e suplementares acumulados.", hasEmp: true, isPonto: true, days: 22, campos: [{ id: "periodo", label: "Período", type: "month", default: "2026-09" }] },
+      { id: "folha-ponto-simples", nome: "5. Folha de Ponto Simples", categoria: "Folhas de Ponto", icon: "fa-solid fa-file-lines", descricao: "Cartão de ponto enxuto com entradas e saídas diretas.", hasEmp: true, isPonto: true, days: 22, campos: [{ id: "periodo", label: "Mês/Ano", type: "month", default: "2026-09" }] },
+      { id: "folha-ponto-funcionarios", nome: "6. Folha de Ponto para Funcionários", categoria: "Folhas de Ponto", icon: "fa-solid fa-users-viewfinder", descricao: "Mapeamento simplificado para controle geral de equipe.", hasEmp: true, isPonto: true, days: 30, campos: [{ id: "setor", label: "Setor / Depto", type: "text", default: "Operacional" }] },
 
-      // 8 a 11: Controles de Horas e Tarefas
-      { id: "controle-horas", nome: "Controle de Horas", categoria: "Controle & Banco de Horas", icon: "fa-solid fa-stopwatch", descricao: "Acompanhamento exato de horas trabalhadas por projeto.", maxEmp: 50, isPonto: true, days: 15, campos: [{ id: "projeto", label: "Projeto/Cliente", type: "text", default: "Operação Especial" }] },
-      { id: "controle-banco-horas", nome: "Controle de Banco de Horas", categoria: "Controle & Banco de Horas", icon: "fa-solid fa-vault", descricao: "Apuração de saldo positivo e negativo de horas acumuladas.", maxEmp: 50, isPonto: true, days: 20, campos: [{ id: "saldo_anterior", label: "Saldo Anterior (HH:MM)", type: "text", default: "+05:00" }] },
-      { id: "controle-atividades", nome: "Controle de Atividades", categoria: "Controle & Banco de Horas", icon: "fa-solid fa-list-check", descricao: "Tabela de distribuição de atividades cotidianas.", isTextBody: true, campos: [{ id: "responsavel", label: "Supervisor Responsável", type: "text", default: "Carlos Santos" }] },
-      { id: "controle-tarefas", nome: "Controle de Tarefas", categoria: "Controle & Banco de Horas", icon: "fa-solid fa-tasks", descricao: "Checklist operacional de tarefas cumpridas.", isTextBody: true, campos: [{ id: "setor", label: "Setor", type: "text", default: "Produção" }] },
+      // 7 a 10: Controles e Banco de Horas
+      { id: "controle-horas", nome: "7. Controle de Horas", categoria: "Controle & Banco de Horas", icon: "fa-solid fa-stopwatch", descricao: "Apuração exata de horas trabalhadas em projetos.", hasEmp: true, isPonto: true, days: 15, campos: [{ id: "projeto", label: "Projeto / Cliente", type: "text", default: "Projeto Alpha" }] },
+      { id: "controle-banco-horas", nome: "8. Controle de Banco de Horas", categoria: "Controle & Banco de Horas", icon: "fa-solid fa-vault", descricao: "Extrato de horas acumuladas, compensadas e saldo.", hasEmp: true, isPonto: true, days: 20, campos: [{ id: "saldo_anterior", label: "Saldo Anterior (HH:MM)", type: "text", default: "+05:00" }] },
+      { id: "controle-atividades", nome: "9. Controle de Atividades", categoria: "Controle & Banco de Horas", icon: "fa-solid fa-list-check", descricao: "Distribuição e acompanhamento diário de tarefas.", isTextBody: true, campos: [{ id: "supervisor", label: "Supervisor Responsável", type: "text", default: "Carlos Santos" }] },
+      { id: "controle-tarefas", nome: "10. Controle de Tarefas", categoria: "Controle & Banco de Horas", icon: "fa-solid fa-tasks", descricao: "Checklist estático e cronograma de metas executadas.", isTextBody: true, campos: [{ id: "setor", label: "Setor", type: "text", default: "Produção Gráfica" }] },
 
-      // 12 a 21: Relatórios
-      { id: "relatorio-diario", nome: "Relatório Diário", categoria: "Relatórios", icon: "fa-solid fa-sun", descricao: "Resumo diário de ocorrências e metas.", isTextBody: true, campos: [{ id: "data", label: "Data", type: "date", default: "2026-09-26" }] },
-      { id: "relatorio-semanal", nome: "Relatório Semanal", categoria: "Relatórios", icon: "fa-solid fa-chart-simple", descricao: "Consolidado semanal de desempenho e entregas.", isTextBody: true, campos: [{ id: "semana", label: "Semana", type: "text", default: "Semana 38 - 2026" }] },
-      { id: "relatorio-mensal", nome: "Relatório Mensal", categoria: "Relatórios", icon: "fa-solid fa-chart-line", descricao: "Relatório executivo mensal para diretoria/cliente.", isTextBody: true, campos: [{ id: "mes", label: "Mês/Ano", type: "month", default: "2026-09" }] },
-      { id: "relatorio-atividades", nome: "Relatório de Atividades", categoria: "Relatórios", icon: "fa-solid fa-clipboard-list", descricao: "Detalhamento de tarefas executadas por equipe.", isTextBody: true, campos: [{ id: "departamento", label: "Departamento", type: "text", default: "Atendimento" }] },
-      { id: "relatorio-servico", nome: "Relatório de Serviço", categoria: "Relatórios", icon: "fa-solid fa-wrench", descricao: "Ficha de serviços prestados e ordem de execução.", isTextBody: true, campos: [{ id: "cliente", label: "Cliente", type: "text", default: "Empresa Parceira Ltda" }] },
-      { id: "relatorio-ocorrencia", nome: "Relatório de Ocorrência", categoria: "Relatórios", icon: "fa-solid fa-triangle-exclamation", descricao: "Registro de imprevistos e incidentes de trabalho.", isTextBody: true, campos: [{ id: "local", label: "Local da Ocorrência", type: "text", default: "Setor de Logística" }] },
-      { id: "relatorio-atendimento", nome: "Relatório de Atendimento", categoria: "Relatórios", icon: "fa-solid fa-headset", descricao: "Resumo de chamados e suporte prestado.", isTextBody: true, campos: [{ id: "atendente", label: "Atendente", type: "text", default: "Fernanda Lima" }] },
-      { id: "relatorio-producao", nome: "Relatório de Produção", categoria: "Relatórios", icon: "fa-solid fa-industry", descricao: "Métricas e volumes de produção atingidos.", isTextBody: true, campos: [{ id: "linha", label: "Linha de Produção", type: "text", default: "Linha 02 - Impressão" }] },
-      { id: "relatorio-visita", nome: "Relatório de Visita", categoria: "Relatórios", icon: "fa-solid fa-briefcase", descricao: "Relatório de visita técnica ou comercial a clientes.", isTextBody: true, campos: [{ id: "visitado", label: "Empresa Visitada", type: "text", default: "Gráfica Central" }] },
-      { id: "relatorio-manutencao", nome: "Relatório de Manutenção", categoria: "Relatórios", icon: "fa-solid fa-gears", descricao: "Registro de manutenção preventiva e corretiva.", isTextBody: true, campos: [{ id: "maquina", label: "Máquina/Equipamento", type: "text", default: "Impressora Offset X" }] },
+      // 11 a 20: Relatórios Operacionais e de Serviço
+      { id: "relatorio-diario", nome: "11. Relatório Diário", categoria: "Relatórios", icon: "fa-solid fa-sun", descricao: "Síntese diária de acontecimentos e entregas.", isTextBody: true, campos: [{ id: "data", label: "Data do Relatório", type: "date", default: "2026-09-26" }] },
+      { id: "relatorio-semanal", nome: "12. Relatório Semanal", categoria: "Relatórios", icon: "fa-solid fa-chart-simple", descricao: "Consolidado de metas e demandas da semana.", isTextBody: true, campos: [{ id: "semana", label: "Semana De/Até", type: "text", default: "21/09 a 27/09/2026" }] },
+      { id: "relatorio-mensal", nome: "13. Relatório Mensal", categoria: "Relatórios", icon: "fa-solid fa-chart-line", descricao: "Apresentação executiva de resultados mensais.", isTextBody: true, campos: [{ id: "mes", label: "Mês/Ano", type: "month", default: "2026-09" }] },
+      { id: "relatorio-atividades", nome: "14. Relatório de Atividades", categoria: "Relatórios", icon: "fa-solid fa-clipboard-list", descricao: "Prestação de contas das rotinas desempenhadas.", isTextBody: true, campos: [{ id: "departamento", label: "Departamento", type: "text", default: "Atendimento" }] },
+      { id: "relatorio-servico", nome: "15. Relatório de Serviço", categoria: "Relatórios", icon: "fa-solid fa-wrench", descricao: "Laudo técnico e descritivo de serviços executados.", isTextBody: true, campos: [{ id: "cliente", label: "Cliente Atendido", type: "text", default: "Empresa Parceira Ltda" }] },
+      { id: "relatorio-ocorrencia", nome: "16. Relatório de Ocorrência", categoria: "Relatórios", icon: "fa-solid fa-triangle-exclamation", descricao: "Notificação e documentação de imprevistos internos.", isTextBody: true, campos: [{ id: "local", label: "Local da Ocorrência", type: "text", default: "Galpão 02" }] },
+      { id: "relatorio-atendimento", nome: "17. Relatório de Atendimento", categoria: "Relatórios", icon: "fa-solid fa-headset", descricao: "Registro de suporte prestado a clientes.", isTextBody: true, campos: [{ id: "atendente", label: "Atendente", type: "text", default: "Fernanda Lima" }] },
+      { id: "relatorio-producao", nome: "18. Relatório de Produção", categoria: "Relatórios", icon: "fa-solid fa-industry", descricao: "Balanço de volume e eficiência produtiva.", isTextBody: true, campos: [{ id: "linha", label: "Linha de Produção", type: "text", default: "Impressão Off-Set" }] },
+      { id: "relatorio-visita", nome: "19. Relatório de Visita", categoria: "Relatórios", icon: "fa-solid fa-briefcase", descricao: "Ata de visita técnica ou comercial externas.", isTextBody: true, campos: [{ id: "visitado", label: "Empresa Visitada", type: "text", default: "Gráfica Central" }] },
+      { id: "relatorio-manutencao", nome: "20. Relatório de Manutenção", categoria: "Relatórios", icon: "fa-solid fa-gears", descricao: "Ficha de manutenção preventiva/corretiva de máquinas.", isTextBody: true, campos: [{ id: "maquina", label: "Equipamento/Máquina", type: "text", default: "Plotter Roland HP" }] },
 
-      // 22 a 25: Registros e Controles de Funcionários
-      { id: "ficha-acompanhamento", nome: "Ficha de Acompanhamento", categoria: "Registros & Fichas", icon: "fa-solid fa-clipboard-user", descricao: "Acompanhamento individual ou de novos treinados.", maxEmp: 50, isTextBody: true, campos: [{ id: "supervisor", label: "Supervisor", type: "text", default: "Roberto Alves" }] },
-      { id: "registro-servicos", nome: "Registro de Serviços", categoria: "Registros & Fichas", icon: "fa-solid fa-folder-open", descricao: "Log completo de entradas e saídas de ordens de serviço.", isTextBody: true, campos: [{ id: "unidade", label: "Unidade", type: "text", default: "Matriz" }] },
-      { id: "registro-ocorrencias", nome: "Registro de Ocorrências", categoria: "Registros & Fichas", icon: "fa-solid fa-book-bookmark", descricao: "Livro de registro de eventos contínuos.", isTextBody: true, campos: [{ id: "livro_num", label: "Nº do Registro", type: "text", default: "2026/088" }] },
-      { id: "controle-funcionarios", nome: "Controle de Funcionários", categoria: "Registros & Fichas", icon: "fa-solid fa-address-book", descricao: "Ficha de dados gerais e alocação de equipe até 50 integrantes.", maxEmp: 50, isTextBody: true, campos: [{ id: "gestor", label: "Gestor do Setor", type: "text", default: "Mariana Costa" }] }
+      // 21 a 25: Fichas, Registros e Cadastro de Funcionários
+      { id: "ficha-acompanhamento", nome: "21. Ficha de Acompanhamento", categoria: "Registros & Fichas", icon: "fa-solid fa-clipboard-user", descricao: "Ficha de evolução ou onboarding de funcionário.", hasEmp: true, isTextBody: true, campos: [{ id: "evaluator", label: "Avaliador", type: "text", default: "Roberto Alves" }] },
+      { id: "registro-servicos", nome: "22. Registro de Serviços", categoria: "Registros & Fichas", icon: "fa-solid fa-folder-open", descricao: "Protocolo de recebimento e entrega de ordens de serviço.", isTextBody: true, campos: [{ id: "os_num", label: "Nº da Ordem de Serviço", type: "text", default: "OS-2026/902" }] },
+      { id: "registro-ocorrencias", nome: "23. Registro de Ocorrências", categoria: "Registros & Fichas", icon: "fa-solid fa-book-bookmark", descricao: "Livro de ocorrências administrativas.", isTextBody: true, campos: [{ id: "livro_num", label: "Nº Registro / Livro", type: "text", default: "Reg-042" }] },
+      { id: "controle-funcionarios", nome: "24. Controle de Funcionários", categoria: "Registros & Fichas", icon: "fa-solid fa-address-book", descricao: "Mapeamento e listagem geral de equipe de 1 até 50 pessoas.", hasEmp: true, isTextBody: true, campos: [{ id: "gestor", label: "Gestor do Setor", type: "text", default: "Mariana Costa" }] },
+      { id: "ficha-funcionario", nome: "25. Ficha de Funcionário", categoria: "Registros & Fichas", icon: "fa-solid fa-user-gear", descricao: "Ficha individual com dados cadastrais e funcionais.", hasEmp: true, isTextBody: true, campos: [{ id: "admissao", label: "Data de Admissão", type: "date", default: "2026-01-15" }] }
     ];
 
     class DocumentGeneratorApp {
       constructor() {
         this.currentModel = null;
         this.formData = {};
-        this.employees = []; // Armazena funcionários quando o modelo utiliza até 50
+        this.employees = []; // Cadastro dinâmico de funcionários
         this.empCount = 1;
         this.tableRows = [];
         this.logoBase64 = "";
@@ -601,7 +601,7 @@
         this.empCount = 1;
         this.setupEmployeesData();
         this.setupForm();
-        this.showToast(`Modelo "${this.currentModel.nome}" carregado.`);
+        this.showToast(`Modelo selecionado: ${this.currentModel.nome}`);
       }
 
       changeEmpCount(delta) {
@@ -631,7 +631,7 @@
           const idx = this.employees.length + 1;
           this.employees.push({
             nome: `Funcionário ${idx}`,
-            cargo: "Auxiliar",
+            cargo: "Cargo / Função",
             matricula: String(idx).padStart(3, '0')
           });
         }
@@ -663,7 +663,7 @@
         const empCapacitySec = document.getElementById('section-emp-capacity');
         const empListSec = document.getElementById('section-employees-list');
 
-        if (this.currentModel.maxEmp) {
+        if (this.currentModel.hasEmp) {
           empCapacitySec.style.display = 'block';
           empListSec.style.display = 'block';
           this.renderEmployeeInputs();
@@ -677,7 +677,7 @@
         tableContainer.innerHTML = '';
 
         if (this.currentModel.isPonto) {
-          document.getElementById('section-table-title').innerHTML = `<i class="fa-solid fa-clock"></i> Espelho de Horários (Formato HH:MM)`;
+          document.getElementById('section-table-title').innerHTML = `<i class="fa-solid fa-clock"></i> Quadro de Horários (Entrada / Saída - HH:MM)`;
           this.buildPontoTable(tableContainer);
         } else {
           document.getElementById('section-table-title').innerHTML = `<i class="fa-solid fa-align-left"></i> Conteúdo do Documento`;
@@ -706,7 +706,7 @@
                 <input type="text" class="form-control" value="${emp.cargo}" oninput="app.updateEmpDetail(${idx}, 'cargo', this.value)">
               </div>
               <div class="form-group" style="margin-bottom:0; grid-column: span 2;">
-                <label>Matrícula / ID</label>
+                <label>Matrícula / Código</label>
                 <input type="text" class="form-control" value="${emp.matricula}" oninput="app.updateEmpDetail(${idx}, 'matricula', this.value)">
               </div>
             </div>
@@ -733,8 +733,8 @@
                 <tr>
                   <th>Dia</th>
                   <th>Entrada</th>
-                  <th>Almoço Saída</th>
-                  <th>Almoço Retorno</th>
+                  <th>Saída Almoço</th>
+                  <th>Retorno Almoço</th>
                   <th>Saída</th>
                   <th>Total</th>
                 </tr>
@@ -744,7 +744,6 @@
 
         for (let i = 1; i <= days; i++) {
           const diaStr = String(i).padStart(2, '0');
-          // Standard Brazilian HH:MM times
           const ent = "08:00", sAlm = "12:00", rAlm = "13:00", sai = "17:30";
           const tot = this.calcHours(ent, sAlm, rAlm, sai);
 
@@ -769,11 +768,11 @@
       buildReportForm(container) {
         container.innerHTML = `
           <div class="form-group">
-            <label>Descrição Detalhada / Atividades</label>
+            <label>Descrição Principal / Lançamentos</label>
             <textarea id="report-act" class="form-control" rows="4" oninput="app.updateData()">1. Verificação e alinhamento do escopo de serviços.\n2. Execução das atividades operacionais conforme padrão estabelecido.\n3. Registro e finalização do atendimento com validação da equipe.</textarea>
           </div>
           <div class="form-group">
-            <label>Resultados / Conclusão</label>
+            <label>Resultados / Parecer</label>
             <textarea id="report-res" class="form-control" rows="3" oninput="app.updateData()">Serviços concluídos e validados conforme exigências técnicas do projeto.</textarea>
           </div>
           <div class="form-group">
@@ -834,7 +833,7 @@
         document.getElementById('render-doc-subtitle').innerText = `Documento Estático Final - ${empName}`;
         document.getElementById('render-footer-date').innerText = `Emitido em: ${new Date().toLocaleDateString('pt-BR')}`;
 
-        // Render Metadata
+        // Render Metadata Globais
         const metaGrid = document.getElementById('render-meta-grid');
         let metaHtml = Object.entries(this.formData).map(([k, v]) => {
           const fieldObj = this.currentModel.campos ? this.currentModel.campos.find(c => c.id === k) : null;
@@ -842,39 +841,39 @@
           return `<div class="doc-meta-item"><strong>${label}:</strong> <span>${v || '-'}</span></div>`;
         }).join('');
 
-        if (this.currentModel.maxEmp) {
+        if (this.currentModel.hasEmp) {
           metaHtml += `<div class="doc-meta-item"><strong>QTD FUNCIONÁRIOS:</strong> <span>${this.empCount} cadastrado(s)</span></div>`;
         }
 
         metaGrid.innerHTML = metaHtml;
 
-        // Render Body Content (Renderiza EXATAMENTE a quantidade de funcionários sem sobras)
+        // Renderização Estrita da quantidade exata de funcionários no PDF
         const bodyContent = document.getElementById('render-body-content');
 
-        if (this.currentModel.maxEmp) {
-          // Exibição em lista para múltiplos funcionários
+        if (this.currentModel.hasEmp) {
+          // Renderiza exatamente a quantidade selecionada de funcionários sem criar sobras nem dias fictícios
           let empsHtml = this.employees.map((emp, i) => `
             <div style="border:1px solid #000; padding:6px; margin-bottom:8px; background:#fff; font-size:7.5pt;">
-              <div style="display:flex; justify-size: space-between; border-bottom:1px dashed #ccc; padding-bottom:4px; margin-bottom:4px;">
-                <strong>#${i+1} - ${emp.nome.toUpperCase()}</strong>
+              <div style="display:flex; justify-content: space-between; border-bottom:1px dashed #999; padding-bottom:3px; margin-bottom:4px;">
+                <strong>FUNCIONÁRIO #${i+1}: ${emp.nome.toUpperCase()}</strong>
                 <span>CARGO: ${emp.cargo.toUpperCase()} | MATRÍCULA: ${emp.matricula}</span>
               </div>
               ${this.currentModel.isPonto ? `
                 <table class="doc-table" style="margin-bottom:0; font-size:7pt;">
-                  <thead><tr><th>Dia</th><th>Entrada</th><th>Saída Almoço</th><th>Retorno</th><th>Saída</th><th>Total</th></tr></thead>
+                  <thead><tr><th>Dia</th><th>Entrada</th><th>Saída Almoço</th><th>Retorno Almoço</th><th>Saída</th><th>Total</th></tr></thead>
                   <tbody>
                     ${this.tableRows.slice(0, 5).map(r => `<tr><td>${r.dia}</td><td>${r.ent}</td><td>${r.sAlm}</td><td>${r.rAlm}</td><td>${r.sai}</td><td>${r.tot}</td></tr>`).join('')}
-                    <tr><td colspan="6" style="text-align:center; font-style:italic; background:#f1f5f9;">... Espelho completo de horários emitido ...</td></tr>
+                    <tr><td colspan="6" style="text-align:center; font-style:italic; background:#f8fafc; font-size:6.5pt;">... Espelho individualizado de ponto anexado ...</td></tr>
                   </tbody>
                 </table>
-              ` : `<p style="color:#555; font-size:7.5pt;">Registro individual ativo e confirmado no documento final.</p>`}
+              ` : `<p style="color:#333; font-size:7.5pt;">Registro individual ativo e confirmado no documento final.</p>`}
             </div>
           `).join('');
 
           bodyContent.innerHTML = empsHtml;
 
         } else if (this.currentModel.isPonto) {
-          // Tabela completa normal
+          // Tabela completa normal para ponto único
           let sumMinutes = 0;
           let tableRowsHtml = this.tableRows.map(r => {
             if (r.tot.includes(':')) {
@@ -966,10 +965,10 @@
         this.setupForm();
       }
 
-      /* GERAÇÃO DE PDF ESTÁTICO DE ALTA PRECISÃO VISUAL */
+      /* GERAÇÃO DE PDF ESTÁTICO (Captura em imagem e achata o documento) */
       async downloadPDF() {
         const element = document.getElementById('printable-area');
-        this.showToast('Gerando PDF estático final...');
+        this.showToast('Gerando PDF estático e não editável...');
 
         try {
           const { jsPDF } = window.jspdf;
@@ -980,11 +979,10 @@
           const imgData = canvas.toDataURL('image/jpeg', 0.98);
           const imgHeight = (canvas.height * pdfWidth) / canvas.width;
 
-          // Incorpora a imagem renderizada como texto estático não editável
+          // Desenha a imagem renderizada, garantindo que o PDF fique estático
           pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
 
-          const primaryName = this.employees[0]?.nome || Object.values(this.formData)[0] || 'documento';
-          const fileName = `${this.currentModel.id}-${this.empCount}func-${primaryName.toLowerCase().replace(/\s+/g, '-')}.pdf`;
+          const fileName = `${this.currentModel.id}-${this.empCount}func.pdf`;
           
           pdf.save(fileName);
           this.showToast('✓ PDF estático baixado com sucesso!');
