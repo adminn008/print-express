@@ -1906,20 +1906,6 @@
         const PRODUTOS = [
             // FOLHAS DE PONTO
             {
-                id: "fp-basica",
-                categoria: "ponto",
-                nome: "Folha de Ponto Mensal — Básica",
-                descricao: "Modelo simples para registrar horários de entrada, saída e intervalo.",
-                preco: 3.00,
-                formato: "PDF",
-                paginas: 1,
-                pdf: "pdfs/folha-ponto-basica.pdf",
-                preenchimentoPermitido: ["manual", "digital"],
-                badge: "Mais simples",
-                imagem: "",
-                destaque: true
-            },
-            {
                 id: "fp-completa",
                 categoria: "ponto",
                 nome: "Folha de Ponto Mensal — Completa",
@@ -1932,48 +1918,6 @@
                 badge: "Completa",
                 imagem: "",
                 destaque: true
-            },
-            {
-                id: "fp-intervalos",
-                categoria: "ponto",
-                nome: "Folha de Ponto com Intervalos",
-                descricao: "Controle de entrada, saída, intervalo e retorno durante o expediente.",
-                preco: 5.00,
-                formato: "PDF",
-                paginas: 1,
-                pdf: "pdfs/folha-ponto-intervalos.pdf",
-                preenchimentoPermitido: ["manual", "digital"],
-                badge: "",
-                imagem: "",
-                destaque: false
-            },
-            {
-                id: "fp-semanal",
-                categoria: "ponto",
-                nome: "Folha de Ponto Semanal",
-                descricao: "Modelo compacto para controle de horários durante a semana.",
-                preco: 3.00,
-                formato: "PDF",
-                paginas: 1,
-                pdf: "pdfs/folha-ponto-semanal.pdf",
-                preenchimentoPermitido: ["manual", "digital"],
-                badge: "",
-                imagem: "",
-                destaque: false
-            },
-            {
-                id: "fp-funcionarios",
-                categoria: "ponto",
-                nome: "Folha de Ponto para Funcionários",
-                descricao: "Modelo organizado para identificação do funcionário e registro dos horários.",
-                preco: 5.00,
-                formato: "PDF",
-                paginas: 1,
-                pdf: "pdfs/folha-ponto-funcionarios.pdf",
-                preenchimentoPermitido: ["manual", "digital"],
-                badge: "",
-                imagem: "",
-                destaque: false
             },
             {
                 id: "fp-banco-horas",
@@ -2368,7 +2312,7 @@
 
             const btn = document.getElementById("modalAddBtn");
             btn.onclick = () => {
-                addToCart(p.id);
+                addToCart(productId);
                 closeModal();
             };
 
@@ -2381,503 +2325,506 @@
         }
 
         /* --------------------------------------------------------------------------
-           8. GERENCIAMENTO DE PEDIDOS, FLUXO EM ETAPAS & CÁLCULOS AUTOMÁTICOS
+           8. CARRINHO, PASSO A PASSO & CÁLCULOS
            -------------------------------------------------------------------------- */
+        function addToCart(productId) {
+            const p = PRODUTOS.find(prod => prod.id === productId);
+            if (!p) return;
+
+            const fillType = selecaoPreenchimento[productId] || p.preenchimentoPermitido[0];
+            const existingIndex = carrinho.findIndex(item => item.id === productId && item.preenchimento === fillType);
+
+            if (existingIndex > -1) {
+                carrinho[existingIndex].quantidade += 1;
+            } else {
+                carrinho.push({
+                    id: p.id,
+                    nome: p.nome,
+                    precoUnitario: p.preco,
+                    quantidade: 1,
+                    preenchimento: fillType,
+                    solicitarImpressao: false,
+                    tipoImpressao: "pb", 
+                    copiasImpressas: 10, 
+                    frenteVerso: false,
+                    paginasPDF: p.paginas || 1
+                });
+            }
+
+            updateCartUI();
+            saveDraftOrder();
+            openCart();
+        }
+
+        function removeFromCart(index) {
+            carrinho.splice(index, 1);
+            updateCartUI();
+            saveDraftOrder();
+        }
+
+        function changeQty(index, delta) {
+            if (carrinho[index]) {
+                carrinho[index].quantidade += delta;
+                if (carrinho[index].quantidade <= 0) {
+                    carrinho.splice(index, 1);
+                }
+            }
+            updateCartUI();
+            saveDraftOrder();
+        }
+
         function openCart() {
             document.getElementById("cartPanel").classList.add("active");
-            document.getElementById("successScreen").style.display = "none";
-            document.getElementById("stepContentContainer").style.display = "block";
-            document.getElementById("cartFooterNav").style.display = "block";
-            updateCalculations();
         }
 
         function closeCart() {
             document.getElementById("cartPanel").classList.remove("active");
         }
 
-        function changeStep(delta) {
-            const newStep = currentStep + delta;
-            
-            // Validações antes de avançar
-            if (delta > 0 && currentStep === 1) {
-                const name = document.getElementById("clientName").value.trim();
-                const contact = document.getElementById("clientContact").value.trim();
-                if (!name || !contact) {
-                    showErrorAlert("Por favor, preencha seu nome e contato de WhatsApp antes de continuar.");
-                    return;
-                }
-            }
+        function updateCartUI() {
+            const badge = document.getElementById("cartBadge");
+            const totalItens = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
+            badge.innerText = totalItens;
 
-            if (delta > 0 && currentStep === 2) {
-                if (carrinho.length === 0) {
-                    showErrorAlert("Seu pedido está vazio. Escolha ao menos um modelo no catálogo.");
-                    return;
-                }
-            }
-
-            hideErrorAlert();
-
-            if (newStep >= 1 && newStep <= totalSteps) {
-                currentStep = newStep;
-                updateStepVisibility();
-            }
-        }
-
-        function goToStep(stepNum) {
-            if (stepNum >= 1 && stepNum <= totalSteps) {
-                currentStep = stepNum;
-                updateStepVisibility();
-            }
-        }
-
-        function updateStepVisibility() {
-            // Atualiza Pílulas do Indicador de Progresso
-            for (let i = 1; i <= totalSteps; i++) {
-                const pill = document.getElementById(`stepPill-${i}`);
-                const section = document.getElementById(`stepSection-${i}`);
-                if (pill) {
-                    pill.classList.remove("active", "completed");
-                    if (i === currentStep) pill.classList.add("active");
-                    if (i < currentStep) pill.classList.add("completed");
-                }
-                if (section) {
-                    section.style.display = (i === currentStep) ? "flex" : "none";
-                }
-            }
-
-            // Atualiza Visibilidade dos Botões de Navegação
-            const btnPrev = document.getElementById("btnPrevStep");
-            const btnNext = document.getElementById("btnNextStep");
-            const btnSubmit = document.getElementById("btnSubmitOrder");
-
-            if (btnPrev) btnPrev.style.display = (currentStep === 1) ? "none" : "inline-flex";
-            if (btnNext) btnNext.style.display = (currentStep === totalSteps) ? "none" : "inline-flex";
-            if (btnSubmit) btnSubmit.style.display = (currentStep === totalSteps) ? "inline-flex" : "none";
-
+            renderCartItems();
+            renderPrintOptions();
             updateCalculations();
         }
 
-        function calcularValorImpressao(paginasPdf, copias, tipoColor, frenteVerso) {
-            let paginasTotais = paginasPdf * copias;
-            let folhas = frenteVerso ? Math.ceil(paginasTotais / 2) : paginasTotais;
-            let precoPorFolha = (tipoColor === 'color') ? CUSTOS_IMPRESSAO.custoFolhaColor : CUSTOS_IMPRESSAO.custoFolhaPB;
-            return folhas * precoPorFolha;
-        }
-
-        function addToCart(productId) {
-            const prod = PRODUTOS.find(p => p.id === productId);
-            if (!prod) return;
-
-            const modalidade = selecaoPreenchimento[productId] || prod.preenchimentoPermitido[0];
-            const cartItemId = `${prod.id}-${modalidade}`;
-
-            const itemExistente = carrinho.find(item => item.cartItemId === cartItemId);
-
-            if (itemExistente) {
-                itemExistente.quantidade += 1;
-            } else {
-                carrinho.push({
-                    cartItemId,
-                    id: prod.id,
-                    nome: prod.nome,
-                    preco: prod.preco,
-                    paginas: prod.paginas || 1,
-                    pdf: prod.pdf,
-                    modalidade: modalidade,
-                    quantidade: 1,
-                    // Opções de Impressão
-                    querImpressao: false,
-                    imprCopias: 1,
-                    imprTipo: "pb",
-                    imprFrenteVerso: true
-                });
-            }
-
-            saveDraftOrder();
-            updateCalculations();
-            openCart();
-        }
-
-        function changeQty(cartItemId, delta) {
-            const item = carrinho.find(i => i.cartItemId === cartItemId);
-            if (!item) return;
-
-            item.quantidade += delta;
-            if (item.quantidade <= 0) {
-                carrinho = carrinho.filter(i => i.cartItemId !== cartItemId);
-            }
-
-            saveDraftOrder();
-            updateCalculations();
-        }
-
-        function removeItem(cartItemId) {
-            carrinho = carrinho.filter(i => i.cartItemId !== cartItemId);
-            saveDraftOrder();
-            updateCalculations();
-        }
-
-        function toggleCartItemImpressao(cartItemId, checked) {
-            const item = carrinho.find(i => i.cartItemId === cartItemId);
-            if (item) {
-                item.querImpressao = checked;
-                saveDraftOrder();
-                updateCalculations();
-            }
-        }
-
-        function updateCartItemImpressaoOpt(cartItemId, field, value) {
-            const item = carrinho.find(i => i.cartItemId === cartItemId);
-            if (item) {
-                item[field] = value;
-                saveDraftOrder();
-                updateCalculations();
-            }
-        }
-
-        function updateCalculations() {
-            // Atualizar contagem no header
-            const totalItensCount = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
-            document.getElementById("cartBadge").innerText = totalItensCount;
-
-            // Renderizar Lista do Passo 2 (Modelos)
-            const cartItemsContainer = document.getElementById("cartItemsContainer");
+        function renderCartItems() {
+            const container = document.getElementById("cartItemsContainer");
             if (carrinho.length === 0) {
-                cartItemsContainer.innerHTML = `
-                    <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted);">
-                        <i data-lucide="shopping-bag" style="width: 40px; height: 40px; opacity: 0.3; margin-bottom: 0.5rem;"></i>
-                        <p>Nenhum modelo selecionado ainda.</p>
+                container.innerHTML = `
+                    <div style="text-align:center; padding:2rem 1rem; color:var(--text-muted);">
+                        <i data-lucide="shopping-bag" style="width:48px; height:48px; stroke-width:1; margin-bottom:0.5rem;"></i>
+                        <p style="font-weight:600;">Seu carrinho está vazio</p>
+                        <p style="font-size:0.85rem;">Escolha um modelo no catálogo para iniciar seu pedido.</p>
                     </div>
                 `;
-            } else {
-                cartItemsContainer.innerHTML = carrinho.map((item) => `
-                    <div class="cart-item">
-                        <div class="cart-item-header">
-                            <div class="cart-item-info">
-                                <h4>${item.nome}</h4>
-                                <p>Modalidade: <strong>${item.modalidade === 'digital' ? '💻 Digital' : '✍️ Manual'}</strong></p>
-                                <p>Unitário: R$ ${item.preco.toFixed(2).replace('.', ',')}</p>
-                            </div>
-                            <button type="button" style="background:none; border:none; color:#ef4444; cursor:pointer;" onclick="removeItem('${item.cartItemId}')">
-                                <i data-lucide="trash-2" style="width:18px;"></i>
-                            </button>
-                        </div>
-
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem;">
-                            <div class="cart-controls">
-                                <button type="button" class="qty-btn" onclick="changeQty('${item.cartItemId}', -1)">-</button>
-                                <span style="font-weight:700; font-size:0.95rem; min-width:24px; text-align:center;">${item.quantidade}</span>
-                                <button type="button" class="qty-btn" onclick="changeQty('${item.cartItemId}', 1)">+</button>
-                            </div>
-                            <strong style="color:var(--text-main);">R$ ${(item.preco * item.quantidade).toFixed(2).replace('.', ',')}</strong>
-                        </div>
-                    </div>
-                `).join('');
+                lucide.createIcons();
+                return;
             }
 
-            // Renderizar Lista do Passo 3 (Opções de Impressão)
-            const printItemsContainer = document.getElementById("printItemsContainer");
-            if (carrinho.length === 0) {
-                printItemsContainer.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted);">Nenhum item selecionado.</p>`;
-            } else {
-                printItemsContainer.innerHTML = carrinho.map((item) => {
-                    let valorImpressao = item.querImpressao ? calcularValorImpressao(item.paginas, item.imprCopias, item.imprTipo, item.imprFrenteVerso) : 0;
-                    return `
-                    <div style="background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem; margin-bottom: 0.75rem;">
-                        <label style="font-size: 0.9rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" ${item.querImpressao ? 'checked' : ''} onchange="toggleCartItemImpressao('${item.cartItemId}', this.checked)">
-                            🖨️ Solicitar Impressão Física de "${item.nome}"
-                        </label>
-
-                        ${item.querImpressao ? `
-                            <div class="print-options-box">
-                                <div class="form-grid-2">
-                                    <div class="form-group">
-                                        <label class="form-label">Quantidade de Cópias Impressas:</label>
-                                        <input type="number" min="1" value="${item.imprCopias}" class="form-input" style="padding:0.4rem;" onchange="updateCartItemImpressaoOpt('${item.cartItemId}', 'imprCopias', parseInt(this.value) || 1)">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Tipo de Impressão:</label>
-                                        <select class="form-select" style="padding:0.4rem;" onchange="updateCartItemImpressaoOpt('${item.cartItemId}', 'imprTipo', this.value)">
-                                            <option value="pb" ${item.imprTipo === 'pb' ? 'selected' : ''}>Preto e Branco (P&B)</option>
-                                            <option value="color" ${item.imprTipo === 'color' ? 'selected' : ''}>Colorida</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label style="font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">
-                                        <input type="checkbox" ${item.imprFrenteVerso ? 'checked' : ''} onchange="updateCartItemImpressaoOpt('${item.cartItemId}', 'imprFrenteVerso', this.checked)">
-                                        Imprimir Frente e Verso (Economia de folhas)
-                                    </label>
-                                </div>
-                                <div style="text-align: right; font-weight: 700; color: var(--primary);">
-                                    Adicional de Impressão: R$ ${valorImpressao.toFixed(2).replace('.', ',')}
-                                </div>
-                            </div>
-                        ` : ''}
+            container.innerHTML = carrinho.map((item, idx) => `
+                <div class="cart-item">
+                    <div class="cart-item-header">
+                        <div class="cart-item-info">
+                            <h4>${item.nome}</h4>
+                            <p>Preenchimento: <strong>${item.preenchimento === 'digital' ? '💻 Digital' : '✍️ Manual'}</strong></p>
+                            <p style="color:var(--primary); font-weight:700;">R$ ${(item.precoUnitario * item.quantidade).toFixed(2).replace('.', ',')}</p>
+                        </div>
+                        <button type="button" class="btn-icon" style="width:32px; height:32px; color:#ef4444;" onclick="removeFromCart(${idx})">
+                            <i data-lucide="trash-2" style="width:16px;"></i>
+                        </button>
                     </div>
-                    `;
-                }).join('');
-            }
-
-            // Calcular Valor Geral
-            let totalGeral = 0;
-            carrinho.forEach(item => {
-                let digitalVal = item.preco * item.quantidade;
-                let impressaoVal = item.querImpressao ? calcularValorImpressao(item.paginas, item.imprCopias, item.imprTipo, item.imprFrenteVerso) : 0;
-                totalGeral += (digitalVal + impressaoVal);
-            });
-
-            document.getElementById("cartTotalValue").innerText = `R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
-
-            // Renderizar Resumo do Passo 4
-            const clientName = document.getElementById("clientName").value || "Não informado";
-            const clientContact = document.getElementById("clientContact").value || "Não informado";
-            const notes = document.getElementById("orderNotes").value || "Nenhuma";
-            const paymentMethod = document.getElementById("paymentMethod").value;
-
-            const reviewSummary = document.getElementById("orderReviewSummary");
-            reviewSummary.innerHTML = `
-                <div><strong>Cliente:</strong> ${clientName} (${clientContact})</div>
-                <div><strong>Forma de Pagamento:</strong> ${paymentMethod}</div>
-                <div><strong>Observações:</strong> ${notes}</div>
-                <hr style="border:0; border-top:1px dashed var(--border); margin:0.5rem 0;">
-                <div><strong>Itens do Pedido:</strong></div>
-                ${carrinho.map(i => {
-                    let imprTxt = i.querImpressao ? ` + Impressão (${i.imprCopias}x,${i.imprTipo.toUpperCase()})` : '';
-                    return `<div style="padding-left:0.5rem;">• ${i.quantidade}x${i.nome} (${i.modalidade})${imprTxt}</div>`;
-                }).join('')}
-                <hr style="border:0; border-top:1px dashed var(--border); margin:0.5rem 0;">
-                <div style="font-size:1.1rem; font-weight:800; color:var(--primary);">Valor Total: R$ ${totalGeral.toFixed(2).replace('.', ',')}</div>
-            `;
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--border); padding-top:0.5rem;">
+                        <span style="font-size:0.8rem; color:var(--text-muted);">Qtd. Arquivo Digital:</span>
+                        <div class="cart-controls">
+                            <button type="button" class="qty-btn" onclick="changeQty(${idx}, -1)">-</button>
+                            <span style="font-weight:700; width:24px; text-align:center;">${item.quantidade}</span>
+                            <button type="button" class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
 
             lucide.createIcons();
         }
 
+        function renderPrintOptions() {
+            const container = document.getElementById("printItemsContainer");
+            if (carrinho.length === 0) {
+                container.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted);">Adicione modelos ao carrinho para liberar opções de impressão.</p>`;
+                return;
+            }
+
+            container.innerHTML = carrinho.map((item, idx) => `
+                <div class="print-options-box">
+                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                        <strong>📄 ${item.nome}</strong>
+                        <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer; font-weight:600; color:var(--primary);">
+                            <input type="checkbox" ${item.solicitarImpressao ? 'checked' : ''} onchange="toggleItemPrint(${idx}, this.checked)">
+                            Imprimir este modelo
+                        </label>
+                    </div>
+
+                    ${item.solicitarImpressao ? `
+                        <div class="form-grid-2" style="margin-top:0.5rem; background:var(--bg-primary); padding:0.75rem; border-radius:var(--radius-sm); border:1px solid var(--border);">
+                            <div class="form-group">
+                                <label class="form-label">Tipo de Impressão</label>
+                                <select class="form-select" onchange="updateItemPrintOpt(${idx}, 'tipoImpressao', this.value)">
+                                    <option value="pb" ${item.tipoImpressao === 'pb' ? 'selected' : ''}>Preto & Branco (R$ 0,35 / pág)</option>
+                                    <option value="color" ${item.tipoImpressao === 'color' ? 'selected' : ''}>Colorida (R$ 0,75 / pág)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Quantidade de Cópias</label>
+                                <input type="number" min="1" max="1000" value="${item.copiasImpressas}" class="form-input" onchange="updateItemPrintOpt(${idx}, 'copiasImpressas', parseInt(this.value) || 1)">
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.8rem; cursor:pointer;">
+                                    <input type="checkbox" ${item.frenteVerso ? 'checked' : ''} onchange="updateItemPrintOpt(${idx}, 'frenteVerso', this.checked)">
+                                    Imprimir Frente e Verso (Duplex)
+                                </label>
+                            </div>
+                        </div>
+                    ` : `
+                        <span style="font-size:0.75rem; color:var(--text-muted);">Apenas envio em arquivo digital (sem cópia impressa).</span>
+                    `}
+                </div>
+            `).join('');
+        }
+
+        function toggleItemPrint(index, isChecked) {
+            if (carrinho[index]) {
+                carrinho[index].solicitarImpressao = isChecked;
+                renderPrintOptions();
+                updateCalculations();
+                saveDraftOrder();
+            }
+        }
+
+        function updateItemPrintOpt(index, field, value) {
+            if (carrinho[index]) {
+                carrinho[index][field] = value;
+                updateCalculations();
+                saveDraftOrder();
+            }
+        }
+
+        function updateCalculations() {
+            let totalDigital = 0;
+            let totalImpressao = 0;
+
+            carrinho.forEach(item => {
+                totalDigital += (item.precoUnitario * item.quantidade);
+
+                if (item.solicitarImpressao) {
+                    const custoUnitarioFolha = item.tipoImpressao === 'color' 
+                        ? CUSTOS_IMPRESSAO.custoFolhaColor 
+                        : CUSTOS_IMPRESSAO.custoFolhaPB;
+                    
+                    const paginasTotal = item.paginasPDF * item.copiasImpressas;
+                    totalImpressao += (paginasTotal * custoUnitarioFolha);
+                }
+            });
+
+            const totalGeral = totalDigital + totalImpressao;
+
+            document.getElementById("cartTotalValue").innerText = `R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
+
+            renderReviewSummary(totalDigital, totalImpressao, totalGeral);
+        }
+
+        function renderReviewSummary(totalDigital, totalImpressao, totalGeral) {
+            const container = document.getElementById("orderReviewSummary");
+            const nome = document.getElementById("clientName").value || "Não informado";
+            const contato = document.getElementById("clientContact").value || "Não informado";
+            const obs = document.getElementById("orderNotes").value || "Nenhuma";
+            const pagto = document.getElementById("paymentMethod").value || "PIX";
+
+            if (carrinho.length === 0) {
+                container.innerHTML = `<p style="color:var(--text-muted);">Nenhum item no carrinho.</p>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <div style="background:var(--bg-primary); padding:0.85rem; border-radius:var(--radius-sm); border:1px solid var(--border);">
+                    <strong>👤 Cliente:</strong> ${nome} (${contato})
+                </div>
+                
+                <div style="background:var(--bg-primary); padding:0.85rem; border-radius:var(--radius-sm); border:1px solid var(--border);">
+                    <strong>📋 Itens Selecionados:</strong>
+                    <ul style="margin-left:1.25rem; margin-top:0.3rem; list-style:disc;">
+                        ${carrinho.map(item => `
+                            <li>
+                                <strong>${item.nome}</strong> (${item.quantidade}x Digital - R$ ${(item.precoUnitario * item.quantidade).toFixed(2).replace('.', ',')})${item.solicitarImpressao ? `<br><small style="color:var(--primary);">└ Impressão: ${item.copiasImpressas} cópias (${item.tipoImpressao === 'color' ? 'Colorida' : 'P&B'})</small>` : ''}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+
+                <div style="background:var(--bg-primary); padding:0.85rem; border-radius:var(--radius-sm); border:1px solid var(--border);">
+                    <div><strong>Subtotal Digitais:</strong> R$ ${totalDigital.toFixed(2).replace('.', ',')}</div>
+                    <div><strong>Subtotal Impressão:</strong> R$ ${totalImpressao.toFixed(2).replace('.', ',')}</div>
+                    <div style="font-size:1.1rem; font-weight:800; color:var(--primary); margin-top:0.4rem;">
+                        Total Final: R$ ${totalGeral.toFixed(2).replace('.', ',')}
+                    </div>
+                </div>
+
+                <div style="background:var(--bg-primary); padding:0.85rem; border-radius:var(--radius-sm); border:1px solid var(--border);">
+                    <strong>💳 Forma de Pagamento:</strong> ${pagto}<br>
+                    <strong>📝 Observações:</strong> ${obs}
+                </div>
+            `;
+        }
+
         /* --------------------------------------------------------------------------
-           9. LOCALSTORAGE E RASCUNHO SEGURO
+           9. FLUXO PASSO A PASSO (NAVEGAÇÃO DO MULTI-STEP)
+           -------------------------------------------------------------------------- */
+        function changeStep(delta) {
+            const nextStep = currentStep + delta;
+
+            if (delta > 0 && !validateStep(currentStep)) {
+                return;
+            }
+
+            if (nextStep >= 1 && nextStep <= totalSteps) {
+                currentStep = nextStep;
+                updateStepVisibility();
+            }
+        }
+
+        function validateStep(step) {
+            hideError();
+
+            if (step === 1) {
+                const name = document.getElementById("clientName").value.trim();
+                const contact = document.getElementById("clientContact").value.trim();
+                if (!name) {
+                    showError("Por favor, preencha o seu nome completo.");
+                    return false;
+                }
+                if (!contact) {
+                    showError("Por favor, preencha o seu número de WhatsApp / Contato.");
+                    return false;
+                }
+            }
+
+            if (step === 2) {
+                if (carrinho.length === 0) {
+                    showError("Seu carrinho está vazio. Adicione pelo menos um modelo antes de continuar.");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function updateStepVisibility() {
+            for (let i = 1; i <= totalSteps; i++) {
+                const sec = document.getElementById(`stepSection-${i}`);
+                const pill = document.getElementById(`stepPill-${i}`);
+                
+                if (sec) sec.style.display = i === currentStep ? "flex" : "none";
+                
+                if (pill) {
+                    pill.classList.remove("active", "completed");
+                    if (i === currentStep) {
+                        pill.classList.add("active");
+                    } else if (i < currentStep) {
+                        pill.classList.add("completed");
+                    }
+                }
+            }
+
+            const btnPrev = document.getElementById("btnPrevStep");
+            const btnNext = document.getElementById("btnNextStep");
+            const btnSubmit = document.getElementById("btnSubmitOrder");
+
+            if (btnPrev) btnPrev.style.display = currentStep === 1 ? "none" : "inline-flex";
+            
+            if (currentStep === totalSteps) {
+                if (btnNext) btnNext.style.display = "none";
+                if (btnSubmit) btnSubmit.style.display = "inline-flex";
+            } else {
+                if (btnNext) btnNext.style.display = "inline-flex";
+                if (btnSubmit) btnSubmit.style.display = "none";
+            }
+
+            updateCalculations();
+        }
+
+        function toggleContactInput() {
+            const method = document.getElementById("contactMethod").value;
+            const labelContact = document.querySelector("label[for='clientContact']");
+            if (method === "email") {
+                if (labelContact) labelContact.innerText = "E-mail Principal *";
+            } else {
+                if (labelContact) labelContact.innerText = "Número WhatsApp *";
+            }
+        }
+
+        function showError(msg) {
+            const alert = document.getElementById("statusAlert");
+            alert.innerText = msg;
+            alert.style.display = "block";
+            if (errorTimer) clearTimeout(errorTimer);
+            errorTimer = setTimeout(() => {
+                hideError();
+            }, 6000);
+        }
+
+        function hideError() {
+            const alert = document.getElementById("statusAlert");
+            alert.style.display = "none";
+        }
+
+        /* --------------------------------------------------------------------------
+           10. RASCUNHO AUTOMÁTICO (LOCALSTORAGE)
            -------------------------------------------------------------------------- */
         function saveDraftOrder() {
             const draft = {
+                carrinho: carrinho,
                 clientName: document.getElementById("clientName").value,
                 contactMethod: document.getElementById("contactMethod").value,
                 clientContact: document.getElementById("clientContact").value,
                 clientEmail: document.getElementById("clientEmail").value,
                 orderNotes: document.getElementById("orderNotes").value,
-                paymentMethod: document.getElementById("paymentMethod").value,
-                carrinho: carrinho
+                paymentMethod: document.getElementById("paymentMethod").value
             };
             localStorage.setItem("printexpress_draft_order", JSON.stringify(draft));
         }
 
         function loadDraftOrder() {
             const saved = localStorage.getItem("printexpress_draft_order");
-            if (saved) {
-                try {
-                    const draft = JSON.parse(saved);
-                    document.getElementById("clientName").value = draft.clientName || "";
-                    document.getElementById("contactMethod").value = draft.contactMethod || "whatsapp";
-                    document.getElementById("clientContact").value = draft.clientContact || "";
-                    document.getElementById("clientEmail").value = draft.clientEmail || "";
-                    document.getElementById("orderNotes").value = draft.orderNotes || "";
-                    document.getElementById("paymentMethod").value = draft.paymentMethod || "PIX";
-                    if (Array.isArray(draft.carrinho)) {
-                        carrinho = draft.carrinho;
-                    }
-                } catch (e) {
-                    console.error("Erro ao carregar rascunho de pedido:", e);
+            if (!saved) return;
+
+            try {
+                const draft = JSON.parse(saved);
+                if (draft.carrinho && Array.isArray(draft.carrinho)) {
+                    carrinho = draft.carrinho;
                 }
+                if (draft.clientName) document.getElementById("clientName").value = draft.clientName;
+                if (draft.contactMethod) document.getElementById("contactMethod").value = draft.contactMethod;
+                if (draft.clientContact) document.getElementById("clientContact").value = draft.clientContact;
+                if (draft.clientEmail) document.getElementById("clientEmail").value = draft.clientEmail;
+                if (draft.orderNotes) document.getElementById("orderNotes").value = draft.orderNotes;
+                if (draft.paymentMethod) document.getElementById("paymentMethod").value = draft.paymentMethod;
+
+                updateCartUI();
+            } catch (e) {
+                console.error("Erro ao carregar rascunho:", e);
             }
-        }
-
-        function resetOrder() {
-            // Limpar Estado do Pedido Atual
-            carrinho = [];
-            currentStep = 1;
-            
-            // Limpar Campos
-            document.getElementById("clientName").value = "";
-            document.getElementById("clientContact").value = "";
-            document.getElementById("clientEmail").value = "";
-            document.getElementById("orderNotes").value = "";
-            document.getElementById("paymentMethod").value = "PIX";
-
-            // Limpar Rascunho do LocalStorage
-            localStorage.removeItem("printexpress_draft_order");
-
-            // Resetar UI das telas
-            document.getElementById("successScreen").style.display = "none";
-            document.getElementById("stepContentContainer").style.display = "block";
-            document.getElementById("cartFooterNav").style.display = "block";
-
-            hideErrorAlert();
-            updateStepVisibility();
-        }
-
-        function toggleContactInput() {
-            const method = document.getElementById("contactMethod").value;
-            const input = document.getElementById("clientContact");
-            if (method === "whatsapp") {
-                input.placeholder = "Número do WhatsApp com DDD Ex: (41) 99999-9999";
-            } else {
-                input.placeholder = "Seu E-mail Principal";
-            }
-        }
-
-        function showErrorAlert(msg) {
-            const alertBox = document.getElementById("statusAlert");
-            alertBox.innerText = msg;
-            alertBox.style.display = "block";
-        }
-
-        function hideErrorAlert() {
-            const alertBox = document.getElementById("statusAlert");
-            alertBox.style.display = "none";
-            if (errorTimer) clearTimeout(errorTimer);
         }
 
         /* --------------------------------------------------------------------------
-           10. SUBMISSÃO FORMSUBMIT & FALLBACK WHATSAPP
+           11. SUBMISSÃO DE PEDIDO E INTEGRAÇÕES
            -------------------------------------------------------------------------- */
-        function submitFormSubmit(event) {
+        async function submitFormSubmit(event) {
             event.preventDefault();
 
-            if (carrinho.length === 0) {
-                showErrorAlert("Adicione ao menos um modelo antes de finalizar.");
-                return;
-            }
+            if (!validateStep(1) || !validateStep(2)) return;
 
             const name = document.getElementById("clientName").value.trim();
             const contact = document.getElementById("clientContact").value.trim();
-            if (!name || !contact) {
-                showErrorAlert("Preencha seu nome e dados de contato.");
-                return;
-            }
+            const email = document.getElementById("clientEmail").value.trim();
+            const notes = document.getElementById("orderNotes").value.trim();
+            const payment = document.getElementById("paymentMethod").value;
+
+            // Montar texto legível
+            let resumoItens = carrinho.map(item => {
+                let txt = `- ${item.nome} (${item.quantidade}x Digital) - Preenchimento: ${item.preenchimento}`;
+                if (item.solicitarImpressao) {
+                    txt += ` | Impressão: ${item.copiasImpressas}x (${item.tipoImpressao.toUpperCase()}${item.frenteVerso ? ', Duplex' : ''})`;
+                }
+                return txt;
+            }).join('\n');
+
+            const totalText = document.getElementById("cartTotalValue").innerText;
+
+            const formData = new FormData();
+            formData.append("Nome do Cliente", name);
+            formData.append("Contato", contact);
+            formData.append("E-mail", email || "Não informado");
+            formData.append("Forma de Pagamento", payment);
+            formData.append("Observações", notes || "Nenhuma");
+            formData.append("Itens do Pedido", resumoItens);
+            formData.append("Valor Total", totalText);
+            formData.append("_subject", `Novo Pedido PrintExpress - ${name}`);
 
             const btnSubmit = document.getElementById("btnSubmitOrder");
             btnSubmit.disabled = true;
-            btnSubmit.innerHTML = `<i data-lucide="loader" class="spin"></i> Enviando...`;
+            btnSubmit.innerText = "Enviando pedido...";
 
-            // Montar dados para o FormSubmit
-            const formData = new FormData();
-            formData.append("Nome", name);
-            formData.append("Contato", contact);
-            formData.append("Email", document.getElementById("clientEmail").value);
-            formData.append("Forma_Pagamento", document.getElementById("paymentMethod").value);
-            formData.append("Observacoes", document.getElementById("orderNotes").value);
+            try {
+                // Envio FormSubmit via fetch
+                await fetch(`https://formsubmit.co/ajax/${FORMSUBMIT_EMAIL}`, {
+                    method: "POST",
+                    body: formData
+                });
 
-            let totalGeral = 0;
-            const resumoItensText = carrinho.map((item, idx) => {
-                let digitalVal = item.preco * item.quantidade;
-                let impressaoVal = item.querImpressao ? calcularValorImpressao(item.paginas, item.imprCopias, item.imprTipo, item.imprFrenteVerso) : 0;
-                let sub = digitalVal + impressaoVal;
-                totalGeral += sub;
+                // Notificar WhatsApp em segundo plano
+                sendWhatsAppNotification(name, contact, payment, totalText, resumoItens);
 
-                let imprTxt = item.querImpressao ? ` [Com Impressão A4: ${item.imprCopias}x, ${item.imprTipo.toUpperCase()}]` : '';
-                return `${idx + 1}. ${item.nome} (${item.quantidade}x - ${item.modalidade})${imprTxt} - R$ ${sub.toFixed(2)}`;
-            }).join("\n");
+                // Exibir tela de sucesso
+                showSuccessScreen(name, totalText, payment);
+                localStorage.removeItem("printexpress_draft_order");
 
-            formData.append("Itens_Pedido", resumoItensText);
-            formData.append("Valor_Total", `R$ ${totalGeral.toFixed(2).replace('.', ',')}`);
-
-            // Envio AJAX para FormSubmit
-            fetch(`https://formsubmit.co/ajax/${FORMSUBMIT_EMAIL}`, {
-                method: "POST",
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    showSuccessScreen(totalGeral);
-                } else {
-                    handleOrderError(resumoItensText, totalGeral);
-                }
-            })
-            .catch(() => {
-                handleOrderError(resumoItensText, totalGeral);
-            })
-            .finally(() => {
+            } catch (err) {
+                console.error(err);
+                // Mesmo com erro de rede no AJAX, aciona fallback para WhatsApp
+                sendWhatsAppNotification(name, contact, payment, totalText, resumoItens);
+                showSuccessScreen(name, totalText, payment);
+            } finally {
                 btnSubmit.disabled = false;
-                btnSubmit.innerHTML = `<i data-lucide="check-circle"></i> ✓ Finalizar pedido`;
-                lucide.createIcons();
-            });
+                btnSubmit.innerText = "✓ Finalizar pedido";
+            }
         }
 
-        function showSuccessScreen(totalGeral) {
-            hideErrorAlert();
+        function sendWhatsAppNotification(name, contact, payment, total, itens) {
+            const mensagem = `*NOVO PEDIDO - PRINTEXPRESS*\n\n` +
+                `*Cliente:* ${name}\n` +
+                `*Contato:* ${contact}\n` +
+                `*Pagamento:* ${payment}\n` +
+                `*Total:* ${total}\n\n` +
+                `*Itens:*\n${itens}\n\n` +
+                `_Pedido gerado via site PrintExpress_`;
 
-            const clientName = document.getElementById("clientName").value;
-            const paymentMethod = document.getElementById("paymentMethod").value;
+            const url = `https://wa.me/${WHATSAPP_CONTATO}?text=${encodeURIComponent(mensagem)}`;
+            window.open(url, "_blank");
+        }
 
+        function showSuccessScreen(name, totalText, payment) {
             document.getElementById("stepContentContainer").style.display = "none";
             document.getElementById("cartFooterNav").style.display = "none";
+            document.getElementById("orderStepsBar").style.display = "none";
+
+            const successScreen = document.getElementById("successScreen");
+            successScreen.style.display = "flex";
 
             const summaryBox = document.getElementById("successSummaryDetails");
             summaryBox.innerHTML = `
-                <div><strong>Cliente:</strong> ${clientName}</div>
-                <div><strong>Forma de Pagamento:</strong> ${paymentMethod}</div>
-                <div><strong>Total do Pedido:</strong> R$ ${totalGeral.toFixed(2).replace('.', ',')}</div>
-                <hr style="border:0; border-top:1px dashed var(--border); margin:0.4rem 0;">
-                <div><strong>Itens Inclusos:</strong></div>
-                ${carrinho.map(i => `<div style="padding-left:0.5rem; font-size:0.85rem;">• ${i.quantidade}x ${i.nome} (${i.modalidade})</div>`).join('')}
+                <div><strong>Cliente:</strong> ${name}</div>
+                <div><strong>Total do Pedido:</strong> <span style="color:var(--primary); font-weight:700;">${totalText}</span></div>
+                <div><strong>Pagamento:</strong> ${payment}</div>
+                <p style="margin-top:0.5rem; font-size:0.8rem; color:var(--text-muted);">
+                    Se a janela do WhatsApp não abriu automaticamente, você pode entrar em contato diretamente pelo número <strong>${TELEFONE_FORMATADO}</strong>.
+                </p>
             `;
+        }
 
-            document.getElementById("successScreen").style.display = "flex";
+        function resetOrder() {
+            carrinho = [];
+            currentStep = 1;
+            document.getElementById("orderForm").reset();
             localStorage.removeItem("printexpress_draft_order");
-            lucide.createIcons();
+
+            document.getElementById("stepContentContainer").style.display = "block";
+            document.getElementById("cartFooterNav").style.display = "block";
+            document.getElementById("orderStepsBar").style.display = "flex";
+            document.getElementById("successScreen").style.display = "none";
+
+            updateCartUI();
+            updateStepVisibility();
+            closeCart();
         }
 
-        function handleOrderError(resumoItensText, totalGeral) {
-            let secondsLeft = 5;
-
-            const name = document.getElementById("clientName").value;
-            const contact = document.getElementById("clientContact").value;
-            const paymentMethod = document.getElementById("paymentMethod").value;
-            const notes = document.getElementById("orderNotes").value;
-
-            const msgWhats = `Olá! Tive um problema no site e gostaria de enviar meu pedido diretamente por aqui:\n\n*Cliente:* ${name}\n*Contato:* ${contact}\n*Pagamento:* ${paymentMethod}\n*Observações:* ${notes}\n\n*Pedido:*\n${resumoItensText}\n\n*Total:* R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
-
-            const urlWhats = `https://wa.me/${WHATSAPP_CONTATO}?text=${encodeURIComponent(msgWhats)}`;
-
-            const errorHtml = `
-                ⚠️ Não conseguimos enviar seu pedido automaticamente.
-                <br><br>
-                Não se preocupe. Você pode enviá-lo pelo WhatsApp para garantir que suas informações sejam recebidas.
-                <br><br>
-                <button type="button" class="btn btn-primary" style="width:100%; margin-bottom:0.5rem;" id="btnRedirectWhatsNow">
-                    📱 Enviar pelo WhatsApp agora
-                </button>
-                <span id="countdownText" style="font-size:0.8rem; opacity:0.8;">Redirecionando em ${secondsLeft} segundos...</span>
-            `;
-
-            showErrorAlert("");
-            document.getElementById("statusAlert").innerHTML = errorHtml;
-
-            const btnWhatsNow = document.getElementById("btnRedirectWhatsNow");
-            btnWhatsNow.onclick = () => {
-                if (errorTimer) clearInterval(errorTimer);
-                window.open(urlWhats, "_blank");
-            };
-
-            errorTimer = setInterval(() => {
-                secondsLeft -= 1;
-                const txt = document.getElementById("countdownText");
-                if (txt) txt.innerText = `Redirecionando em ${secondsLeft} segundos...`;
-
-                if (secondsLeft <= 0) {
-                    clearInterval(errorTimer);
-                    window.open(urlWhats, "_blank");
-                }
-            }, 1000);
-        }
-
-        function handleCustomSubmit(e) {
-            e.preventDefault();
+        function handleCustomSubmit(event) {
+            event.preventDefault();
             const name = document.getElementById("customName").value;
             const purpose = document.getElementById("customPurpose").value;
             const fields = document.getElementById("customFields").value;
 
-            const msg = `Olá! Gostaria de solicitar um orçamento para um modelo personalizado:\n\n*Documento:* ${name}\n*Finalidade:* ${purpose}\n*Campos:* ${fields}`;
+            const msg = `*SOLICITAÇÃO DE MODELO PERSONALIZADO*\n\n` +
+                `*Documento:* ${name}\n` +
+                `*Finalidade:* ${purpose}\n` +
+                `*Campos/Detalhes:* ${fields}\n\n` +
+                `_Orçamento inicial a partir de R$ 15,00_`;
+
             window.open(`https://wa.me/${WHATSAPP_CONTATO}?text=${encodeURIComponent(msg)}`, "_blank");
+            document.getElementById("customForm").reset();
+            alert("Sua solicitação foi direcionada para o nosso WhatsApp!");
         }
     </script>
 </body>
