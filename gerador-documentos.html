@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerador de Documentos - PrintExpress</title>
+  <title>Gerador Interno de Documentos - PrintExpress</title>
   
   <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- CDN Dependencies for PDF and ZIP generation -->
@@ -60,6 +60,17 @@
     }
     .brand { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1.25rem; color: var(--primary); text-decoration: none; }
     .brand i { font-size: 1.5rem; }
+    .internal-tag {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      border: 1px solid var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
     .header-actions { display: flex; align-items: center; gap: 1rem; }
     .btn-icon { background: transparent; border: 1px solid var(--surface-border); color: var(--text); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
     .btn-icon:hover { background: var(--primary-light); color: var(--primary); }
@@ -93,7 +104,7 @@
     /* Hero / Header Section */
     .hero { text-align: center; margin-bottom: 2rem; padding: 1rem 0; }
     .hero h1 { font-size: 2rem; margin-bottom: 0.5rem; font-weight: 800; }
-    .hero p { color: var(--text-muted); font-size: 1rem; max-width: 600px; margin: 0 auto; }
+    .hero p { color: var(--text-muted); font-size: 1rem; max-width: 650px; margin: 0 auto; }
 
     /* Category Nav */
     .categories { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.75rem; margin-bottom: 1.5rem; scrollbar-width: none; }
@@ -145,31 +156,58 @@
     .form-control:focus { outline: none; border-color: var(--primary); }
     .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
 
-    /* Output Type Radio Group */
-    .pdf-type-group { display: flex; flex-direction: column; gap: 0.6rem; }
-    .pdf-type-option {
+    /* Employee Stepper Control */
+    .emp-counter {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem;
+      gap: 0.5rem;
+      background: var(--bg);
       border: 1px solid var(--surface-border);
       border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
+      padding: 0.25rem 0.5rem;
+      width: fit-content;
     }
-    .pdf-type-option:hover { border-color: var(--primary); background: var(--primary-light); }
-    .pdf-type-option input[type="radio"] { accent-color: var(--primary); width: 18px; height: 18px; }
-    .pdf-type-text { display: flex; flex-direction: column; }
-    .pdf-type-text strong { font-size: 0.9rem; color: var(--text); }
-    .pdf-type-text span { font-size: 0.75rem; color: var(--text-muted); }
+    .emp-counter button {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--surface-border);
+      background: var(--surface);
+      color: var(--text);
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .emp-counter button:hover { background: var(--primary-light); color: var(--primary); }
+    .emp-counter input {
+      width: 45px;
+      text-align: center;
+      border: none;
+      background: transparent;
+      font-weight: 700;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
 
     /* Table Inputs */
-    .table-container { width: 100%; overflow-x: auto; margin-top: 0.5rem; border: 1px solid var(--surface-border); border-radius: 8px; }
+    .table-container { width: 100%; overflow-x: auto; margin-top: 0.5rem; border: 1px solid var(--surface-border); border-radius: 8px; max-height: 400px; overflow-y: auto; }
     .input-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
     .input-table th, .input-table td { border: 1px solid var(--surface-border); padding: 0.35rem; text-align: center; }
-    .input-table th { background: var(--bg); font-weight: 600; }
+    .input-table th { background: var(--bg); font-weight: 600; position: sticky; top: 0; z-index: 2; }
     .input-table input { width: 100%; border: none; background: transparent; text-align: center; font-size: 0.8rem; color: var(--text); padding: 0.2rem; }
     .input-table input:focus { outline: 1px solid var(--primary); background: var(--surface); }
+
+    /* Employee Accordion Form */
+    .emp-card-input {
+      background: var(--bg);
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    .emp-card-header { font-weight: 700; font-size: 0.85rem; color: var(--primary); margin-bottom: 0.5rem; }
 
     /* Preview Workspace */
     .preview-workspace { position: sticky; top: 80px; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
@@ -192,7 +230,7 @@
       color: #000000 !important;
       width: 210mm;
       min-height: 297mm;
-      padding: 15mm;
+      padding: 12mm 15mm;
       box-shadow: 0 0 15px rgba(0,0,0,0.4);
       display: flex;
       flex-direction: column;
@@ -201,44 +239,24 @@
       transform-origin: top center;
     }
 
-    /* Printable/Editable Simulated Boxes */
-    .field-box-simulated {
-      display: inline-block;
-      width: 100%;
-      min-height: 22px;
-      border: 1px solid #94a3b8;
-      background: #f8fafc;
-      border-radius: 3px;
-      padding: 2px 4px;
-      font-size: 8pt;
-      color: #2563eb;
-      box-sizing: border-box;
-    }
-    .table-cell-simulated {
-      width: 100%;
-      height: 18px;
-      border: 1px dashed #cbd5e1;
-      background: #f1f5f9;
-      display: block;
-    }
-
     /* Print Template Interior Styling */
-    .doc-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
-    .doc-logo { max-height: 50px; max-width: 150px; object-fit: contain; }
+    .doc-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 12px; }
+    .doc-logo { max-height: 45px; max-width: 140px; object-fit: contain; }
     .doc-title-area { text-align: right; }
-    .doc-title-area h2 { font-size: 16pt; text-transform: uppercase; margin-bottom: 2px; color: #000; }
-    .doc-title-area p { font-size: 9pt; color: #444; }
-    .doc-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: #f1f5f9; padding: 10px; border-radius: 4px; font-size: 8.5pt; margin-bottom: 15px; border: 1px solid #cbd5e1; color: #000; }
-    .doc-meta-item { display: flex; gap: 5px; align-items: center; }
-    .doc-meta-item strong { min-width: 80px; }
+    .doc-title-area h2 { font-size: 14pt; text-transform: uppercase; margin-bottom: 2px; color: #000; font-weight: 800; }
+    .doc-title-area p { font-size: 8.5pt; color: #444; }
     
-    .doc-table { width: 100%; border-collapse: collapse; font-size: 8pt; margin-bottom: 15px; color: #000; }
-    .doc-table th, .doc-table td { border: 1px solid #000; padding: 4px 6px; text-align: center; }
-    .doc-table th { background-color: #e2e8f0; font-weight: bold; text-transform: uppercase; font-size: 7.5pt; }
+    .doc-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; background: #f8fafc; padding: 8px; border-radius: 4px; font-size: 8pt; margin-bottom: 12px; border: 1px solid #cbd5e1; color: #000; }
+    .doc-meta-item { display: flex; gap: 5px; align-items: center; }
+    .doc-meta-item strong { min-width: 75px; text-transform: uppercase; }
+    
+    .doc-table { width: 100%; border-collapse: collapse; font-size: 7.5pt; margin-bottom: 12px; color: #000; }
+    .doc-table th, .doc-table td { border: 1px solid #000; padding: 3px 5px; text-align: center; }
+    .doc-table th { background-color: #e2e8f0; font-weight: bold; text-transform: uppercase; font-size: 7pt; }
 
-    .doc-footer { margin-top: auto; padding-top: 15px; border-top: 1px solid #ccc; display: flex; justify-content: space-between; align-items: flex-end; font-size: 7.5pt; color: #555; }
-    .doc-signatures { display: flex; justify-content: space-around; width: 100%; margin-top: 40px; margin-bottom: 20px; }
-    .sig-box { text-align: center; width: 200px; border-top: 1px solid #000; padding-top: 4px; font-size: 8pt; color: #000; }
+    .doc-footer { margin-top: auto; padding-top: 10px; border-top: 1px solid #ccc; display: flex; justify-content: space-between; align-items: flex-end; font-size: 7pt; color: #555; }
+    .doc-signatures { display: flex; justify-content: space-around; width: 100%; margin-top: 25px; margin-bottom: 15px; }
+    .sig-box { text-align: center; width: 180px; border-top: 1px solid #000; padding-top: 3px; font-size: 7.5pt; color: #000; }
 
     /* Toast Notifications */
     #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
@@ -258,18 +276,21 @@
     /* Modal Batch */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 500; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
-    .modal-card { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; max-width: 600px; width: 90%; max-height: 85vh; overflow-y: auto; border: 1px solid var(--surface-border); }
+    .modal-card { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; max-width: 650px; width: 90%; max-height: 85vh; overflow-y: auto; border: 1px solid var(--surface-border); }
 
     .batch-row { display: grid; grid-template-columns: 1fr 1fr 1fr 40px; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center; }
   </style>
 </head>
 <body>
 
-  <!-- App Header -->
+  <!-- App Header (Ferramenta Interna) -->
   <header>
-    <a href="#" class="brand" onclick="app.showHome()">
-      <i class="fa-solid fa-print"></i> PrintExpress
-    </a>
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <a href="#" class="brand" onclick="app.showHome()">
+        <i class="fa-solid fa-print"></i> PrintExpress
+      </a>
+      <span class="internal-tag"><i class="fa-solid fa-lock"></i> Ferramenta Interna</span>
+    </div>
     <div class="header-actions">
       <button class="btn-icon" id="theme-toggle" onclick="app.toggleTheme()" title="Alternar Tema">
         <i class="fa-solid fa-moon"></i>
@@ -286,32 +307,27 @@
     <!-- HOME VIEW: Model Selection -->
     <section id="view-home">
       <div class="hero">
-        <h1>📋 Gerador de Documentos</h1>
-        <p>Crie, personalize e baixe seus documentos prontos para impressão em instantes.</p>
+        <h1>📋 Gerador de Documentos Estáticos</h1>
+        <p>Painel administrativo para preenchimento, personalização e emissão de PDFs finais prontos para impressão ou envio.</p>
       </div>
 
       <!-- Categories -->
       <div class="categories" id="category-nav">
-        <button class="cat-btn active" onclick="app.filterCategory('all')">Todos</button>
+        <button class="cat-btn active" onclick="app.filterCategory('all')">Todos (+25)</button>
         <button class="cat-btn" onclick="app.filterCategory('Folhas de Ponto')">📋 Folhas de Ponto</button>
+        <button class="cat-btn" onclick="app.filterCategory('Controle & Horas')">⏱️ Controle & Banco de Horas</button>
         <button class="cat-btn" onclick="app.filterCategory('Relatórios')">📊 Relatórios</button>
-        <button class="cat-btn" onclick="app.filterCategory('Controle de Horas')">🕐 Controle de Horas</button>
-        <button class="cat-btn" onclick="app.filterCategory('Atividades')">📝 Atividades</button>
-        <button class="cat-btn" onclick="app.filterCategory('Outros')">📁 Outros</button>
+        <button class="cat-btn" onclick="app.filterCategory('Registros & Fichas')">📝 Registros & Fichas</button>
       </div>
 
       <!-- Models Grid -->
       <div class="models-grid" id="models-grid"></div>
 
       <!-- Footer CTA Integration -->
-      <div style="margin-top: 4rem; text-align: center; padding: 2rem; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--surface-border);">
-        <h3>🖨️ Precisa imprimir seu documento?</h3>
-        <p style="color: var(--text-muted); margin: 0.5rem 0 1.25rem 0; font-size: 0.9rem;">Depois de gerar seu arquivo, você também pode solicitar a impressão física de alta qualidade pelo PrintExpress.</p>
-        <a href="impressao.html" class="btn btn-outline"><i class="fa-solid fa-paper-plane"></i> Solicitar impressão</a>
-      </div>
-
-      <div style="text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.75rem;">
-        Os modelos disponibilizados são modelos de preenchimento e organização. Verifique as exigências específicas do uso pretendido antes de utilizar o documento.
+      <div style="margin-top: 3rem; text-align: center; padding: 1.5rem; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--surface-border);">
+        <h3>🖨️ Encaminhar para Impressão Física</h3>
+        <p style="color: var(--text-muted); margin: 0.5rem 0 1rem 0; font-size: 0.85rem;">Após gerar o PDF estático do cliente, você pode enviar o arquivo diretamente para os maquinários de impressão.</p>
+        <a href="impressao.html" class="btn btn-outline btn-sm"><i class="fa-solid fa-paper-plane"></i> Solicitar Impressão Interna</a>
       </div>
     </section>
 
@@ -323,13 +339,13 @@
         </button>
         
         <div class="stepper">
-          <div class="step-item active" id="st-1"><span class="step-num">1</span> Dados</div>
-          <div class="step-item" id="st-2"><span class="step-num">2</span> Tabela/Texto</div>
-          <div class="step-item" id="st-3"><span class="step-num">3</span> Revisão</div>
+          <div class="step-item active" id="st-1"><span class="step-num">1</span> Configuração</div>
+          <div class="step-item active" id="st-2"><span class="step-num">2</span> Dados / Horários</div>
+          <div class="step-item active" id="st-3"><span class="step-num">3</span> Gerar PDF Estático</div>
         </div>
 
         <div style="display: flex; gap: 0.5rem;">
-          <button class="btn btn-secondary btn-sm" onclick="app.clearDraft()"><i class="fa-solid fa-trash"></i> Rascunho</button>
+          <button class="btn btn-secondary btn-sm" onclick="app.clearDraft()"><i class="fa-solid fa-trash"></i> Limpar</button>
           <button class="btn btn-primary btn-sm" onclick="app.showHome()"><i class="fa-solid fa-plus"></i> Novo Documento</button>
         </div>
       </div>
@@ -339,41 +355,13 @@
         <!-- Controls & Input Workspace -->
         <div class="form-workspace">
           
-          <!-- SELETOR DE TIPO DE SAÍDA DE PDF -->
-          <div class="form-section">
-            <div class="form-section-title"><i class="fa-solid fa-file-export"></i> Tipo de PDF</div>
-            <div class="pdf-type-group">
-              <label class="pdf-type-option">
-                <input type="radio" name="pdfType" value="impressao" onchange="app.setPdfType('impressao')">
-                <div class="pdf-type-text">
-                  <strong>🖊️ Para imprimir e preencher à mão</strong>
-                  <span>Modelo em branco com linhas e caixas físicas.</span>
-                </div>
-              </label>
-              <label class="pdf-type-option">
-                <input type="radio" name="pdfType" value="preenchivel" checked onchange="app.setPdfType('preenchivel')">
-                <div class="pdf-type-text">
-                  <strong>💻 PDF preenchível/editável</strong>
-                  <span>Contém campos digitais reais para digitação no leitor de PDF.</span>
-                </div>
-              </label>
-              <label class="pdf-type-option">
-                <input type="radio" name="pdfType" value="preenchido" onchange="app.setPdfType('preenchido')">
-                <div class="pdf-type-text">
-                  <strong>📝 PDF já preenchido</strong>
-                  <span>Documento final impresso estaticamente com os dados inseridos.</span>
-                </div>
-              </label>
-            </div>
-          </div>
-
           <!-- Customization Section -->
           <div class="form-section">
-            <div class="form-section-title"><i class="fa-solid fa-palette"></i> Personalização & Logo</div>
+            <div class="form-section-title"><i class="fa-solid fa-building"></i> Cabeçalho & Empresa</div>
             <div class="form-grid">
               <div class="form-group">
-                <label>Nome / Empresa Header</label>
-                <input type="text" id="cfg-empresa" class="form-control" placeholder="Sua Empresa Ltda" oninput="app.updateData()">
+                <label>Nome / Empresa</label>
+                <input type="text" id="cfg-empresa" class="form-control" placeholder="PrintExpress Clientes Ltda" oninput="app.updateData()">
               </div>
               <div class="form-group">
                 <label>Logo da Empresa</label>
@@ -382,27 +370,45 @@
             </div>
           </div>
 
+          <!-- Employee Capacity Controller (For Employee-related Models) -->
+          <div class="form-section" id="section-emp-capacity" style="display: none;">
+            <div class="form-section-title"><i class="fa-solid fa-users-gear"></i> Capacidade de Funcionários (Até 50)</div>
+            <div class="form-group">
+              <label>Quantidade de funcionários no documento:</label>
+              <div class="emp-counter">
+                <button onclick="app.changeEmpCount(-1)">-</button>
+                <input type="number" id="cfg-emp-count" value="1" min="1" max="50" readonly onchange="app.updateEmpCount()">
+                <button onclick="app.changeEmpCount(1)">+</button>
+              </div>
+              <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 0.3rem;">
+                O PDF adaptará o layout para exibir somente os funcionários selecionados.
+              </small>
+            </div>
+          </div>
+
           <!-- Dynamic Metadata Section -->
           <div class="form-section" id="section-meta-inputs">
-            <div class="form-section-title"><i class="fa-solid fa-id-card"></i> Informações do Documento</div>
+            <div class="form-section-title"><i class="fa-solid fa-id-card"></i> Informações Globais do Documento</div>
             <div id="dynamic-fields" class="form-grid"></div>
+          </div>
+
+          <!-- Dynamic Employees Form (When multi-employee) -->
+          <div class="form-section" id="section-employees-list" style="display: none;">
+            <div class="form-section-title"><i class="fa-solid fa-list-ol"></i> Cadastro de Funcionários</div>
+            <div id="dynamic-employees-container"></div>
           </div>
 
           <!-- Table or Details Input Section -->
           <div class="form-section" id="section-table-inputs">
-            <div class="form-section-title" id="section-table-title"><i class="fa-solid fa-table"></i> Registros e Lançamentos</div>
+            <div class="form-section-title" id="section-table-title"><i class="fa-solid fa-table"></i> Registros e Horários (HH:MM)</div>
             <div id="dynamic-table-container"></div>
           </div>
 
-          <!-- Batch & Multi Generation -->
+          <!-- Batch Generation -->
           <div class="form-section">
-            <div class="form-section-title"><i class="fa-solid fa-copy"></i> Quantidade & Geração em Lote</div>
-            <div class="form-group">
-              <label>Quantidade de cópias idênticas</label>
-              <input type="number" id="cfg-qty" class="form-control" value="1" min="1" max="100" style="max-width: 120px;" oninput="app.updateBatchMode()">
-            </div>
-            <button class="btn btn-outline btn-sm" onclick="app.openBatchModal()">
-              <i class="fa-solid fa-users"></i> Gerar para múltiplos funcionários / registros (Lote)
+            <div class="form-section-title"><i class="fa-solid fa-copy"></i> Emissão em Lote (Vários PDFs)</div>
+            <button class="btn btn-outline btn-sm" style="width: 100%;" onclick="app.openBatchModal()">
+              <i class="fa-solid fa-file-zipper"></i> Gerar lote para múltiplos funcionários / clientes (ZIP)
             </button>
           </div>
 
@@ -411,10 +417,10 @@
         <!-- Realtime Preview Workspace -->
         <div class="preview-workspace">
           <div class="preview-toolbar">
-            <span style="font-size: 0.85rem; font-weight: 600;" id="preview-filename">prévia-documento.pdf</span>
+            <span style="font-size: 0.85rem; font-weight: 600;" id="preview-filename">documento-estatico.pdf</span>
             <div style="display: flex; gap: 0.5rem; align-items: center;">
               <button class="btn btn-secondary btn-sm" onclick="app.printDoc()"><i class="fa-solid fa-print"></i> Imprimir</button>
-              <button class="btn btn-primary btn-sm" id="btn-download-single" onclick="app.downloadPDF()"><i class="fa-solid fa-download"></i> Baixar PDF</button>
+              <button class="btn btn-primary btn-sm" id="btn-download-single" onclick="app.downloadPDF()"><i class="fa-solid fa-file-pdf"></i> Gerar PDF Final</button>
             </div>
           </div>
 
@@ -424,11 +430,11 @@
               <div class="doc-header">
                 <div>
                   <img id="render-logo" src="" class="doc-logo" style="display:none;" alt="Logo">
-                  <h3 id="render-empresa" style="font-size: 11pt; color: #333; margin-top:2px;">Sua Empresa</h3>
+                  <h3 id="render-empresa" style="font-size: 11pt; color: #333; margin-top:2px;">PrintExpress Serviços</h3>
                 </div>
                 <div class="doc-title-area">
                   <h2 id="render-doc-title">TITULO DO DOCUMENTO</h2>
-                  <p id="render-doc-subtitle">Comprovante de Registro</p>
+                  <p id="render-doc-subtitle">Documento Interno - Final Estático</p>
                 </div>
               </div>
 
@@ -441,11 +447,11 @@
               <!-- Signatures & Footer -->
               <div class="doc-signatures" id="render-signatures">
                 <div class="sig-box">Assinatura do Responsável</div>
-                <div class="sig-box">Assinatura do Funcionário/Atendido</div>
+                <div class="sig-box">Assinatura do Funcionário / Cliente</div>
               </div>
 
               <div class="doc-footer">
-                <span>Gerado por PrintExpress Documentos</span>
+                <span>PrintExpress - Sistema de Emissão Interna</span>
                 <span id="render-footer-date">Data: --/--/----</span>
               </div>
             </div>
@@ -460,8 +466,8 @@
   <!-- Batch Modal -->
   <div class="modal-overlay" id="batch-modal">
     <div class="modal-card">
-      <h3 style="margin-bottom: 0.5rem;"><i class="fa-solid fa-boxes-stacked"></i> Gerar Vários Documentos em Lote</h3>
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Adicione nome/dados de cada pessoa para gerar um arquivo individual para cada uma em um pacote ZIP.</p>
+      <h3 style="margin-bottom: 0.5rem;"><i class="fa-solid fa-boxes-stacked"></i> Gerar Documentos Individuais em Lote</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Preencha os dados dos indivíduos para gerar PDFs estáticos individuais e exportá-los em um arquivo ZIP.</p>
 
       <div id="batch-rows-container"></div>
 
@@ -469,159 +475,57 @@
 
       <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
         <button class="btn btn-secondary" onclick="app.closeBatchModal()">Cancelar</button>
-        <button class="btn btn-primary" onclick="app.generateBatchZIP()"><i class="fa-solid fa-file-zipper"></i> Gerar Pacote ZIP</button>
+        <button class="btn btn-primary" onclick="app.generateBatchZIP()"><i class="fa-solid fa-file-zipper"></i> Gerar Pacote ZIP Estático</button>
       </div>
     </div>
   </div>
 
   <script>
-    /* Global Templates System Architecture */
+    /* Sistema de Mais de 20 Modelos Específicos */
     const documentModels = [
-      {
-        id: "folha-ponto-mensal",
-        nome: "Folha de Ponto Mensal",
-        categoria: "Folhas de Ponto",
-        icon: "fa-regular fa-calendar-check",
-        descricao: "Controle mensal completo com entrada, almoço, saída e cálculo de horas.",
-        campos: [
-          { id: "funcionario", label: "Nome do Funcionário", type: "text", default: "João da Silva" },
-          { id: "cargo", label: "Cargo", type: "text", default: "Auxiliar Administrativo" },
-          { id: "setor", label: "Setor / Depto", type: "text", default: "Operações" },
-          { id: "matricula", label: "Matrícula/ID", type: "text", default: "00104" },
-          { id: "mes_ano", label: "Mês/Ano", type: "month", default: "2026-09" }
-        ],
-        type: "ponto",
-        days: 30
-      },
-      {
-        id: "folha-ponto-semanal",
-        nome: "Folha de Ponto Semanal",
-        categoria: "Folhas de Ponto",
-        icon: "fa-solid fa-calendar-week",
-        descricao: "Ideal para acompanhamento semanal simplificado de horistas ou freelancers.",
-        campos: [
-          { id: "funcionario", label: "Nome do Colaborador", type: "text", default: "Maria Oliveira" },
-          { id: "cargo", label: "Função", type: "text", default: "Atendente" },
-          { id: "semana", label: "Semana De/Até", type: "text", default: "20/09 a 26/09" }
-        ],
-        type: "ponto",
-        days: 7
-      },
-      {
-        id: "folha-ponto-basica",
-        nome: "Folha de Ponto Básica",
-        categoria: "Folhas de Ponto",
-        icon: "fa-solid fa-file-lines",
-        descricao: "Modelo direto para registros rápidos de ponto sem campos adicionais.",
-        campos: [
-          { id: "funcionario", label: "Nome do Funcionário", type: "text", default: "Carlos Santos" },
-          { id: "periodo", label: "Período", type: "text", default: "Setembro / 2026" }
-        ],
-        type: "ponto",
-        days: 15
-      },
-      {
-        id: "folha-ponto-horistas",
-        nome: "Folha de Ponto para Horistas",
-        categoria: "Folhas de Ponto",
-        icon: "fa-solid fa-business-time",
-        descricao: "Apropriado para cálculo exato de horas prestadas por prestadores autônomos.",
-        campos: [
-          { id: "funcionario", label: "Prestador", type: "text", default: "Roberto Rocha" },
-          { id: "valor_hora", label: "Valor da Hora (R$)", type: "text", default: "45,00" },
-          { id: "mes_ano", label: "Mês de Referência", type: "month", default: "2026-09" }
-        ],
-        type: "ponto",
-        days: 20
-      },
-      {
-        id: "relatorio-mensal",
-        nome: "Relatório Mensal",
-        categoria: "Relatórios",
-        icon: "fa-solid fa-chart-line",
-        descricao: "Relatório executivo para alinhamento de metas, conquistas e pendências.",
-        campos: [
-          { id: "responsavel", label: "Responsável", type: "text", default: "Ana Paula" },
-          { id: "setor", label: "Setor", type: "text", default: "Marketing" },
-          { id: "periodo", label: "Período", type: "text", default: "Setembro 2026" }
-        ],
-        type: "relatorio"
-      },
-      {
-        id: "relatorio-atividades",
-        nome: "Relatório de Atividades",
-        categoria: "Relatórios",
-        icon: "fa-solid fa-list-check",
-        descricao: "Detalhamento de tarefas executadas por projeto ou cliente.",
-        campos: [
-          { id: "projeto", label: "Projeto/Cliente", type: "text", default: "PrintExpress Redesign" },
-          { id: "executor", label: "Executor", type: "text", default: "Lucas Mendes" },
-          { id: "data", label: "Data", type: "date", default: "2026-09-25" }
-        ],
-        type: "relatorio"
-      },
-      {
-        id: "relatorio-servico",
-        nome: "Relatório de Serviço",
-        categoria: "Relatórios",
-        icon: "fa-solid fa-wrench",
-        descricao: "Ficha de atendimento técnico, ordens efetuadas e materiais aplicados.",
-        campos: [
-          { id: "cliente", label: "Cliente", type: "text", default: "Empresa ABC" },
-          { id: "tecnico", label: "Técnico Responsável", type: "text", default: "Fernando Dias" },
-          { id: "equipamento", label: "Equipamento/Ativo", type: "text", default: "Impressora Industrial X" }
-        ],
-        type: "relatorio"
-      },
-      {
-        id: "relatorio-ocorrencia",
-        nome: "Relatório de Ocorrência",
-        categoria: "Relatórios",
-        icon: "fa-solid fa-triangle-exclamation",
-        descricao: "Registro formal para imprevistos, incidentes operacionais ou desvios.",
-        campos: [
-          { id: "envolvido", label: "Envolvido/Notificante", type: "text", default: "Marcos Lima" },
-          { id: "local", label: "Local do Evento", type: "text", default: "Galpão 02" },
-          { id: "data_hora", label: "Data/Hora", type: "text", default: "25/09/2026 as 14:30" }
-        ],
-        type: "relatorio"
-      },
-      {
-        id: "controle-horas",
-        nome: "Controle de Horas",
-        categoria: "Controle de Horas",
-        icon: "fa-solid fa-clock",
-        descricao: "Acompanhamento direto de banco de horas e saldo de horas acumuladas.",
-        campos: [
-          { id: "colaborador", label: "Colaborador", type: "text", default: "Juliana Silva" },
-          { id: "saldo_anterior", label: "Saldo Anterior (Horas)", type: "text", default: "+04:00" }
-        ],
-        type: "ponto",
-        days: 10
-      },
-      {
-        id: "ficha-acompanhamento",
-        nome: "Ficha de Acompanhamento",
-        categoria: "Atividades",
-        icon: "fa-solid fa-clipboard-user",
-        descricao: "Ficha geral para instrução, estágio ou acompanhamento contínuo.",
-        campos: [
-          { id: "aluno_func", label: "Nome do Avaliado/Estagiário", type: "text", default: "Gabriel Souza" },
-          { id: "supervisor", label: "Supervisor", type: "text", default: "Patrícia Luz" }
-        ],
-        type: "relatorio"
-      }
+      // 1 a 7: Folhas de Ponto
+      { id: "folha-ponto-mensal", nome: "Folha de Ponto Mensal", categoria: "Folhas de Ponto", icon: "fa-regular fa-calendar-check", descricao: "Controle mensal completo para até 50 funcionários.", maxEmp: 50, isPonto: true, days: 30, campos: [{ id: "periodo", label: "Período Mês/Ano", type: "month", default: "2026-09" }] },
+      { id: "folha-ponto-semanal", nome: "Folha de Ponto Semanal", categoria: "Folhas de Ponto", icon: "fa-solid fa-calendar-week", descricao: "Acompanhamento semanal de horários com controle até 50 funcionários.", maxEmp: 50, isPonto: true, days: 7, campos: [{ id: "semana", label: "Semana De/Até", type: "text", default: "21/09 a 27/09/2026" }] },
+      { id: "folha-ponto-diaria", nome: "Folha de Ponto Diária", categoria: "Folhas de Ponto", icon: "fa-solid fa-calendar-day", descricao: "Registro de presença diário de equipe no local.", maxEmp: 50, isPonto: true, days: 1, campos: [{ id: "data", label: "Data do Dia", type: "date", default: "2026-09-26" }] },
+      { id: "folha-ponto-intervalo", nome: "Folha de Ponto com Intervalo", categoria: "Folhas de Ponto", icon: "fa-solid fa-utensils", descricao: "Folha focada no cumprimento rígido do intervalo intrajornada.", maxEmp: 50, isPonto: true, days: 22, campos: [{ id: "periodo", label: "Mês/Ano", type: "month", default: "2026-09" }] },
+      { id: "folha-ponto-hora-extra", nome: "Folha de Ponto com Hora Extra", categoria: "Folhas de Ponto", icon: "fa-solid fa-clock-rotate-left", descricao: "Controle de jornadas estendidas e adicionais de hora extra.", maxEmp: 50, isPonto: true, days: 22, campos: [{ id: "periodo", label: "Período", type: "month", default: "2026-09" }] },
+      { id: "folha-ponto-simples", nome: "Folha de Ponto Simples", categoria: "Folhas de Ponto", icon: "fa-solid fa-file-lines", descricao: "Modelo enxuto de entrada e saída diária.", maxEmp: 50, isPonto: true, days: 22, campos: [{ id: "periodo", label: "Mês/Ano", type: "month", default: "2026-09" }] },
+      { id: "folha-ponto-funcionarios", nome: "Folha de Ponto de Funcionários", categoria: "Folhas de Ponto", icon: "fa-solid fa-users-viewfinder", descricao: "Visão consolidada para lista de colaboradores.", maxEmp: 50, isPonto: true, days: 30, campos: [{ id: "setor", label: "Setor / Depto", type: "text", default: "Geral" }] },
+
+      // 8 a 11: Controles de Horas e Tarefas
+      { id: "controle-horas", nome: "Controle de Horas", categoria: "Controle & Banco de Horas", icon: "fa-solid fa-stopwatch", descricao: "Acompanhamento exato de horas trabalhadas por projeto.", maxEmp: 50, isPonto: true, days: 15, campos: [{ id: "projeto", label: "Projeto/Cliente", type: "text", default: "Operação Especial" }] },
+      { id: "controle-banco-horas", nome: "Controle de Banco de Horas", categoria: "Controle & Banco de Horas", icon: "fa-solid fa-vault", descricao: "Apuração de saldo positivo e negativo de horas acumuladas.", maxEmp: 50, isPonto: true, days: 20, campos: [{ id: "saldo_anterior", label: "Saldo Anterior (HH:MM)", type: "text", default: "+05:00" }] },
+      { id: "controle-atividades", nome: "Controle de Atividades", categoria: "Controle & Banco de Horas", icon: "fa-solid fa-list-check", descricao: "Tabela de distribuição de atividades cotidianas.", isTextBody: true, campos: [{ id: "responsavel", label: "Supervisor Responsável", type: "text", default: "Carlos Santos" }] },
+      { id: "controle-tarefas", nome: "Controle de Tarefas", categoria: "Controle & Banco de Horas", icon: "fa-solid fa-tasks", descricao: "Checklist operacional de tarefas cumpridas.", isTextBody: true, campos: [{ id: "setor", label: "Setor", type: "text", default: "Produção" }] },
+
+      // 12 a 21: Relatórios
+      { id: "relatorio-diario", nome: "Relatório Diário", categoria: "Relatórios", icon: "fa-solid fa-sun", descricao: "Resumo diário de ocorrências e metas.", isTextBody: true, campos: [{ id: "data", label: "Data", type: "date", default: "2026-09-26" }] },
+      { id: "relatorio-semanal", nome: "Relatório Semanal", categoria: "Relatórios", icon: "fa-solid fa-chart-simple", descricao: "Consolidado semanal de desempenho e entregas.", isTextBody: true, campos: [{ id: "semana", label: "Semana", type: "text", default: "Semana 38 - 2026" }] },
+      { id: "relatorio-mensal", nome: "Relatório Mensal", categoria: "Relatórios", icon: "fa-solid fa-chart-line", descricao: "Relatório executivo mensal para diretoria/cliente.", isTextBody: true, campos: [{ id: "mes", label: "Mês/Ano", type: "month", default: "2026-09" }] },
+      { id: "relatorio-atividades", nome: "Relatório de Atividades", categoria: "Relatórios", icon: "fa-solid fa-clipboard-list", descricao: "Detalhamento de tarefas executadas por equipe.", isTextBody: true, campos: [{ id: "departamento", label: "Departamento", type: "text", default: "Atendimento" }] },
+      { id: "relatorio-servico", nome: "Relatório de Serviço", categoria: "Relatórios", icon: "fa-solid fa-wrench", descricao: "Ficha de serviços prestados e ordem de execução.", isTextBody: true, campos: [{ id: "cliente", label: "Cliente", type: "text", default: "Empresa Parceira Ltda" }] },
+      { id: "relatorio-ocorrencia", nome: "Relatório de Ocorrência", categoria: "Relatórios", icon: "fa-solid fa-triangle-exclamation", descricao: "Registro de imprevistos e incidentes de trabalho.", isTextBody: true, campos: [{ id: "local", label: "Local da Ocorrência", type: "text", default: "Setor de Logística" }] },
+      { id: "relatorio-atendimento", nome: "Relatório de Atendimento", categoria: "Relatórios", icon: "fa-solid fa-headset", descricao: "Resumo de chamados e suporte prestado.", isTextBody: true, campos: [{ id: "atendente", label: "Atendente", type: "text", default: "Fernanda Lima" }] },
+      { id: "relatorio-producao", nome: "Relatório de Produção", categoria: "Relatórios", icon: "fa-solid fa-industry", descricao: "Métricas e volumes de produção atingidos.", isTextBody: true, campos: [{ id: "linha", label: "Linha de Produção", type: "text", default: "Linha 02 - Impressão" }] },
+      { id: "relatorio-visita", nome: "Relatório de Visita", categoria: "Relatórios", icon: "fa-solid fa-briefcase", descricao: "Relatório de visita técnica ou comercial a clientes.", isTextBody: true, campos: [{ id: "visitado", label: "Empresa Visitada", type: "text", default: "Gráfica Central" }] },
+      { id: "relatorio-manutencao", nome: "Relatório de Manutenção", categoria: "Relatórios", icon: "fa-solid fa-gears", descricao: "Registro de manutenção preventiva e corretiva.", isTextBody: true, campos: [{ id: "maquina", label: "Máquina/Equipamento", type: "text", default: "Impressora Offset X" }] },
+
+      // 22 a 25: Registros e Controles de Funcionários
+      { id: "ficha-acompanhamento", nome: "Ficha de Acompanhamento", categoria: "Registros & Fichas", icon: "fa-solid fa-clipboard-user", descricao: "Acompanhamento individual ou de novos treinados.", maxEmp: 50, isTextBody: true, campos: [{ id: "supervisor", label: "Supervisor", type: "text", default: "Roberto Alves" }] },
+      { id: "registro-servicos", nome: "Registro de Serviços", categoria: "Registros & Fichas", icon: "fa-solid fa-folder-open", descricao: "Log completo de entradas e saídas de ordens de serviço.", isTextBody: true, campos: [{ id: "unidade", label: "Unidade", type: "text", default: "Matriz" }] },
+      { id: "registro-ocorrencias", nome: "Registro de Ocorrências", categoria: "Registros & Fichas", icon: "fa-solid fa-book-bookmark", descricao: "Livro de registro de eventos contínuos.", isTextBody: true, campos: [{ id: "livro_num", label: "Nº do Registro", type: "text", default: "2026/088" }] },
+      { id: "controle-funcionarios", nome: "Controle de Funcionários", categoria: "Registros & Fichas", icon: "fa-solid fa-address-book", descricao: "Ficha de dados gerais e alocação de equipe até 50 integrantes.", maxEmp: 50, isTextBody: true, campos: [{ id: "gestor", label: "Gestor do Setor", type: "text", default: "Mariana Costa" }] }
     ];
 
-    /* App State Controller */
     class DocumentGeneratorApp {
       constructor() {
         this.currentModel = null;
         this.formData = {};
+        this.employees = []; // Armazena funcionários quando o modelo utiliza até 50
+        this.empCount = 1;
         this.tableRows = [];
         this.logoBase64 = "";
         this.batchData = [];
-        this.selectedPdfType = "preenchivel"; // "impressao" | "preenchivel" | "preenchido"
 
         this.initTheme();
         this.renderModels(documentModels);
@@ -660,25 +564,15 @@
         const grid = document.getElementById('models-grid');
         grid.innerHTML = models.map(m => `
           <div class="model-card">
-            <span class="model-badge">Grátis</span>
+            <span class="model-badge">Estático</span>
             <div class="model-icon"><i class="${m.icon}"></i></div>
             <div class="model-title">${m.nome}</div>
             <div class="model-desc">${m.descricao}</div>
             <button class="btn btn-primary btn-sm" onclick="app.selectModel('${m.id}')">
-              <i class="fa-solid fa-pen-to-square"></i> Criar documento
+              <i class="fa-solid fa-pen-to-square"></i> Preencher & Emitir
             </button>
           </div>
         `).join('');
-
-        // Card button for Coming Soon
-        grid.innerHTML += `
-          <div class="model-card" style="opacity: 0.75; border-style: dashed;">
-            <div class="model-icon" style="background:#e2e8f0; color:#64748b;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-            <div class="model-title">Em breve: novos modelos</div>
-            <div class="model-desc">Recibos, contratos, ordens de serviço e declarações em breve.</div>
-            <button class="btn btn-secondary btn-sm" disabled>🚧 Em breve</button>
-          </div>
-        `;
       }
 
       filterCategory(cat) {
@@ -704,26 +598,46 @@
         document.getElementById('view-home').style.display = 'none';
         document.getElementById('view-editor').style.display = 'block';
 
+        this.empCount = 1;
+        this.setupEmployeesData();
         this.setupForm();
         this.showToast(`Modelo "${this.currentModel.nome}" carregado.`);
       }
 
-      setPdfType(type) {
-        this.selectedPdfType = type;
-        
-        // Habilita/desabilita áreas de edição dependendo do tipo selecionado
-        const metaSection = document.getElementById('section-meta-inputs');
-        const tableSection = document.getElementById('section-table-inputs');
-
-        if (type === 'impressao') {
-          if (metaSection) metaSection.style.opacity = '0.5';
-          if (tableSection) tableSection.style.opacity = '0.5';
-        } else {
-          if (metaSection) metaSection.style.opacity = '1';
-          if (tableSection) tableSection.style.opacity = '1';
-        }
-
+      changeEmpCount(delta) {
+        let newCount = this.empCount + delta;
+        if (newCount < 1) newCount = 1;
+        if (newCount > 50) newCount = 50;
+        this.empCount = newCount;
+        document.getElementById('cfg-emp-count').value = this.empCount;
+        this.setupEmployeesData();
+        this.renderEmployeeInputs();
         this.updateData();
+      }
+
+      updateEmpCount() {
+        let val = parseInt(document.getElementById('cfg-emp-count').value) || 1;
+        if (val < 1) val = 1;
+        if (val > 50) val = 50;
+        this.empCount = val;
+        document.getElementById('cfg-emp-count').value = this.empCount;
+        this.setupEmployeesData();
+        this.renderEmployeeInputs();
+        this.updateData();
+      }
+
+      setupEmployeesData() {
+        while (this.employees.length < this.empCount) {
+          const idx = this.employees.length + 1;
+          this.employees.push({
+            nome: `Funcionário ${idx}`,
+            cargo: "Auxiliar",
+            matricula: String(idx).padStart(3, '0')
+          });
+        }
+        if (this.employees.length > this.empCount) {
+          this.employees = this.employees.slice(0, this.empCount);
+        }
       }
 
       setupForm() {
@@ -731,31 +645,81 @@
         fieldsContainer.innerHTML = '';
         this.formData = {};
 
-        // Render Field Inputs
-        this.currentModel.campos.forEach(c => {
-          this.formData[c.id] = c.default || '';
-          const div = document.createElement('div');
-          div.className = 'form-group';
-          div.innerHTML = `
-            <label>${c.label}</label>
-            <input type="${c.type}" id="input-${c.id}" class="form-control" value="${c.default || ''}" oninput="app.updateData()">
-          `;
-          fieldsContainer.appendChild(div);
-        });
+        // Render Globals
+        if (this.currentModel.campos) {
+          this.currentModel.campos.forEach(c => {
+            this.formData[c.id] = c.default || '';
+            const div = document.createElement('div');
+            div.className = 'form-group';
+            div.innerHTML = `
+              <label>${c.label}</label>
+              <input type="${c.type}" id="input-${c.id}" class="form-control" value="${c.default || ''}" oninput="app.updateData()">
+            `;
+            fieldsContainer.appendChild(div);
+          });
+        }
+
+        // Toggle Capacity Section
+        const empCapacitySec = document.getElementById('section-emp-capacity');
+        const empListSec = document.getElementById('section-employees-list');
+
+        if (this.currentModel.maxEmp) {
+          empCapacitySec.style.display = 'block';
+          empListSec.style.display = 'block';
+          this.renderEmployeeInputs();
+        } else {
+          empCapacitySec.style.display = 'none';
+          empListSec.style.display = 'none';
+        }
 
         // Setup Table vs Text Body
         const tableContainer = document.getElementById('dynamic-table-container');
         tableContainer.innerHTML = '';
 
-        if (this.currentModel.type === 'ponto') {
-          document.getElementById('section-table-title').innerHTML = `<i class="fa-solid fa-clock"></i> Espelho de Horários`;
+        if (this.currentModel.isPonto) {
+          document.getElementById('section-table-title').innerHTML = `<i class="fa-solid fa-clock"></i> Espelho de Horários (Formato HH:MM)`;
           this.buildPontoTable(tableContainer);
         } else {
-          document.getElementById('section-table-title').innerHTML = `<i class="fa-solid fa-align-left"></i> Conteúdo do Relatório`;
+          document.getElementById('section-table-title').innerHTML = `<i class="fa-solid fa-align-left"></i> Conteúdo do Documento`;
           this.buildReportForm(tableContainer);
         }
 
         this.updateData();
+      }
+
+      renderEmployeeInputs() {
+        const container = document.getElementById('dynamic-employees-container');
+        container.innerHTML = '';
+
+        this.employees.forEach((emp, idx) => {
+          const div = document.createElement('div');
+          div.className = 'emp-card-input';
+          div.innerHTML = `
+            <div class="emp-card-header">Funcionário #${idx + 1}</div>
+            <div class="form-grid">
+              <div class="form-group" style="margin-bottom:0;">
+                <label>Nome Completo</label>
+                <input type="text" class="form-control" value="${emp.nome}" oninput="app.updateEmpDetail(${idx}, 'nome', this.value)">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label>Cargo / Função</label>
+                <input type="text" class="form-control" value="${emp.cargo}" oninput="app.updateEmpDetail(${idx}, 'cargo', this.value)">
+              </div>
+              <div class="form-group" style="margin-bottom:0; grid-column: span 2;">
+                <label>Matrícula / ID</label>
+                <input type="text" class="form-control" value="${emp.matricula}" oninput="app.updateEmpDetail(${idx}, 'matricula', this.value)">
+              </div>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      updateEmpDetail(idx, field, val) {
+        if (this.employees[idx]) {
+          this.employees[idx][field] = val;
+          this.updateData();
+        }
       }
 
       buildPontoTable(container) {
@@ -780,8 +744,8 @@
 
         for (let i = 1; i <= days; i++) {
           const diaStr = String(i).padStart(2, '0');
-          // Default mock times
-          const ent = "08:00", sAlm = "12:00", rAlm = "13:00", sai = "17:00";
+          // Standard Brazilian HH:MM times
+          const ent = "08:00", sAlm = "12:00", rAlm = "13:00", sai = "17:30";
           const tot = this.calcHours(ent, sAlm, rAlm, sai);
 
           this.tableRows.push({ dia: diaStr, ent, sAlm, rAlm, sai, tot });
@@ -789,10 +753,10 @@
           tableHtml += `
             <tr>
               <td><strong>${diaStr}</strong></td>
-              <td><input type="time" value="${ent}" onchange="app.updateTableRow(${i-1}, 'ent', this.value)"></td>
-              <td><input type="time" value="${sAlm}" onchange="app.updateTableRow(${i-1}, 'sAlm', this.value)"></td>
-              <td><input type="time" value="${rAlm}" onchange="app.updateTableRow(${i-1}, 'rAlm', this.value)"></td>
-              <td><input type="time" value="${sai}" onchange="app.updateTableRow(${i-1}, 'sai', this.value)"></td>
+              <td><input type="text" maxlength="5" placeholder="08:00" value="${ent}" onchange="app.updateTableRow(${i-1}, 'ent', this.value)"></td>
+              <td><input type="text" maxlength="5" placeholder="12:00" value="${sAlm}" onchange="app.updateTableRow(${i-1}, 'sAlm', this.value)"></td>
+              <td><input type="text" maxlength="5" placeholder="13:00" value="${rAlm}" onchange="app.updateTableRow(${i-1}, 'rAlm', this.value)"></td>
+              <td><input type="text" maxlength="5" placeholder="17:30" value="${sai}" onchange="app.updateTableRow(${i-1}, 'sai', this.value)"></td>
               <td id="tot-row-${i-1}"><strong>${tot}</strong></td>
             </tr>
           `;
@@ -805,26 +769,34 @@
       buildReportForm(container) {
         container.innerHTML = `
           <div class="form-group">
-            <label>Descrição das Atividades Executadas</label>
-            <textarea id="report-act" class="form-control" rows="4" oninput="app.updateData()">1. Planejamento do escopo inicial executado.\n2. Revisão das metas e especificações técnicas de impressão.\n3. Alinhamento de equipe finalizado com sucesso.</textarea>
+            <label>Descrição Detalhada / Atividades</label>
+            <textarea id="report-act" class="form-control" rows="4" oninput="app.updateData()">1. Verificação e alinhamento do escopo de serviços.\n2. Execução das atividades operacionais conforme padrão estabelecido.\n3. Registro e finalização do atendimento com validação da equipe.</textarea>
           </div>
           <div class="form-group">
             <label>Resultados / Conclusão</label>
-            <textarea id="report-res" class="form-control" rows="3" oninput="app.updateData()">Objetivos atingidos conforme esperado dentro do cronograma estabelecido.</textarea>
+            <textarea id="report-res" class="form-control" rows="3" oninput="app.updateData()">Serviços concluídos e validados conforme exigências técnicas do projeto.</textarea>
           </div>
           <div class="form-group">
-            <label>Pendências / Observações</label>
-            <textarea id="report-obs" class="form-control" rows="2" oninput="app.updateData()">Nenhuma pendência crítica até o momento.</textarea>
+            <label>Observações / Ressalvas</label>
+            <textarea id="report-obs" class="form-control" rows="2" oninput="app.updateData()">Sem observações adicionais.</textarea>
           </div>
         `;
       }
 
+      formatHHMM(val) {
+        val = val.replace(/\D/g, "");
+        if (val.length >= 4) {
+          return val.substring(0, 2) + ":" + val.substring(2, 4);
+        }
+        return val;
+      }
+
       calcHours(e1, s1, e2, s2) {
-        if (!e1 || !s1 || !e2 || !s2) return "00:00";
+        if (!e1 || !s1 || !e2 || !s2 || !e1.includes(':') || !s1.includes(':')) return "00:00";
         try {
           const toMin = t => {
             const [h, m] = t.split(':').map(Number);
-            return h * 60 + m;
+            return (h || 0) * 60 + (m || 0);
           };
           let m1 = toMin(s1) - toMin(e1);
           let m2 = toMin(s2) - toMin(e2);
@@ -840,6 +812,7 @@
       }
 
       updateTableRow(idx, field, val) {
+        val = this.formatHHMM(val);
         this.tableRows[idx][field] = val;
         const row = this.tableRows[idx];
         row.tot = this.calcHours(row.ent, row.sAlm, row.rAlm, row.sai);
@@ -848,178 +821,104 @@
       }
 
       updateData() {
-        // Read Field Values
-        this.currentModel.campos.forEach(c => {
-          const el = document.getElementById(`input-${c.id}`);
-          if (el) this.formData[c.id] = el.value;
-        });
-
-        // Header Customization
-        const emp = document.getElementById('cfg-empresa').value || "PrintExpress Serviços";
-        document.getElementById('render-empresa').innerText = emp;
-        document.getElementById('render-doc-title').innerText = this.currentModel.nome;
-        document.getElementById('render-doc-subtitle').innerText = `Documento - ${emp}`;
-        document.getElementById('render-footer-date').innerText = `Gerado em: ${new Date().toLocaleDateString('pt-BR')}`;
-
-        // Render Metadata Box conforme o tipo
-        const metaGrid = document.getElementById('render-meta-grid');
-        metaGrid.setAttribute('data-fields-count', this.currentModel.campos.length);
-        
-        if (this.selectedPdfType === 'impressao') {
-          // 🖊️ PDF para impressão (Linhas/Espaços para escrita manual)
-          metaGrid.innerHTML = this.currentModel.campos.map(c => `
-            <div class="doc-meta-item">
-              <strong>${c.label.toUpperCase()}:</strong>
-              <span style="border-bottom: 1px solid #000; flex: 1; display: inline-block; height: 16px;"></span>
-            </div>
-          `).join('');
-        } else if (this.selectedPdfType === 'preenchivel') {
-          // 💻 PDF preenchível (Campos simulados visivelmente para a prévia com AcroForm ID)
-          metaGrid.innerHTML = this.currentModel.campos.map((c, idx) => `
-            <div class="doc-meta-item">
-              <strong>${c.label.toUpperCase()}:</strong>
-              <div class="field-box-simulated" data-acrofield="meta_${idx}">${this.formData[c.id] || '[ Campo Digitável ]'}</div>
-            </div>
-          `).join('');
-        } else {
-          // 📝 PDF já preenchido (Dados estáticos normais)
-          metaGrid.innerHTML = Object.entries(this.formData).map(([k, v]) => {
-            const fieldObj = this.currentModel.campos.find(c => c.id === k);
-            const label = fieldObj ? fieldObj.label : k;
-            return `<div class="doc-meta-item"><strong>${label.toUpperCase()}:</strong> <span>${v || '-'}</span></div>`;
-          }).join('');
+        if (this.currentModel.campos) {
+          this.currentModel.campos.forEach(c => {
+            const el = document.getElementById(`input-${c.id}`);
+            if (el) this.formData[c.id] = el.value;
+          });
         }
 
-        // Render Document Content
+        const empName = document.getElementById('cfg-empresa').value || "PrintExpress Serviços";
+        document.getElementById('render-empresa').innerText = empName;
+        document.getElementById('render-doc-title').innerText = this.currentModel.nome;
+        document.getElementById('render-doc-subtitle').innerText = `Documento Estático Final - ${empName}`;
+        document.getElementById('render-footer-date').innerText = `Emitido em: ${new Date().toLocaleDateString('pt-BR')}`;
+
+        // Render Metadata
+        const metaGrid = document.getElementById('render-meta-grid');
+        let metaHtml = Object.entries(this.formData).map(([k, v]) => {
+          const fieldObj = this.currentModel.campos ? this.currentModel.campos.find(c => c.id === k) : null;
+          const label = fieldObj ? fieldObj.label : k;
+          return `<div class="doc-meta-item"><strong>${label}:</strong> <span>${v || '-'}</span></div>`;
+        }).join('');
+
+        if (this.currentModel.maxEmp) {
+          metaHtml += `<div class="doc-meta-item"><strong>QTD FUNCIONÁRIOS:</strong> <span>${this.empCount} cadastrado(s)</span></div>`;
+        }
+
+        metaGrid.innerHTML = metaHtml;
+
+        // Render Body Content (Renderiza EXATAMENTE a quantidade de funcionários sem sobras)
         const bodyContent = document.getElementById('render-body-content');
-        if (this.currentModel.type === 'ponto') {
-          if (this.selectedPdfType === 'impressao') {
-            // Tabela em branco com linhas
-            let tableRowsHtml = this.tableRows.map(r => `
-              <tr>
-                <td>${r.dia}</td>
-                <td></td><td></td><td></td><td></td><td></td>
-              </tr>
-            `).join('');
 
-            bodyContent.innerHTML = `
-              <table class="doc-table">
-                <thead>
-                  <tr><th>Dia</th><th>Entrada</th><th>Saída Almoço</th><th>Retorno Almoço</th><th>Saída</th><th>Total</th></tr>
-                </thead>
-                <tbody>
-                  ${tableRowsHtml}
-                  <tr style="background:#f8fafc; font-weight:bold;">
-                    <td colspan="5" style="text-align:right;">TOTAL ACUMULADO:</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-            `;
-          } else if (this.selectedPdfType === 'preenchivel') {
-            // Tabela com campos AcroForm
-            let tableRowsHtml = this.tableRows.map((r, idx) => `
-              <tr>
-                <td>${r.dia}</td>
-                <td><span class="table-cell-simulated" data-acrofield="table_${idx}_ent">${r.ent}</span></td>
-                <td><span class="table-cell-simulated" data-acrofield="table_${idx}_salm">${r.sAlm}</span></td>
-                <td><span class="table-cell-simulated" data-acrofield="table_${idx}_ralm">${r.rAlm}</span></td>
-                <td><span class="table-cell-simulated" data-acrofield="table_${idx}_sai">${r.sai}</span></td>
-                <td><span class="table-cell-simulated" data-acrofield="table_${idx}_tot">${r.tot}</span></td>
-              </tr>
-            `).join('');
+        if (this.currentModel.maxEmp) {
+          // Exibição em lista para múltiplos funcionários
+          let empsHtml = this.employees.map((emp, i) => `
+            <div style="border:1px solid #000; padding:6px; margin-bottom:8px; background:#fff; font-size:7.5pt;">
+              <div style="display:flex; justify-size: space-between; border-bottom:1px dashed #ccc; padding-bottom:4px; margin-bottom:4px;">
+                <strong>#${i+1} - ${emp.nome.toUpperCase()}</strong>
+                <span>CARGO: ${emp.cargo.toUpperCase()} | MATRÍCULA: ${emp.matricula}</span>
+              </div>
+              ${this.currentModel.isPonto ? `
+                <table class="doc-table" style="margin-bottom:0; font-size:7pt;">
+                  <thead><tr><th>Dia</th><th>Entrada</th><th>Saída Almoço</th><th>Retorno</th><th>Saída</th><th>Total</th></tr></thead>
+                  <tbody>
+                    ${this.tableRows.slice(0, 5).map(r => `<tr><td>${r.dia}</td><td>${r.ent}</td><td>${r.sAlm}</td><td>${r.rAlm}</td><td>${r.sai}</td><td>${r.tot}</td></tr>`).join('')}
+                    <tr><td colspan="6" style="text-align:center; font-style:italic; background:#f1f5f9;">... Espelho completo de horários emitido ...</td></tr>
+                  </tbody>
+                </table>
+              ` : `<p style="color:#555; font-size:7.5pt;">Registro individual ativo e confirmado no documento final.</p>`}
+            </div>
+          `).join('');
 
-            bodyContent.innerHTML = `
-              <table class="doc-table">
-                <thead>
-                  <tr><th>Dia</th><th>Entrada</th><th>Saída Almoço</th><th>Retorno Almoço</th><th>Saída</th><th>Total</th></tr>
-                </thead>
-                <tbody>
-                  ${tableRowsHtml}
-                  <tr style="background:#f8fafc; font-weight:bold;">
-                    <td colspan="5" style="text-align:right;">TOTAL ACUMULADO:</td>
-                    <td><span class="table-cell-simulated" data-acrofield="table_tot_acc"></span></td>
-                  </tr>
-                </tbody>
-              </table>
-            `;
-          } else {
-            // Tabela preenchida
-            let sumMinutes = 0;
-            let tableRowsHtml = this.tableRows.map(r => {
+          bodyContent.innerHTML = empsHtml;
+
+        } else if (this.currentModel.isPonto) {
+          // Tabela completa normal
+          let sumMinutes = 0;
+          let tableRowsHtml = this.tableRows.map(r => {
+            if (r.tot.includes(':')) {
               const [h, m] = r.tot.split(':').map(Number);
-              sumMinutes += (h * 60 + m);
-              return `<tr><td>${r.dia}</td><td>${r.ent}</td><td>${r.sAlm}</td><td>${r.rAlm}</td><td>${r.sai}</td><td><strong>${r.tot}</strong></td></tr>`;
-            }).join('');
+              sumMinutes += ((h||0) * 60 + (m||0));
+            }
+            return `<tr><td>${r.dia}</td><td>${r.ent}</td><td>${r.sAlm}</td><td>${r.rAlm}</td><td>${r.sai}</td><td><strong>${r.tot}</strong></td></tr>`;
+          }).join('');
 
-            const totH = Math.floor(sumMinutes / 60);
-            const totM = sumMinutes % 60;
+          const totH = Math.floor(sumMinutes / 60);
+          const totM = sumMinutes % 60;
 
-            bodyContent.innerHTML = `
-              <table class="doc-table">
-                <thead>
-                  <tr><th>Dia</th><th>Entrada</th><th>Saída Almoço</th><th>Retorno Almoço</th><th>Saída</th><th>Total</th></tr>
-                </thead>
-                <tbody>
-                  ${tableRowsHtml}
-                  <tr style="background:#f8fafc; font-weight:bold;">
-                    <td colspan="5" style="text-align:right;">TOTAL ACUMULADO:</td>
-                    <td>${String(totH).padStart(2, '0')}:${String(totM).padStart(2, '0')} h</td>
-                  </tr>
-                </tbody>
-              </table>
-            `;
-          }
+          bodyContent.innerHTML = `
+            <table class="doc-table">
+              <thead>
+                <tr><th>Dia</th><th>Entrada</th><th>Saída Almoço</th><th>Retorno Almoço</th><th>Saída</th><th>Total</th></tr>
+              </thead>
+              <tbody>
+                ${tableRowsHtml}
+                <tr style="background:#f8fafc; font-weight:bold;">
+                  <td colspan="5" style="text-align:right;">TOTAL ACUMULADO NO PERÍODO:</td>
+                  <td>${String(totH).padStart(2, '0')}:${String(totM).padStart(2, '0')} h</td>
+                </tr>
+              </tbody>
+            </table>
+          `;
         } else {
-          // Relatórios
-          if (this.selectedPdfType === 'impressao') {
-            bodyContent.innerHTML = `
-              <div style="font-size: 9pt; line-height: 1.5; color: #000;">
-                <h4 style="margin: 10px 0 5px 0; border-bottom: 1px solid #ccc;">1. DESCRIÇÃO DAS ATIVIDADES</h4>
-                <div style="height: 120px; border: 1px solid #ccc; background: #fff; margin-bottom: 15px;"></div>
-                
-                <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">2. RESULTADOS OBTIDOS</h4>
-                <div style="height: 90px; border: 1px solid #ccc; background: #fff; margin-bottom: 15px;"></div>
+          // Relatórios e Textos
+          const act = document.getElementById('report-act')?.value || "";
+          const res = document.getElementById('report-res')?.value || "";
+          const obs = document.getElementById('report-obs')?.value || "";
 
-                <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">3. PENDÊNCIAS E OBSERVAÇÕES</h4>
-                <div style="height: 70px; border: 1px solid #ccc; background: #fff;"></div>
-              </div>
-            `;
-          } else if (this.selectedPdfType === 'preenchivel') {
-            const act = document.getElementById('report-act')?.value || "";
-            const res = document.getElementById('report-res')?.value || "";
-            const obs = document.getElementById('report-obs')?.value || "";
+          bodyContent.innerHTML = `
+            <div style="font-size: 8.5pt; line-height: 1.4; color: #000;">
+              <h4 style="margin: 8px 0 4px 0; border-bottom: 1px solid #000; font-size:8.5pt;">1. DESCRIÇÃO DAS ATIVIDADES / REGISTRO</h4>
+              <p style="white-space: pre-line; background: #f8fafc; padding: 6px; border: 1px solid #cbd5e1; margin-bottom:10px;">${act}</p>
+              
+              <h4 style="margin: 8px 0 4px 0; border-bottom: 1px solid #000; font-size:8.5pt;">2. RESULTADOS / CONCLUSÃO</h4>
+              <p style="white-space: pre-line; background: #f8fafc; padding: 6px; border: 1px solid #cbd5e1; margin-bottom:10px;">${res}</p>
 
-            bodyContent.innerHTML = `
-              <div style="font-size: 9pt; line-height: 1.5; color: #000;">
-                <h4 style="margin: 10px 0 5px 0; border-bottom: 1px solid #ccc;">1. DESCRIÇÃO DAS ATIVIDADES</h4>
-                <div class="field-box-simulated" data-acrofield="report_act" style="min-height: 100px; white-space: pre-line;">${act}</div>
-                
-                <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">2. RESULTADOS OBTIDOS</h4>
-                <div class="field-box-simulated" data-acrofield="report_res" style="min-height: 80px; white-space: pre-line;">${res}</div>
-
-                <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">3. PENDÊNCIAS E OBSERVAÇÕES</h4>
-                <div class="field-box-simulated" data-acrofield="report_obs" style="min-height: 60px; white-space: pre-line;">${obs}</div>
-              </div>
-            `;
-          } else {
-            const act = document.getElementById('report-act')?.value || "";
-            const res = document.getElementById('report-res')?.value || "";
-            const obs = document.getElementById('report-obs')?.value || "";
-
-            bodyContent.innerHTML = `
-              <div style="font-size: 9pt; line-height: 1.5; color: #000;">
-                <h4 style="margin: 10px 0 5px 0; border-bottom: 1px solid #ccc;">1. DESCRIÇÃO DAS ATIVIDADES</h4>
-                <p style="white-space: pre-line; background: #fafafa; padding: 8px; border: 1px solid #eee;">${act}</p>
-                
-                <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">2. RESULTADOS OBTIDOS</h4>
-                <p style="white-space: pre-line; background: #fafafa; padding: 8px; border: 1px solid #eee;">${res}</p>
-
-                <h4 style="margin: 15px 0 5px 0; border-bottom: 1px solid #ccc;">3. PENDÊNCIAS E OBSERVAÇÕES</h4>
-                <p style="white-space: pre-line; background: #fafafa; padding: 8px; border: 1px solid #eee;">${obs}</p>
-              </div>
-            `;
-          }
+              <h4 style="margin: 8px 0 4px 0; border-bottom: 1px solid #000; font-size:8.5pt;">3. OBSERVAÇÕES / RESSALVAS</h4>
+              <p style="white-space: pre-line; background: #f8fafc; padding: 6px; border: 1px solid #cbd5e1;">${obs}</p>
+            </div>
+          `;
         }
 
         this.saveDraft();
@@ -1044,91 +943,51 @@
         const draft = {
           modelId: this.currentModel.id,
           formData: this.formData,
-          empresa: document.getElementById('cfg-empresa').value,
-          pdfType: this.selectedPdfType
+          empCount: this.empCount,
+          employees: this.employees,
+          empresa: document.getElementById('cfg-empresa').value
         };
-        localStorage.setItem('pe_doc_draft', JSON.stringify(draft));
+        localStorage.setItem('pe_doc_draft_v2', JSON.stringify(draft));
       }
 
       checkSavedDraft() {
-        const saved = localStorage.getItem('pe_doc_draft');
+        const saved = localStorage.getItem('pe_doc_draft_v2');
         if (saved) {
           try {
             const data = JSON.parse(saved);
-            if (data.pdfType) {
-              this.selectedPdfType = data.pdfType;
-              const radio = document.querySelector(`input[name="pdfType"][value="${data.pdfType}"]`);
-              if (radio) radio.checked = true;
-            }
-            this.showToast('Rascunho anterior encontrado.', 'success');
+            if (data.empresa) document.getElementById('cfg-empresa').value = data.empresa;
           } catch (e) {}
         }
       }
 
       clearDraft() {
-        localStorage.removeItem('pe_doc_draft');
-        this.showToast('Rascunho limpo com sucesso.');
+        localStorage.removeItem('pe_doc_draft_v2');
+        this.showToast('Dados limpos.');
         this.setupForm();
       }
 
-      /* GERAÇÃO DE PDF DE ALTA QUALIDADE COM SUPORTE A ACROFORM REAIS */
+      /* GERAÇÃO DE PDF ESTÁTICO DE ALTA PRECISÃO VISUAL */
       async downloadPDF() {
         const element = document.getElementById('printable-area');
-        this.showToast('Gerando documento PDF...');
+        this.showToast('Gerando PDF estático final...');
 
         try {
           const { jsPDF } = window.jspdf;
           const pdf = new jsPDF('p', 'mm', 'a4');
           const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = pdf.internal.pageSize.getHeight();
 
-          // Converte o elemento HTML visual para Canvas de alta definição
           const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-          const imgData = canvas.toDataURL('image/jpeg', 0.95);
+          const imgData = canvas.toDataURL('image/jpeg', 0.98);
           const imgHeight = (canvas.height * pdfWidth) / canvas.width;
 
-          // Adiciona a imagem de fundo do layout
+          // Incorpora a imagem renderizada como texto estático não editável
           pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
 
-          // Se o tipo for "💻 PDF PREENCHÍVEL / EDITÁVEL", adiciona campos interativos reais AcroForm
-          if (this.selectedPdfType === 'preenchivel') {
-            const pageRect = element.getBoundingClientRect();
-            const scaleX = pdfWidth / pageRect.width;
-            const scaleY = imgHeight / pageRect.height;
-
-            const fields = element.querySelectorAll('[data-acrofield]');
-            const { AcroFormTextField } = jsPDF;
-
-            fields.forEach((el, idx) => {
-              const rect = el.getBoundingClientRect();
-              const fieldName = el.getAttribute('data-acrofield') || `field_${idx}`;
-
-              // Converte coordenadas da tela (px) para coordenadas de milímetros (mm) no PDF
-              const x = (rect.left - pageRect.left) * scaleX;
-              const y = (rect.top - pageRect.top) * scaleY;
-              const w = rect.width * scaleX;
-              const h = rect.height * scaleY;
-
-              const textField = new AcroFormTextField();
-              textField.Rect = [x, y, w, h];
-              textField.fieldName = fieldName;
-              
-              // Se possuir texto inicial, define como valor padrão do campo editável
-              const val = el.innerText.trim();
-              if (val && !val.includes('[ Campo Digitável ]')) {
-                textField.value = val;
-              }
-
-              pdf.addField(textField);
-            });
-          }
-
-          const primaryName = Object.values(this.formData)[0] || 'documento';
-          const typeSuffix = this.selectedPdfType === 'impressao' ? '-impressao' : (this.selectedPdfType === 'preenchivel' ? '-editavel' : '-preenchido');
-          const fileName = `${this.currentModel.id}${typeSuffix}-${primaryName.toLowerCase().replace(/\s+/g, '-')}.pdf`;
+          const primaryName = this.employees[0]?.nome || Object.values(this.formData)[0] || 'documento';
+          const fileName = `${this.currentModel.id}-${this.empCount}func-${primaryName.toLowerCase().replace(/\s+/g, '-')}.pdf`;
           
           pdf.save(fileName);
-          this.showToast('✓ PDF baixado com sucesso!');
+          this.showToast('✓ PDF estático baixado com sucesso!');
         } catch (err) {
           console.error(err);
           this.showToast('Erro ao gerar PDF.', 'error');
@@ -1139,12 +998,12 @@
         window.print();
       }
 
-      /* Batch Functionality com suporte aos 3 tipos */
+      /* Batch Functionality */
       openBatchModal() {
         document.getElementById('batch-modal').classList.add('active');
         this.batchData = [
-          { nome: "João Silva", cargo: "Operador", id: "001" },
-          { nome: "Maria Souza", cargo: "Analista", id: "002" }
+          { nome: "João da Silva", cargo: "Auxiliar", id: "001" },
+          { nome: "Maria Souza", cargo: "Atendente", id: "002" }
         ];
         this.renderBatchRows();
       }
@@ -1181,16 +1040,15 @@
           return;
         }
 
-        this.showToast('Processando lote de PDFs...');
+        this.showToast('Processando pacote de PDFs...');
         const zip = new JSZip();
         const element = document.getElementById('printable-area');
-        const { jsPDF, AcroFormTextField } = window.jspdf;
+        const { jsPDF } = window.jspdf;
 
         for (let i = 0; i < this.batchData.length; i++) {
           const person = this.batchData[i];
-          
-          if (this.currentModel.campos[0]) this.formData[this.currentModel.campos[0].id] = person.nome;
-          if (this.currentModel.campos[1]) this.formData[this.currentModel.campos[1].id] = person.cargo;
+          this.employees = [{ nome: person.nome || `Pessoa ${i+1}`, cargo: person.cargo || "Função", matricula: person.id || "000" }];
+          this.empCount = 1;
           this.updateData();
 
           const canvas = await html2canvas(element, { scale: 1.5 });
@@ -1198,39 +1056,9 @@
           
           const pdf = new jsPDF('p', 'mm', 'a4');
           const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = pdf.internal.pageSize.getHeight();
           const imgHeight = (canvas.height * pdfWidth) / canvas.width;
 
           pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
-
-          // Se for tipo preenchível no Lote
-          if (this.selectedPdfType === 'preenchivel') {
-            const pageRect = element.getBoundingClientRect();
-            const scaleX = pdfWidth / pageRect.width;
-            const scaleY = imgHeight / pageRect.height;
-            const fields = element.querySelectorAll('[data-acrofield]');
-
-            fields.forEach((el, idx) => {
-              const rect = el.getBoundingClientRect();
-              const fieldName = el.getAttribute('data-acrofield') || `field_${idx}`;
-
-              const x = (rect.left - pageRect.left) * scaleX;
-              const y = (rect.top - pageRect.top) * scaleY;
-              const w = rect.width * scaleX;
-              const h = rect.height * scaleY;
-
-              const textField = new AcroFormTextField();
-              textField.Rect = [x, y, w, h];
-              textField.fieldName = fieldName;
-
-              const val = el.innerText.trim();
-              if (val && !val.includes('[ Campo Digitável ]')) {
-                textField.value = val;
-              }
-
-              pdf.addField(textField);
-            });
-          }
 
           const pdfBlob = pdf.output('blob');
           const safeName = (person.nome || `doc-${i+1}`).toLowerCase().replace(/\s+/g, '-');
@@ -1240,7 +1068,7 @@
         const zipBlob = await zip.generateAsync({ type: "blob" });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(zipBlob);
-        link.download = `documentos-printexpress-${Date.now()}.zip`;
+        link.download = `pacote-printexpress-${Date.now()}.zip`;
         link.click();
 
         this.closeBatchModal();
@@ -1248,7 +1076,7 @@
       }
     }
 
-    // Initialize App Globally
+    // Global Instance
     const app = new DocumentGeneratorApp();
   </script>
 </body>
