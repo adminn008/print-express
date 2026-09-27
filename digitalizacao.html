@@ -833,7 +833,7 @@
                         <div class="service-card-body">
                             <div class="service-card-title">📄 Organização do PDF</div>
                             <div class="service-card-desc">Organização e ordenação das páginas do documento.</div>
-                            <div class="service-card-badge">Serviço adicional pago — Valor a consultar</div>
+                            <div class="service-card-badge">Serviço adicional: +R$ 2,00</div>
                         </div>
                     </div>
                 </label>
@@ -844,7 +844,7 @@
                         <div class="service-card-body">
                             <div class="service-card-title">🗂️ Separação de documentos</div>
                             <div class="service-card-desc">Separação de diferentes documentos em arquivos PDF individuais.</div>
-                            <div class="service-card-badge">Serviço adicional pago — Valor a consultar</div>
+                            <div class="service-card-badge">Serviço adicional: +R$ 2,00</div>
                         </div>
                     </div>
                 </label>
@@ -855,7 +855,7 @@
                         <div class="service-card-body">
                             <div class="service-card-title">🔄 Ajuste de orientação</div>
                             <div class="service-card-desc">Correção da orientação das páginas quando necessário.</div>
-                            <div class="service-card-badge">Serviço adicional pago — Valor a consultar</div>
+                            <div class="service-card-badge">Serviço adicional: +R$ 1,00</div>
                         </div>
                     </div>
                 </label>
@@ -866,7 +866,7 @@
                         <div class="service-card-body">
                             <div class="service-card-title">✂️ Remoção de páginas em branco</div>
                             <div class="service-card-desc">Identificação e remoção de páginas totalmente em branco.</div>
-                            <div class="service-card-badge">Serviço adicional pago — Valor a consultar</div>
+                            <div class="service-card-badge">Serviço adicional: +R$ 1,00</div>
                         </div>
                     </div>
                 </label>
@@ -927,7 +927,7 @@
             </div>
             <div class="price-row" id="rowAdicionaisConsultar" style="display: none; color: var(--text-muted);">
                 <span>Adicionais selecionados:</span>
-                <span>A consultar</span>
+                <span id="adicionaisExibicao">+ R$ 0,00</span>
             </div>
             <div class="price-row" id="rowExtra" style="display: none; color: var(--primary);">
                 <span>Adicional OCR (Pesquisável):</span>
@@ -1161,12 +1161,18 @@
         const totalComDesconto = precoEfetivo * qtd;
         const desconto = subtotal - totalComDesconto;
 
+        let adicionaisFixos = 0;
+        if (optOrganizacao.checked) adicionaisFixos += 2.00;
+        if (optSeparacao.checked) adicionaisFixos += 2.00;
+        if (optOrientacao.checked) adicionaisFixos += 1.00;
+        if (optRemocao.checked) adicionaisFixos += 1.00;
+
         let extras = 0;
         if (optOcr.checked) {
             extras = 0.30 * qtd;
         }
 
-        const totalFinal = totalComDesconto + extras;
+        const totalFinal = totalComDesconto + adicionaisFixos + extras;
 
         if (qtdPaginasExibicao) qtdPaginasExibicao.innerText = qtd;
         subtotalExibicao.innerText = `R$ ${totalComDesconto.toFixed(2).replace('.', ',')}`;
@@ -1178,9 +1184,12 @@
             rowDesconto.style.display = "none";
         }
 
-        const temAdicionaisAconsultar = optOrganizacao.checked || optSeparacao.checked || optOrientacao.checked || optRemocao.checked;
-        if (temAdicionaisAconsultar) {
+        if (adicionaisFixos > 0) {
             rowAdicionaisConsultar.style.display = "flex";
+            const adicionaisExibicao = document.getElementById("adicionaisExibicao");
+            if (adicionaisExibicao) {
+                adicionaisExibicao.innerText = `+ R$ ${adicionaisFixos.toFixed(2).replace('.', ',')}`;
+            }
         } else {
             rowAdicionaisConsultar.style.display = "none";
         }
