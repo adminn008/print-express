@@ -790,13 +790,13 @@
                 <div style="font-weight:700; font-size:13px; color:var(--text-main); margin-bottom: 2px;">Resumo do Valor</div>
                 
                 <div class="price-row" id="rowEmissao">
-                    <span>📄 Emissão / Busca:</span>
+                    <span>📄 Serviço / Busca:</span>
                     <span id="valorEmissaoExibicao">R$ 0,00</span>
                 </div>
 
-                <div class="price-row" id="rowImpressao">
+                <div class="price-row" id="rowImpressao" style="display: none;">
                     <span>🖨️ Impressão (<span id="txtQtdCalculada">1 pág.</span>):</span>
-                    <span id="valorImpressaoExibicao">R$ 0,50</span>
+                    <span id="valorImpressaoExibicao">R$ 0,00</span>
                 </div>
 
                 <div class="price-row" id="rowAdicionais" style="display: none; color: var(--primary);">
@@ -806,7 +806,7 @@
 
                 <div class="price-row total">
                     <span>💰 Total estimado:</span>
-                    <strong id="valorTotalExibicao">R$ 0,50</strong>
+                    <strong id="valorTotalExibicao">R$ 0,00</strong>
                 </div>
 
                 <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">
@@ -1068,23 +1068,34 @@
                 document.getElementById("grupoDescricaoOutro").style.display = (tipo === "outras_certidoes") ? "flex" : "none";
             }
 
-            // CÁLCULO DINÂMICO
-            let valorEmissao = 0;
-            if (!temDoc) {
-                if (tipo === "crlv") valorEmissao = 4.20; // Diferença de R$12,20 - R$8,00
-                else if (tipo === "situacao_cpf") valorEmissao = 3.00; // Diferença de R$3,50 - R$0,50
-                else if (tipo === "cnpj" || tipo === "antecedentes" || tipo === "outras_certidoes") valorEmissao = 4.50; // Diferença de R$5,00 - R$0,50
-            }
-
+            // CÁLCULO DE PREÇO BASE SEGUNDO A TABELA OFICIAL
             const tipoImpSelected = document.querySelector('input[name="TipoImpressao"]:checked')?.value || "Preto e Branco";
-            const qtdCopias = parseInt(document.getElementById("qtd_copias").value) || 1;
+            const isColorido = (tipoImpSelected === "Colorido");
+            let valorBaseServico = 0;
 
-            let precoPorPagina = (tipoImpSelected === "Colorido") ? 2.50 : 0.50;
-            if ((tipo === "cnpj" || tipo === "antecedentes") && !temDoc) {
-                precoPorPagina = (tipoImpSelected === "Colorido") ? 2.50 : 0.50;
+            switch(tipo) {
+                case "crlv":
+                    valorBaseServico = temDoc ? 8.00 : 12.20;
+                    break;
+                case "situacao_cpf":
+                    valorBaseServico = temDoc ? 0.50 : 3.50;
+                    break;
+                case "cnpj":
+                    valorBaseServico = isColorido ? 7.00 : 5.00;
+                    break;
+                case "antecedentes":
+                    valorBaseServico = isColorido ? 7.00 : 5.00;
+                    break;
+                case "quitacao_eleitoral":
+                    valorBaseServico = 0.50;
+                    break;
+                case "cnh_digital":
+                    valorBaseServico = 0.50;
+                    break;
+                case "outras_certidoes":
+                    valorBaseServico = temDoc ? 0.50 : 5.00;
+                    break;
             }
-
-            let valorImpressao = precoPorPagina * qtdCopias;
 
             let valorAdicionais = 0;
             if (optRedimensionar.checked) valorAdicionais += 2.00;
@@ -1092,19 +1103,15 @@
             if (optCopiaExtra.checked) valorAdicionais += 0.50;
             if (optRecorte.checked) valorAdicionais += 1.00;
 
-            let total = valorEmissao + valorImpressao + valorAdicionais;
+            let total = valorBaseServico + valorAdicionais;
 
-            // Renderização do Resumo
+            // Renderização do Resumo de Preços
             const rowEmissao = document.getElementById("rowEmissao");
-            if (valorEmissao > 0) {
-                rowEmissao.style.display = "flex";
-                document.getElementById("valorEmissaoExibicao").innerText = `R$ ${valorEmissao.toFixed(2).replace('.', ',')}`;
-            } else {
-                rowEmissao.style.display = "none";
-            }
+            rowEmissao.style.display = "flex";
+            document.getElementById("valorEmissaoExibicao").innerText = `R$ ${valorBaseServico.toFixed(2).replace('.', ',')}`;
 
-            document.getElementById("txtQtdCalculada").innerText = `${qtdCopias} folha(s) ${tipoImpSelected === "Colorido" ? "Colorida" : "P&B"}`;
-            document.getElementById("valorImpressaoExibicao").innerText = `R$ ${valorImpressao.toFixed(2).replace('.', ',')}`;
+            const rowImpressao = document.getElementById("rowImpressao");
+            rowImpressao.style.display = "none"; // O valor base já inclui o serviço/impressão conforme tabela especificada
 
             const rowAdicionais = document.getElementById("rowAdicionais");
             if (valorAdicionais > 0) {
