@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WelGrafx — Gerador & Edição de Currículos Profissionais</title>
+    <title>Gerador & Edição de Currículos Profissionais</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
             --primary: #0284c7;
-            --primary-hover: #0369a1;
             --bg: #0f172a;
             --card-bg: #1e293b;
             --border: #334155;
@@ -19,46 +18,31 @@
             --green: #10b981;
             --green-hover: #059669;
             --danger: #ef4444;
-            --warning: #f59e0b;
-            --warning-hover: #d97706;
             --line-height-cv: 1.4;
             --font-family-cv: 'Inter', sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.5; min-height: 100vh; }
+        body { background-color: var(--bg); color: var(--text); padding: 20px 16px; line-height: 1.5; }
 
-        .header-title { text-align: center; margin-bottom: 20px; padding: 0 8px; }
-        .header-title h1 { color: var(--accent); font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+        .header-title { text-align: center; margin-bottom: 20px; }
+        .header-title h1 { color: var(--accent); font-size: 26px; font-weight: 700; }
         .header-title p { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
 
         .app-container {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
             max-width: 1400px;
             margin: 0 auto;
-        }
-
-        @media (min-width: 1024px) {
-            .app-container {
-                grid-template-columns: 1fr 1fr;
-                gap: 24px;
-            }
         }
 
         /* TABELA E AVISOS */
         .info-panel {
             grid-column: 1 / -1;
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 16px;
-        }
-
-        @media (min-width: 768px) {
-            .info-panel {
-                grid-template-columns: 1fr 1fr;
-            }
         }
 
         .info-card {
@@ -68,21 +52,19 @@
             padding: 16px;
         }
 
-        .info-card h3 { font-size: 15px; color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        .info-card h3 { font-size: 15px; color: var(--accent); margin-bottom: 10px; }
 
-        .price-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .price-table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
+        .price-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         .price-table th, .price-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
         .price-table td strong { color: var(--green); }
 
         .notice-box {
             background: rgba(2, 132, 199, 0.1);
             border-left: 4px solid var(--accent);
-            padding: 12px;
+            padding: 10px 12px;
             border-radius: 6px;
             font-size: 13px;
             color: #e0f2fe;
-            line-height: 1.6;
         }
 
         /* FORMULÁRIO E ETAPAS */
@@ -90,48 +72,38 @@
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 20px;
+            padding: 22px;
+            max-height: 85vh;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
 
-        @media (min-width: 1024px) {
-            .form-section {
-                max-height: 85vh;
-                overflow-y: auto;
-            }
-        }
-
         /* BARRA DE ETAPAS */
         .step-nav {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             overflow-x: auto;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
             border-bottom: 1px solid var(--border);
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
         }
         .step-pill {
             background: #0f172a;
             color: var(--text-muted);
             border: 1px solid var(--border);
-            padding: 8px 14px;
+            padding: 6px 12px;
             font-size: 12px;
             font-weight: 600;
             border-radius: 20px;
             white-space: nowrap;
             cursor: pointer;
             transition: all 0.2s ease;
-            user-select: none;
-            touch-action: manipulation;
         }
         .step-pill.active {
             background: var(--primary);
             color: #fff;
             border-color: var(--accent);
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
         }
         .step-pill.completed {
             border-color: var(--green);
@@ -158,27 +130,21 @@
             justify-content: space-between;
             gap: 10px;
             margin-top: 10px;
-            padding-top: 14px;
+            padding-top: 10px;
             border-top: 1px solid var(--border);
         }
         .btn-step {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 10px 18px;
             border-radius: 8px;
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            touch-action: manipulation;
-            min-height: 44px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            transition: background 0.2s;
         }
-        .btn-step:hover { background: var(--primary-hover); }
-        .btn-step:active { transform: scale(0.98); }
+        .btn-step:hover { background: #0369a1; }
         .btn-step-prev {
             background: var(--border);
             color: var(--text);
@@ -196,39 +162,30 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
         }
 
         .form-group { display: flex; flex-direction: column; gap: 6px; }
-        label { font-size: 13px; font-weight: 600; color: #cbd5e1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; }
+        label { font-size: 13px; font-weight: 600; color: #cbd5e1; display: flex; justify-content: space-between; align-items: center; }
         
         .char-count { font-size: 11px; color: var(--text-muted); font-weight: 400; }
 
         input, select, textarea {
             width: 100%;
-            padding: 12px;
+            padding: 10px 12px;
             background: #0f172a;
             border: 1px solid var(--border);
             border-radius: 8px;
             color: #fff;
-            font-size: 15px; /* Prevents iOS auto-zoom */
-            transition: border-color 0.2s;
+            font-size: 14px;
         }
         
         input:focus, select:focus, textarea:focus {
             border-color: var(--accent);
             outline: none;
-            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
         }
 
-        .grid-2 { display: grid; grid-template-columns: 1fr; gap: 12px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr; gap: 10px; }
-
-        @media (min-width: 600px) {
-            .grid-2 { grid-template-columns: 1fr 1fr; }
-            .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
-        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 
         /* FORMATADOR DE TEXTO WYSIWYG */
         .editor-toolbar {
@@ -238,27 +195,25 @@
             border: 1px solid var(--border);
             border-bottom: none;
             border-radius: 8px 8px 0 0;
-            padding: 6px;
+            padding: 4px;
         }
         .editor-btn {
             background: var(--card-bg);
             color: #fff;
             border: 1px solid var(--border);
-            padding: 6px 12px;
+            padding: 4px 8px;
             border-radius: 4px;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
             font-weight: bold;
-            min-height: 36px;
-            touch-action: manipulation;
         }
         .editor-btn:hover { background: var(--primary); }
         .wysiwyg-box {
-            min-height: 90px;
+            min-height: 80px;
             background: #0f172a;
             border: 1px solid var(--border);
             border-radius: 0 0 8px 8px;
-            padding: 12px;
+            padding: 10px;
             color: #fff;
             font-size: 14px;
             overflow-y: auto;
@@ -270,14 +225,14 @@
             background: #0f172a;
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
             position: relative;
         }
         .dynamic-item .btn-remove {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 8px;
+            right: 8px;
         }
         .tag-container {
             display: flex;
@@ -288,21 +243,21 @@
         .tag-item {
             background: var(--primary);
             color: #fff;
-            padding: 6px 12px;
+            padding: 4px 10px;
             border-radius: 16px;
             font-size: 12px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
-        .tag-item span { cursor: pointer; font-weight: bold; padding: 2px 4px; }
+        .tag-item span { cursor: pointer; font-weight: bold; }
 
         /* BARRA DE PROGRESSO */
         .score-bar-container {
             background: #0f172a;
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 12px;
+            padding: 10px;
             margin-bottom: 5px;
         }
         .score-bar {
@@ -323,16 +278,11 @@
             background: var(--border);
             color: var(--accent);
             border: none;
-            padding: 8px 12px;
-            font-size: 12px;
-            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
-            min-height: 36px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            touch-action: manipulation;
         }
         .btn-mini:hover { background: var(--accent); color: #0f172a; }
 
@@ -340,91 +290,13 @@
             background: rgba(239, 68, 68, 0.2);
             color: var(--danger);
             border: 1px solid var(--danger);
-            padding: 8px 12px;
-            font-size: 12px;
+            padding: 6px 10px;
+            font-size: 11px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 700;
-            min-height: 36px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            touch-action: manipulation;
         }
         .btn-danger-mini:hover { background: var(--danger); color: white; }
-
-        /* ABAS DA ETAPA 10 / REVISÃO */
-        .final-actions-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .final-summary-card {
-            background: #0f172a;
-            border: 1px solid var(--accent);
-            border-radius: 10px;
-            padding: 16px;
-            text-align: center;
-        }
-        .final-summary-card h2 { color: var(--accent); font-size: 18px; margin-bottom: 8px; }
-        .final-summary-card p { font-size: 13px; color: var(--text-muted); }
-        .final-summary-metrics {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid var(--border);
-            font-size: 12px;
-            color: #cbd5e1;
-            flex-wrap: wrap;
-        }
-
-        .action-tabs-nav {
-            display: flex;
-            gap: 8px;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 4px;
-            overflow-x: auto;
-        }
-        .action-tab-btn {
-            flex: 1;
-            min-width: 120px;
-            background: #0f172a;
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-            border-bottom: none;
-            padding: 12px 10px;
-            border-radius: 8px 8px 0 0;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s ease;
-            touch-action: manipulation;
-        }
-        .action-tab-btn.active {
-            background: var(--card-bg);
-            color: var(--accent);
-            border-color: var(--accent);
-            border-bottom: 2px solid var(--card-bg);
-            margin-bottom: -2px;
-        }
-
-        .action-tab-pane {
-            display: none;
-            background: #0f172a;
-            border: 1px solid var(--border);
-            border-radius: 0 0 10px 10px;
-            padding: 16px;
-            gap: 14px;
-            flex-direction: column;
-            animation: fadeIn 0.25s ease-in-out;
-        }
-        .action-tab-pane.active {
-            display: flex;
-        }
 
         /* BOTÕES PRINCIPAIS */
         .btn-action-group {
@@ -447,8 +319,6 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            min-height: 48px;
-            touch-action: manipulation;
         }
         .btn-download:hover { background: var(--green-hover); }
 
@@ -462,13 +332,11 @@
             font-size: 14px;
             cursor: pointer;
             text-align: center;
-            min-height: 48px;
-            touch-action: manipulation;
         }
         .btn-firebase:hover { filter: brightness(1.1); }
 
         .btn-formsubmit {
-            background: var(--warning);
+            background: #eab308;
             color: #0f172a;
             border: none;
             padding: 14px;
@@ -477,82 +345,25 @@
             font-size: 14px;
             cursor: pointer;
             text-align: center;
-            min-height: 48px;
-            touch-action: manipulation;
         }
-        .btn-formsubmit:hover { background: var(--warning-hover); color: #fff; }
-
-        /* RESUMO DE CÁLCULO DE IMPRESSÃO */
-        .calc-summary-box {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 13px;
-        }
-        .calc-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px dashed var(--border);
-            padding-bottom: 6px;
-        }
-        .calc-row:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-            font-weight: 700;
-            font-size: 15px;
-            color: var(--green);
-            margin-top: 4px;
-        }
+        .btn-formsubmit:hover { filter: brightness(1.1); }
 
         /* PREVIEW A4 */
         .preview-section {
             background: #334155;
             border-radius: 12px;
-            padding: 16px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        @media (min-width: 1024px) {
-            .preview-section {
-                max-height: 85vh;
-                overflow-y: auto;
-            }
+            max-height: 85vh;
+            overflow-y: auto;
         }
 
         .preview-wrapper {
             width: 210mm;
             display: flex;
             justify-content: center;
-            transform-origin: top center;
-        }
-
-        /* RESPONSIVIDADE PREVIEW PARA TELAS MENORES QUE 210mm (~800px) */
-        @media (max-width: 850px) {
-            .preview-wrapper {
-                transform: scale(0.75);
-                margin-bottom: -70mm;
-            }
-        }
-        @media (max-width: 600px) {
-            .preview-wrapper {
-                transform: scale(0.55);
-                margin-bottom: -130mm;
-            }
-        }
-        @media (max-width: 420px) {
-            .preview-wrapper {
-                transform: scale(0.42);
-                margin-bottom: -170mm;
-            }
         }
 
         /* FOLHA A4 PERFEITA (210mm x 297mm) */
@@ -642,7 +453,6 @@
             max-width: 420px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
         }
         .toast-icon { font-size: 38px; margin-bottom: 8px; }
         .toast-title { font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 6px; }
@@ -651,67 +461,65 @@
             background: var(--accent);
             color: #0f172a;
             border: none;
-            padding: 12px 20px;
+            padding: 10px 20px;
             border-radius: 8px;
             font-weight: 700;
             cursor: pointer;
             width: 100%;
-            min-height: 44px;
-            touch-action: manipulation;
+        }
+
+        @media (max-width: 960px) {
+            .app-container { grid-template-columns: 1fr; }
+            .info-panel { grid-template-columns: 1fr; }
+            .preview-wrapper { transform: scale(0.65); transform-origin: top center; }
+            .preview-section { overflow-x: auto; }
         }
     </style>
 </head>
 <body>
 
     <div class="header-title">
-        <h1>WelGrafx — Criador & Gerador de Currículos</h1>
-        <p>Preencha os dados, baixe seu PDF sem cortes ou envie direto para a WelGrafx!</p>
+        <h1>📄 Criador de Currículos Profissionais</h1>
+        <p>Preencha os dados, baixe seu PDF sem cortes ou envie direto para a impressão!</p>
     </div>
 
     <div class="app-container">
         <div class="info-panel">
             <div class="info-card">
-                <h3>🏷️ Tabela de Serviços & Valores — WelGrafx</h3>
-                <div class="price-table-wrapper">
-                    <table class="price-table">
-                        <thead>
-                            <tr>
-                                <th>Serviço</th>
-                                <th>Descrição</th>
-                                <th>Valor</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Gerar PDF Grátis</td>
-                                <td>Você preenche e baixa no dispositivo</td>
-                                <td><strong>GRÁTIS</strong></td>
-                            </tr>
-                            <tr>
-                                <td>Serviço de Produção / Edição WelGrafx</td>
-                                <td>Edição profissional e formatação humanizada **(Até 24h)**</td>
-                                <td><strong>R$ 10,00</strong></td>
-                            </tr>
-                            <tr>
-                                <td>Impressão Sulfite A4 P&B</td>
-                                <td>Impressão presencial WelGrafx</td>
-                                <td><strong>R$ 0,50 / folha</strong></td>
-                            </tr>
-                            <tr>
-                                <td>Impressão Sulfite A4 Colorida</td>
-                                <td>Impressão presencial WelGrafx</td>
-                                <td><strong>R$ 1,00 / folha</strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <h3>🏷️ Tabela de Serviços & Valores</h3>
+                <table class="price-table">
+                    <thead>
+                        <tr>
+                            <th>Serviço</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Gerar PDF Grátis</td>
+                            <td>Você preenche e baixa no dispositivo</td>
+                            <td><strong>GRÁTIS</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Enviar para Produção / Edição</td>
+                            <td>Salva no banco de dados para edição do seu currículo **(Entregue até 24h)**</td>
+                            <td><strong>R$ 10,00</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Impressão Sulfite A4</td>
+                            <td>Impressão presencial P&B</td>
+                            <td><strong>R$ 0,50 / folha</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <div class="info-card">
-                <h3>📌 Avisos WelGrafx</h3>
+                <h3>📌 Avisos</h3>
                 <div class="notice-box">
                     • O PDF é gerado rigorosamente na escala A4 (210x297mm) sem cortar margens.<br>
-                    • Ao optar pela <strong>Impressão ou Edição</strong>, seu pedido é enviado com total praticidade e confirmação imediata para a WelGrafx.
+                    • Ao clicar em <strong>"Enviar Pedido"</strong>, os dados do seu currículo são registrados na sua conta do Banco de Dados e você é redirecionado para a <code>aba principal</code>.
                 </div>
             </div>
         </div>
@@ -727,8 +535,8 @@
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-                <button class="btn-mini" onclick="preencherExemploRapido()" style="width: 50%;">⚡ Exemplo Rápido</button>
-                <button class="btn-danger-mini" onclick="limparTodosCampos()" style="width: 50%;">🧹 Limpar Campos</button>
+                <button class="btn-mini" onclick="preencherExemploRapido()" style="padding: 8px; font-size: 12px; width: 50%;">⚡ Preencher Exemplo Rápido</button>
+                <button class="btn-danger-mini" onclick="limparTodosCampos()" style="padding: 8px; font-size: 12px; width: 50%;">🧹 Limpar Todos os Campos</button>
             </div>
 
             <!-- NAVEGAÇÃO POR ETAPAS (ABA DE ETAPAS) -->
@@ -764,7 +572,7 @@
                     </div>
                     <div class="form-group">
                         <label>WhatsApp / Telefone:</label>
-                        <input type="tel" id="telefone" placeholder="(41) 99999-9999" maxlength="15" oninput="mascaraTelefone(this); atualizarPreview();">
+                        <input type="text" id="telefone" placeholder="(41) 99999-9999" maxlength="15" oninput="mascaraTelefone(this); atualizarPreview();">
                     </div>
                 </div>
 
@@ -792,7 +600,7 @@
 
                 <div class="grid-3">
                     <div class="form-group">
-                        <label>Data Nasc. / Idade:</label>
+                        <label>Data de Nasc. / Idade:</label>
                         <input type="text" id="idade" placeholder="Ex: 25 anos" oninput="atualizarPreview()">
                     </div>
                     <div class="form-group">
@@ -821,7 +629,7 @@
             <div class="step-content" id="step-2">
                 <div class="section-subtitle">
                     2. Perfil Profissional
-                    <button class="btn-mini" onclick="gerarResumoIA()">💡 Sugerir Resumo</button>
+                    <button class="btn-mini" onclick="gerarResumoIA()">💡 Sugerir Resumo com IA</button>
                 </div>
 
                 <div class="form-group">
@@ -857,8 +665,9 @@
 
                 <div id="containerExperiencias"></div>
 
-                <button type="button" class="btn-mini" onclick="adicionarCampoExperiencia()" style="padding: 10px; width: 100%;">+ Adicionar experiência</button>
+                <button type="button" class="btn-mini" onclick="adicionarCampoExperiencia()" style="padding: 8px; width: 100%;">+ Adicionar experiência</button>
 
+                <!-- TEXTAREA ORIGINAL MANTIDO COMO BACKUP/LEGADO E COMPATIBILIDADE -->
                 <textarea id="experiencia" rows="4" style="display:none;" oninput="atualizarPreview()"></textarea>
             </div>
 
@@ -871,7 +680,7 @@
 
                 <div id="containerFormacao"></div>
 
-                <button type="button" class="btn-mini" onclick="adicionarCampoFormacao()" style="padding: 10px; width: 100%;">+ Adicionar formação</button>
+                <button type="button" class="btn-mini" onclick="adicionarCampoFormacao()" style="padding: 8px; width: 100%;">+ Adicionar formação</button>
 
                 <textarea id="formacao" rows="2" style="display:none;" oninput="atualizarPreview()"></textarea>
             </div>
@@ -888,7 +697,7 @@
 
                 <div id="containerCursos"></div>
 
-                <button type="button" class="btn-mini" onclick="adicionarCampoCurso()" style="padding: 10px; width: 100%;">+ Adicionar curso</button>
+                <button type="button" class="btn-mini" onclick="adicionarCampoCurso()" style="padding: 8px; width: 100%;">+ Adicionar curso</button>
 
                 <textarea id="cursos" rows="2" style="display:none;" oninput="atualizarPreview()"></textarea>
             </div>
@@ -898,7 +707,7 @@
                 <div class="section-subtitle">6. Habilidades</div>
                 <div class="grid-2">
                     <input type="text" id="inputHabilidade" placeholder="Ex: Pacote Office, Boa Comunicação">
-                    <button type="button" class="btn-mini" onclick="adicionarHabilidade()" style="padding: 12px;">+ Adicionar</button>
+                    <button type="button" class="btn-mini" onclick="adicionarHabilidade()" style="padding: 10px;">+ Adicionar</button>
                 </div>
                 <div class="tag-container" id="listaHabilidades"></div>
             </div>
@@ -914,7 +723,7 @@
                         <option value="Avançado">Avançado</option>
                         <option value="Fluente">Fluente</option>
                     </select>
-                    <button type="button" class="btn-mini" onclick="adicionarIdioma()" style="padding: 12px;">+ Adicionar</button>
+                    <button type="button" class="btn-mini" onclick="adicionarIdioma()" style="padding: 10px;">+ Adicionar</button>
                 </div>
                 <div class="tag-container" id="listaIdiomas"></div>
             </div>
@@ -949,7 +758,7 @@
 
             <!-- ETAPA 9: PERSONALIZAÇÃO -->
             <div class="step-content" id="step-9">
-                <div class="section-subtitle">9. Personalização do Modelo WelGrafx</div>
+                <div class="section-subtitle">9. Personalização do Modelo</div>
 
                 <div class="grid-2">
                     <div class="form-group">
@@ -984,140 +793,27 @@
                 </div>
             </div>
 
-            <!-- ETAPA 10: REVISÃO FINAL E AÇÕES SEPARADAS -->
+            <!-- ETAPA 10: REVISÃO FINAL -->
             <div class="step-content" id="step-10">
-                <div class="section-subtitle">10. Revisão & Finalização WelGrafx</div>
+                <div class="section-subtitle">10. Revisão & Finalização</div>
+                <p style="font-size: 13px; color: var(--text-muted);">Confira a prévia do seu currículo ao lado antes de baixar ou enviar.</p>
 
-                <div class="final-actions-wrapper">
-                    <div class="final-summary-card">
-                        <h2>🎉 Seu currículo está pronto!</h2>
-                        <p>Confira seu currículo na prévia ao lado antes de continuar.</p>
-                        <div class="final-summary-metrics">
-                            <span>📄 Páginas calculadas: <strong id="rev-paginas" style="color:var(--accent);">1</strong></span>
-                            <span>🎨 Modelo: <strong id="rev-modelo" style="color:var(--accent);">Modelo 1</strong></span>
-                            <span>👤 Candidato: <strong id="rev-nome" style="color:var(--accent);">-</strong></span>
-                        </div>
-                    </div>
+                <div class="btn-action-group">
+                    <button class="btn-download" onclick="baixarPDFSemCorte()">
+                        📥 Baixar PDF Perfeito (Grátis)
+                    </button>
 
-                    <div class="action-tabs-nav">
-                        <button type="button" class="action-tab-btn active" onclick="mudarAbaFinal('baixar')">📥 Baixar PDF</button>
-                        <button type="button" class="action-tab-btn" onclick="mudarAbaFinal('edicao')">✏️ Solicitar Edição</button>
-                        <button type="button" class="action-tab-btn" onclick="mudarAbaFinal('impressao')">🖨️ Solicitar Impressão</button>
-                    </div>
+                    <button class="btn-formsubmit" onclick="enviarParaImpressaoFormSubmit()">
+                        🖨️ Enviar Currículo para Impressão P&B (R$ 0,50)
+                    </button>
 
-                    <!-- ABA 1: BAIXAR PDF -->
-                    <div class="action-tab-pane active" id="pane-baixar">
-                        <p style="font-size: 13px; color: var(--text-muted);">
-                            O download do seu currículo em formato PDF é totalmente <strong>gratuito</strong>. O arquivo é gerado com formatação A4 perfeita.
-                        </p>
-                        <button class="btn-download" onclick="baixarPDFSemCorte()">
-                            📥 Baixar PDF Grátis
-                        </button>
-                    </div>
+                    <button class="btn-firebase" id="btn-enviar-fb" onclick="enviarParaFirebaseEPainel()">
+                        🚀 Enviar Pedido & Ir ao Painel (R$ 10,00)
+                    </button>
 
-                    <!-- ABA 2: MODIFICAR / SOLICITAR EDIÇÃO -->
-                    <div class="action-tab-pane" id="pane-edicao">
-                        <p style="font-size: 13px; color: var(--text-muted);">
-                            Precisa de ajuda profissional para alterar, revisar ou aprimorar seu currículo? Envie sua solicitação para a equipe WelGrafx!
-                        </p>
-                        <div class="notice-box" style="margin-bottom: 4px;">
-                            <strong>Serviço de Produção / Edição: R$ 10,00</strong> (Entregue em até 24h com suporte WelGrafx).
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Seu Nome Completo:</label>
-                            <input type="text" id="edit-nome" placeholder="Nome do solicitante">
-                        </div>
-
-                        <div class="form-group">
-                            <label>WhatsApp para Contato:</label>
-                            <input type="tel" id="edit-whatsapp" placeholder="(41) 99999-9999" maxlength="15" oninput="mascaraTelefone(this)">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Tipo de Alteração / Ajuda Desejada:</label>
-                            <select id="edit-tipo">
-                                <option value="Revisão e Edição Completa (R$ 10,00)">Revisão e Edição Completa (R$ 10,00)</option>
-                                <option value="Ajuste de Formatação / Layout">Ajuste de Formatação / Layout</option>
-                                <option value="Aprimoramento de Textos / Experiências">Aprimoramento de Textos / Experiências</option>
-                                <option value="Outras alterações">Outras alterações</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Observações / Detalhes da Solicitação:</label>
-                            <textarea id="edit-obs" rows="3" placeholder="Descreva quais alterações deseja no seu currículo..."></textarea>
-                        </div>
-
-                        <button class="btn-firebase" onclick="enviarSolicitacaoEdicaoWelGrafx()">
-                            🚀 Enviar Solicitação de Edição WelGrafx
-                        </button>
-                    </div>
-
-                    <!-- ABA 3: SOLICITAR IMPRESSÃO -->
-                    <div class="action-tab-pane" id="pane-impressao">
-                        <p style="font-size: 13px; color: var(--text-muted);">
-                            Solicite a impressão do seu currículo presencialmente na WelGrafx.
-                        </p>
-
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <label>Nome do Solicitante:</label>
-                                <input type="text" id="imp-nome" placeholder="Seu nome">
-                            </div>
-                            <div class="form-group">
-                                <label>WhatsApp para Retirada:</label>
-                                <input type="tel" id="imp-whatsapp" placeholder="(41) 99999-9999" maxlength="15" oninput="mascaraTelefone(this)">
-                            </div>
-                        </div>
-
-                        <div class="grid-2">
-                            <div class="form-group">
-                                <label>Tipo de Impressão:</label>
-                                <select id="imp-tipo" onchange="atualizarCalculoImpressao()">
-                                    <option value="pb">⚫ Preto e Branco — R$ 0,50 por folha</option>
-                                    <option value="cor">🌈 Colorido — R$ 1,00 por folha</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Quantidade de Cópias:</label>
-                                <input type="number" id="imp-copias" value="1" min="1" oninput="if(this.value<1)this.value=1; atualizarCalculoImpressao();">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Observações para Impressão (Opcional):</label>
-                            <input type="text" id="imp-obs" placeholder="Ex: Retiro hoje à tarde, papel especial, etc.">
-                        </div>
-
-                        <!-- RESUMO AUTOMÁTICO E DINÂMICO DA IMPRESSÃO -->
-                        <div class="calc-summary-box">
-                            <div class="calc-row">
-                                <span>📄 Currículo</span>
-                                <span><strong id="summary-paginas">1</strong> página(s)</span>
-                            </div>
-                            <div class="calc-row">
-                                <span>🖨️ Tipo</span>
-                                <span id="summary-tipo">Preto e Branco</span>
-                            </div>
-                            <div class="calc-row">
-                                <span>📑 Cópias</span>
-                                <span id="summary-copias">1</span>
-                            </div>
-                            <div class="calc-row">
-                                <span>💰 Valor por folha</span>
-                                <span id="summary-valor-folha">R$ 0,50</span>
-                            </div>
-                            <div class="calc-row">
-                                <span>💵 Total da Impressão</span>
-                                <span id="summary-total">R$ 0,50</span>
-                            </div>
-                        </div>
-
-                        <button class="btn-formsubmit" onclick="enviarPedidoImpressaoWelGrafx()">
-                            🖨️ Enviar Pedido de Impressão para WelGrafx
-                        </button>
-                    </div>
+                    <button class="btn-step btn-step-prev" onclick="irParaEtapa(1)" style="margin-top: 10px;">
+                        ✏️ Solicitar edição / Voltar ao Início
+                    </button>
                 </div>
             </div>
 
@@ -1226,34 +922,10 @@
 
             document.getElementById('btnPrevStep').style.display = etapaAtual === 1 ? 'none' : 'block';
             document.getElementById('btnNextStep').style.display = etapaAtual === totalEtapas ? 'none' : 'block';
-
-            if (etapaAtual === 10) {
-                if (window.atualizarCalculoImpressao) window.atualizarCalculoImpressao();
-            }
         }
 
         function avancarEtapa() { irParaEtapa(etapaAtual + 1); }
         function voltarEtapa() { irParaEtapa(etapaAtual - 1); }
-
-        function mudarAbaFinal(aba) {
-            const btns = document.querySelectorAll('.action-tab-btn');
-            btns.forEach(b => b.classList.remove('active'));
-
-            const panes = document.querySelectorAll('.action-tab-pane');
-            panes.forEach(p => p.classList.remove('active'));
-
-            if (aba === 'baixar') {
-                btns[0].classList.add('active');
-                document.getElementById('pane-baixar').classList.add('active');
-            } else if (aba === 'edicao') {
-                btns[1].classList.add('active');
-                document.getElementById('pane-edicao').classList.add('active');
-            } else if (aba === 'impressao') {
-                btns[2].classList.add('active');
-                document.getElementById('pane-impressao').classList.add('active');
-                if (window.atualizarCalculoImpressao) window.atualizarCalculoImpressao();
-            }
-        }
 
         // ENTER PARA NAVEGAR ENTRE CAMPOS DE UMA LINHA
         document.addEventListener('keydown', function(e) {
@@ -1498,7 +1170,7 @@
         // FUNÇÃO DE LIMPAR TODOS OS CAMPOS
         window.limparTodosCampos = function() {
             if (confirm("Tem certeza que deseja limpar todos os campos do currículo?")) {
-                const ids = ["nome", "cargo", "telefone", "email", "cidade", "idade", "estadoCivil", "cnh", "linkQr", "resumo", "experiencia", "formacao", "cursos", "linkedin", "portfolio", "objetivo", "infoAdicional", "edit-nome", "edit-whatsapp", "edit-obs", "imp-nome", "imp-whatsapp", "imp-obs"];
+                const ids = ["nome", "cargo", "telefone", "email", "cidade", "idade", "estadoCivil", "cnh", "linkQr", "resumo", "experiencia", "formacao", "cursos", "linkedin", "portfolio", "objetivo", "infoAdicional"];
                 ids.forEach(id => {
                     const el = document.getElementById(id);
                     if(el) {
@@ -1536,7 +1208,6 @@
 
         window.mudarEspacamento = function(val) {
             document.documentElement.style.setProperty('--line-height-cv', val);
-            atualizarPreview();
         };
 
         window.gerarQrCodeCv = function(url) {
@@ -1604,57 +1275,21 @@
         function carregarRascunhoAuto() {
             const salvo = localStorage.getItem("cv_rascunho");
             if(salvo) {
-                try {
-                    const dados = JSON.parse(salvo);
-                    Object.keys(dados).forEach(key => {
-                        const el = document.getElementById(key);
-                        if(el) {
-                            if(el.isContentEditable) el.innerHTML = dados[key];
-                            else el.value = dados[key];
-                        }
-                    });
-                } catch(e) {}
+                const dados = JSON.parse(salvo);
+                Object.keys(dados).forEach(key => {
+                    const el = document.getElementById(key);
+                    if(el) {
+                        if(el.isContentEditable) el.innerHTML = dados[key];
+                        else el.value = dados[key];
+                    }
+                });
             }
         }
-
-        // CÁLCULO DE PÁGINAS DO CURRÍCULO
-        window.calcularPaginasReais = function() {
-            const folha = document.getElementById("curriculo-folha");
-            if (!folha) return 1;
-            const alturaTotalPx = folha.offsetHeight;
-            // 297mm em pixels aproximados (aproximadamente 1122px em tela padrão)
-            const alturaPaginaA4Px = 1120;
-            const paginas = Math.ceil(alturaTotalPx / alturaPaginaA4Px);
-            return Math.max(1, paginas);
-        };
-
-        window.atualizarCalculoImpressao = function() {
-            const paginas = window.calcularPaginasReais();
-            const tipo = document.getElementById("imp-tipo").value;
-            const copiasInput = document.getElementById("imp-copias");
-            let copias = parseInt(copiasInput.value) || 1;
-            if (copias < 1) copias = 1;
-
-            const precoPorFolha = tipo === 'cor' ? 1.00 : 0.50;
-            const total = paginas * precoPorFolha * copias;
-
-            document.getElementById("summary-paginas").innerText = paginas;
-            document.getElementById("summary-tipo").innerText = tipo === 'cor' ? 'Colorido' : 'Preto e Branco';
-            document.getElementById("summary-copias").innerText = copias;
-            document.getElementById("summary-valor-folha").innerText = `R$ ${precoPorFolha.toFixed(2).replace('.', ',')}`;
-            document.getElementById("summary-total").innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
-
-            document.getElementById("rev-paginas").innerText = paginas;
-        };
 
         window.atualizarPreview = function() {
             const modelo = document.getElementById("selectModelo").value;
             const folha = document.getElementById("curriculo-folha");
             folha.className = modelo;
-
-            const selectMod = document.getElementById("selectModelo");
-            const nomeModeloTexto = selectMod.options[selectMod.selectedIndex].text;
-            document.getElementById("rev-modelo").innerText = nomeModeloTexto;
 
             const nome = document.getElementById("nome").value.trim() || "SEU NOME COMPLETO";
             const cargo = document.getElementById("cargo").value.trim() || "Cargo Desejado";
@@ -1666,22 +1301,6 @@
             const cnh = document.getElementById("cnh").value.trim();
             const linkedin = document.getElementById("linkedin").value.trim();
             const portfolio = document.getElementById("portfolio").value.trim();
-
-            document.getElementById("rev-nome").innerText = nome !== "SEU NOME COMPLETO" ? nome : "-";
-
-            // Sincronizar nome/whatsapp nas abas se estiverem vazios
-            if(!document.getElementById("edit-nome").value && nome !== "SEU NOME COMPLETO") {
-                document.getElementById("edit-nome").value = nome;
-            }
-            if(!document.getElementById("edit-whatsapp").value && telefone !== "(00) 00000-0000") {
-                document.getElementById("edit-whatsapp").value = telefone;
-            }
-            if(!document.getElementById("imp-nome").value && nome !== "SEU NOME COMPLETO") {
-                document.getElementById("imp-nome").value = nome;
-            }
-            if(!document.getElementById("imp-whatsapp").value && telefone !== "(00) 00000-0000") {
-                document.getElementById("imp-whatsapp").value = telefone;
-            }
 
             let detalhesPessoais = [];
             if (idade) detalhesPessoais.push(idade);
@@ -1820,203 +1439,170 @@
                 secAdic.style.display = "none";
             }
 
-            // ATUALIZAR SCORE
-            atualizarScoreQualidade();
+            // Atualiza contadores
+            document.getElementById("count-resumo").innerText = `${resumoTxt.length} carac.`;
+            document.getElementById("count-experiencia").innerText = `${document.getElementById("pv-experiencia").innerText.length} carac.`;
+            document.getElementById("count-formacao").innerText = `${document.getElementById("pv-formacao").innerText.length} carac.`;
+            document.getElementById("count-cursos").innerText = `${document.getElementById("pv-cursos").innerText.length} carac.`;
 
-            // RECALCULAR PÁGINAS E IMPRESSÃO
-            setTimeout(window.atualizarCalculoImpressao, 100);
+            calcularScore();
         };
 
-        function atualizarScoreQualidade() {
-            let pontos = 0;
-            if (document.getElementById("nome").value.trim()) pontos += 15;
-            if (document.getElementById("cargo").value.trim()) pontos += 10;
-            if (document.getElementById("telefone").value.trim()) pontos += 10;
-            if (document.getElementById("email").value.trim()) pontos += 10;
-            if (document.getElementById("resumo").innerText.trim().length > 30) pontos += 15;
-            if (document.querySelectorAll('#containerExperiencias .dynamic-item').length > 0 || document.getElementById('semExperiencia').checked) pontos += 15;
-            if (document.querySelectorAll('#containerFormacao .dynamic-item').length > 0) pontos += 15;
-            if (window.habilidadesArray && window.habilidadesArray.length > 0) pontos += 10;
+        function calcularScore() {
+            let pts = 0;
+            if(document.getElementById("nome").value.trim()) pts += 15;
+            if(document.getElementById("telefone").value.trim()) pts += 15;
+            if(document.getElementById("email").value.trim()) pts += 10;
+            if(document.getElementById("cargo").value.trim()) pts += 15;
+            if(document.getElementById("resumo").innerHTML.trim()) pts += 15;
+            if(document.getElementById("pv-experiencia").innerText.trim()) pts += 15;
+            if(document.getElementById("pv-formacao").innerText.trim()) pts += 15;
 
-            const total = Math.min(100, pontos);
-            document.getElementById("scoreText").innerText = total + "%";
-            document.getElementById("scoreFill").style.width = total + "%";
+            document.getElementById("scoreFill").style.width = `${pts}%`;
+            document.getElementById("scoreText").innerText = `${pts}% Completo`;
         }
 
-        // GERAR E BAIXAR PDF (GERA SOMENTE 1 PDF INDEPENDENTE DA QTD DE CÓPIAS DE IMPRESSÃO)
+        // GERAÇÃO DE PDF SEM CORTES PERFEITA
         window.baixarPDFSemCorte = function() {
+            const nome = document.getElementById('nome').value.trim();
+            if (!nome) {
+                mostrarToast("Nome Necessário", "Por favor, informe seu nome completo antes de baixar o PDF.");
+                return;
+            }
+
+            mostrarToast("Gerando PDF...", "Aguarde enquanto preparamos o arquivo em alta definição...", "⏳");
+
             const element = document.getElementById('curriculo-folha');
-            const nomeStr = (document.getElementById('nome').value.trim() || 'Curriculo').replace(/\s+/g, '_');
+            const nomeArquivo = `Curriculo_${nome.replace(/\s+/g, '_')}.pdf`;
             
             const opt = {
-                margin: 0,
-                filename: `Currículo_${nomeStr}_WelGrafx.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                margin:       0,
+                filename:     nomeArquivo,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, scrollY: 0, logging: false },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            mostrarToast("Gerando PDF WelGrafx", "Seu arquivo PDF será baixado em instantes...", "📥");
-
             html2pdf().set(opt).from(element).save().then(() => {
-                mostrarToast("Download Concluído", "Seu PDF digital WelGrafx foi gerado com sucesso!", "✅");
+                mostrarToast("Sucesso!", "Seu currículo foi baixado com sucesso no formato A4 sem cortes.", "✅");
+            }).catch(err => {
+                mostrarToast("Erro ao Baixar", "Ocorreu uma falha ao renderizar o PDF. Tente novamente.");
             });
         };
 
-        // SOLICITAÇÃO DE EDIÇÃO / MODIFICAÇÃO VIA FORMSUBMIT
-        window.enviarSolicitacaoEdicaoWelGrafx = function() {
-            const nome = document.getElementById("edit-nome").value.trim();
-            const whatsapp = document.getElementById("edit-whatsapp").value.trim();
-            const tipo = document.getElementById("edit-tipo").value;
-            const obs = document.getElementById("edit-obs").value.trim();
+        // ENVIAR CURRÍCULO CORRIGIDO COM FORMULÁRIO E AVISO WHATSAPP
+        window.enviarParaImpressaoFormSubmit = async function() {
+            const nome = document.getElementById('nome').value.trim();
+            const telefone = document.getElementById('telefone').value.trim();
 
-            if (!nome) {
-                mostrarToast("Campo Obrigatório", "Por favor, informe seu nome na área de solicitação de edição.", "⚠️");
-                document.getElementById("edit-nome").focus();
-                return;
-            }
-            if (!whatsapp) {
-                mostrarToast("Campo Obrigatório", "Por favor, informe seu WhatsApp para contato.", "⚠️");
-                document.getElementById("edit-whatsapp").focus();
+            if (!nome || !telefone) {
+                mostrarToast("Atenção", "Informe seu Nome e WhatsApp antes de mandar para a impressão.");
                 return;
             }
 
-            const nomeCv = document.getElementById("nome").value.trim();
-            const cargoCv = document.getElementById("cargo").value.trim();
+            mostrarToast("Preparando Envio...", "Convertendo documento e enviando para a fila de impressão...", "⏳");
 
-            mostrarToast("Enviando Solicitação WelGrafx", "Aguarde enquanto registramos seu pedido...", "⏳");
-
-            const form = document.createElement("form");
-            form.method = "POST";
-            form.action = `https://formsubmit.co/${EMAIL_FORMSUBMIT}`;
-            form.target = "_blank";
-
-            const campos = {
-                "_subject": `✏️ WelGrafx - Solicitação de Edição: ${nome}`,
-                "Identificação do Serviço": "WelGrafx — Edição / Produção de Currículo (R$ 10,00)",
-                "Nome Solicitante": nome,
-                "WhatsApp": whatsapp,
-                "Tipo de Alteração": tipo,
-                "Observações": obs || "Sem observações",
-                "Nome do Candidato no Currículo": nomeCv || "Não informado",
-                "Cargo no Currículo": cargoCv || "Não informado",
-                "_captcha": "false",
-                "_template": "table"
+            const element = document.getElementById('curriculo-folha');
+            const opt = {
+                margin:       0,
+                filename:     `Curriculo_${nome.replace(/\s+/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-
-            for (let k in campos) {
-                const input = document.createElement("input");
-                input.type = "hidden";
-                input.name = k;
-                input.value = campos[k];
-                form.appendChild(input);
-            }
-
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
-
-            mostrarToast("Solicitação Enviada!", "Sua solicitação de edição foi enviada com sucesso para a WelGrafx. Entraremos em contato via WhatsApp!", "🎉");
-        };
-
-        // SOLICITAÇÃO DE IMPRESSÃO VIA FORMSUBMIT
-        window.enviarPedidoImpressaoWelGrafx = function() {
-            const nome = document.getElementById("imp-nome").value.trim();
-            const whatsapp = document.getElementById("imp-whatsapp").value.trim();
-            const paginas = window.calcularPaginasReais();
-            const tipoKey = document.getElementById("imp-tipo").value;
-            const tipoTexto = tipoKey === 'cor' ? 'Colorido (R$ 1,00/folha)' : 'Preto e Branco (R$ 0,50/folha)';
-            const valorPorFolha = tipoKey === 'cor' ? "R$ 1,00" : "R$ 0,50";
-            let copias = parseInt(document.getElementById("imp-copias").value) || 1;
-            if (copias < 1) copias = 1;
-
-            const precoFolhaNum = tipoKey === 'cor' ? 1.00 : 0.50;
-            const totalCalc = (paginas * precoFolhaNum * copias).toFixed(2).replace('.', ',');
-
-            const obs = document.getElementById("imp-obs").value.trim();
-
-            if (!nome) {
-                mostrarToast("Campo Obrigatório", "Por favor, informe seu nome na área de solicitação de impressão.", "⚠️");
-                document.getElementById("imp-nome").focus();
-                return;
-            }
-            if (!whatsapp) {
-                mostrarToast("Campo Obrigatório", "Por favor, informe seu WhatsApp para contato.", "⚠️");
-                document.getElementById("imp-whatsapp").focus();
-                return;
-            }
-
-            mostrarToast("Enviando Pedido de Impressão", "Registrando seu pedido de impressão na WelGrafx...", "⏳");
-
-            const form = document.createElement("form");
-            form.method = "POST";
-            form.action = `https://formsubmit.co/${EMAIL_FORMSUBMIT}`;
-            form.target = "_blank";
-
-            const campos = {
-                "_subject": `🖨️ WelGrafx - Pedido de Impressão de Currículo: ${nome}`,
-                "Identificação do Pedido": "WelGrafx — Impressão de Currículo",
-                "Nome Solicitante": nome,
-                "WhatsApp": whatsapp,
-                "Quantidade de Páginas Real": paginas,
-                "Tipo de Impressão": tipoTexto,
-                "Quantidade de Cópias": copias,
-                "Valor por Folha": valorPorFolha,
-                "Valor Total da Impressão": `R$ ${totalCalc}`,
-                "Observações de Impressão": obs || "Nenhuma",
-                "Total de Arquivos PDF": "1 (Único PDF gerado independentemente da quantidade de cópias)",
-                "_captcha": "false",
-                "_template": "table"
-            };
-
-            for (let k in campos) {
-                const input = document.createElement("input");
-                input.type = "hidden";
-                input.name = k;
-                input.value = campos[k];
-                form.appendChild(input);
-            }
-
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
-
-            mostrarToast("Pedido Enviado com Sucesso!", `Seu pedido de ${copias} cópia(s) (${paginas} pág) totalizando R$ ${totalCalc} foi enviado para a WelGrafx!`, "🎉");
-        };
-
-        // COMPATIBILIDADE DE ENVIO PARA PAINEL / FIREBASE MANTIDO
-        window.enviarParaFirebaseEPainel = async function() {
-            const nome = document.getElementById("nome").value.trim();
-            if (!nome) {
-                mostrarToast("Campo Obrigatório", "Preencha ao menos seu Nome Completo na Etapa 1 antes de enviar.", "⚠️");
-                irParaEtapa(1);
-                return;
-            }
 
             try {
-                mostrarToast("Salvando Pedido", "Registrando currículo para edição WelGrafx...", "⏳");
-                await addDoc(collection(db, "curriculos_pedidos"), {
-                    nome: nome,
-                    cargo: document.getElementById("cargo").value,
-                    telefone: document.getElementById("telefone").value,
-                    email: document.getElementById("email").value,
-                    cidade: document.getElementById("cidade").value,
-                    servico: "Edição / Produção de Currículo WelGrafx",
-                    valor: 10.00,
-                    dataCriacao: serverTimestamp()
+                const pdfWorker = html2pdf().set(opt).from(element);
+                const pdfBlob = await pdfWorker.output('blob');
+
+                const formData = new FormData();
+                formData.append("attachment", pdfBlob, `Curriculo_${nome.replace(/\s+/g, '_')}.pdf`);
+                formData.append("Nome do Cliente", nome);
+                formData.append("WhatsApp", telefone);
+                formData.append("Servico", "Impressao de Curriculo P&B");
+                formData.append("Valor Estimado", "R$ 0,50");
+                formData.append("_subject", `Novo Currículo para Impressão - ${nome}`);
+
+                const res = await fetch(`https://formsubmit.co/ajax/${EMAIL_FORMSUBMIT}`, {
+                    method: "POST",
+                    body: formData
                 });
-                mostrarToast("Pedido Registrado!", "Seu currículo foi registrado para edição WelGrafx.", "🚀");
-            } catch (err) {
-                console.error(err);
-                mostrarToast("Aviso", "Seu pedido foi processado na página.", "ℹ️");
+
+                if(res.ok) {
+                    const msgWhats = encodeURIComponent(`Olá! Acabei de mandar meu currículo pelo site para impressão P&B.\n\n👤 Nome: ${nome}\n📱 Contato: ${telefone}\n💰 Valor: R$ 0,50`);
+                    const urlWhats = `https://wa.me/5541999682836?text=${msgWhats}`;
+
+                    mostrarToast(
+                        "Pedido Enviado com Sucesso!", 
+                        `Seu currículo foi enviado para impressão P&B!\n\n💰 Valor: R$ 0,50 por folha na retirada.\n\nClique no botão do WhatsApp na tela para avisar a loja!`, 
+                        "🖨️"
+                    );
+
+                    // Abre o WhatsApp para confirmação
+                    setTimeout(() => { window.open(urlWhats, '_blank'); }, 1500);
+
+                } else {
+                    mostrarToast("Erro no Envio", "Não foi possível registrar o pedido no servidor de e-mail.");
+                }
+            } catch(e) {
+                console.error(e);
+                mostrarToast("Erro de Conexão", "Falha ao processar o arquivo. Verifique sua conexão e tente novamente.");
             }
         };
 
-        // CARREGAR INICIALMENTE
-        window.addEventListener('DOMContentLoaded', () => {
-            carregarRascunhoAuto();
-            atualizarPreview();
-        });
+        // SALVAR NO FIREBASE E REDIRECIONAR PARA PAINEL.HTML / INDEX.HTML
+        window.enviarParaFirebaseEPainel = async function() {
+            const nome = document.getElementById('nome').value.trim();
+            const telefone = document.getElementById('telefone').value.trim();
+
+            if (!nome) {
+                mostrarToast("Campo Obrigatório", "Informe seu nome antes de enviar para o sistema.");
+                return;
+            }
+
+            const btn = document.getElementById("btn-enviar-fb");
+            btn.disabled = true;
+            btn.innerText = "Salvando no Banco de Dados... ⏳";
+
+            const dadosCurriculo = {
+                cliente: nome,
+                telefone: telefone || "Não informado",
+                email: document.getElementById('email').value.trim(),
+                cidade: document.getElementById('cidade').value.trim(),
+                cargo: document.getElementById('cargo').value.trim(),
+                idade: document.getElementById('idade').value.trim(),
+                estadoCivil: document.getElementById('estadoCivil').value.trim(),
+                cnh: document.getElementById('cnh').value.trim(),
+                resumo: document.getElementById('resumo').innerHTML.trim(),
+                experiencia: document.getElementById('pv-experiencia').innerText.trim(),
+                formacao: document.getElementById('pv-formacao').innerText.trim(),
+                cursos: document.getElementById('pv-cursos').innerText.trim(),
+                modelo: document.getElementById('selectModelo').value,
+                servico: "Elaboração / Edição de Currículo",
+                total: 10.00,
+                status: "Pendente",
+                dataEnvio: serverTimestamp()
+            };
+
+            try {
+                await addDoc(collection(db, "pedidos"), dadosCurriculo);
+                
+                mostrarToast("Sucesso!", "Currículo cadastrado no Banco de Dados! Redirecionando para a página principal...", "🚀");
+                
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1500);
+
+            } catch (err) {
+                console.error(err);
+                mostrarToast("Erro", "Falha ao salvar no banco de dados. Tente novamente.");
+                btn.disabled = false;
+                btn.innerText = "🚀 Enviar Pedido & Ir ao Painel (R$ 10,00)";
+            }
+        };
+
+        carregarRascunhoAuto();
+        atualizarPreview();
     </script>
 </body>
 </html>
