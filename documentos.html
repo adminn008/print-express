@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PrintExpress - Documentos Oficiais</title>
+    <title>WelGrafx - Documentos Oficiais</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/print-express/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/print-express/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/print-express/images/favicon-16x16.png">
+    <link rel="manifest" href="/print-express/images/site.webmanifest">
+    <meta name="theme-color" content="#0070f3">
     <style>
         :root {
             --bg-body: #f8fafc;
@@ -554,7 +559,7 @@
 
             <div class="form-group">
                 <label for="nome">Seu Nome Completo *</label>
-                <input type="text" id="nome" name="Nome do Cliente" placeholder="EX: JOÃO DA SILVA" required>
+                <input type="text" id="nome" name="Nome do Cliente" placeholder="Ex: João da Silva" required>
             </div>
 
             <div class="form-group">
@@ -676,9 +681,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="qtd_copias">Quantidade de Folhas/Cópias:</label>
+                    <label for="qtd_copias">Quantidade de Cópias:</label>
                     <input type="number" id="qtd_copias" name="Quantidade de Copias" value="1" min="1" max="100">
-                    <span style="font-size: 12px; color: var(--text-muted);">Ex.: Um documento com 5 páginas × 3 cópias = 15 páginas impressas.</span>
+                    <span style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                        ℹ️ 1 cópia já incluída no valor do serviço. Cópias adicionais possuem valor próprio.
+                    </span>
                 </div>
 
                 <div class="form-group">
@@ -790,13 +797,13 @@
                 <div style="font-weight:700; font-size:13px; color:var(--text-main); margin-bottom: 2px;">Resumo do Valor</div>
                 
                 <div class="price-row" id="rowEmissao">
-                    <span>📄 Serviço / Busca:</span>
+                    <span>📄 Serviço (Preço-base):</span>
                     <span id="valorEmissaoExibicao">R$ 0,00</span>
                 </div>
 
-                <div class="price-row" id="rowImpressao" style="display: none;">
-                    <span>🖨️ Impressão (<span id="txtQtdCalculada">1 pág.</span>):</span>
-                    <span id="valorImpressaoExibicao">R$ 0,00</span>
+                <div class="price-row" id="rowCopiasAdicionais" style="display: none;">
+                    <span>🖨️ Cópias Adicionais (<span id="txtQtdCopiasExtra">0</span>):</span>
+                    <span id="valorCopiasAdicionaisExibicao">R$ 0,00</span>
                 </div>
 
                 <div class="price-row" id="rowAdicionais" style="display: none; color: var(--primary);">
@@ -835,6 +842,14 @@
     </div>
 
     <script>
+        // TABELA DE CÓPIAS ADICIONAIS (ESTRUTURA SEPARADA DO PREÇO-BASE DO SERVIÇO)
+        // Valores das cópias adicionais facilmente configuráveis.
+        // Se não possuir valor definido (null ou undefined), exibe como a definir no resumo.
+        const PRECO_COPIA_ADICIONAL = {
+            "P&B": null,      // Ex: 0.50 (Valores a definir sem inventar)
+            "colorido": null  // Ex: 1.00 (Valores a definir sem inventar)
+        };
+
         const CHAVE_PIX_TEXTO = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
         let permitirSaida = false;
         let cliquesVoltar = 0;
@@ -1097,21 +1112,45 @@
                     break;
             }
 
+            // LÓGICA DE CÓPIAS ADICIONAIS
+            let inputQtd = parseInt(document.getElementById("qtd_copias").value) || 1;
+            if (inputQtd < 1) inputQtd = 1;
+            let copiasAdicionaisQtd = inputQtd - 1;
+
+            let precoUnitarioCopiaExtra = isColorido ? PRECO_COPIA_ADICIONAL["colorido"] : PRECO_COPIA_ADICIONAL["P&B"];
+            let valorTotalCopiasAdicionais = 0;
+            let temPrecoCopiaExtraDefinido = (precoUnitarioCopiaExtra !== null && precoUnitarioCopiaExtra !== undefined && !isNaN(precoUnitarioCopiaExtra));
+
+            if (copiasAdicionaisQtd > 0 && temPrecoCopiaExtraDefinido) {
+                valorTotalCopiasAdicionais = copiasAdicionaisQtd * precoUnitarioCopiaExtra;
+            }
+
+            // SERVIÇOS ADICIONAIS EXTRAS
             let valorAdicionais = 0;
             if (optRedimensionar.checked) valorAdicionais += 2.00;
             if (optPdfWhats.checked && !optPdfWhats.disabled) valorAdicionais += 2.00;
             if (optCopiaExtra.checked) valorAdicionais += 0.50;
             if (optRecorte.checked) valorAdicionais += 1.00;
 
-            let total = valorBaseServico + valorAdicionais;
+            let total = valorBaseServico + valorTotalCopiasAdicionais + valorAdicionais;
 
-            // Renderização do Resumo de Preços
-            const rowEmissao = document.getElementById("rowEmissao");
-            rowEmissao.style.display = "flex";
+            // RENDERIZAÇÃO DO RESUMO DE PREÇOS
+            document.getElementById("rowEmissao").style.display = "flex";
             document.getElementById("valorEmissaoExibicao").innerText = `R$ ${valorBaseServico.toFixed(2).replace('.', ',')}`;
 
-            const rowImpressao = document.getElementById("rowImpressao");
-            rowImpressao.style.display = "none"; // O valor base já inclui o serviço/impressão conforme tabela especificada
+            const rowCopiasAdic = document.getElementById("rowCopiasAdicionais");
+            if (copiasAdicionaisQtd > 0) {
+                rowCopiasAdic.style.display = "flex";
+                document.getElementById("txtQtdCopiasExtra").innerText = `${copiasAdicionaisQtd} extra${copiasAdicionaisQtd > 1 ? 's' : ''}`;
+                
+                if (temPrecoCopiaExtraDefinido) {
+                    document.getElementById("valorCopiasAdicionaisExibicao").innerText = `+ R$ ${valorTotalCopiasAdicionais.toFixed(2).replace('.', ',')}`;
+                } else {
+                    document.getElementById("valorCopiasAdicionaisExibicao").innerText = `a definir`;
+                }
+            } else {
+                rowCopiasAdic.style.display = "none";
+            }
 
             const rowAdicionais = document.getElementById("rowAdicionais");
             if (valorAdicionais > 0) {
@@ -1121,11 +1160,24 @@
                 rowAdicionais.style.display = "none";
             }
 
-            document.getElementById("valorTotalExibicao").innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
-            document.getElementById("hidden_total").value = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            let textoTotal = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            if (copiasAdicionaisQtd > 0 && !temPrecoCopiaExtraDefinido) {
+                textoTotal += " (+ cópias a definir)";
+            }
+
+            document.getElementById("valorTotalExibicao").innerText = textoTotal;
+            document.getElementById("hidden_total").value = textoTotal;
 
             atualizarConferencia();
-            return total;
+            return {
+                total,
+                valorBaseServico,
+                copiasAdicionaisQtd,
+                precoUnitarioCopiaExtra,
+                valorTotalCopiasAdicionais,
+                temPrecoCopiaExtraDefinido,
+                valorAdicionais
+            };
         }
 
         function atualizarConferencia() {
@@ -1159,7 +1211,7 @@
 
             document.getElementById("confImpressao").innerText = tipoImp;
             document.getElementById("confLado").innerText = ladoImp;
-            document.getElementById("confQtd").innerText = `${qtdCop} cópia(s)`;
+            document.getElementById("confQtd").innerText = `${qtdCop} cópia(s) (${parseInt(qtdCop) > 1 ? '1 principal + ' + (parseInt(qtdCop)-1) + ' extra(s)' : '1 incluída'})`;
             document.getElementById("confOrg").innerText = orgCop;
             document.getElementById("confAcabamento").innerText = acab;
 
@@ -1191,7 +1243,7 @@
         form.addEventListener("submit", (e) => {
             e.preventDefault();
 
-            const totalCalculado = calcularEAtualizarCampos();
+            const calc = calcularEAtualizarCampos();
             const pagamentoSel = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
             const clienteNome = document.getElementById("nome").value;
             const clienteWhats = document.getElementById("telefone").value;
@@ -1222,22 +1274,37 @@
             if (optCopiaExtra.checked) extras.push("2ª Cópia Extra");
             if (optRecorte.checked) extras.push("Ajuste Margem/Recorte");
 
+            let detalheCopiasWhats = `${qtdCop} cópia(s) [1 incluída no serviço`;
+            if (calc.copiasAdicionaisQtd > 0) {
+                if (calc.temPrecoCopiaExtraDefinido) {
+                    detalheCopiasWhats += ` + ${calc.copiasAdicionaisQtd} extra(s) × R$ ${calc.precoUnitarioCopiaExtra.toFixed(2).replace('.', ',')}`;
+                } else {
+                    detalheCopiasWhats += ` + ${calc.copiasAdicionaisQtd} extra(s) com valor a definir`;
+                }
+            }
+            detalheCopiasWhats += `]`;
+
+            let textoTotalWhats = `R$ ${calc.total.toFixed(2).replace('.', ',')}`;
+            if (calc.copiasAdicionaisQtd > 0 && !calc.temPrecoCopiaExtraDefinido) {
+                textoTotalWhats += " (+ valor das cópias adicionais a definir)";
+            }
+
             let mensagemWhatsApp = `*NOVO PEDIDO - PRINNTEXPRESS*\n\n` +
                 `👤 *Cliente:* ${clienteNome}\n` +
                 `📱 *WhatsApp:* ${clienteWhats}\n` +
-                `📄 *Serviço:* ${tipoDocText}\n` +
+                `📄 *Serviço:* ${tipoDocText} (R$ ${calc.valorBaseServico.toFixed(2).replace('.', ',')})\n` +
                 `📁 *Solicitação:* ${possuiDocText}\n` +
                 (detalhesBusca ? `\n*DADOS PARA EMISSÃO:*${detalhesBusca}\n` : '') +
                 `\n🖨️ *CONFIGURAÇÕES DE IMPRESSÃO:*\n` +
                 `• Tipo: ${tipoImp}\n` +
                 `• Impressão: ${ladoImp}\n` +
-                `• Quantidade: ${qtdCop} cópia(s)\n` +
+                `• Quantidade: ${detalheCopiasWhats}\n` +
                 `• Organização: ${orgCop}\n` +
                 `• Acabamento: ${acab}\n` +
                 (extras.length > 0 ? `\n✨ *Extras:* ${extras.join(', ')}\n` : '') +
                 (obs ? `\n💬 *Obs:* ${obs}\n` : '') +
                 `\n💳 *Pagamento:* ${pagamentoSel}\n` +
-                `💰 *Total Estimado:* R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
+                `💰 *Total Estimado:* ${textoTotalWhats}`;
 
             const urlWhatsApp = `https://wa.me/5541999682836?text=${encodeURIComponent(mensagemWhatsApp)}`;
 
@@ -1254,7 +1321,7 @@
                 boxPagamento.innerHTML = `
                     <div class="pix-box">
                         <p style="font-size:13px; color:var(--text-muted); font-weight:700;">VALOR TOTAL A PAGAR VIA PIX</p>
-                        <div style="font-size:28px; font-weight:800; color:var(--green);">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
+                        <div style="font-size:28px; font-weight:800; color:var(--green);">${textoTotalWhats}</div>
                         
                         <div style="margin: 8px 0;">
                             <img src="qrcode-pix.jpg" alt="QR Code PIX" style="max-width: 170px; width: 100%; border-radius: 12px; border: 1px solid var(--border-color);" onerror="this.style.display='none'">
@@ -1268,7 +1335,7 @@
                 boxPagamento.innerHTML = `
                     <div style="background:var(--bg-input); padding:20px; border-radius:16px; margin-top:16px;">
                         <p style="font-size:13px; color:var(--text-muted);">VALOR A PAGAR NA RETIRADA</p>
-                        <div style="font-size:28px; font-weight:800; color:var(--green);">R$ ${totalCalculado.toFixed(2).replace('.', ',')}</div>
+                        <div style="font-size:28px; font-weight:800; color:var(--green);">${textoTotalWhats}</div>
                         <p style="font-size:13px; margin-top:8px;">Pagamento em <strong>Dinheiro</strong> no momento da retirada.</p>
                     </div>
                 `;
