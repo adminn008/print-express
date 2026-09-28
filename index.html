@@ -25,6 +25,7 @@
             --green: #10b981;
             --danger: #ef4444;
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            --shadow-hover: 0 20px 30px -10px rgba(2, 132, 199, 0.15);
             --font-scale: 1rem;
         }
 
@@ -37,6 +38,7 @@
             --text-muted: #94a3b8;
             --accent-light: rgba(56, 189, 248, 0.12);
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 20px 30px -10px rgba(56, 189, 248, 0.2);
         }
 
         * {
@@ -44,12 +46,13 @@
             margin: 0;
             padding: 0;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
         }
 
         html {
             font-size: var(--font-scale);
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
         body {
@@ -90,6 +93,26 @@
             gap: 28px;
         }
 
+        /* ANIMAÇÕES SUAVES DE REVELAÇÃO AO ROLAR */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-on-scroll.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, .reveal-on-scroll {
+                transition: none !important;
+                animation: none !important;
+                transform: none !important;
+                opacity: 1 !important;
+            }
+        }
+
         header { text-align: center; position: relative; width: 100%; }
         .header-top { 
             display: flex; 
@@ -127,11 +150,12 @@
         .theme-toggle:hover, .access-btn:hover, .nav-blog-btn:hover {
             transform: translateY(-2px);
             border-color: var(--primary);
+            box-shadow: var(--shadow-hover);
         }
 
         h1 { 
             color: var(--primary); 
-            font-size: clamp(26px, 5vw, 34px); 
+            font-size: clamp(28px, 5.5vw, 36px); 
             font-weight: 800; 
             letter-spacing: -0.5px; 
             margin-bottom: 4px; 
@@ -144,7 +168,17 @@
             overflow-wrap: break-word;
         }
 
-        /* AVISO DE MUDANÇA (ITEM 2) */
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* AVISO DE MUDANÇA */
         .notice-card {
             background: var(--bg-card);
             border: 1px solid var(--primary);
@@ -197,6 +231,7 @@
             background: var(--primary);
             color: #ffffff;
             border-color: var(--primary);
+            transform: translateY(-2px);
         }
 
         /* HERO SECTION */
@@ -204,7 +239,7 @@
             background: linear-gradient(135deg, rgba(2, 132, 199, 0.12) 0%, rgba(56, 189, 248, 0.18) 100%);
             border: 1px solid var(--accent);
             border-radius: 24px;
-            padding: 32px 24px;
+            padding: 36px 24px;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -212,21 +247,36 @@
             gap: 16px;
             box-shadow: var(--shadow);
             width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-brand {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(2, 132, 199, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
         }
 
         .hero-card h2 {
-            font-size: clamp(20px, 4.5vw, 24px);
+            font-size: clamp(22px, 5vw, 28px);
             font-weight: 800;
             color: var(--primary);
             overflow-wrap: break-word;
+            line-height: 1.25;
         }
 
         .hero-card p {
-            font-size: clamp(14px, 3.5vw, 15px);
+            font-size: clamp(14px, 3.5vw, 16px);
             color: var(--text-main);
-            max-width: 600px;
+            max-width: 620px;
             width: 100%;
             overflow-wrap: break-word;
+            font-weight: 500;
         }
 
         .btn-cta-main {
@@ -241,13 +291,134 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+            box-shadow: 0 6px 18px rgba(2, 132, 199, 0.3);
             max-width: 100%;
             text-align: center;
         }
         .btn-cta-main:hover {
             background: var(--primary-hover);
             transform: translateY(-3px);
+            box-shadow: 0 10px 22px rgba(2, 132, 199, 0.4);
+        }
+
+        /* SEÇÃO INSTITUCIONAL WELGRAFX */
+        .institucional-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .institucional-content h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .institucional-content p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .institucional-badge {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            background: var(--accent-light);
+            padding: 6px 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        /* NOVAS SEÇÕES DE NAVEGAÇÃO & CARDS */
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            width: 100%;
+        }
+
+        .quick-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+            box-shadow: var(--shadow);
+            font-weight: 700;
+            font-size: 14px;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .quick-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .quick-card-icon {
+            font-size: 24px;
+            background: var(--bg-input);
+            padding: 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.2s ease;
+        }
+
+        .quick-card:hover .quick-card-icon {
+            transform: scale(1.1);
+        }
+
+        /* "POR QUE WELGRAFX?" */
+        .diferenciais-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            width: 100%;
+        }
+
+        .diferencial-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px 12px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .diferencial-item:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .diferencial-icon {
+            font-size: 26px;
+        }
+
+        .diferencial-texto {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.3;
         }
 
         /* STATUS E HORÁRIOS */
@@ -285,6 +456,15 @@
         }
         .status-open { background: rgba(16, 185, 129, 0.15); color: var(--green); }
         .status-closed { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+
+        .status-indicator-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-open .status-indicator-dot { background: var(--green); box-shadow: 0 0 8px var(--green); }
+        .status-closed .status-indicator-dot { background: var(--danger); }
 
         .status-info-text {
             font-size: 14px;
@@ -324,6 +504,7 @@
             background: var(--accent-light);
             font-weight: 700;
             color: var(--primary);
+            border-left: 4px solid var(--primary);
         }
 
         .proximo-horario {
@@ -338,6 +519,7 @@
             gap: 8px;
             overflow-wrap: break-word;
             word-break: break-word;
+            border: 1px solid var(--border-color);
         }
 
         /* 24H E PRAZOS */
@@ -355,6 +537,11 @@
             padding: 20px;
             box-shadow: var(--shadow);
             width: 100%;
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
         }
 
         .info-card h3 {
@@ -507,6 +694,7 @@
         .servico-card:hover {    
             transform: translateY(-4px);    
             border-color: var(--primary);    
+            box-shadow: var(--shadow-hover);
         }
 
         /* COMO FUNCIONA */
@@ -538,27 +726,35 @@
 
         .passo-item {
             background: var(--bg-input);
-            padding: 16px;
-            border-radius: 12px;
+            padding: 18px 16px;
+            border-radius: 14px;
             text-align: center;
             width: 100%;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .passo-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
         }
 
         .passo-num {
             background: var(--primary);
             color: white;
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 800;
             margin: 0 auto 10px auto;
-            font-size: 13px;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
         }
 
-        /* FUTURAS ATUALIZAÇÕES (ITEM 3) */
+        /* FUTURAS ATUALIZAÇÕES */
         .futuras-atualizacoes-card {    
             background: var(--bg-card);    
             border: 1px dashed var(--primary);    
@@ -603,6 +799,12 @@
             align-items: center;    
             gap: 8px;    
             overflow-wrap: break-word;
+            border: 1px solid var(--border-color);
+        }
+
+        .atualizacao-item:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
         }
 
         /* CONTATO WHATSAPP */
@@ -610,13 +812,13 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 20px;
-            padding: 24px;
+            padding: 28px 24px;
             text-align: center;
             box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             width: 100%;
         }
 
@@ -624,19 +826,23 @@
             background: #25D366;    
             color: white;    
             text-decoration: none;    
-            padding: 16px 24px;    
-            border-radius: 12px;    
-            font-weight: 700;    
+            padding: 16px 28px;    
+            border-radius: 14px;    
+            font-weight: 800;    
             display: flex;    
             align-items: center;    
             justify-content: center;    
-            gap: 8px;    
+            gap: 10px;    
             font-size: clamp(14px, 3.5vw, 16px);    
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);    
+            box-shadow: 0 6px 16px rgba(37, 211, 102, 0.3);    
             max-width: 100%;
             text-align: center;
         }    
-        .btn-whatsapp:hover { transform: translateY(-2px); }
+        .btn-whatsapp:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.4);
+            background: #22bf5b;
+        }
 
         .btn-flutuante {    
             position: fixed;    
@@ -652,7 +858,7 @@
         }    
         .btn-flutuante:hover { transform: scale(1.05); }
 
-        /* NOVO SISTEMA DE CONSENTIMENTO DE COOKIES (PRINTEXPRESS) */
+        /* COOKIES & MODAL */
         .px-cookie-banner {
             position: fixed;
             bottom: 20px;
@@ -766,13 +972,9 @@
             transform: translateY(-2px);
         }
 
-        /* MODAL DE PREFERÊNCIAS */
         .px-cookie-modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(4px);
             z-index: 10001;
@@ -894,7 +1096,6 @@
             line-height: 1.5;
         }
 
-        /* TOGGLE SWITCH */
         .px-switch {
             position: relative;
             display: inline-block;
@@ -1047,7 +1248,7 @@
         }
         .px-footer-top-btn:hover { background: var(--primary-hover); transform: translateY(-2px); }
 
-        /* NOVA VITRINE EXCLUSIVA */
+        /* VITRINE EXCLUSIVA */
         .vitrine-solucoes-container {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -1221,6 +1422,8 @@
             .passos-grid { grid-template-columns: 1fr; }
             .atualizacoes-grid { grid-template-columns: 1fr; }
             .info-prazos-grid { grid-template-columns: 1fr; }
+            .quick-grid { grid-template-columns: 1fr; }
+            .diferenciais-grid { grid-template-columns: repeat(2, 1fr); }
             .btn-flutuante { bottom: 12px; right: 12px; padding: 10px 16px; font-size: 13px; }
             .hero-card { padding: 24px 16px; }
             .btn-cta-main { width: 100%; }
@@ -1259,27 +1462,172 @@
             <p>Seu Painel de Impressões, Serviços e Solicitações Rápidas</p>
         </header>
 
-        <!-- AVISO DE MUDANÇA NO INÍCIO (ITEM 2) -->
-        <section class="notice-card" aria-label="Aviso de Mudanças no Site">
+        <!-- ÁREA INSTITUCIONAL DE APRESENTAÇÃO WELGRAFX -->
+        <section class="institucional-box reveal-on-scroll">
+            <div class="institucional-content">
+                <h3>WelGrafx</h3>
+                <p>Serviços gráficos e soluções digitais para facilitar documentos, arquivos e tarefas do dia a dia.</p>
+            </div>
+            <div class="institucional-badge">
+                Praticidade • Organização • Tecnologia
+            </div>
+        </section>
+
+        <!-- AVISO DE MUDANÇA NO INÍCIO -->
+        <section class="notice-card reveal-on-scroll" aria-label="Aviso de Mudanças no Site">
             <h3>🆕 O WelGrafx está de cara nova!</h3>
             <p>O site recebeu melhorias, novas páginas, ferramentas e uma organização pensada para facilitar suas impressões e documentos.</p>
             <a href="#secaoFuturasAtualizacoes" class="btn-notice">✨ Ver Futuras Novidades</a>
         </section>
 
-        <!-- HERO -->
-        <section id="hero" class="hero-card">
-            <h2>Impressões e Serviços Rápidos em Um Só Lugar</h2>
+        <!-- HERO / APRESENTAÇÃO -->
+        <section id="hero" class="hero-card reveal-on-scroll">
+            <span class="hero-brand">WelGrafx</span>
+            <h2>Soluções gráficas e digitais para facilitar documentos, arquivos e serviços do dia a dia.</h2>
             <p>Envie seus documentos com praticidade, acompanhe seus prazos e garanta atendimento prioritário de forma simples e rápida.</p>
             <a href="impressao.html" class="btn-cta-main">🚀 Monte seu Pedido de Impressão</a>
         </section>
 
-        <!-- DESTAGUES / CARROSSEL -->
-        <section class="carousel-container" aria-label="Carrossel de Avisos">
+        <!-- SEÇÃO: O QUE VOCÊ PRECISA RESOLVER? -->
+        <section class="reveal-on-scroll">
+            <h3 class="section-title">🔎 O que você precisa resolver?</h3>
+            <div class="quick-grid">
+                <a href="impressao.html" class="quick-card">
+                    <span class="quick-card-icon">🖨️</span>
+                    <span>Quero imprimir</span>
+                </a>
+                <a href="documentos.html" class="quick-card">
+                    <span class="quick-card-icon">📄</span>
+                    <span>Preciso de um documento</span>
+                </a>
+                <a href="curriculo.html" class="quick-card">
+                    <span class="quick-card-icon">💼</span>
+                    <span>Quero fazer um currículo</span>
+                </a>
+                <a href="sos-documentos.html" class="quick-card">
+                    <span class="quick-card-icon">🔧</span>
+                    <span>Meu arquivo está com problema</span>
+                </a>
+                <a href="abnt.html" class="quick-card">
+                    <span class="quick-card-icon">🎓</span>
+                    <span>Preciso formatar um trabalho</span>
+                </a>
+                <a href="digitalizacao.html" class="quick-card">
+                    <span class="quick-card-icon">📲</span>
+                    <span>Quero digitalizar</span>
+                </a>
+                <a href="folha-ponto.html" class="quick-card">
+                    <span class="quick-card-icon">📑</span>
+                    <span>Preciso de uma ficha ou formulário</span>
+                </a>
+                <a href="empresas.html" class="quick-card">
+                    <span class="quick-card-icon">🏢</span>
+                    <span>Preciso de uma solução para empresa</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: POR QUE USAR A WELGRAFX? -->
+        <section class="reveal-on-scroll">
+            <h3 class="section-title">⭐ Por que usar a WelGrafx?</h3>
+            <div class="diferenciais-grid">
+                <div class="diferencial-item">
+                    <span class="diferencial-icon">📱</span>
+                    <span class="diferencial-texto">Feito para celular</span>
+                </div>
+                <div class="diferencial-item">
+                    <span class="diferencial-icon">⚡</span>
+                    <span class="diferencial-texto">Solicitação online</span>
+                </div>
+                <div class="diferencial-item">
+                    <span class="diferencial-icon">📄</span>
+                    <span class="diferencial-texto">Diversos serviços em um só lugar</span>
+                </div>
+                <div class="diferencial-item">
+                    <span class="diferencial-icon">🛠️</span>
+                    <span class="diferencial-texto">Ferramentas digitais próprias</span>
+                </div>
+                <div class="diferencial-item">
+                    <span class="diferencial-icon">💬</span>
+                    <span class="diferencial-texto">Atendimento pelo WhatsApp</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: SERVIÇOS MAIS PROCURADOS -->
+        <section class="reveal-on-scroll">
+            <h3 class="section-title">📌 Serviços mais procurados</h3>
+            <div class="servicos-grid">
+                <a href="impressao.html" class="servico-card">
+                    <div style="font-size:28px;">🖨️</div>
+                    <div style="font-weight:700; font-size:14px;">Impressão e Xerox</div>
+                    <div style="font-size:11px; color:var(--text-muted);">A4 P&B e Colorido</div>
+                </a>
+
+                <a href="curriculo.html" class="servico-card">
+                    <div style="font-size:28px;">💼</div>
+                    <div style="font-weight:700; font-size:14px;">Currículos</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Criação e Atualização</div>
+                </a>
+
+                <a href="documentos.html" class="servico-card">
+                    <div style="font-size:28px;">📄</div>
+                    <div style="font-weight:700; font-size:14px;">Documentos</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Boletos, CPF, RG, CRLV</div>
+                </a>
+
+                <a href="digitalizacao.html" class="servico-card">
+                    <div style="font-size:28px;">📲</div>
+                    <div style="font-weight:700; font-size:14px;">Digitalização</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Arquivos PDF e Imagens</div>
+                </a>
+
+                <a href="sos-documentos.html" class="servico-card">
+                    <div style="font-size:28px;">🔧</div>
+                    <div style="font-weight:700; font-size:14px;">SOS Documento</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Correção e Ajuste de Arquivos</div>
+                </a>
+
+                <a href="abnt.html" class="servico-card">
+                    <div style="font-size:28px;">🎓</div>
+                    <div style="font-weight:700; font-size:14px;">Trabalhos e Formatação</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Normas ABNT e Acadêmico</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: ENCONTRE SEU SERVIÇO -->
+        <section class="reveal-on-scroll">
+            <h3 class="section-title">🧭 Encontre seu serviço</h3>
+            <div class="quick-grid">
+                <a href="impressao.html" class="quick-card">
+                    <span>Quero imprimir algo →</span>
+                </a>
+                <a href="curriculo.html" class="quick-card">
+                    <span>Quero criar um currículo →</span>
+                </a>
+                <a href="sos-documentos.html" class="quick-card">
+                    <span>Meu arquivo está com problema →</span>
+                </a>
+                <a href="digitalizacao.html" class="quick-card">
+                    <span>Quero digitalizar documentos →</span>
+                </a>
+                <a href="folha-ponto.html" class="quick-card">
+                    <span>Preciso de uma ficha ou formulário →</span>
+                </a>
+                <a href="empresas.html" class="quick-card">
+                    <span>Preciso de algo para minha empresa →</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- DESTAQUES / CARROSSEL -->
+        <section class="carousel-container reveal-on-scroll" aria-label="Carrossel de Avisos">
             <div class="carousel-slide active" style="background-image: url('images/atendimento.jpg');">
                 <div class="carousel-card-overlay">
                     <span class="carousel-card-badge">Destaque</span>
                     <div class="carousel-card-title">⚡ Atendimento Rápido e Eficiente</div>
-                    <div class="carousel-card-desc">Envie seus documentos diretamente pelo site e retire sem pegar filas!</div>
+                    <div class="carousel-card-desc">Envie seus documentos diretamente pelo site e acompanhe pelo WhatsApp!</div>
                 </div>
             </div>
             <div class="carousel-slide" style="background-image: url('images/curriculo.jpg');">
@@ -1292,8 +1640,8 @@
             <div class="carousel-slide" style="background-image: url('images/impressao.jpg');">
                 <div class="carousel-card-overlay">
                     <span class="carousel-card-badge">Qualidade</span>
-                    <div class="carousel-card-title">🎨 Impressão & Xerox de Alta Precisão</div>
-                    <div class="carousel-card-desc">Opções em P&B e Colorido de cobertura total com papel de excelente qualidade.</div>
+                    <div class="carousel-card-title">🎨 Impressão & Xerox Práticas</div>
+                    <div class="carousel-card-desc">Opções em P&B e Colorido com agilidade e praticidade para seu dia a dia.</div>
                 </div>
             </div>
             <div class="carousel-slide" style="background-image: url('images/digitalizacao.jpg');">
@@ -1306,15 +1654,15 @@
             <div class="carousel-slide" style="background-image: url('images/seguranca.jpg');">
                 <div class="carousel-card-overlay">
                     <span class="carousel-card-badge">Segurança</span>
-                    <div class="carousel-card-title">🔒 Privacidade & Descarte Seguro 24h</div>
-                    <div class="carousel-card-desc">Seus arquivos e dados são apagados do sistema com segurança após o pedido.</div>
+                    <div class="carousel-card-title">🔒 Privacidade dos seus Dados</div>
+                    <div class="carousel-card-desc">Seus arquivos e dados são tratados com o devido cuidado e sigilo durante o atendimento.</div>
                 </div>
             </div>
             <div class="carousel-slide" style="background-image: url('images/pedidos.jpg');">
                 <div class="carousel-card-overlay">
                     <span class="carousel-card-badge">Praticidade</span>
                     <div class="carousel-card-title">⏱️ Pedidos Abertos 24 Horas</div>
-                    <div class="carousel-card-desc">Envie seu pedido a qualquer momento. A impressão é liberada no horário comercial!</div>
+                    <div class="carousel-card-desc">Envie seu pedido a qualquer momento. A produção segue os horários ativos.</div>
                 </div>
             </div>
             <div class="carousel-slide" style="background-image: url('images/feedback.jpg');">
@@ -1344,14 +1692,16 @@
         </section>
 
         <!-- STATUS DE FUNCIONAMENTO & HORÁRIOS -->
-        <section class="status-box">
+        <section class="status-box reveal-on-scroll">
             <div class="status-header-live">
                 <div>
                     <h3 style="font-size: 18px; color: var(--primary);">Status de Atendimento</h3>
                     <p style="font-size: 12px; color: var(--text-muted);">Pedidos são recebidos 24 horas por dia.</p>
                 </div>
                 <div id="statusBadgeHome" class="status-badge-large status-open">
-                    <span id="statusIconHome">🟢</span> <span id="statusTextoHome">Impressões ativas</span>
+                    <span class="status-indicator-dot"></span>
+                    <span id="statusIconHome">🟢</span> 
+                    <span id="statusTextoHome">Impressões ativas</span>
                 </div>
             </div>
             
@@ -1383,15 +1733,15 @@
         </section>
 
         <!-- PRAZOS E PEDIDOS 24H -->
-        <section class="info-prazos-grid">
+        <section class="info-prazos-grid reveal-on-scroll">
             <div class="info-card">
                 <h3>📥 PEDIDOS 24H</h3>
-                <p><strong>Você pode enviar seu pedido a qualquer momento.</strong> Os pedidos podem ser enviados 24 horas por dia. A produção/impressão seguirá os horários e prazos informados. <br><small style="color:var(--primary); font-weight:700;">* Aos sábados e domingos, a produção/impressão também pode ocorrer no mesmo dia, desde que o pedido seja enviado dentro do horário de funcionamento e respeite a capacidade de produção.</small></p>
+                <p><strong>Você pode enviar seu pedido a qualquer momento.</strong> A produção/impressão segue os horários e prazos informados. <br><small style="color:var(--primary); font-weight:700;">* A produção/impressão ocorre nos horários ativos informados na tabela de atendimento.</small></p>
             </div>
 
             <div class="info-card">
                 <h3>🖨️ Prazos de Impressão</h3>
-                <p><strong>Segunda a sexta:</strong> prazo de conclusão no mesmo dia, considerando os horários de funcionamento de impressão. <br><small style="color:var(--primary); font-weight:700;">* Sábados e domingos: o prazo também pode ser no mesmo dia, desde que o pedido seja realizado dentro do horário de funcionamento de impressão.</small></p>
+                <p><strong>Segunda a sexta:</strong> produção dentro do horário de atendimento. <br><small style="color:var(--primary); font-weight:700;">* Sábados e domingos: atendimentos realizados dentro da janela estendida informada.</small></p>
             </div>
 
             <div class="info-card">
@@ -1400,67 +1750,30 @@
             </div>
         </section>
 
-        <!-- NAVEGAÇÃO DE PÁGINAS EXISTENTES -->
-        <section>
-            <h3 style="font-size: 18px; color: var(--primary); margin-bottom: 12px;"> Nossos Serviços e Páginas</h3>
-            <div class="servicos-grid">
-                <a href="impressao.html" class="servico-card">
-                    <div style="font-size:28px;">📄</div>
-                    <div style="font-weight:700; font-size:14px;">Impressão / Xerox</div>
-                    <div style="font-size:11px; color:var(--text-muted);">A4 P&B e Colorido</div>
-                </a>
-
-                <a href="curriculo.html" class="servico-card">
-                    <div style="font-size:28px;">💼</div>
-                    <div style="font-weight:700; font-size:14px;">Currículos</div>
-                    <div style="font-size:11px; color:var(--text-muted);">Criação e Atualização Profissional</div>
-                </a>
-
-                <a href="documentos.html" class="servico-card">
-                    <div style="font-size:28px;">🏛️</div>
-                    <div style="font-weight:700; font-size:14px;">Doc. Oficiais</div>
-                    <div style="font-size:11px; color:var(--text-muted);">Boletos, CPF, RG, CRLV</div>
-                </a>
-
-                <a href="gerador.html" class="servico-card">
-                    <div style="font-size:28px;">⚙️</div>
-                    <div style="font-weight:700; font-size:14px;">Gerador de Recibo</div>
-                    <div style="font-size:11px; color:var(--text-muted);">Prest. de Serviços, Recibos, Pagamentos</div>
-                </a>
-
-                <a href="digitalizacao.html" class="servico-card">
-                    <div style="font-size:28px;">💻</div>
-                    <div style="font-weight:700; font-size:14px;">Digitalização</div>
-                    <div style="font-size:11px; color:var(--text-muted);">Digitalização de Documentos, Contratos, Recibos, Fotos</div>
-                </a>
-                        
-            </div>
-        </section>
-
         <!-- COMO FUNCIONA -->
-        <section class="como-funciona-box">
-            <h3>💡 Como Funciona?</h3>
+        <section class="como-funciona-box reveal-on-scroll">
+            <h3>📊 Como Funciona?</h3>
             <div class="passos-grid">
                 <div class="passo-item">
                     <div class="passo-num">1</div>
                     <strong style="font-size:14px;">Escolha o Serviço</strong>
-                    <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Acesse a página de impressão ou serviços desejados.</p>
+                    <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Acesse a página do serviço ou documento que você precisa.</p>
                 </div>
                 <div class="passo-item">
                     <div class="passo-num">2</div>
                     <strong style="font-size:14px;">Envie os Arquivos</strong>
-                    <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Anexe os documentos ou preencha o formulário rápido.</p>
+                    <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Anexe seus documentos ou preencha o formulário online.</p>
                 </div>
                 <div class="passo-item">
                     <div class="passo-num">3</div>
-                    <strong style="font-size:14px;">Retire / Receba</strong>
-                    <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">Acompanhe pelo WhatsApp e retire no horário ativo.</p>
+                    <strong style="font-size:14px;">Receba / Acompanhe</strong>
+                    <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">📲 Receba as orientações do seu atendimento pelo WhatsApp.</p>
                 </div>
             </div>
         </section>
 
         <!-- VITRINE EXCLUSIVA -->
-        <section class="vitrine-solucoes-container" aria-label="Vitrine de Soluções">
+        <section class="vitrine-solucoes-container reveal-on-scroll" aria-label="Vitrine de Soluções">
             <div class="vitrine-header">
                 <h2>🚀 Soluções PrintExpress</h2>
                 <p>Serviços pensados para facilitar seus documentos, arquivos e tarefas do dia a dia.</p>
@@ -1491,7 +1804,7 @@
                 <a href="folha-ponto.html" class="vitrine-card">
                     <div class="vitrine-card-top">
                         <div class="vitrine-icon">📑</div>
-                        <div class="vitrine-card-title">Preciso de folhas de ponto e relatórios.</div>
+                        <div class="vitrine-card-title">Preciso de folhas de ponto e relatórios</div>
                         <div class="vitrine-card-desc">Modelos padronizados para preenchimento manual ou digital.</div>
                     </div>
                     <div class="vitrine-card-btn">Acessar serviço →</div>
@@ -1501,7 +1814,7 @@
                 <a href="flashcards.html" class="vitrine-card">
                     <div class="vitrine-card-top">
                         <div class="vitrine-icon">📇</div>
-                        <div class="vitrine-card-title">Preciso de fichas de estudo e resumos (flashcards)</div>
+                        <div class="vitrine-card-title">Preciso de fichas de estudo e resumos</div>
                         <div class="vitrine-card-desc">Modelos prontos ou personalizados para o aluno preencher.</div>
                     </div>
                     <div class="vitrine-card-btn">Acessar serviço →</div>
@@ -1516,9 +1829,8 @@
                     </div>
                     <div class="vitrine-card-btn">Acessar serviço →</div>
                 </a>
-            </div>
 
-            <!-- CONTRATOS -->
+                <!-- CONTRATOS -->
                 <a href="contratos.html" class="vitrine-card">
                     <div class="vitrine-card-top">
                         <div class="vitrine-icon">📝</div>
@@ -1528,56 +1840,57 @@
                     <div class="vitrine-card-btn">Acessar serviço →</div>
                 </a>
 
-            <!-- MANUAIS -->
+                <!-- MANUAIS -->
                 <a href="manuais.html" class="vitrine-card">
                     <div class="vitrine-card-top">
                         <div class="vitrine-icon">📖</div>
-                        <div class="vitrine-card-title">Preciso de manuais de treinamento / integração.</div>
+                        <div class="vitrine-card-title">Preciso de manuais de treinamento / integração</div>
                         <div class="vitrine-card-desc">Guias para novos funcionários ou manuais de instrução de produtos.</div>
                     </div>
                     <div class="vitrine-card-btn">Acessar serviço →</div>
+                </a>
 
-                    <!-- FORMULÁRIOS -->
+                <!-- FORMULÁRIOS -->
                 <a href="empresas.html" class="vitrine-card">
                     <div class="vitrine-card-top">
                         <div class="vitrine-icon">📋</div>
-                        <div class="vitrine-card-title">Preciso de preenchimento de formulários online.</div>
+                        <div class="vitrine-card-title">Preciso de preenchimento de formulários online</div>
                         <div class="vitrine-card-desc">Auxílio para quem tem dificuldade em cadastros digitais burocráticos.</div>
                     </div>
                     <div class="vitrine-card-btn">Acessar serviço →</div>
                 </a>
-                </a>
+            </div>
         </section>
 
-        <!-- FUTURAS ATUALIZAÇÕES (ITEM 3 - APRESENTAÇÃO + LISTA EXPANDIDA) -->
-        <section id="secaoFuturasAtualizacoes" class="futuras-atualizacoes-card">    
-            <h3>🚀 Novidades a Caminho</h3> 
+        <!-- FUTURAS ATUALIZAÇÕES -->
+        <section id="secaoFuturasAtualizacoes" class="futuras-atualizacoes-card reveal-on-scroll">    
+            <h3>🆕 Novidades a Caminho</h3> 
             <p class="atualizacoes-intro">Estamos trabalhando continuamente para trazer novas soluções. O WelGrafx está recebendo atualizações frequentes com novas ferramentas, geradores e melhorias gerais de desempenho.</p>   
             <div class="atualizacoes-grid">    
                 <div class="atualizacao-item">📄 Novos geradores de documentos</div>    
                 <div class="atualizacao-item">🧾 Novos modelos de recibos</div>
                 <div class="atualizacao-item">📅 Agendamento de Horário</div>           
-                <div class="atualizacao-item">⚡ Novos geradores gratuitos e premium</div>  
-                <div class="atualizacao-item">📤 Upload de Comprovante</div>
-                <div class="atualizacao-item">📑 Mais opções de personalização nos geradores</div>    
-                <div class="atualizacao-item">🔄 Conversor de Imagem para PDF</div>
-                <div class="atualizacao-item">🔁 Novas ferramentas para facilitar a criação de arquivos</div>
-                <div class="atualizacao-item">📥 Novas opções de exportação e geração de arquivos</div>
-                <div class="atualizacao-item">🛠️ Aprimoramentos de desempenho e usabilidade</div>
-                <div class="atualizacao-item">✨ Melhorias contínuas nos geradores existentes</div>
+                <div class="atualizacao-item">⚡ Geradores gratuitos e premium</div>  
+                <div class="atualizacao-item">📤 Upload de comprovante</div>
+                <div class="atualizacao-item">📑 Personalização nos geradores</div>    
+                <div class="atualizacao-item">🔄 Conversor de imagem para PDF</div>
+                <div class="atualizacao-item">🔁 Novas ferramentas</div>
+                <div class="atualizacao-item">📥 Novas opções de exportação</div>
+                <div class="atualizacao-item">🛠️ Melhorias de desempenho</div>
+                <div class="atualizacao-item">✨ Melhorias nos geradores</div>
             </div>    
 
-            <hr style="border: 0; height: 1px; background: #334155; margin: 24px 0 16px 0;">
+            <hr style="border: 0; height: 1px; background: var(--border-color); margin: 24px 0 16px 0;">
             
-            <p style="color: #00c4cc; font-size: 12px; line-height: 1.6; opacity: 0.9; margin: 0; text-align: justify;">
+            <p style="color: var(--primary); font-size: 12px; line-height: 1.6; opacity: 0.9; margin: 0; text-align: justify;">
                 Estamos preparando novas ferramentas e recursos para deixar a PrintExpress cada vez mais completa. Os recursos serão adicionados gradualmente conforme o desenvolvimento da plataforma. Algumas funcionalidades poderão ser gratuitas e outras poderão possuir recursos premium.
             </p>
         </section>
 
         <!-- CONTATO / DUVIDAS -->
-        <section class="contato-box">
+        <section class="contato-box reveal-on-scroll">
             <h3 style="font-size: 18px; color: var(--primary);">Ficou com alguma dúvida?</h3>
-            <p style="font-size: 14px; color: var(--text-muted);">Estamos prontos para te ajudar com suas impressões e dúvidas gerais.</p>
+            <p style="font-size: 14px; color: var(--text-muted);">Estamos prontos para te ajudar com suas solicitações e dúvidas gerais.</p>
             <a href="https://wa.me/5541999682836?text=Olá,%20fiquei%20com%20uma%20dúvida!" target="_blank" class="btn-whatsapp">
                 💬 Fale conosco pelo WhatsApp
             </a>
@@ -1646,7 +1959,6 @@
                 <button type="button" class="px-cookie-modal-close" onclick="fecharPreferenciasCookies()" aria-label="Fechar">✕</button>
             </div>
             <div class="px-cookie-modal-body">
-                <!-- Categoria: Necessários -->
                 <div class="px-cookie-category">
                     <div class="px-cookie-category-header">
                         <div class="px-cookie-category-title">
@@ -1659,7 +1971,6 @@
                     </p>
                 </div>
 
-                <!-- Categoria: Análise/Estatísticas -->
                 <div class="px-cookie-category">
                     <div class="px-cookie-category-header">
                         <div class="px-cookie-category-title">
@@ -1675,7 +1986,6 @@
                     </p>
                 </div>
 
-                <!-- Categoria: Preferências -->
                 <div class="px-cookie-category">
                     <div class="px-cookie-category-header">
                         <div class="px-cookie-category-title">
@@ -1704,7 +2014,20 @@
     <script>
         function pxScrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
-        // NOVO SISTEMA DE CONSENTIMENTO DE COOKIES (PRINTEXPRESS)
+        // OBSERVER PARA ANIMAÇÕES DE ENTRADA SUAVE
+        document.addEventListener("DOMContentLoaded", () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+        });
+
+        // CONSENTIMENTO DE COOKIES
         const COOKIE_STORAGE_KEY = 'printexpress_cookie_consent';
 
         function obterConsentimentoSalvo() {
@@ -1839,7 +2162,7 @@
             mudarSlide(slideIndex + 1);
         }, 5000);
 
-        // LÓGICA DE HORÁRIO AUTOMÁTICO
+        // HORÁRIOS AUTOMÁTICOS
         const HORARIOS = {
             1: { inicio: 17*60, fim: 21*60, nome: "Segunda-feira" },
             2: { inicio: 17*60, fim: 21*60, nome: "Terça-feira" },
@@ -1861,7 +2184,6 @@
             const diaSemana = agora.getDay();
             const minutosAtuais = agora.getHours() * 60 + agora.getMinutes();
 
-            // Destacar dia atual na tabela
             document.querySelectorAll('.tabela-horarios tr').forEach(tr => tr.classList.remove('dia-atual'));
             const rowHoje = document.getElementById(`row-${diaSemana}`);
             if (rowHoje) rowHoje.classList.add('dia-atual');
@@ -1887,7 +2209,6 @@
                 texto.innerText = "Impressões inativas";
                 desc.innerText = "Os pedidos continuam disponíveis 24h. As impressões serão realizadas no próximo horário de atendimento.";
 
-                // Calcular próximo horário
                 if (minutosAtuais < hHoje.inicio) {
                     proximoTexto.innerText = `Próximo horário de impressão: Hoje às ${formatarMinutos(hHoje.inicio)}`;
                 } else {
