@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criação & Edição Sob Demanda | WelGrafx</title>
+  <meta name="description" content="Criação, edição, organização e adaptação de documentos e materiais personalizados conforme a sua necessidade com a WelGrafx.">
+  <style>
+    /* ==========================================================================
+       1. VARIÁVEIS E TEMAS (IDENTIDADE VISUAL WELGRAFX)
+       ========================================================================== */
+    :root {
+      --primary: #0088cc;
+      --primary-hover: #006699;
+      --primary-light: rgba(0, 136, 204, 0.1);
+      --accent: #00d2ff;
+      --accent-glow: rgba(0, 210, 255, 0.3);
+      
+      --bg-body: #f4f7f9;
+      --bg-card: #ffffff;
+      --bg-input: #ffffff;
+      --border-color: #e1e8ed;
+      --border-focus: #0088cc;
+      
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --text-white: #ffffff;
+      
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-body: #0f172a;
+        --bg-card: #1e293b;
+        --bg-input: #0f172a;
+        --border-color: #334155;
+        --border-focus: #00d2ff;
+        
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+      }
+    }
+
+    [data-theme="dark"] {
+      --bg-body: #0f172a;
+      --bg-card: #1e293b;
+      --bg-input: #0f172a;
+      --border-color: #334155;
+      --border-focus: #00d2ff;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    [data-theme="light"] {
+      --bg-body: #f4f7f9;
+      --bg-card: #ffffff;
+      --bg-input: #ffffff;
+      --border-color: #e1e8ed;
+      --border-focus: #0088cc;
+      
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+    }
+
+    /* ==========================================================================
+       2. RESET & BASE
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.6;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* ==========================================================================
+       3. HEADER & CONTROLES
+       ========================================================================== */
+    .header {
+      padding: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 30px;
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand span {
+      color: var(--text-main);
+    }
+
+    .theme-toggle {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--primary);
+    }
+
+    /* ==========================================================================
+       4. HERO SECTION
+       ========================================================================== */
+    .hero {
+      text-align: center;
+      padding: 40px 20px;
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, rgba(255,255,255,0) 70%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .hero-description {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0 auto 28px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(0, 136, 204, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 136, 204, 0.6);
+    }
+
+    .btn-secondary {
+      background: var(--bg-body);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-color);
+    }
+
+    .hero-features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      background: var(--bg-body);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-color);
+    }
+
+    /* ==========================================================================
+       5. COMO FUNCIONA (STEPS)
+       ========================================================================== */
+    .section-title {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .how-it-works {
+      margin-bottom: 50px;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .step-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px 20px;
+      text-align: center;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .step-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+
+    .step-num {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--primary);
+      background: var(--primary-light);
+      width: 48px;
+      height: 48px;
+      line-height: 48px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+    }
+
+    .step-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .step-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       6. SERVIÇOS DISPONÍVEIS (VITRINE)
+       ========================================================================== */
+    .services-section {
+      margin-bottom: 50px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .service-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .service-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .service-card.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .service-card h3 {
+      font-size: 1rem;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .service-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       7. FORMULÁRIO WIZARD
+       ========================================================================== */
+    .form-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 50px;
+    }
+
+    /* Barra de Progresso */
+    .progress-bar-container {
+      margin-bottom: 30px;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .progress-bar-bg {
+      height: 8px;
+      background: var(--border-color);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 14.28%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+    }
+
+    /* Etapas Form */
+    .form-step {
+      display: none;
+    }
+
+    .form-step.active {
+      display: block;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    /* Inputs e Controles */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .form-group label .required {
+      color: #e11d48;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background: var(--bg-input);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      transition: var(--transition);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    /* Radio / Checkbox Custom Grid */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .custom-option {
+      position: relative;
+    }
+
+    .custom-option input[type="radio"],
+    .custom-option input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: var(--transition);
+      user-select: none;
+    }
+
+    .custom-option input:checked + .option-label {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Upload de Arquivos */
+    .file-upload-zone {
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 30px 20px;
+      text-align: center;
+      background: var(--bg-body);
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .file-upload-zone:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .file-upload-zone input[type="file"] {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .file-list {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .file-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 250px;
+      font-weight: 600;
+    }
+
+    .file-size {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .btn-remove-file {
+      background: transparent;
+      border: none;
+      color: #e11d48;
+      cursor: pointer;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .btn-remove-file:hover {
+      background: rgba(225, 29, 72, 0.1);
+    }
+
+    /* Avisos de Segurança */
+    .security-notice {
+      background: var(--primary-light);
+      border-left: 4px solid var(--primary);
+      padding: 12px 16px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      margin-top: 20px;
+    }
+
+    /* Navigation Buttons */
+    .form-navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* Error Message */
+    .error-msg {
+      color: #e11d48;
+      font-size: 0.85rem;
+      margin-top: 6px;
+      display: none;
+    }
+
+    /* ==========================================================================
+       8. SEÇÃO DE ORÇAMENTO E RESUMO
+       ========================================================================== */
+    .budget-box {
+      background: var(--primary-light);
+      border: 1px solid var(--primary);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .budget-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .summary-card {
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--border-color);
+      font-size: 0.9rem;
+    }
+
+    .summary-item:last-child {
+      border-bottom: none;
+    }
+
+    .summary-label {
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .summary-value {
+      font-weight: 600;
+      text-align: right;
+      max-width: 60%;
+      word-break: break-word;
+    }
+
+    /* ==========================================================================
+       9. TELA DE SUCESSO
+       ========================================================================== */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .success-screen.active {
+      display: block;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .success-icon {
+      font-size: 3.5rem;
+      margin-bottom: 16px;
+    }
+
+    .status-list {
+      display: inline-block;
+      text-align: left;
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin: 24px 0;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+
+    .status-item:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ==========================================================================
+       10. SEÇÃO DE PAGAMENTO (FUTURA / CONFIGURÁVEL)
+       ========================================================================== */
+    .payment-section {
+      margin-top: 50px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+    }
+
+    .payment-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .payment-card {
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .qr-placeholder {
+      width: 160px;
+      height: 160px;
+      margin: 16px auto;
+      background: #ffffff;
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-placeholder img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .pix-key-container {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pix-key-input {
+      flex: 1;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    /* Spinner Loading */
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- HEADER -->
+    <header class="header">
+      <a href="#" class="brand">🛠️ <span>WelGrafx</span></a>
+      <button class="theme-toggle" id="themeToggle" type="button">
+        <span id="themeIcon">🌙</span> <span id="themeText">Modo Escuro</span>
+      </button>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+      <div class="hero-content">
+        <div class="hero-subtitle">🛠️ Criação & Edição Sob Demanda</div>
+        <h1 class="hero-title">Precisa de algo personalizado?</h1>
+        <p class="hero-description">
+          Explique o que você precisa e deixe a criação por nossa conta. Criação, edição, organização e adaptação de documentos e materiais conforme a sua necessidade.
+        </p>
+        <a href="#solicitar" class="btn btn-primary">🚀 Solicitar serviço</a>
+
+        <div class="hero-features">
+          <div class="feature-item">📄 Projetos personalizados</div>
+          <div class="feature-item">🎨 Ajustes sob medida</div>
+          <div class="feature-item">📎 Envio de arquivos</div>
+          <div class="feature-item">💬 Atendimento personalizado</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMO FUNCIONA -->
+    <section class="how-it-works">
+      <h2 class="section-title">Como funciona</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <h3>Explique</h3>
+          <p>Conte o que você precisa detalhadamente.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <h3>Envie</h3>
+          <p>Envie arquivos, imagens ou referências.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <h3>Analisamos</h3>
+          <p>Analisamos a solicitação e definimos o valor.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">04</div>
+          <h3>Produzimos</h3>
+          <p>Após a confirmação, o projeto é desenvolvido.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVIÇOS DISPONÍVEIS -->
+    <section class="services-section">
+      <h2 class="section-title">Serviços Disponíveis</h2>
+      <div class="services-grid">
+        <div class="service-card" onclick="selectServiceFromVitrine('Editar documento existente')">
+          <h3>📄 Editar documento</h3>
+          <p>Alterações, organização e ajustes em documentos existentes.</p>
+        </div>
+        <div class="service-card" onclick="selectServiceFromVitrine('Criar documento do zero')">
+          <h3>🎨 Criar material do zero</h3>
+          <p>Criação de documentos e materiais personalizados.</p>
+        </div>
+        <div class="service-card" onclick="selectServiceFromVitrine('Criar formulário/ficha')">
+          <h3>📝 Criar formulário ou ficha</h3>
+          <p>Modelos personalizados para diferentes necessidades.</p>
+        </div>
+        <div class="service-card" onclick="selectServiceFromVitrine('Criar currículo')">
+          <h3>💼 Currículo personalizado</h3>
+          <p>Criação ou adaptação de currículo conforme o objetivo.</p>
+        </div>
+        <div class="service-card" onclick="selectServiceFromVitrine('Criar planilha/modelo')">
+          <h3>📊 Criar planilha/modelo</h3>
+          <p>Modelos organizados para controle, registro ou uso profissional.</p>
+        </div>
+        <div class="service-card" onclick="selectServiceFromVitrine('Ajustar material visual')">
+          <h3>🖼️ Ajustar material visual</h3>
+          <p>Alterações em imagens, layouts e materiais fornecidos pelo cliente.</p>
+        </div>
+        <div class="service-card" onclick="selectServiceFromVitrine('Criar PDF personalizado')">
+          <h3>📑 Criar PDF personalizado</h3>
+          <p>Documentos estruturados conforme as especificações solicitadas.</p>
+        </div>
+        <div class="service-card" onclick="selectServiceFromVitrine('Outro')">
+          <h3>🔧 Outro</h3>
+          <p>Descreva sua necessidade e analisaremos a possibilidade.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FORMULÁRIO DE SOLICITAÇÃO (WIZARD) -->
+    <section id="solicitar" class="form-container">
+      
+      <!-- BARRA DE PROGRESSO -->
+      <div class="progress-bar-container" id="progressBarContainer">
+        <div class="progress-info">
+          <span id="stepProgressText">Etapa 1 de 7</span>
+          <span id="stepPercentText">14%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
+      </div>
+
+      <form id="requestForm" enctype="multipart/form-data" onsubmit="return false;">
+        
+        <!-- ETAPA 1: SERVIÇO -->
+        <div class="form-step active" data-step="1">
+          <div class="step-title">1. Qual serviço você precisa? <span class="required">*</span></div>
+          <div class="step-desc">Selecione uma das opções abaixo para começar.</div>
+          
+          <div class="options-grid">
+            <div class="custom-option">
+              <input type="radio" name="servico" id="srv1" value="Editar documento existente" required>
+              <label for="srv1" class="option-label">📄 Editar documento existente</label>
+            </div>
+            <div class="custom-option">
+              <input type="radio" name="servico" id="srv2" value="Criar documento do zero">
+              <label for="srv2" class="option-label">🎨 Criar documento do zero</label>
+            </div>
+            <div class="custom-option">
+              <input type="radio" name="servico" id="srv3" value="Criar formulário/ficha">
+              <label for="srv3" class="option-label">📝 Criar formulário/ficha</label>
+            </div>
+            <div class="custom-option">
+              <input type="radio" name="servico" id="srv4" value="Criar currículo">
+              <label for="srv4" class="option-label">💼 Criar currículo</label>
+            </div>
+            <div class="custom-option">
+              <input type="radio" name="servico" id="srv5" value="Criar planilha/modelo">
+              <label for="srv5" class="option-label">📊 Criar planilha/modelo</label>
+            </div>
+            <div class="custom-option">
+              <input type="radio" name="servico" id="srv6" value="Ajustar material visual">
+              <label for="srv6" class="option-label">🖼️ Ajustar material visual</label>
+            </div>
+            <div class="custom-option">
+              <input type="radio" name="servico" id="srv7" value="Criar PDF personalizado">
+              <label for="srv7" class="option-label">📑 Criar PDF personalizado</label>
+            </div>
+            <div class="custom-option">
+              <input type="radio" name="servico" id="srv8" value="Outro">
+              <label for="srv8" class="option-label">🔧 Outro</label>
+            </div>
+          </div>
+          <div class="error-msg" id="err-servico">Por favor, selecione um serviço.</div>
+        </div>
+
+        <!-- ETAPA 2: DETALHES -->
+        <div class="form-step" data-step="2">
+          <div class="step-title">2. Detalhes da solicitação <span class="required">*</span></div>
+          <div class="step-desc">Quanto mais detalhes você fornecer, melhor poderemos entender sua solicitação.</div>
+          
+          <div class="form-group">
+            <label for="descricao">Explique o que você precisa <span class="required">*</span></label>
+            <textarea class="form-control" id="descricao" name="descricao" placeholder="Descreva o que precisa ser criado, alterado ou ajustado..." required></textarea>
+            <div class="error-msg" id="err-descricao">Por favor, detalhe sua solicitação.</div>
+          </div>
+        </div>
+
+        <!-- ETAPA 3: ARQUIVOS -->
+        <div class="form-step" data-step="3">
+          <div class="step-title">3. Arquivos e Referências</div>
+          <div class="step-desc">Envie arquivos que nos ajudem a entender seu projeto (PDF, DOC, DOCX, JPG, PNG, WEBP, XLS, XLSX).</div>
+          
+          <div class="file-upload-zone">
+            <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.xls,.xlsx" onchange="handleFileSelect(event)">
+            <p><strong>Clique aqui ou arraste seus arquivos</strong></p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Você pode adicionar múltiplos arquivos.</p>
+          </div>
+
+          <div class="file-list" id="fileList"></div>
+
+          <div class="security-notice">
+            🔒 <strong>Privacidade:</strong> Envie somente os arquivos e informações necessários para a realização da sua solicitação. Não envie senhas, códigos de autenticação ou informações de acesso.
+          </div>
+        </div>
+
+        <!-- ETAPA 4: FORMATO -->
+        <div class="form-step" data-step="4">
+          <div class="step-title">4. Uso e Formato</div>
+          <div class="step-desc">Como e onde o material será utilizado?</div>
+
+          <div class="form-group">
+            <label>Como você pretende utilizar o material?</label>
+            <div class="options-grid">
+              <div class="custom-option">
+                <input type="radio" name="uso" id="uso1" value="Impressão" checked>
+                <label for="uso1" class="option-label">📄 Impressão</label>
+              </div>
+              <div class="custom-option">
+                <input type="radio" name="uso" id="uso2" value="Uso digital">
+                <label for="uso2" class="option-label">📱 Uso digital</label>
+              </div>
+              <div class="custom-option">
+                <input type="radio" name="uso" id="uso3" value="Computador">
+                <label for="uso3" class="option-label">💻 Computador</label>
+              </div>
+              <div class="custom-option">
+                <input type="radio" name="uso" id="uso4" value="Celular">
+                <label for="uso4" class="option-label">📲 Celular</label>
+              </div>
+              <div class="custom-option">
+                <input type="radio" name="uso" id="uso5" value="Impressão e digital">
+                <label for="uso5" class="option-label">🖨️ Impressão e digital</label>
+              </div>
+              <div class="custom-option">
+                <input type="radio" name="uso" id="uso6" value="Ainda não sei">
+                <label for="uso6" class="option-label">🔧 Ainda não sei</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="tamanho">Tamanho/formato desejado</label>
+            <select class="form-control" id="tamanho" name="tamanho" onchange="toggleTamanhoCustom(this.value)">
+              <option value="A4">A4</option>
+              <option value="A5">A5</option>
+              <option value="Personalizado">Personalizado</option>
+              <option value="Não sei">Não sei</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="groupTamanhoCustom" style="display: none;">
+            <label for="tamanhoCustom">Qual tamanho?</label>
+            <input type="text" class="form-control" id="tamanhoCustom" name="tamanhoCustom" placeholder="Ex: 10x15cm, 1920x1080px...">
+          </div>
+        </div>
+
+        <!-- ETAPA 5: PERSONALIZAÇÃO -->
+        <div class="form-step" data-step="5">
+          <div class="step-title">5. Elementos e Preferências</div>
+          <div class="step-desc">Selecione o que o seu material deve conter.</div>
+
+          <div class="form-group">
+            <label>Elementos desejados:</label>
+            <div class="options-grid">
+              <div class="custom-option">
+                <input type="checkbox" name="elementos" id="elem1" value="Texto personalizado">
+                <label for="elem1" class="option-label">☐ Texto personalizado</label>
+              </div>
+              <div class="custom-option">
+                <input type="checkbox" name="elementos" id="elem2" value="Logo">
+                <label for="elem2" class="option-label">☐ Logo</label>
+              </div>
+              <div class="custom-option">
+                <input type="checkbox" name="elementos" id="elem3" value="Cores específicas">
+                <label for="elem3" class="option-label">☐ Cores específicas</label>
+              </div>
+              <div class="custom-option">
+                <input type="checkbox" name="elementos" id="elem4" value="Imagens">
+                <label for="elem4" class="option-label">☐ Imagens</label>
+              </div>
+              <div class="custom-option">
+                <input type="checkbox" name="elementos" id="elem5" value="Tabelas">
+                <label for="elem5" class="option-label">☐ Tabelas</label>
+              </div>
+              <div class="custom-option">
+                <input type="checkbox" name="elementos" id="elem6" value="Campos para preenchimento">
+                <label for="elem6" class="option-label">☐ Campos para preenchimento</label>
+              </div>
+              <div class="custom-option">
+                <input type="checkbox" name="elementos" id="elem7" value="Espaço para assinatura">
+                <label for="elem7" class="option-label">☐ Espaço para assinatura</label>
+              </div>
+              <div class="custom-option">
+                <input type="checkbox" name="elementos" id="elem8" value="Cabeçalho/rodapé">
+                <label for="elem8" class="option-label">☐ Cabeçalho/rodapé</label>
+              </div>
+              <div class="custom-option">
+                <input type="checkbox" name="elementos" id="elem9" value="Outro">
+                <label for="elem9" class="option-label">☐ Outro</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="preferencias">Preferências ou observações</label>
+            <textarea class="form-control" id="preferencias" name="preferencias" placeholder="Cores de preferência, estilo visual, observações gerais..."></textarea>
+          </div>
+        </div>
+
+        <!-- ETAPA 6: REFERÊNCIA E PRAZO -->
+        <div class="form-step" data-step="6">
+          <div class="step-title">6. Referência & Prazo</div>
+          <div class="step-desc">Nos ajude com referências e sua expectativa de tempo.</div>
+
+          <div class="form-group">
+            <label for="referenciaText">Existe algum modelo ou referência?</label>
+            <textarea class="form-control" id="referenciaText" name="referenciaText" placeholder="Explique como gostaria que ficasse ou mencione um estilo de referência..."></textarea>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Uma referência ajuda a entender melhor o resultado desejado.</p>
+          </div>
+
+          <div class="form-group">
+            <label>Quando você precisa do material?</label>
+            <div class="options-grid">
+              <div class="custom-option">
+                <input type="radio" name="prazo" id="prz1" value="Sem urgência" checked onclick="toggleDataEspecifica(false)">
+                <label for="prz1" class="option-label">Sem urgência</label>
+              </div>
+              <div class="custom-option">
+                <input type="radio" name="prazo" id="prz2" value="O quanto antes" onclick="toggleDataEspecifica(false)">
+                <label for="prz2" class="option-label">O quanto antes</label>
+              </div>
+              <div class="custom-option">
+                <input type="radio" name="prazo" id="prz3" value="Tenho uma data específica" onclick="toggleDataEspecifica(true)">
+                <label for="prz3" class="option-label">Data específica</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" id="groupDataEspecifica" style="display: none;">
+            <label for="dataPrazo">Qual a data limite?</label>
+            <input type="date" class="form-control" id="dataPrazo" name="dataPrazo">
+          </div>
+
+          <p style="font-size: 0.8rem; color: var(--text-muted);">* O prazo final deverá ser confirmado após análise do projeto.</p>
+        </div>
+
+        <!-- ETAPA 7: DADOS E RESUMO -->
+        <div class="form-step" data-step="7">
+          <div class="step-title">7. Dados do Cliente & Resumo</div>
+          <div class="step-desc">Informe seus dados de contato e revise seu pedido.</div>
+
+          <div class="form-group">
+            <label for="nomeCliente">Nome completo <span class="required">*</span></label>
+            <input type="text" class="form-control" id="nomeCliente" name="nomeCliente" required placeholder="Seu nome completo">
+            <div class="error-msg" id="err-nome">Por favor, informe seu nome.</div>
+          </div>
+
+          <div class="form-group">
+            <label for="whatsappCliente">WhatsApp <span class="required">*</span></label>
+            <input type="tel" class="form-control" id="whatsappCliente" name="whatsappCliente" required placeholder="(00) 00000-0000">
+            <div class="error-msg" id="err-whatsapp">Por favor, informe seu WhatsApp.</div>
+          </div>
+
+          <div class="form-group">
+            <label for="emailCliente">E-mail (opcional)</label>
+            <input type="email" class="form-control" id="emailCliente" name="emailCliente" placeholder="seu@email.com">
+          </div>
+
+          <!-- CAIXA DE ORÇAMENTO -->
+          <div class="budget-box">
+            <div class="budget-title">💰 Orçamento personalizado</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+              Cada projeto possui necessidades diferentes. Após analisar sua solicitação, arquivos e referências, informaremos o valor do serviço.
+            </p>
+          </div>
+
+          <!-- RESUMO -->
+          <div class="summary-card">
+            <h3 style="font-size: 1rem; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">📋 Resumo da solicitação</h3>
+            <div class="summary-item"><span class="summary-label">Serviço:</span><span class="summary-value" id="sum-servico">-</span></div>
+            <div class="summary-item"><span class="summary-label">Descrição:</span><span class="summary-value" id="sum-descricao">-</span></div>
+            <div class="summary-item"><span class="summary-label">Formato:</span><span class="summary-value" id="sum-formato">-</span></div>
+            <div class="summary-item"><span class="summary-label">Uso:</span><span class="summary-value" id="sum-uso">-</span></div>
+            <div class="summary-item"><span class="summary-label">Personalizações:</span><span class="summary-value" id="sum-personalizacoes">-</span></div>
+            <div class="summary-item"><span class="summary-label">Prazo:</span><span class="summary-value" id="sum-prazo">-</span></div>
+            <div class="summary-item"><span class="summary-label">Arquivos:</span><span class="summary-value" id="sum-arquivos">0 arquivo(s)</span></div>
+            <div class="summary-item"><span class="summary-label">Cliente:</span><span class="summary-value" id="sum-cliente">-</span></div>
+            <div class="summary-item" style="margin-top: 8px; color: var(--primary);"><span class="summary-label" style="color: var(--primary);">💰 Valor:</span><span class="summary-value">Orçamento a definir</span></div>
+          </div>
+
+          <div class="form-group">
+            <div class="custom-option">
+              <input type="checkbox" id="confirmacao" required>
+              <label for="confirmacao" class="option-label">Confirmo que as informações fornecidas estão corretas. <span class="required">*</span></label>
+            </div>
+            <div class="error-msg" id="err-confirmacao">Você precisa confirmar as informações.</div>
+          </div>
+        </div>
+
+        <!-- NAVEGAÇÃO DOS BOTÕES -->
+        <div class="form-navigation">
+          <button type="button" class="btn btn-secondary" id="btnPrev" onclick="changeStep(-1)" style="display: none;">← Voltar</button>
+          <button type="button" class="btn btn-primary" id="btnNext" onclick="changeStep(1)" style="margin-left: auto;">Avançar →</button>
+          <button type="button" class="btn btn-primary" id="btnSubmit" onclick="submitForm()" style="display: none; margin-left: auto;">🚀 Enviar solicitação</button>
+        </div>
+
+      </form>
+
+      <!-- TELA DE SUCESSO -->
+      <div class="success-screen" id="successScreen">
+        <div class="success-icon">✅</div>
+        <h2>Solicitação enviada!</h2>
+        <p style="color: var(--text-muted); margin-top: 8px;">Recebemos os detalhes do seu projeto.</p>
+        <p style="color: var(--text-muted);">Agora vamos analisar as informações e definir o orçamento e as condições do serviço.</p>
+
+        <div class="status-list">
+          <div class="status-item">📩 <strong>Solicitação:</strong> recebida</div>
+          <div class="status-item">💰 <strong>Orçamento:</strong> aguardando análise</div>
+          <div class="status-item">💬 <strong>Atendimento:</strong> WhatsApp</div>
+        </div>
+
+        <div>
+          <a href="https://wa.me/5541999682836?text=Ol%C3%A1!%20Enviei%20uma%20solicita%C3%A7%C3%A3o%20de%20cria%C3%A7%C3%A3o%2Fedi%C3%A7%C3%A3o%20pelo%20site%20da%20WelGrafx%20e%20gostaria%20de%20acompanhar%20meu%20pedido." target="_blank" class="btn btn-primary" style="background: #25d366; border: none;">
+            💬 Falar pelo WhatsApp
+          </a>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" onclick="resetForm()">Nova solicitação</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- SEÇÃO DE PAGAMENTO (PREPARADA PARA USO FUTURO) -->
+    <section class="payment-section">
+      <h2 class="section-title">💳 Pagamento</h2>
+      <p style="text-align: center; color: var(--text-muted);">Após a confirmação do orçamento, escolha uma forma de pagamento.</p>
+
+      <div class="payment-grid">
+        <!-- PIX -->
+        <div class="payment-card">
+          <h3>📱 Pagamento via PIX</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Aprovação instantânea</p>
+          
+          <div class="qr-placeholder">
+            <img src="qrcode-pix.jpg" alt="QR Code PIX" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><path d=\'M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7zM14 14h3v3h-3z\'/></svg>'">
+          </div>
+
+          <div class="pix-key-container">
+            <input type="text" class="form-control pix-key-input" id="pixKey" value="ws8530135@gmail.com" readonly>
+            <button type="button" class="btn btn-secondary" onclick="copyPixKey()" style="padding: 8px 12px; font-size: 0.8rem;">📋 Copiar</button>
+          </div>
+        </div>
+
+        <!-- DINHEIRO -->
+        <div class="payment-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+          <h3>💵 Pagamento em dinheiro</h3>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 12px;">
+            Disponível conforme combinado no atendimento presencial ou na entrega.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       ESTADO GLOBAL E CONFIGURAÇÃO
+       ========================================================================== */
+    let currentStep = 1;
+    const totalSteps = 7;
+    let selectedFiles = [];
+
+    /* ==========================================================================
+       GERENCIAMENTO DE TEMA (CLARO / ESCURO)
+       ========================================================================== */
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeText = document.getElementById('themeText');
+
+    function initTheme() {
+      const savedTheme = localStorage.getItem('welgrafx_theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeUI(savedTheme);
+      } else {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        updateThemeUI(prefersDark ? 'dark' : 'light');
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 
+                      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('welgrafx_theme', next);
+      updateThemeUI(next);
+    }
+
+    function updateThemeUI(theme) {
+      if (theme === 'dark') {
+        themeIcon.textContent = '☀️';
+        themeText.textContent = 'Modo Claro';
+      } else {
+        themeIcon.textContent = '🌙';
+        themeText.textContent = 'Modo Escuro';
+      }
+    }
+
+    themeToggleBtn.addEventListener('click', toggleTheme);
+    initTheme();
+
+    /* ==========================================================================
+       VITRINE DE SERVIÇOS
+       ========================================================================== */
+    function selectServiceFromVitrine(serviceValue) {
+      const radios = document.getElementsByName('servico');
+      for (let r of radios) {
+        if (r.value === serviceValue) {
+          r.checked = true;
+          break;
+        }
+      }
+      // Rolar suavemente e focar no form
+      document.getElementById('solicitar').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* ==========================================================================
+       WIZARD / NAVEGAÇÃO DE ETAPAS
+       ========================================================================== */
+    function changeStep(delta) {
+      if (delta > 0 && !validateStep(currentStep)) {
+        return;
+      }
+
+      currentStep += delta;
+      if (currentStep < 1) currentStep = 1;
+      if (currentStep > totalSteps) currentStep = totalSteps;
+
+      updateWizardUI();
+    }
+
+    function updateWizardUI() {
+      // Mostrar / Esconder passos
+      const steps = document.querySelectorAll('.form-step');
+      steps.forEach(step => {
+        if (parseInt(step.dataset.step) === currentStep) {
+          step.classList.add('active');
+        } else {
+          step.classList.remove('active');
+        }
+      });
+
+      // Atualizar progresso
+      const percent = Math.round((currentStep / totalSteps) * 100);
+      document.getElementById('stepProgressText').textContent = `Etapa ${currentStep} de ${totalSteps}`;
+      document.getElementById('stepPercentText').textContent = `${percent}%`;
+      document.getElementById('progressBarFill').style.width = `${percent}%`;
+
+      // Atualizar Botões
+      document.getElementById('btnPrev').style.display = currentStep === 1 ? 'none' : 'inline-flex';
+      
+      if (currentStep === totalSteps) {
+        document.getElementById('btnNext').style.display = 'none';
+        document.getElementById('btnSubmit').style.display = 'inline-flex';
+        updateSummary();
+      } else {
+        document.getElementById('btnNext').style.display = 'inline-flex';
+        document.getElementById('btnSubmit').style.display = 'none';
+      }
+    }
+
+    function validateStep(step) {
+      let valid = true;
+
+      if (step === 1) {
+        const servicoChecked = document.querySelector('input[name="servico"]:checked');
+        const err = document.getElementById('err-servico');
+        if (!servicoChecked) {
+          err.style.display = 'block';
+          valid = false;
+        } else {
+          err.style.display = 'none';
+        }
+      }
+
+      if (step === 2) {
+        const desc = document.getElementById('descricao').value.trim();
+        const err = document.getElementById('err-descricao');
+        if (!desc) {
+          err.style.display = 'block';
+          valid = false;
+        } else {
+          err.style.display = 'none';
+        }
+      }
+
+      if (step === 7) {
+        const nome = document.getElementById('nomeCliente').value.trim();
+        const whatsapp = document.getElementById('whatsappCliente').value.trim();
+        const confirmacao = document.getElementById('confirmacao').checked;
+
+        document.getElementById('err-nome').style.display = nome ? 'none' : 'block';
+        document.getElementById('err-whatsapp').style.display = whatsapp ? 'none' : 'block';
+        document.getElementById('err-confirmacao').style.display = confirmacao ? 'none' : 'block';
+
+        if (!nome || !whatsapp || !confirmacao) valid = false;
+      }
+
+      return valid;
+    }
+
+    /* ==========================================================================
+       CONTROLES DE FORMULÁRIO DINÂMICOS
+       ========================================================================== */
+    function toggleTamanhoCustom(val) {
+      const g = document.getElementById('groupTamanhoCustom');
+      g.style.display = (val === 'Personalizado') ? 'block' : 'none';
+    }
+
+    function toggleDataEspecifica(show) {
+      const g = document.getElementById('groupDataEspecifica');
+      g.style.display = show ? 'block' : 'none';
+    }
+
+    /* ==========================================================================
+       UPLOAD REAL DE ARQUIVOS MULTIPLOS
+       ========================================================================== */
+    function handleFileSelect(event) {
+      const files = Array.from(event.target.files);
+      files.forEach(file => {
+        // Evitar duplicados simples por nome e tamanho
+        if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+          selectedFiles.push(file);
+        }
+      });
+      renderFileList();
+      event.target.value = ''; // Reset input para permitir selecionar o mesmo arquivo se redefinido
+    }
+
+    function removeFile(index) {
+      selectedFiles.splice(index, 1);
+      renderFileList();
+    }
+
+    function renderFileList() {
+      const listContainer = document.getElementById('fileList');
+      listContainer.innerHTML = '';
+
+      selectedFiles.forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        
+        const sizeFormatted = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+
+        item.innerHTML = `
+          <div class="file-info">
+            <span>📎</span>
+            <div>
+              <div class="file-name">${escapeHtml(file.name)}</div>
+              <div class="file-size">${sizeFormatted}</div>
+            </div>
+          </div>
+          <button type="button" class="btn-remove-file" onclick="removeFile(${index})" title="Remover arquivo">✕</button>
+        `;
+        listContainer.appendChild(item);
+      });
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, function(m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        }[m];
+      });
+    }
+
+    /* ==========================================================================
+       RESUMO DA SOLICITAÇÃO
+       ========================================================================== */
+    function updateSummary() {
+      const servico = document.querySelector('input[name="servico"]:checked')?.value || '-';
+      const descricao = document.getElementById('descricao').value.trim() || '-';
+      
+      const uso = document.querySelector('input[name="uso"]:checked')?.value || '-';
+      let tamanho = document.getElementById('tamanho').value;
+      if (tamanho === 'Personalizado') {
+        const custom = document.getElementById('tamanhoCustom').value.trim();
+        if (custom) tamanho += ` (${custom})`;
+      }
+
+      const elementos = Array.from(document.querySelectorAll('input[name="elementos"]:checked')).map(el => el.value);
+      const personalizacoesStr = elementos.length > 0 ? elementos.join(', ') : 'Nenhuma específica';
+
+      let prazo = document.querySelector('input[name="prazo"]:checked')?.value || '-';
+      if (prazo === 'Tenho uma data específica') {
+        const data = document.getElementById('dataPrazo').value;
+        if (data) prazo += ` (${data})`;
+      }
+
+      const nome = document.getElementById('nomeCliente').value.trim();
+      const whatsapp = document.getElementById('whatsappCliente').value.trim();
+
+      document.getElementById('sum-servico').textContent = servico;
+      document.getElementById('sum-descricao').textContent = descricao;
+      document.getElementById('sum-formato').textContent = tamanho;
+      document.getElementById('sum-uso').textContent = uso;
+      document.getElementById('sum-personalizacoes').textContent = personalizacoesStr;
+      document.getElementById('sum-prazo').textContent = prazo;
+      document.getElementById('sum-arquivos').textContent = `${selectedFiles.length} arquivo(s) selecionado(s)`;
+      document.getElementById('sum-cliente').textContent = `${nome} (${whatsapp})`;
+    }
+
+    /* ==========================================================================
+       ENVIO FORMSUBMIT (AJAX COM FORMDATA REAL)
+       ========================================================================== */
+    async function submitForm() {
+      if (!validateStep(7)) return;
+
+      const btnSubmit = document.getElementById('btnSubmit');
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = `<span class="spinner"></span> Enviando...`;
+
+      try {
+        const formData = new FormData();
+
+        // Informações Principais
+        formData.append('Servico', document.querySelector('input[name="servico"]:checked')?.value || '');
+        formData.append('Descricao_Detalhada', document.getElementById('descricao').value);
+        formData.append('Uso_Pretendido', document.querySelector('input[name="uso"]:checked')?.value || '');
+        
+        let tamanho = document.getElementById('tamanho').value;
+        if (tamanho === 'Personalizado') {
+          tamanho += ` (${document.getElementById('tamanhoCustom').value})`;
+        }
+        formData.append('Tamanho_Formato', tamanho);
+
+        const elementos = Array.from(document.querySelectorAll('input[name="elementos"]:checked')).map(el => el.value);
+        formData.append('Elementos_Desejados', elementos.join(', ') || 'Nenhum');
+        formData.append('Preferencias_Observacoes', document.getElementById('preferencias').value || 'Nenhuma');
+        formData.append('Referencia_Modelo', document.getElementById('referenciaText').value || 'Nenhuma');
+
+        let prazo = document.querySelector('input[name="prazo"]:checked')?.value || '';
+        if (prazo === 'Tenho uma data específica') {
+          prazo += ` (${document.getElementById('dataPrazo').value})`;
+        }
+        formData.append('Prazo_Desejado', prazo);
+
+        // Dados do Cliente
+        formData.append('Nome_Cliente', document.getElementById('nomeCliente').value);
+        formData.append('WhatsApp_Cliente', document.getElementById('whatsappCliente').value);
+        formData.append('Email_Cliente', document.getElementById('emailCliente').value || 'Não informado');
+
+        // Anexar Arquivos Reais
+        selectedFiles.forEach((file, idx) => {
+          formData.append(`attachment_${idx + 1}`, file, file.name);
+        });
+
+        // Configurações do FormSubmit
+        formData.append('_subject', `Nova Solicitação de Edição/Criação - ${document.getElementById('nomeCliente').value}`);
+        formData.append('_template', 'table');
+        formData.append('_captcha', 'false');
+
+        // Envio Fetch sem definir manualmente Content-Type header
+        const response = await fetch('https://formsubmit.co/ajax/ws8530135@gmail.com', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          showSuccessScreen();
+        } else {
+          alert('Houve um erro ao enviar sua solicitação. Por favor, tente novamente ou entre em contato pelo WhatsApp.');
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = '🚀 Enviar solicitação';
+        }
+      } catch (error) {
+        console.error('Erro de envio:', error);
+        alert('Ocorreu uma falha de conexão ao enviar. Tente novamente.');
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = '🚀 Enviar solicitação';
+      }
+    }
+
+    function showSuccessScreen() {
+      document.getElementById('requestForm').style.display = 'none';
+      document.getElementById('progressBarContainer').style.display = 'none';
+      document.getElementById('successScreen').classList.add('active');
+    }
+
+    function resetForm() {
+      document.getElementById('requestForm').reset();
+      selectedFiles = [];
+      renderFileList();
+      currentStep = 1;
+      
+      document.getElementById('requestForm').style.display = 'block';
+      document.getElementById('progressBarContainer').style.display = 'block';
+      document.getElementById('successScreen').classList.remove('active');
+      
+      const btnSubmit = document.getElementById('btnSubmit');
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = '🚀 Enviar solicitação';
+
+      updateWizardUI();
+    }
+
+    /* ==========================================================================
+       UTILITÁRIOS
+       ========================================================================== */
+    function copyPixKey() {
+      const pixInput = document.getElementById('pixKey');
+      pixInput.select();
+      pixInput.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(pixInput.value).then(() => {
+        alert('Chave PIX copiada para a área de transferência!');
+      }).catch(() => {
+        document.execCommand('copy');
+        alert('Chave PIX copiada!');
+      });
+    }
+
+    // Inicialização do formulário
+    updateWizardUI();
+  </script>
+</body>
+</html>
