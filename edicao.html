@@ -83,6 +83,10 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       background-color: var(--bg-body);
       color: var(--text-main);
@@ -93,14 +97,14 @@
 
     .container {
       width: 100%;
-      max-width: 1000px;
+      max-width: 1050px;
       margin: 0 auto;
       padding: 0 20px;
     }
 
     /* Accessibility */
     @media (prefers-reduced-motion: reduce) {
-      * {
+      *, ::before, ::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
@@ -117,7 +121,7 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid var(--border-color);
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     .brand {
@@ -162,7 +166,7 @@
       border-radius: var(--radius-lg);
       border: 1px solid var(--border-color);
       box-shadow: var(--shadow-md);
-      margin-bottom: 40px;
+      margin-bottom: 30px;
       position: relative;
       overflow: hidden;
     }
@@ -265,7 +269,199 @@
     }
 
     /* ==========================================================================
-       5. COMO FUNCIONA (STEPS)
+       5. NOVO: CARROSSEL DE AVISOS
+       ========================================================================== */
+    .carousel-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px 24px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .carousel-slide {
+      min-width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .carousel-icon {
+      font-size: 1.6rem;
+      flex-shrink: 0;
+    }
+
+    .carousel-text h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .carousel-text p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       6. NOVO: SEÇÃO CRIAÇÃO E EDIÇÃO SOB ENCOMENDA
+       ========================================================================== */
+    .custom-notice-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-left: 5px solid var(--primary);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow-sm);
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 20px;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .custom-notice-card {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .custom-notice-body h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .custom-notice-body p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .custom-notice-list {
+      list-style: none;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 6px;
+    }
+
+    .custom-notice-list li {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .time-badge-card {
+      background: var(--primary-light);
+      border: 1px solid var(--primary);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .time-badge-header {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .time-badge-card p {
+      font-size: 0.8rem;
+      color: var(--text-main);
+      line-height: 1.4;
+    }
+
+    /* ==========================================================================
+       7. NOVO: ABAS DE NAVEGAÇÃO
+       ========================================================================== */
+    .nav-tabs-wrapper {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-body);
+      padding: 10px 0;
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-tabs::-webkit-scrollbar {
+      height: 4px;
+    }
+    .nav-tabs::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 10px 18px;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(0, 136, 204, 0.3);
+    }
+
+    .tab-content {
+      display: none;
+      animation: tabFadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       8. COMO FUNCIONA (STEPS)
        ========================================================================== */
     .section-title {
       text-align: center;
@@ -275,12 +471,12 @@
     }
 
     .how-it-works {
-      margin-bottom: 50px;
+      margin-bottom: 40px;
     }
 
     .steps-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 20px;
     }
 
@@ -323,10 +519,10 @@
     }
 
     /* ==========================================================================
-       6. SERVIÇOS DISPONÍVEIS (VITRINE)
+       9. SERVIÇOS DISPONÍVEIS (VITRINE ANTIGA)
        ========================================================================== */
     .services-section {
-      margin-bottom: 50px;
+      margin-bottom: 40px;
     }
 
     .services-grid {
@@ -371,7 +567,115 @@
     }
 
     /* ==========================================================================
-       7. FORMULÁRIO WIZARD
+       10. NOVO: GALERIA DE EXEMPLOS ILUSTRATIVOS (ABA EXEMPLOS)
+       ========================================================================== */
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .example-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .example-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    .example-preview {
+      height: 150px;
+      background: var(--bg-body);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      position: relative;
+    }
+
+    /* CSS Mockup para miniaturas de documentos */
+    .doc-mockup {
+      width: 100px;
+      height: 120px;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }
+
+    .doc-mockup-line {
+      height: 4px;
+      background: #cbd5e1;
+      border-radius: 2px;
+    }
+
+    .doc-mockup-line.title {
+      height: 8px;
+      width: 70%;
+      background: var(--primary);
+    }
+
+    .doc-mockup-line.short { width: 50%; }
+
+    .doc-mockup-badge {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      font-size: 0.65rem;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+
+    .example-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .example-body h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .example-body p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      flex: 1;
+    }
+
+    .example-tag {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--primary);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    /* ==========================================================================
+       11. FORMULÁRIO WIZARD
        ========================================================================== */
     .form-container {
       background: var(--bg-card);
@@ -379,7 +683,7 @@
       border-radius: var(--radius-lg);
       padding: 30px;
       box-shadow: var(--shadow-lg);
-      margin-bottom: 50px;
+      margin-bottom: 40px;
     }
 
     /* Barra de Progresso */
@@ -623,7 +927,7 @@
     }
 
     /* ==========================================================================
-       8. SEÇÃO DE ORÇAMENTO E RESUMO
+       12. SEÇÃO DE ORÇAMENTO E RESUMO
        ========================================================================== */
     .budget-box {
       background: var(--primary-light);
@@ -674,7 +978,7 @@
     }
 
     /* ==========================================================================
-       9. TELA DE SUCESSO
+       13. TELA DE SUCESSO
        ========================================================================== */
     .success-screen {
       display: none;
@@ -717,14 +1021,36 @@
     }
 
     /* ==========================================================================
-       10. SEÇÃO DE PAGAMENTO (FUTURA / CONFIGURÁVEL)
+       14. SEÇÃO DE PAGAMENTO (PRIORITÁRIA E EXPANDIDA)
        ========================================================================== */
     .payment-section {
-      margin-top: 50px;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
       padding: 30px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 40px;
+    }
+
+    .payment-notice-banner {
+      background: var(--primary-light);
+      border: 1px solid var(--primary);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .payment-notice-banner h3 {
+      font-size: 1.15rem;
+      color: var(--primary);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .payment-notice-banner p {
+      font-size: 0.9rem;
+      color: var(--text-main);
     }
 
     .payment-grid {
@@ -738,16 +1064,19 @@
       background: var(--bg-body);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
-      padding: 20px;
+      padding: 24px;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .qr-placeholder {
-      width: 160px;
-      height: 160px;
+      width: 170px;
+      height: 170px;
       margin: 16px auto;
       background: #ffffff;
-      padding: 8px;
+      padding: 10px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--border-color);
       display: flex;
@@ -771,6 +1100,52 @@
       flex: 1;
       font-size: 0.85rem;
       text-align: center;
+    }
+
+    .pay-declared-box {
+      margin-top: 25px;
+      padding: 20px;
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+
+    /* ==========================================================================
+       15. NOVO: SEÇÃO DE DÚVIDAS FREQUENTES (FAQ)
+       ========================================================================== */
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .faq-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      transition: var(--transition);
+    }
+
+    .faq-card:hover {
+      border-color: var(--primary);
+    }
+
+    .faq-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .faq-card p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
     }
 
     /* Spinner Loading */
@@ -800,6 +1175,54 @@
       </button>
     </header>
 
+    <!-- CARROSSEL DE AVISOS DINÂMICO -->
+    <div class="carousel-container" id="announcementCarousel">
+      <div class="carousel-track" id="carouselTrack">
+        <div class="carousel-slide">
+          <div class="carousel-icon">🛠️</div>
+          <div class="carousel-text">
+            <h4>Serviço personalizado</h4>
+            <p>Cada solicitação é analisada individualmente para entender o que você precisa.</p>
+          </div>
+        </div>
+        <div class="carousel-slide">
+          <div class="carousel-icon">⏳</div>
+          <div class="carousel-text">
+            <h4>Prazo estimado habitual</h4>
+            <p>A previsão habitual é de 3 a 5 dias, dependendo do serviço e da complexidade.</p>
+          </div>
+        </div>
+        <div class="carousel-slide">
+          <div class="carousel-icon">📎</div>
+          <div class="carousel-text">
+            <h4>Envie suas referências</h4>
+            <p>Você pode explicar sua ideia e anexar arquivos ou modelos que ajudem a entender o resultado desejado.</p>
+          </div>
+        </div>
+        <div class="carousel-slide">
+          <div class="carousel-icon">💰</div>
+          <div class="carousel-text">
+            <h4>Orçamento antes da execução</h4>
+            <p>O valor é definido após a análise da solicitação. Nenhum preço deve ser inventado automaticamente.</p>
+          </div>
+        </div>
+        <div class="carousel-slide">
+          <div class="carousel-icon">📋</div>
+          <div class="carousel-text">
+            <h4>Confira os detalhes</h4>
+            <p>Quanto mais completas forem as informações, mais fácil será entender o projeto.</p>
+          </div>
+        </div>
+        <div class="carousel-slide">
+          <div class="carousel-icon">💳</div>
+          <div class="carousel-text">
+            <h4>Pagamento combinado</h4>
+            <p>As instruções de pagamento serão apresentadas quando o orçamento estiver definido.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- HERO SECTION -->
     <section class="hero">
       <div class="hero-content">
@@ -808,7 +1231,7 @@
         <p class="hero-description">
           Explique o que você precisa e deixe a criação por nossa conta. Criação, edição, organização e adaptação de documentos e materiais conforme a sua necessidade.
         </p>
-        <a href="#solicitar" class="btn btn-primary">🚀 Solicitar serviço</a>
+        <button class="btn btn-primary" onclick="switchTab('solicitar')">🚀 Solicitar serviço</button>
 
         <div class="hero-features">
           <div class="feature-item">📄 Projetos personalizados</div>
@@ -819,419 +1242,751 @@
       </div>
     </section>
 
-    <!-- COMO FUNCIONA -->
-    <section class="how-it-works">
-      <h2 class="section-title">Como funciona</h2>
-      <div class="steps-grid">
-        <div class="step-card">
-          <div class="step-num">01</div>
-          <h3>Explique</h3>
-          <p>Conte o que você precisa detalhadamente.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">02</div>
-          <h3>Envie</h3>
-          <p>Envie arquivos, imagens ou referências.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">03</div>
-          <h3>Analisamos</h3>
-          <p>Analisamos a solicitação e definimos o valor.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">04</div>
-          <h3>Produzimos</h3>
-          <p>Após a confirmação, o projeto é desenvolvido.</p>
-        </div>
+    <!-- NAVEGAÇÃO DE ABAS PRÓPRIAS DA PÁGINA -->
+    <div class="nav-tabs-wrapper">
+      <div class="nav-tabs" role="tablist">
+        <button class="tab-btn active" onclick="switchTab('visao-geral')" id="tab-visao-geral">🔍 Visão geral</button>
+        <button class="tab-btn" onclick="switchTab('solicitar')" id="tab-solicitar">🚀 Solicitar serviço</button>
+        <button class="tab-btn" onclick="switchTab('exemplos')" id="tab-exemplos">🖼️ Exemplos</button>
+        <button class="tab-btn" onclick="switchTab('como-funciona')" id="tab-como-funciona">🧭 Como funciona</button>
+        <button class="tab-btn" onclick="switchTab('pagamento')" id="tab-pagamento">💳 Pagamento</button>
+        <button class="tab-btn" onclick="switchTab('faq')" id="tab-faq">❓ Dúvidas frequentes</button>
       </div>
-    </section>
+    </div>
 
-    <!-- SERVIÇOS DISPONÍVEIS -->
-    <section class="services-section">
-      <h2 class="section-title">Serviços Disponíveis</h2>
-      <div class="services-grid">
-        <div class="service-card" onclick="selectServiceFromVitrine('Editar documento existente')">
-          <h3>📄 Editar documento</h3>
-          <p>Alterações, organização e ajustes em documentos existentes.</p>
-        </div>
-        <div class="service-card" onclick="selectServiceFromVitrine('Criar documento do zero')">
-          <h3>🎨 Criar material do zero</h3>
-          <p>Criação de documentos e materiais personalizados.</p>
-        </div>
-        <div class="service-card" onclick="selectServiceFromVitrine('Criar formulário/ficha')">
-          <h3>📝 Criar formulário ou ficha</h3>
-          <p>Modelos personalizados para diferentes necessidades.</p>
-        </div>
-        <div class="service-card" onclick="selectServiceFromVitrine('Criar currículo')">
-          <h3>💼 Currículo personalizado</h3>
-          <p>Criação ou adaptação de currículo conforme o objetivo.</p>
-        </div>
-        <div class="service-card" onclick="selectServiceFromVitrine('Criar planilha/modelo')">
-          <h3>📊 Criar planilha/modelo</h3>
-          <p>Modelos organizados para controle, registro ou uso profissional.</p>
-        </div>
-        <div class="service-card" onclick="selectServiceFromVitrine('Ajustar material visual')">
-          <h3>🖼️ Ajustar material visual</h3>
-          <p>Alterações em imagens, layouts e materiais fornecidos pelo cliente.</p>
-        </div>
-        <div class="service-card" onclick="selectServiceFromVitrine('Criar PDF personalizado')">
-          <h3>📑 Criar PDF personalizado</h3>
-          <p>Documentos estruturados conforme as especificações solicitadas.</p>
-        </div>
-        <div class="service-card" onclick="selectServiceFromVitrine('Outro')">
-          <h3>🔧 Outro</h3>
-          <p>Descreva sua necessidade e analisaremos a possibilidade.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- FORMULÁRIO DE SOLICITAÇÃO (WIZARD) -->
-    <section id="solicitar" class="form-container">
+    <!-- ABA 1: VISÃO GERAL -->
+    <div id="pane-visao-geral" class="tab-content active">
       
-      <!-- BARRA DE PROGRESSO -->
-      <div class="progress-bar-container" id="progressBarContainer">
-        <div class="progress-info">
-          <span id="stepProgressText">Etapa 1 de 7</span>
-          <span id="stepPercentText">14%</span>
+      <!-- AVISO VISUAL DESTACADO: SOB ENCOMENDA -->
+      <section class="custom-notice-card">
+        <div class="custom-notice-body">
+          <h3>🛠️ Criação e edição sob encomenda</h3>
+          <p>
+            Cada projeto é desenvolvido conforme a necessidade do cliente. Você explica o que precisa, envia os arquivos e referências, e nós analisamos os detalhes para definir o orçamento e o prazo.
+          </p>
+          <ul class="custom-notice-list">
+            <li>✓ Não são serviços de execução instantânea</li>
+            <li>✓ Prazo combinado após análise</li>
+            <li>✓ O prazo não inicia só pelo envio</li>
+            <li>✓ Projetos complexos têm prazos sob medida</li>
+          </ul>
         </div>
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" id="progressBarFill"></div>
+        <div class="time-badge-card">
+          <div class="time-badge-header">⏳ Prazo estimado: 3 a 5 dias</div>
+          <p>O prazo depende do tipo de serviço, da complexidade do projeto e do recebimento de todas as informações necessárias. O prazo aplicável será confirmado após a análise da solicitação.</p>
         </div>
-      </div>
+      </section>
 
-      <form id="requestForm" enctype="multipart/form-data" onsubmit="return false;">
+      <!-- SERVIÇOS DISPONÍVEIS -->
+      <section class="services-section">
+        <h2 class="section-title">Serviços Disponíveis</h2>
+        <div class="services-grid">
+          <div class="service-card" onclick="selectServiceFromVitrine('Editar documento existente')">
+            <h3>📄 Editar documento</h3>
+            <p>Alterações, organização e ajustes em documentos existentes.</p>
+          </div>
+          <div class="service-card" onclick="selectServiceFromVitrine('Criar documento do zero')">
+            <h3>🎨 Criar material do zero</h3>
+            <p>Criação de documentos e materiais personalizados.</p>
+          </div>
+          <div class="service-card" onclick="selectServiceFromVitrine('Criar formulário/ficha')">
+            <h3>📝 Criar formulário ou ficha</h3>
+            <p>Modelos personalizados para diferentes necessidades.</p>
+          </div>
+          <div class="service-card" onclick="selectServiceFromVitrine('Criar currículo')">
+            <h3>💼 Currículo personalizado</h3>
+            <p>Criação ou adaptação de currículo conforme o objetivo.</p>
+          </div>
+          <div class="service-card" onclick="selectServiceFromVitrine('Criar planilha/modelo')">
+            <h3>📊 Criar planilha/modelo</h3>
+            <p>Modelos organizados para controle, registro ou uso profissional.</p>
+          </div>
+          <div class="service-card" onclick="selectServiceFromVitrine('Ajustar material visual')">
+            <h3>🖼️ Ajustar material visual</h3>
+            <p>Alterações em imagens, layouts e materiais fornecidos pelo cliente.</p>
+          </div>
+          <div class="service-card" onclick="selectServiceFromVitrine('Criar PDF personalizado')">
+            <h3>📑 Criar PDF personalizado</h3>
+            <p>Documentos estruturados conforme as especificações solicitadas.</p>
+          </div>
+          <div class="service-card" onclick="selectServiceFromVitrine('Outro')">
+            <h3>🔧 Outro</h3>
+            <p>Descreva sua necessidade e analisaremos a possibilidade.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ABA 2: SOLICITAR SERVIÇO (FORMULÁRIO WIZARD INTEGRAL) -->
+    <div id="pane-solicitar" class="tab-content">
+      <section id="solicitar" class="form-container">
         
-        <!-- ETAPA 1: SERVIÇO -->
-        <div class="form-step active" data-step="1">
-          <div class="step-title">1. Qual serviço você precisa? <span class="required">*</span></div>
-          <div class="step-desc">Selecione uma das opções abaixo para começar.</div>
-          
-          <div class="options-grid">
-            <div class="custom-option">
-              <input type="radio" name="servico" id="srv1" value="Editar documento existente" required>
-              <label for="srv1" class="option-label">📄 Editar documento existente</label>
-            </div>
-            <div class="custom-option">
-              <input type="radio" name="servico" id="srv2" value="Criar documento do zero">
-              <label for="srv2" class="option-label">🎨 Criar documento do zero</label>
-            </div>
-            <div class="custom-option">
-              <input type="radio" name="servico" id="srv3" value="Criar formulário/ficha">
-              <label for="srv3" class="option-label">📝 Criar formulário/ficha</label>
-            </div>
-            <div class="custom-option">
-              <input type="radio" name="servico" id="srv4" value="Criar currículo">
-              <label for="srv4" class="option-label">💼 Criar currículo</label>
-            </div>
-            <div class="custom-option">
-              <input type="radio" name="servico" id="srv5" value="Criar planilha/modelo">
-              <label for="srv5" class="option-label">📊 Criar planilha/modelo</label>
-            </div>
-            <div class="custom-option">
-              <input type="radio" name="servico" id="srv6" value="Ajustar material visual">
-              <label for="srv6" class="option-label">🖼️ Ajustar material visual</label>
-            </div>
-            <div class="custom-option">
-              <input type="radio" name="servico" id="srv7" value="Criar PDF personalizado">
-              <label for="srv7" class="option-label">📑 Criar PDF personalizado</label>
-            </div>
-            <div class="custom-option">
-              <input type="radio" name="servico" id="srv8" value="Outro">
-              <label for="srv8" class="option-label">🔧 Outro</label>
-            </div>
+        <!-- BARRA DE PROGRESSO -->
+        <div class="progress-bar-container" id="progressBarContainer">
+          <div class="progress-info">
+            <span id="stepProgressText">Etapa 1 de 7</span>
+            <span id="stepPercentText">14%</span>
           </div>
-          <div class="error-msg" id="err-servico">Por favor, selecione um serviço.</div>
-        </div>
-
-        <!-- ETAPA 2: DETALHES -->
-        <div class="form-step" data-step="2">
-          <div class="step-title">2. Detalhes da solicitação <span class="required">*</span></div>
-          <div class="step-desc">Quanto mais detalhes você fornecer, melhor poderemos entender sua solicitação.</div>
-          
-          <div class="form-group">
-            <label for="descricao">Explique o que você precisa <span class="required">*</span></label>
-            <textarea class="form-control" id="descricao" name="descricao" placeholder="Descreva o que precisa ser criado, alterado ou ajustado..." required></textarea>
-            <div class="error-msg" id="err-descricao">Por favor, detalhe sua solicitação.</div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressBarFill"></div>
           </div>
         </div>
 
-        <!-- ETAPA 3: ARQUIVOS -->
-        <div class="form-step" data-step="3">
-          <div class="step-title">3. Arquivos e Referências</div>
-          <div class="step-desc">Envie arquivos que nos ajudem a entender seu projeto (PDF, DOC, DOCX, JPG, PNG, WEBP, XLS, XLSX).</div>
+        <form id="requestForm" enctype="multipart/form-data" onsubmit="return false;">
           
-          <div class="file-upload-zone">
-            <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.xls,.xlsx" onchange="handleFileSelect(event)">
-            <p><strong>Clique aqui ou arraste seus arquivos</strong></p>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Você pode adicionar múltiplos arquivos.</p>
-          </div>
-
-          <div class="file-list" id="fileList"></div>
-
-          <div class="security-notice">
-            🔒 <strong>Privacidade:</strong> Envie somente os arquivos e informações necessários para a realização da sua solicitação. Não envie senhas, códigos de autenticação ou informações de acesso.
-          </div>
-        </div>
-
-        <!-- ETAPA 4: FORMATO -->
-        <div class="form-step" data-step="4">
-          <div class="step-title">4. Uso e Formato</div>
-          <div class="step-desc">Como e onde o material será utilizado?</div>
-
-          <div class="form-group">
-            <label>Como você pretende utilizar o material?</label>
+          <!-- ETAPA 1: SERVIÇO -->
+          <div class="form-step active" data-step="1">
+            <div class="step-title">1. Qual serviço você precisa? <span class="required">*</span></div>
+            <div class="step-desc">Selecione uma das opções abaixo para começar.</div>
+            
             <div class="options-grid">
               <div class="custom-option">
-                <input type="radio" name="uso" id="uso1" value="Impressão" checked>
-                <label for="uso1" class="option-label">📄 Impressão</label>
+                <input type="radio" name="servico" id="srv1" value="Editar documento existente" required>
+                <label for="srv1" class="option-label">📄 Editar documento existente</label>
               </div>
               <div class="custom-option">
-                <input type="radio" name="uso" id="uso2" value="Uso digital">
-                <label for="uso2" class="option-label">📱 Uso digital</label>
+                <input type="radio" name="servico" id="srv2" value="Criar documento do zero">
+                <label for="srv2" class="option-label">🎨 Criar documento do zero</label>
               </div>
               <div class="custom-option">
-                <input type="radio" name="uso" id="uso3" value="Computador">
-                <label for="uso3" class="option-label">💻 Computador</label>
+                <input type="radio" name="servico" id="srv3" value="Criar formulário/ficha">
+                <label for="srv3" class="option-label">📝 Criar formulário/ficha</label>
               </div>
               <div class="custom-option">
-                <input type="radio" name="uso" id="uso4" value="Celular">
-                <label for="uso4" class="option-label">📲 Celular</label>
+                <input type="radio" name="servico" id="srv4" value="Criar currículo">
+                <label for="srv4" class="option-label">💼 Criar currículo</label>
               </div>
               <div class="custom-option">
-                <input type="radio" name="uso" id="uso5" value="Impressão e digital">
-                <label for="uso5" class="option-label">🖨️ Impressão e digital</label>
+                <input type="radio" name="servico" id="srv5" value="Criar planilha/modelo">
+                <label for="srv5" class="option-label">📊 Criar planilha/modelo</label>
               </div>
               <div class="custom-option">
-                <input type="radio" name="uso" id="uso6" value="Ainda não sei">
-                <label for="uso6" class="option-label">🔧 Ainda não sei</label>
+                <input type="radio" name="servico" id="srv6" value="Ajustar material visual">
+                <label for="srv6" class="option-label">🖼️ Ajustar material visual</label>
+              </div>
+              <div class="custom-option">
+                <input type="radio" name="servico" id="srv7" value="Criar PDF personalizado">
+                <label for="srv7" class="option-label">📑 Criar PDF personalizado</label>
+              </div>
+              <div class="custom-option">
+                <input type="radio" name="servico" id="srv8" value="Outro">
+                <label for="srv8" class="option-label">🔧 Outro</label>
+              </div>
+            </div>
+            <div class="error-msg" id="err-servico">Por favor, selecione um serviço.</div>
+          </div>
+
+          <!-- ETAPA 2: DETALHES DA SOLICITAÇÃO -->
+          <div class="form-step" data-step="2">
+            <div class="step-title">2. Detalhes da solicitação <span class="required">*</span></div>
+            <div class="step-desc">Quanto mais detalhes você fornecer, melhor poderemos entender sua solicitação.</div>
+            
+            <div class="form-group">
+              <label for="descricao">Explique o que você precisa <span class="required">*</span></label>
+              <textarea class="form-control" id="descricao" name="descricao" placeholder="Descreva o que precisa ser criado, alterado ou ajustado..." required></textarea>
+              <div class="error-msg" id="err-descricao">Por favor, detalhe sua solicitação.</div>
+            </div>
+
+            <!-- NOVAS ESPECIFICAÇÕES ADICIONAIS -->
+            <div class="form-group">
+              <label for="finalidade">Finalidade do material / Público que utilizará (opcional)</label>
+              <input type="text" class="form-control" id="finalidade" name="finalidade" placeholder="Ex: Uso interno comercial, envio para clientes, impresso para cadastro...">
+            </div>
+
+            <div class="form-group">
+              <label for="qtdPaginas">Quantidade de páginas aproximada</label>
+              <input type="text" class="form-control" id="qtdPaginas" name="qtdPaginas" placeholder="Ex: 1 página, 3 a 5 páginas, Não sei...">
+            </div>
+          </div>
+
+          <!-- ETAPA 3: ARQUIVOS E REFERÊNCIAS -->
+          <div class="form-step" data-step="3">
+            <div class="step-title">3. Arquivos e Referências</div>
+            <div class="step-desc">Envie arquivos que nos ajudem a entender seu projeto (PDF, DOC, DOCX, JPG, PNG, WEBP, XLS, XLSX).</div>
+            
+            <div class="file-upload-zone">
+              <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.xls,.xlsx" onchange="handleFileSelect(event)">
+              <p><strong>Clique aqui ou arraste seus arquivos</strong></p>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Você pode adicionar múltiplos arquivos.</p>
+            </div>
+
+            <div class="file-list" id="fileList"></div>
+
+            <div class="security-notice">
+              🔒 <strong>Privacidade:</strong> Envie somente os arquivos e informações necessários para a realização da sua solicitação. Não envie senhas, códigos de autenticação ou informações de acesso.
+            </div>
+          </div>
+
+          <!-- ETAPA 4: FORMATO E USO -->
+          <div class="form-step" data-step="4">
+            <div class="step-title">4. Uso e Formato</div>
+            <div class="step-desc">Como e onde o material será utilizado?</div>
+
+            <div class="form-group">
+              <label>Como você pretende utilizar o material?</label>
+              <div class="options-grid">
+                <div class="custom-option">
+                  <input type="radio" name="uso" id="uso1" value="Impressão" checked>
+                  <label for="uso1" class="option-label">📄 Impressão</label>
+                </div>
+                <div class="custom-option">
+                  <input type="radio" name="uso" id="uso2" value="Uso digital">
+                  <label for="uso2" class="option-label">📱 Uso digital</label>
+                </div>
+                <div class="custom-option">
+                  <input type="radio" name="uso" id="uso3" value="Computador">
+                  <label for="uso3" class="option-label">💻 Computador</label>
+                </div>
+                <div class="custom-option">
+                  <input type="radio" name="uso" id="uso4" value="Celular">
+                  <label for="uso4" class="option-label">📲 Celular</label>
+                </div>
+                <div class="custom-option">
+                  <input type="radio" name="uso" id="uso5" value="Impressão e digital">
+                  <label for="uso5" class="option-label">🖨️ Impressão e digital</label>
+                </div>
+                <div class="custom-option">
+                  <input type="radio" name="uso" id="uso6" value="Ainda não sei">
+                  <label for="uso6" class="option-label">🔧 Ainda não sei</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="tamanho">Tamanho/formato desejado</label>
+              <select class="form-control" id="tamanho" name="tamanho" onchange="toggleTamanhoCustom(this.value)">
+                <option value="A4">A4</option>
+                <option value="A5">A5</option>
+                <option value="Personalizado">Personalizado</option>
+                <option value="Não sei">Não sei</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="groupTamanhoCustom" style="display: none;">
+              <label for="tamanhoCustom">Qual tamanho?</label>
+              <input type="text" class="form-control" id="tamanhoCustom" name="tamanhoCustom" placeholder="Ex: 10x15cm, 1920x1080px...">
+            </div>
+
+            <!-- NOVAS OPÇÕES DE ORIENTAÇÃO -->
+            <div class="form-group">
+              <label>Orientação da página/layout</label>
+              <div class="options-grid">
+                <div class="custom-option">
+                  <input type="radio" name="orientacao" id="ori1" value="Vertical (Retrato)" checked>
+                  <label for="ori1" class="option-label">📱 Vertical (Retrato)</label>
+                </div>
+                <div class="custom-option">
+                  <input type="radio" name="orientacao" id="ori2" value="Horizontal (Paisagem)">
+                  <label for="ori2" class="option-label">💻 Horizontal (Paisagem)</label>
+                </div>
+                <div class="custom-option">
+                  <input type="radio" name="orientacao" id="ori3" value="Indiferente / Não sei">
+                  <label for="ori3" class="option-label">🔧 Não sei</label>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="tamanho">Tamanho/formato desejado</label>
-            <select class="form-control" id="tamanho" name="tamanho" onchange="toggleTamanhoCustom(this.value)">
-              <option value="A4">A4</option>
-              <option value="A5">A5</option>
-              <option value="Personalizado">Personalizado</option>
-              <option value="Não sei">Não sei</option>
-            </select>
-          </div>
+          <!-- ETAPA 5: PERSONALIZAÇÃO -->
+          <div class="form-step" data-step="5">
+            <div class="step-title">5. Elementos e Preferências</div>
+            <div class="step-desc">Selecione o que o seu material deve conter.</div>
 
-          <div class="form-group" id="groupTamanhoCustom" style="display: none;">
-            <label for="tamanhoCustom">Qual tamanho?</label>
-            <input type="text" class="form-control" id="tamanhoCustom" name="tamanhoCustom" placeholder="Ex: 10x15cm, 1920x1080px...">
-          </div>
-        </div>
+            <div class="form-group">
+              <label>Elementos desejados:</label>
+              <div class="options-grid">
+                <div class="custom-option">
+                  <input type="checkbox" name="elementos" id="elem1" value="Texto personalizado">
+                  <label for="elem1" class="option-label">☐ Texto personalizado</label>
+                </div>
+                <div class="custom-option">
+                  <input type="checkbox" name="elementos" id="elem2" value="Logo">
+                  <label for="elem2" class="option-label">☐ Logo</label>
+                </div>
+                <div class="custom-option">
+                  <input type="checkbox" name="elementos" id="elem3" value="Cores específicas">
+                  <label for="elem3" class="option-label">☐ Cores específicas</label>
+                </div>
+                <div class="custom-option">
+                  <input type="checkbox" name="elementos" id="elem4" value="Imagens">
+                  <label for="elem4" class="option-label">☐ Imagens</label>
+                </div>
+                <div class="custom-option">
+                  <input type="checkbox" name="elementos" id="elem5" value="Tabelas">
+                  <label for="elem5" class="option-label">☐ Tabelas</label>
+                </div>
+                <div class="custom-option">
+                  <input type="checkbox" name="elementos" id="elem6" value="Campos para preenchimento">
+                  <label for="elem6" class="option-label">☐ Campos para preenchimento</label>
+                </div>
+                <div class="custom-option">
+                  <input type="checkbox" name="elementos" id="elem7" value="Espaço para assinatura">
+                  <label for="elem7" class="option-label">☐ Espaço para assinatura</label>
+                </div>
+                <div class="custom-option">
+                  <input type="checkbox" name="elementos" id="elem8" value="Cabeçalho/rodapé">
+                  <label for="elem8" class="option-label">☐ Cabeçalho/rodapé</label>
+                </div>
+                <div class="custom-option">
+                  <input type="checkbox" name="elementos" id="elem9" value="Campos digitais preenchíveis">
+                  <label for="elem9" class="option-label">☐ Campos digitais preenchíveis</label>
+                </div>
+                <div class="custom-option">
+                  <input type="checkbox" name="elementos" id="elem10" value="Outro">
+                  <label for="elem10" class="option-label">☐ Outro</label>
+                </div>
+              </div>
+            </div>
 
-        <!-- ETAPA 5: PERSONALIZAÇÃO -->
-        <div class="form-step" data-step="5">
-          <div class="step-title">5. Elementos e Preferências</div>
-          <div class="step-desc">Selecione o que o seu material deve conter.</div>
-
-          <div class="form-group">
-            <label>Elementos desejados:</label>
-            <div class="options-grid">
-              <div class="custom-option">
-                <input type="checkbox" name="elementos" id="elem1" value="Texto personalizado">
-                <label for="elem1" class="option-label">☐ Texto personalizado</label>
-              </div>
-              <div class="custom-option">
-                <input type="checkbox" name="elementos" id="elem2" value="Logo">
-                <label for="elem2" class="option-label">☐ Logo</label>
-              </div>
-              <div class="custom-option">
-                <input type="checkbox" name="elementos" id="elem3" value="Cores específicas">
-                <label for="elem3" class="option-label">☐ Cores específicas</label>
-              </div>
-              <div class="custom-option">
-                <input type="checkbox" name="elementos" id="elem4" value="Imagens">
-                <label for="elem4" class="option-label">☐ Imagens</label>
-              </div>
-              <div class="custom-option">
-                <input type="checkbox" name="elementos" id="elem5" value="Tabelas">
-                <label for="elem5" class="option-label">☐ Tabelas</label>
-              </div>
-              <div class="custom-option">
-                <input type="checkbox" name="elementos" id="elem6" value="Campos para preenchimento">
-                <label for="elem6" class="option-label">☐ Campos para preenchimento</label>
-              </div>
-              <div class="custom-option">
-                <input type="checkbox" name="elementos" id="elem7" value="Espaço para assinatura">
-                <label for="elem7" class="option-label">☐ Espaço para assinatura</label>
-              </div>
-              <div class="custom-option">
-                <input type="checkbox" name="elementos" id="elem8" value="Cabeçalho/rodapé">
-                <label for="elem8" class="option-label">☐ Cabeçalho/rodapé</label>
-              </div>
-              <div class="custom-option">
-                <input type="checkbox" name="elementos" id="elem9" value="Outro">
-                <label for="elem9" class="option-label">☐ Outro</label>
-              </div>
+            <div class="form-group">
+              <label for="preferencias">Preferências ou observações</label>
+              <textarea class="form-control" id="preferencias" name="preferencias" placeholder="Cores de preferência, estilo visual, observações gerais..."></textarea>
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="preferencias">Preferências ou observações</label>
-            <textarea class="form-control" id="preferencias" name="preferencias" placeholder="Cores de preferência, estilo visual, observações gerais..."></textarea>
+          <!-- ETAPA 6: REFERÊNCIA E PRAZO -->
+          <div class="form-step" data-step="6">
+            <div class="step-title">6. Referência & Prazo</div>
+            <div class="step-desc">Nos ajude com referências e sua expectativa de tempo.</div>
+
+            <div class="form-group">
+              <label for="referenciaText">Existe algum modelo ou referência?</label>
+              <textarea class="form-control" id="referenciaText" name="referenciaText" placeholder="Explique como gostaria que ficasse ou mencione um estilo de referência..."></textarea>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Uma referência ajuda a entender melhor o resultado desejado.</p>
+            </div>
+
+            <div class="form-group">
+              <label>Quando você precisa do material?</label>
+              <div class="options-grid">
+                <div class="custom-option">
+                  <input type="radio" name="prazo" id="prz1" value="Sem urgência" checked onclick="toggleDataEspecifica(false)">
+                  <label for="prz1" class="option-label">Sem urgência</label>
+                </div>
+                <div class="custom-option">
+                  <input type="radio" name="prazo" id="prz2" value="O quanto antes" onclick="toggleDataEspecifica(false)">
+                  <label for="prz2" class="option-label">O quanto antes</label>
+                </div>
+                <div class="custom-option">
+                  <input type="radio" name="prazo" id="prz3" value="Tenho uma data específica" onclick="toggleDataEspecifica(true)">
+                  <label for="prz3" class="option-label">Data específica</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" id="groupDataEspecifica" style="display: none;">
+              <label for="dataPrazo">Qual a data limite?</label>
+              <input type="date" class="form-control" id="dataPrazo" name="dataPrazo">
+            </div>
+
+            <p style="font-size: 0.8rem; color: var(--text-muted);">* O prazo final deverá ser confirmado após análise do projeto.</p>
           </div>
-        </div>
 
-        <!-- ETAPA 6: REFERÊNCIA E PRAZO -->
-        <div class="form-step" data-step="6">
-          <div class="step-title">6. Referência & Prazo</div>
-          <div class="step-desc">Nos ajude com referências e sua expectativa de tempo.</div>
+          <!-- ETAPA 7: DADOS E RESUMO -->
+          <div class="form-step" data-step="7">
+            <div class="step-title">7. Dados do Cliente & Resumo</div>
+            <div class="step-desc">Informe seus dados de contato e revise seu pedido.</div>
 
-          <div class="form-group">
-            <label for="referenciaText">Existe algum modelo ou referência?</label>
-            <textarea class="form-control" id="referenciaText" name="referenciaText" placeholder="Explique como gostaria que ficasse ou mencione um estilo de referência..."></textarea>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Uma referência ajuda a entender melhor o resultado desejado.</p>
-          </div>
+            <div class="form-group">
+              <label for="nomeCliente">Nome completo <span class="required">*</span></label>
+              <input type="text" class="form-control" id="nomeCliente" name="nomeCliente" required placeholder="Seu nome completo">
+              <div class="error-msg" id="err-nome">Por favor, informe seu nome.</div>
+            </div>
 
-          <div class="form-group">
-            <label>Quando você precisa do material?</label>
-            <div class="options-grid">
+            <div class="form-group">
+              <label for="whatsappCliente">WhatsApp <span class="required">*</span></label>
+              <input type="tel" class="form-control" id="whatsappCliente" name="whatsappCliente" required placeholder="(00) 00000-0000">
+              <div class="error-msg" id="err-whatsapp">Por favor, informe seu WhatsApp.</div>
+            </div>
+
+            <div class="form-group">
+              <label for="emailCliente">E-mail (opcional)</label>
+              <input type="email" class="form-control" id="emailCliente" name="emailCliente" placeholder="seu@email.com">
+            </div>
+
+            <!-- CAIXA DE ORÇAMENTO -->
+            <div class="budget-box">
+              <div class="budget-title">💰 Orçamento personalizado</div>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                Cada projeto possui necessidades diferentes. Após analisar sua solicitação, arquivos e referências, informaremos o valor do serviço.
+              </p>
+            </div>
+
+            <!-- RESUMO DA SOLICITAÇÃO -->
+            <div class="summary-card">
+              <h3 style="font-size: 1rem; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">📋 Resumo da solicitação</h3>
+              <div class="summary-item"><span class="summary-label">Serviço:</span><span class="summary-value" id="sum-servico">-</span></div>
+              <div class="summary-item"><span class="summary-label">Descrição:</span><span class="summary-value" id="sum-descricao">-</span></div>
+              <div class="summary-item"><span class="summary-label">Formato:</span><span class="summary-value" id="sum-formato">-</span></div>
+              <div class="summary-item"><span class="summary-label">Uso:</span><span class="summary-value" id="sum-uso">-</span></div>
+              <div class="summary-item"><span class="summary-label">Personalizações:</span><span class="summary-value" id="sum-personalizacoes">-</span></div>
+              <div class="summary-item"><span class="summary-label">Prazo:</span><span class="summary-value" id="sum-prazo">-</span></div>
+              <div class="summary-item"><span class="summary-label">Arquivos:</span><span class="summary-value" id="sum-arquivos">0 arquivo(s)</span></div>
+              <div class="summary-item"><span class="summary-label">Cliente:</span><span class="summary-value" id="sum-cliente">-</span></div>
+              <div class="summary-item" style="margin-top: 8px; color: var(--primary);"><span class="summary-label" style="color: var(--primary);">💰 Valor:</span><span class="summary-value">Orçamento a definir</span></div>
+            </div>
+
+            <div class="form-group">
               <div class="custom-option">
-                <input type="radio" name="prazo" id="prz1" value="Sem urgência" checked onclick="toggleDataEspecifica(false)">
-                <label for="prz1" class="option-label">Sem urgência</label>
+                <input type="checkbox" id="confirmacao" required>
+                <label for="confirmacao" class="option-label">Confirmo que as informações fornecidas estão corretas. <span class="required">*</span></label>
               </div>
-              <div class="custom-option">
-                <input type="radio" name="prazo" id="prz2" value="O quanto antes" onclick="toggleDataEspecifica(false)">
-                <label for="prz2" class="option-label">O quanto antes</label>
-              </div>
-              <div class="custom-option">
-                <input type="radio" name="prazo" id="prz3" value="Tenho uma data específica" onclick="toggleDataEspecifica(true)">
-                <label for="prz3" class="option-label">Data específica</label>
-              </div>
+              <div class="error-msg" id="err-confirmacao">Você precisa confirmar as informações.</div>
             </div>
           </div>
 
-          <div class="form-group" id="groupDataEspecifica" style="display: none;">
-            <label for="dataPrazo">Qual a data limite?</label>
-            <input type="date" class="form-control" id="dataPrazo" name="dataPrazo">
+          <!-- NAVEGAÇÃO DOS BOTÕES -->
+          <div class="form-navigation">
+            <button type="button" class="btn btn-secondary" id="btnPrev" onclick="changeStep(-1)" style="display: none;">← Voltar</button>
+            <button type="button" class="btn btn-primary" id="btnNext" onclick="changeStep(1)" style="margin-left: auto;">Avançar →</button>
+            <button type="button" class="btn btn-primary" id="btnSubmit" onclick="submitForm()" style="display: none; margin-left: auto;">🚀 Enviar solicitação</button>
           </div>
 
-          <p style="font-size: 0.8rem; color: var(--text-muted);">* O prazo final deverá ser confirmado após análise do projeto.</p>
+        </form>
+
+        <!-- TELA DE SUCESSO -->
+        <div class="success-screen" id="successScreen">
+          <div class="success-icon">✅</div>
+          <h2>Solicitação enviada!</h2>
+          <p style="color: var(--text-muted); margin-top: 8px;">Recebemos os detalhes do seu projeto.</p>
+          <p style="color: var(--text-muted);">Agora vamos analisar as informações e definir o orçamento e as condições do serviço.</p>
+
+          <div class="status-list">
+            <div class="status-item">📩 <strong>Solicitação:</strong> recebida</div>
+            <div class="status-item">💰 <strong>Orçamento:</strong> aguardando análise</div>
+            <div class="status-item">💬 <strong>Atendimento:</strong> WhatsApp</div>
+          </div>
+
+          <div>
+            <a href="https://wa.me/5541999682836?text=Ol%C3%A1!%20Enviei%20uma%20solicita%C3%A7%C3%A3o%20de%20cria%C3%A7%C3%A3o%2Fedi%C3%A7%C3%A3o%20pelo%20site%20da%20WelGrafx%20e%20gostaria%20de%20acompanhar%20meu%20pedido." target="_blank" class="btn btn-primary" style="background: #25d366; border: none;">
+              💬 Falar pelo WhatsApp
+            </a>
+          </div>
+
+          <div style="margin-top: 20px;">
+            <button type="button" class="btn btn-secondary" onclick="resetForm()">Nova solicitação</button>
+          </div>
         </div>
 
-        <!-- ETAPA 7: DADOS E RESUMO -->
-        <div class="form-step" data-step="7">
-          <div class="step-title">7. Dados do Cliente & Resumo</div>
-          <div class="step-desc">Informe seus dados de contato e revise seu pedido.</div>
+      </section>
+    </div>
 
-          <div class="form-group">
-            <label for="nomeCliente">Nome completo <span class="required">*</span></label>
-            <input type="text" class="form-control" id="nomeCliente" name="nomeCliente" required placeholder="Seu nome completo">
-            <div class="error-msg" id="err-nome">Por favor, informe seu nome.</div>
-          </div>
+    <!-- ABA 3: EXEMPLOS DE TRABALHOS ILUSTRATIVOS -->
+    <div id="pane-exemplos" class="tab-content">
+      <h2 class="section-title">Exemplos Ilustrativos de Serviços</h2>
+      <p style="text-align: center; color: var(--text-muted); margin-top: -15px; margin-bottom: 30px;">
+        Modelos demonstrativos de formatos e estruturas que podem ser criados ou ajustados.
+      </p>
 
-          <div class="form-group">
-            <label for="whatsappCliente">WhatsApp <span class="required">*</span></label>
-            <input type="tel" class="form-control" id="whatsappCliente" name="whatsappCliente" required placeholder="(00) 00000-0000">
-            <div class="error-msg" id="err-whatsapp">Por favor, informe seu WhatsApp.</div>
-          </div>
-
-          <div class="form-group">
-            <label for="emailCliente">E-mail (opcional)</label>
-            <input type="email" class="form-control" id="emailCliente" name="emailCliente" placeholder="seu@email.com">
-          </div>
-
-          <!-- CAIXA DE ORÇAMENTO -->
-          <div class="budget-box">
-            <div class="budget-title">💰 Orçamento personalizado</div>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">
-              Cada projeto possui necessidades diferentes. Após analisar sua solicitação, arquivos e referências, informaremos o valor do serviço.
-            </p>
-          </div>
-
-          <!-- RESUMO -->
-          <div class="summary-card">
-            <h3 style="font-size: 1rem; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">📋 Resumo da solicitação</h3>
-            <div class="summary-item"><span class="summary-label">Serviço:</span><span class="summary-value" id="sum-servico">-</span></div>
-            <div class="summary-item"><span class="summary-label">Descrição:</span><span class="summary-value" id="sum-descricao">-</span></div>
-            <div class="summary-item"><span class="summary-label">Formato:</span><span class="summary-value" id="sum-formato">-</span></div>
-            <div class="summary-item"><span class="summary-label">Uso:</span><span class="summary-value" id="sum-uso">-</span></div>
-            <div class="summary-item"><span class="summary-label">Personalizações:</span><span class="summary-value" id="sum-personalizacoes">-</span></div>
-            <div class="summary-item"><span class="summary-label">Prazo:</span><span class="summary-value" id="sum-prazo">-</span></div>
-            <div class="summary-item"><span class="summary-label">Arquivos:</span><span class="summary-value" id="sum-arquivos">0 arquivo(s)</span></div>
-            <div class="summary-item"><span class="summary-label">Cliente:</span><span class="summary-value" id="sum-cliente">-</span></div>
-            <div class="summary-item" style="margin-top: 8px; color: var(--primary);"><span class="summary-label" style="color: var(--primary);">💰 Valor:</span><span class="summary-value">Orçamento a definir</span></div>
-          </div>
-
-          <div class="form-group">
-            <div class="custom-option">
-              <input type="checkbox" id="confirmacao" required>
-              <label for="confirmacao" class="option-label">Confirmo que as informações fornecidas estão corretas. <span class="required">*</span></label>
+      <div class="examples-grid">
+        <!-- Exemplo 1 -->
+        <div class="example-card">
+          <div class="example-preview">
+            <div class="doc-mockup">
+              <div class="doc-mockup-line title"></div>
+              <div class="doc-mockup-line"></div>
+              <div class="doc-mockup-line"></div>
+              <div class="doc-mockup-line short"></div>
+              <div class="doc-mockup-badge">PDF</div>
             </div>
-            <div class="error-msg" id="err-confirmacao">Você precisa confirmar as informações.</div>
+          </div>
+          <div class="example-body">
+            <div class="example-tag">Demonstrativo</div>
+            <h3>📄 Documento Formatado</h3>
+            <p>Reorganização visual, alinhamento de texto, inclusão de tipografia profissional e padronização visual.</p>
+            <button class="btn btn-secondary" onclick="selectServiceFromVitrine('Editar documento existente')">Solicitar algo parecido</button>
           </div>
         </div>
 
-        <!-- NAVEGAÇÃO DOS BOTÕES -->
-        <div class="form-navigation">
-          <button type="button" class="btn btn-secondary" id="btnPrev" onclick="changeStep(-1)" style="display: none;">← Voltar</button>
-          <button type="button" class="btn btn-primary" id="btnNext" onclick="changeStep(1)" style="margin-left: auto;">Avançar →</button>
-          <button type="button" class="btn btn-primary" id="btnSubmit" onclick="submitForm()" style="display: none; margin-left: auto;">🚀 Enviar solicitação</button>
+        <!-- Exemplo 2 -->
+        <div class="example-card">
+          <div class="example-preview">
+            <div class="doc-mockup">
+              <div class="doc-mockup-line title"></div>
+              <div style="display:flex; gap:4px; margin-top:4px;"><div class="doc-mockup-line" style="flex:1;"></div><div class="doc-mockup-line" style="width:20px;"></div></div>
+              <div style="display:flex; gap:4px;"><div class="doc-mockup-line" style="flex:1;"></div><div class="doc-mockup-line" style="width:20px;"></div></div>
+              <div class="doc-mockup-badge">FICHA</div>
+            </div>
+          </div>
+          <div class="example-body">
+            <div class="example-tag">Demonstrativo</div>
+            <h3>📋 Ficha de Preenchimento</h3>
+            <p>Modelos de cadastro, fichas de atendimento e formulários para coleta de dados em papel ou digital.</p>
+            <button class="btn btn-secondary" onclick="selectServiceFromVitrine('Criar formulário/ficha')">Solicitar algo parecido</button>
+          </div>
         </div>
 
-      </form>
-
-      <!-- TELA DE SUCESSO -->
-      <div class="success-screen" id="successScreen">
-        <div class="success-icon">✅</div>
-        <h2>Solicitação enviada!</h2>
-        <p style="color: var(--text-muted); margin-top: 8px;">Recebemos os detalhes do seu projeto.</p>
-        <p style="color: var(--text-muted);">Agora vamos analisar as informações e definir o orçamento e as condições do serviço.</p>
-
-        <div class="status-list">
-          <div class="status-item">📩 <strong>Solicitação:</strong> recebida</div>
-          <div class="status-item">💰 <strong>Orçamento:</strong> aguardando análise</div>
-          <div class="status-item">💬 <strong>Atendimento:</strong> WhatsApp</div>
+        <!-- Exemplo 3 -->
+        <div class="example-card">
+          <div class="example-preview">
+            <div class="doc-mockup">
+              <div class="doc-mockup-line title"></div>
+              <div class="doc-mockup-line"></div>
+              <div style="border:1px dashed var(--primary); height:24px; border-radius:3px; margin-top:4px;"></div>
+              <div class="doc-mockup-badge">DIGITAL</div>
+            </div>
+          </div>
+          <div class="example-body">
+            <div class="example-tag">Demonstrativo</div>
+            <h3>🗂️ Formulário Personalizado</h3>
+            <p>Arquivos interativos com campos editáveis no computador ou celular e espaço para assinatura.</p>
+            <button class="btn btn-secondary" onclick="selectServiceFromVitrine('Criar formulário/ficha')">Solicitar algo parecido</button>
+          </div>
         </div>
 
-        <div>
-          <a href="https://wa.me/5541999682836?text=Ol%C3%A1!%20Enviei%20uma%20solicita%C3%A7%C3%A3o%20de%20cria%C3%A7%C3%A3o%2Fedi%C3%A7%C3%A3o%20pelo%20site%20da%20WelGrafx%20e%20gostaria%20de%20acompanhar%20meu%20pedido." target="_blank" class="btn btn-primary" style="background: #25d366; border: none;">
-            💬 Falar pelo WhatsApp
-          </a>
+        <!-- Exemplo 4 -->
+        <div class="example-card">
+          <div class="example-preview">
+            <div class="doc-mockup">
+              <div style="display:flex; gap:6px; align-items:center;">
+                <div style="width:16px; height:16px; background:var(--primary); border-radius:50%;"></div>
+                <div class="doc-mockup-line title" style="margin:0;"></div>
+              </div>
+              <div class="doc-mockup-line" style="margin-top:6px;"></div>
+              <div class="doc-mockup-line"></div>
+              <div class="doc-mockup-badge">CV</div>
+            </div>
+          </div>
+          <div class="example-body">
+            <div class="example-tag">Demonstrativo</div>
+            <h3>💼 Modelo de Currículo</h3>
+            <p>Layout limpo, moderno e estruturado com destaque para suas experiências e qualificações.</p>
+            <button class="btn btn-secondary" onclick="selectServiceFromVitrine('Criar currículo')">Solicitar algo parecido</button>
+          </div>
         </div>
 
-        <div style="margin-top: 20px;">
-          <button type="button" class="btn btn-secondary" onclick="resetForm()">Nova solicitação</button>
+        <!-- Exemplo 5 -->
+        <div class="example-card">
+          <div class="example-preview">
+            <div class="doc-mockup">
+              <div class="doc-mockup-line title"></div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:3px; margin-top:4px;">
+                <div style="background:#e2e8f0; height:12px;"></div>
+                <div style="background:#e2e8f0; height:12px;"></div>
+                <div style="background:#f1f5f9; height:12px;"></div>
+                <div style="background:#f1f5f9; height:12px;"></div>
+              </div>
+              <div class="doc-mockup-badge">XLS</div>
+            </div>
+          </div>
+          <div class="example-body">
+            <div class="example-tag">Demonstrativo</div>
+            <h3>📊 Planilha de Controle</h3>
+            <p>Tabelas organizadas para acompanhamento financeiro, orçamentos, estoque e registros diários.</p>
+            <button class="btn btn-secondary" onclick="selectServiceFromVitrine('Criar planilha/modelo')">Solicitar algo parecido</button>
+          </div>
+        </div>
+
+        <!-- Exemplo 6 -->
+        <div class="example-card">
+          <div class="example-preview">
+            <div class="doc-mockup" style="height:90px;">
+              <div class="doc-mockup-line title"></div>
+              <div class="doc-mockup-line"></div>
+              <div class="doc-mockup-line short"></div>
+              <div class="doc-mockup-badge">RECIBO</div>
+            </div>
+          </div>
+          <div class="example-body">
+            <div class="example-tag">Demonstrativo</div>
+            <h3>🧾 Modelo de Recibo</h3>
+            <p>Comprovantes e modelos formais padronizados com seus dados e identidade visual.</p>
+            <button class="btn btn-secondary" onclick="selectServiceFromVitrine('Criar documento do zero')">Solicitar algo parecido</button>
+          </div>
+        </div>
+
+        <!-- Exemplo 7 -->
+        <div class="example-card">
+          <div class="example-preview">
+            <div class="doc-mockup">
+              <div class="doc-mockup-line title"></div>
+              <div class="doc-mockup-line"></div>
+              <div style="height:25px; background:var(--primary-light); border-radius:3px; margin-top:4px;"></div>
+              <div class="doc-mockup-badge">RELATÓRIO</div>
+            </div>
+          </div>
+          <div class="example-body">
+            <div class="example-tag">Demonstrativo</div>
+            <h3>📑 Relatório Profissional</h3>
+            <p>Apresentação estruturada de dados, pareceres técnicos e prestação de contas com gráficos/tabelas.</p>
+            <button class="btn btn-secondary" onclick="selectServiceFromVitrine('Criar PDF personalizado')">Solicitar algo parecido</button>
+          </div>
+        </div>
+
+        <!-- Exemplo 8 -->
+        <div class="example-card">
+          <div class="example-preview">
+            <div class="doc-mockup">
+              <div style="height:20px; background:var(--primary); border-radius:2px; margin-bottom:4px;"></div>
+              <div class="doc-mockup-line"></div>
+              <div class="doc-mockup-line"></div>
+              <div class="doc-mockup-badge">DESIGN</div>
+            </div>
+          </div>
+          <div class="example-body">
+            <div class="example-tag">Demonstrativo</div>
+            <h3>🖼️ Identidade Visual Aplicada</h3>
+            <p>Documentos padronizados com paleta de cores, marca d'água e elementos da sua empresa.</p>
+            <button class="btn btn-secondary" onclick="selectServiceFromVitrine('Ajustar material visual')">Solicitar algo parecido</button>
+          </div>
         </div>
       </div>
+    </div>
 
-    </section>
+    <!-- ABA 4: COMO FUNCIONA (ETAPAS COMPLETAS DO PROJETO) -->
+    <div id="pane-como-funciona" class="tab-content">
+      <section class="how-it-works">
+        <h2 class="section-title">Etapas do Atendimento</h2>
+        <p style="text-align: center; color: var(--text-muted); margin-top: -15px; margin-bottom: 30px;">
+          Entenda como seu projeto é processado do início ao envio final.
+        </p>
 
-    <!-- SEÇÃO DE PAGAMENTO (PREPARADA PARA USO FUTURO) -->
-    <section class="payment-section">
-      <h2 class="section-title">💳 Pagamento</h2>
-      <p style="text-align: center; color: var(--text-muted);">Após a confirmação do orçamento, escolha uma forma de pagamento.</p>
-
-      <div class="payment-grid">
-        <!-- PIX -->
-        <div class="payment-card">
-          <h3>📱 Pagamento via PIX</h3>
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Aprovação instantânea</p>
-          
-          <div class="qr-placeholder">
-            <img src="qrcode-pix.jpg" alt="QR Code PIX" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><path d=\'M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7zM14 14h3v3h-3z\'/></svg>'">
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-num">01</div>
+            <h3>Solicitação</h3>
+            <p>O cliente explica o que precisa e envia as referências necessárias.</p>
           </div>
-
-          <div class="pix-key-container">
-            <input type="text" class="form-control pix-key-input" id="pixKey" value="ws8530135@gmail.com" readonly>
-            <button type="button" class="btn btn-secondary" onclick="copyPixKey()" style="padding: 8px 12px; font-size: 0.8rem;">📋 Copiar</button>
+          <div class="step-card">
+            <div class="step-num">02</div>
+            <h3>Análise</h3>
+            <p>A WelGrafx analisa os detalhes, a viabilidade, o orçamento e o prazo.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">03</div>
+            <h3>Confirmação</h3>
+            <p>O cliente recebe as condições propostas e decide se deseja prosseguir.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">04</div>
+            <h3>Pagamento</h3>
+            <p>Quando aplicável, o pagamento é combinado e confirmado.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">05</div>
+            <h3>Produção</h3>
+            <p>O trabalho começa conforme as condições acordadas.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num">06</div>
+            <h3>Entrega</h3>
+            <p>O material final é disponibilizado na forma combinada.</p>
           </div>
         </div>
 
-        <!-- DINHEIRO -->
-        <div class="payment-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-          <h3>💵 Pagamento em dinheiro</h3>
-          <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 12px;">
-            Disponível conforme combinado no atendimento presencial ou na entrega.
+        <div style="margin-top: 30px; text-align: center;">
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            📌 <em>O envio da solicitação não representa aceitação automática do projeto nem confirmação imediata de pagamento.</em>
           </p>
         </div>
+      </section>
+    </div>
+
+    <!-- ABA 5: PAGAMENTO (PRIORITÁRIA E COMPLETA) -->
+    <div id="pane-pagamento" class="tab-content">
+      <section class="payment-section">
+        <h2 class="section-title">💳 Informações de Pagamento</h2>
+
+        <!-- ESTADO ANTES DA CONFIRMAÇÃO DO ORÇAMENTO -->
+        <div class="payment-notice-banner">
+          <h3>Seu pagamento será preparado após a análise</h3>
+          <p>Primeiro analisamos a solicitação e confirmamos o valor. Depois, você poderá consultar e utilizar as instruções de pagamento abaixo.</p>
+        </div>
+
+        <div class="payment-grid">
+          <!-- PIX -->
+          <div class="payment-card">
+            <div>
+              <h3>📱 Pagamento via PIX</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Aprovação rápida e prática</p>
+              
+              <div class="qr-placeholder">
+                <img src="qrcode-pix.jpg" alt="QR Code PIX WelGrafx" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%230088cc\' stroke-width=\'2\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><path d=\'M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7zM14 14h3v3h-3z\'/></svg>'">
+              </div>
+
+              <div class="pix-key-container">
+                <input type="text" class="form-control pix-key-input" id="pixKey" value="ws8530135@gmail.com" readonly>
+                <button type="button" class="btn btn-secondary" id="btnCopyPix" onclick="copyPixKey()" style="padding: 8px 12px; font-size: 0.8rem;">📋 Copiar</button>
+              </div>
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px;">Chave PIX E-mail: ws8530135@gmail.com</p>
+          </div>
+
+          <!-- DINHEIRO E OUTROS -->
+          <div class="payment-card">
+            <div>
+              <h3>💵 Pagamento em dinheiro</h3>
+              <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 12px;">
+                Disponível quando previamente combinado para atendimento presencial ou entrega física de materiais impressos.
+              </p>
+            </div>
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed var(--border-color);">
+              <p style="font-size: 0.8rem; color: var(--text-muted);">
+                Avisos adicionais e recibos são emitidos diretamente pelo nosso atendimento no WhatsApp.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- DECLARAÇÃO DO USUÁRIO -->
+        <div class="pay-declared-box">
+          <p style="font-size: 0.9rem; margin-bottom: 12px;">Já combinou o valor conosco e realizou o pagamento?</p>
+          <button type="button" class="btn btn-secondary" onclick="declarePaymentDone()">
+            ✅ Já realizei o pagamento
+          </button>
+          <p id="payDeclaredMsg" style="display:none; font-size: 0.85rem; color: var(--primary); font-weight:600; margin-top: 10px;">
+            Declaração registrada! Por favor, envie o comprovante pelo WhatsApp para agilizar a liberação do seu projeto.
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ABA 6: DÚVIDAS FREQUENTES (FAQ) -->
+    <div id="pane-faq" class="tab-content">
+      <h2 class="section-title">❓ Dúvidas Frequentes</h2>
+      
+      <div class="faq-grid">
+        <div class="faq-card">
+          <h3>O que significa sob encomenda?</h3>
+          <p>Cada projeto é analisado e preparado conforme as necessidades informadas por você. Não vendemos modelos genéricos fechados.</p>
+        </div>
+
+        <div class="faq-card">
+          <h3>Qual é o prazo habitual?</h3>
+          <p>A previsão habitual é de 3 a 5 dias, dependendo do serviço e da complexidade. O prazo aplicável será confirmado após a análise.</p>
+        </div>
+
+        <div class="faq-card">
+          <h3>O prazo começa quando envio o formulário?</h3>
+          <p>Não necessariamente. O início da produção será combinado após a análise e a confirmação das condições do serviço.</p>
+        </div>
+
+        <div class="faq-card">
+          <h3>Posso enviar um arquivo como referência?</h3>
+          <p>Sim! Aceitamos PDF, DOC, DOCX, JPG, PNG, WEBP, XLS e XLSX até o limite suportado pelo formulário.</p>
+        </div>
+
+        <div class="faq-card">
+          <h3>O orçamento é automático?</h3>
+          <p>Não. O valor é definido manualmente após a análise da solicitação e dos arquivos enviados.</p>
+        </div>
+
+        <div class="faq-card">
+          <h3>Preciso pagar antes da análise?</h3>
+          <p>Não. A solicitação inicial serve exclusivamente para análise. O pagamento só é realizado após a definição e concordância do orçamento.</p>
+        </div>
+
+        <div class="faq-card">
+          <h3>Posso pedir alterações?</h3>
+          <p>As possibilidades, os limites e eventuais custos de alterações devem ser combinados antes do início do trabalho.</p>
+        </div>
+
+        <div class="faq-card">
+          <h3>Todos os projetos ficam prontos em 3 a 5 dias?</h3>
+          <p>Não. Esse é um prazo estimado habitual. Projetos de maior complexidade podem exigir outro prazo, que será informado previamente.</p>
+        </div>
       </div>
-    </section>
+    </div>
+
   </div>
 
   <script>
@@ -1243,7 +1998,7 @@
     let selectedFiles = [];
 
     /* ==========================================================================
-       GERENCIAMENTO DE TEMA (CLARO / ESCURO)
+       GERENCIAMENTO DE TEMAS (CLARO / ESCURO)
        ========================================================================== */
     const themeToggleBtn = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
@@ -1283,7 +2038,58 @@
     initTheme();
 
     /* ==========================================================================
-       VITRINE DE SERVIÇOS
+       GERENCIAMENTO DE ABAS INTERNAS
+       ========================================================================== */
+    function switchTab(tabId) {
+      // Atualizar Botões
+      const buttons = document.querySelectorAll('.tab-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`tab-${tabId}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      // Atualizar Painéis
+      const panes = document.querySelectorAll('.tab-content');
+      panes.forEach(pane => pane.classList.remove('active'));
+      const activePane = document.getElementById(`pane-${tabId}`);
+      if (activePane) activePane.classList.add('active');
+    }
+
+    /* ==========================================================================
+       CARROSSEL AUTOMÁTICO DE AVISOS
+       ========================================================================== */
+    let carouselIndex = 0;
+    let carouselInterval = null;
+    const carouselTrack = document.getElementById('carouselTrack');
+    const carouselContainer = document.getElementById('announcementCarousel');
+    const totalSlides = 6;
+
+    function nextSlide() {
+      carouselIndex = (carouselIndex + 1) % totalSlides;
+      if (carouselTrack) {
+        carouselTrack.style.transform = `translateX(-${carouselIndex * 100}%)`;
+      }
+    }
+
+    function startCarousel() {
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        carouselInterval = setInterval(nextSlide, 4500);
+      }
+    }
+
+    function stopCarousel() {
+      if (carouselInterval) clearInterval(carouselInterval);
+    }
+
+    if (carouselContainer) {
+      carouselContainer.addEventListener('mouseenter', stopCarousel);
+      carouselContainer.addEventListener('mouseleave', startCarousel);
+      carouselContainer.addEventListener('touchstart', stopCarousel, {passive: true});
+      carouselContainer.addEventListener('touchend', startCarousel, {passive: true});
+      startCarousel();
+    }
+
+    /* ==========================================================================
+       VITRINE DE SERVIÇOS & EXEMPLOS -> FORMULÁRIO
        ========================================================================== */
     function selectServiceFromVitrine(serviceValue) {
       const radios = document.getElementsByName('servico');
@@ -1293,12 +2099,12 @@
           break;
         }
       }
-      // Rolar suavemente e focar no form
+      switchTab('solicitar');
       document.getElementById('solicitar').scrollIntoView({ behavior: 'smooth' });
     }
 
     /* ==========================================================================
-       WIZARD / NAVEGAÇÃO DE ETAPAS
+       WIZARD / NAVEGAÇÃO DE ETAPAS DO FORMULÁRIO
        ========================================================================== */
     function changeStep(delta) {
       if (delta > 0 && !validateStep(currentStep)) {
@@ -1313,7 +2119,6 @@
     }
 
     function updateWizardUI() {
-      // Mostrar / Esconder passos
       const steps = document.querySelectorAll('.form-step');
       steps.forEach(step => {
         if (parseInt(step.dataset.step) === currentStep) {
@@ -1323,13 +2128,11 @@
         }
       });
 
-      // Atualizar progresso
       const percent = Math.round((currentStep / totalSteps) * 100);
       document.getElementById('stepProgressText').textContent = `Etapa ${currentStep} de ${totalSteps}`;
       document.getElementById('stepPercentText').textContent = `${percent}%`;
       document.getElementById('progressBarFill').style.width = `${percent}%`;
 
-      // Atualizar Botões
       document.getElementById('btnPrev').style.display = currentStep === 1 ? 'none' : 'inline-flex';
       
       if (currentStep === totalSteps) {
@@ -1401,13 +2204,12 @@
     function handleFileSelect(event) {
       const files = Array.from(event.target.files);
       files.forEach(file => {
-        // Evitar duplicados simples por nome e tamanho
         if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
           selectedFiles.push(file);
         }
       });
       renderFileList();
-      event.target.value = ''; // Reset input para permitir selecionar o mesmo arquivo se redefinido
+      event.target.value = '';
     }
 
     function removeFile(index) {
@@ -1503,6 +2305,8 @@
         // Informações Principais
         formData.append('Servico', document.querySelector('input[name="servico"]:checked')?.value || '');
         formData.append('Descricao_Detalhada', document.getElementById('descricao').value);
+        formData.append('Finalidade_Publico', document.getElementById('finalidade').value || 'Não informado');
+        formData.append('Qtd_Paginas', document.getElementById('qtdPaginas').value || 'Não informado');
         formData.append('Uso_Pretendido', document.querySelector('input[name="uso"]:checked')?.value || '');
         
         let tamanho = document.getElementById('tamanho').value;
@@ -1510,6 +2314,7 @@
           tamanho += ` (${document.getElementById('tamanhoCustom').value})`;
         }
         formData.append('Tamanho_Formato', tamanho);
+        formData.append('Orientacao', document.querySelector('input[name="orientacao"]:checked')?.value || '');
 
         const elementos = Array.from(document.querySelectorAll('input[name="elementos"]:checked')).map(el => el.value);
         formData.append('Elementos_Desejados', elementos.join(', ') || 'Nenhum');
@@ -1537,7 +2342,7 @@
         formData.append('_template', 'table');
         formData.append('_captcha', 'false');
 
-        // Envio Fetch sem definir manualmente Content-Type header
+        // Envio Fetch sem redefinir manualmente o cabeçalho Content-Type
         const response = await fetch('https://formsubmit.co/ajax/ws8530135@gmail.com', {
           method: 'POST',
           body: formData,
@@ -1585,21 +2390,30 @@
     }
 
     /* ==========================================================================
-       UTILITÁRIOS
+       UTILITÁRIOS E PIX
        ========================================================================== */
     function copyPixKey() {
       const pixInput = document.getElementById('pixKey');
+      const btn = document.getElementById('btnCopyPix');
       pixInput.select();
       pixInput.setSelectionRange(0, 99999);
+      
       navigator.clipboard.writeText(pixInput.value).then(() => {
-        alert('Chave PIX copiada para a área de transferência!');
+        if (btn) btn.textContent = '✓ Copiado!';
+        setTimeout(() => { if (btn) btn.textContent = '📋 Copiar'; }, 2500);
       }).catch(() => {
         document.execCommand('copy');
-        alert('Chave PIX copiada!');
+        if (btn) btn.textContent = '✓ Copiado!';
+        setTimeout(() => { if (btn) btn.textContent = '📋 Copiar'; }, 2500);
       });
     }
 
-    // Inicialização do formulário
+    function declarePaymentDone() {
+      const msg = document.getElementById('payDeclaredMsg');
+      if (msg) msg.style.display = 'block';
+    }
+
+    // Inicialização do Formulário Wizard
     updateWizardUI();
   </script>
 </body>
