@@ -516,13 +516,22 @@
     }
 
     .example-preview {
-      height: 160px;
+      height: 180px;
       background: var(--bg-body);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 12px;
+      overflow: hidden;
+    }
+
+    .example-preview img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     .doc-mockup {
@@ -586,6 +595,19 @@
       flex: 1;
     }
 
+    .example-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .example-actions .btn {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
     .example-tag {
       font-size: 0.7rem;
       text-transform: uppercase;
@@ -603,6 +625,78 @@
       text-align: center;
       margin-top: 10px;
       margin-bottom: 30px;
+    }
+
+    /* MODAL DE VISUALIZAÇÃO AMPLIADA DA IMAGEM DO MODELO */
+    .image-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(4px);
+    }
+
+    .image-modal-overlay.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .image-modal-content {
+      position: relative;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .image-modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .image-modal-header h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .image-modal-close {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-main);
+      line-height: 1;
+    }
+
+    .image-modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-body);
+      min-height: 300px;
+    }
+
+    .image-modal-body img {
+      max-width: 100%;
+      max-height: 70vh;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
     /* ==========================================================================
@@ -1131,104 +1225,148 @@
       <h2 class="section-title">Vitrine de Modelos Demonstrativos</h2>
       
       <div class="vitrine-notice">
-        ℹ <strong>Aviso demonstrativo:</strong> Os exemplos exibidos abaixo servem para mostrar os tipos de materiais que podem ser criados ou editados. Não são trabalhos reais de clientes nem serviços já contratados. Você pode utilizar qualquer um deles como base para a sua encomenda ou solicitar um trabalho totalmente exclusivo.
+        ℹ <strong>Aviso demonstrativo:</strong> Os exemplos exibidos abaixo servem como referência visual e base para a sua encomenda. Não são trabalhos reais de clientes nem arquivos editáveis disponíveis para download. Você pode utilizar qualquer um deles como referência ou solicitar um trabalho do zero.
       </div>
 
       <div class="examples-grid">
         <!-- Modelo 1: Currículo -->
         <div class="example-card">
           <div class="example-preview">
-            <div class="doc-mockup">
-              <div style="display:flex; gap:6px; align-items:center;">
-                <div style="width:16px; height:16px; background:var(--primary); border-radius:50%;"></div>
-                <div class="doc-mockup-line title" style="margin:0;"></div>
-              </div>
-              <div class="doc-mockup-line" style="margin-top:6px;"></div>
-              <div class="doc-mockup-line"></div>
-              <div class="doc-mockup-badge">CV</div>
-            </div>
+            <img src="images/modelo-curriculo.png" alt="Modelo de Currículo" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'doc-mockup\'><div style=\'display:flex; gap:6px; align-items:center;\'><div style=\'width:16px; height:16px; background:var(--primary); border-radius:50%;\'></div><div class=\'doc-mockup-line title\' style=\'margin:0;\'></div></div><div class=\'doc-mockup-line\' style=\'margin-top:6px;\'></div><div class=\'doc-mockup-line\'></div><div class=\'doc-mockup-badge\'>CV</div></div>';">
           </div>
           <div class="example-body">
             <div class="example-tag">Demonstrativo</div>
             <h3>Modelo de Currículo</h3>
             <p>Estrutura limpa, moderna e bem organizada para apresentar suas qualificações e experiência profissional.</p>
-            <button class="btn btn-secondary" onclick="useModel('curriculo_zero', 'Modelo de Currículo')">Usar este modelo</button>
+            <div class="example-actions">
+              <button class="btn btn-secondary" onclick="openImageModal('images/modelo-curriculo.png', 'Modelo de Currículo')">Visualizar modelo</button>
+              <button class="btn btn-primary" onclick="useModel('curriculo_zero', 'Modelo de Currículo')">Usar este modelo</button>
+            </div>
           </div>
         </div>
 
-        <!-- Modelo 2: Recibo -->
+        <!-- Modelo 2: Carta de Apresentação -->
         <div class="example-card">
           <div class="example-preview">
-            <div class="doc-mockup" style="height:95px;">
-              <div class="doc-mockup-line title"></div>
-              <div class="doc-mockup-line"></div>
-              <div class="doc-mockup-line short"></div>
-              <div class="doc-mockup-badge">RECIBO</div>
+            <img src="images/modelo-carta-apresentacao.png" alt="Modelo de Carta de Apresentação" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'doc-mockup\'><div class=\'doc-mockup-line title\'></div><div class=\'doc-mockup-line\'></div><div class=\'doc-mockup-line short\'></div><div class=\'doc-mockup-badge\'>CARTA</div></div>';">
+          </div>
+          <div class="example-body">
+            <div class="example-tag">Demonstrativo</div>
+            <h3>Modelo de Carta de Apresentação</h3>
+            <p>Texto e formatação profissional sob medida para se destacar em processos seletivos.</p>
+            <div class="example-actions">
+              <button class="btn btn-secondary" onclick="openImageModal('images/modelo-carta-apresentacao.png', 'Modelo de Carta de Apresentação')">Visualizar modelo</button>
+              <button class="btn btn-primary" onclick="useModel('carta_apresentacao', 'Modelo de Carta de Apresentação')">Usar este modelo</button>
             </div>
+          </div>
+        </div>
+
+        <!-- Modelo 3: Recibo -->
+        <div class="example-card">
+          <div class="example-preview">
+            <img src="images/modelo-recibo.png" alt="Modelo de Recibo" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'doc-mockup\' style=\'height:95px;\'><div class=\'doc-mockup-line title\'></div><div class=\'doc-mockup-line\'></div><div class=\'doc-mockup-line short\'></div><div class=\'doc-mockup-badge\'>RECIBO</div></div>';">
           </div>
           <div class="example-body">
             <div class="example-tag">Demonstrativo</div>
             <h3>Modelo de Recibo</h3>
             <p>Comprovante formal personalizável com campos para assinatura, dados de pagamento e marca.</p>
-            <button class="btn btn-secondary" onclick="useModel('criacao_doc', 'Modelo de Recibo')">Usar este modelo</button>
-          </div>
-        </div>
-
-        <!-- Modelo 3: Planilha -->
-        <div class="example-card">
-          <div class="example-preview">
-            <div class="doc-mockup">
-              <div class="doc-mockup-line title"></div>
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:3px; margin-top:4px;">
-                <div style="background:#e2e8f0; height:12px;"></div>
-                <div style="background:#e2e8f0; height:12px;"></div>
-                <div style="background:#f1f5f9; height:12px;"></div>
-                <div style="background:#f1f5f9; height:12px;"></div>
-              </div>
-              <div class="doc-mockup-badge">XLS</div>
+            <div class="example-actions">
+              <button class="btn btn-secondary" onclick="openImageModal('images/modelo-recibo.png', 'Modelo de Recibo')">Visualizar modelo</button>
+              <button class="btn btn-primary" onclick="useModel('criacao_doc', 'Modelo de Recibo')">Usar este modelo</button>
             </div>
-          </div>
-          <div class="example-body">
-            <div class="example-tag">Demonstrativo</div>
-            <h3>Modelo de Planilha</h3>
-            <p>Tabelas organizadas para acompanhamento financeiro, orçamentos, estoque e registros diários.</p>
-            <button class="btn btn-secondary" onclick="useModel('planilha_simples', 'Modelo de Planilha')">Usar este modelo</button>
           </div>
         </div>
 
         <!-- Modelo 4: Formulário -->
         <div class="example-card">
           <div class="example-preview">
-            <div class="doc-mockup">
-              <div class="doc-mockup-line title"></div>
-              <div style="display:flex; gap:4px; margin-top:4px;"><div class="doc-mockup-line" style="flex:1;"></div><div class="doc-mockup-line" style="width:20px;"></div></div>
-              <div style="display:flex; gap:4px;"><div class="doc-mockup-line" style="flex:1;"></div><div class="doc-mockup-line" style="width:20px;"></div></div>
-              <div class="doc-mockup-badge">FICHA</div>
-            </div>
+            <img src="images/modelo-formulario.png" alt="Modelo de Formulário" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'doc-mockup\'><div class=\'doc-mockup-line title\'></div><div style=\'display:flex; gap:4px; margin-top:4px;\'><div class=\'doc-mockup-line\' style=\'flex:1;\'></div><div class=\'doc-mockup-line\' style=\'width:20px;\'></div></div><div style=\'display:flex; gap:4px;\'><div class=\'doc-mockup-line\' style=\'flex:1;\'></div><div class=\'doc-mockup-line\' style=\'width:20px;\'></div></div><div class=\'doc-mockup-badge\'>FICHA</div></div>';">
           </div>
           <div class="example-body">
             <div class="example-tag">Demonstrativo</div>
             <h3>Modelo de Formulário</h3>
             <p>Fichas de atendimento, cadastro de clientes ou formulários digitais preenchíveis.</p>
-            <button class="btn btn-secondary" onclick="useModel('formularios_pers', 'Modelo de Formulário')">Usar este modelo</button>
+            <div class="example-actions">
+              <button class="btn btn-secondary" onclick="openImageModal('images/modelo-formulario.png', 'Modelo de Formulário')">Visualizar modelo</button>
+              <button class="btn btn-primary" onclick="useModel('formularios_pers', 'Modelo de Formulário')">Usar este modelo</button>
+            </div>
           </div>
         </div>
 
-        <!-- Modelo 5: Relatório -->
+        <!-- Modelo 5: Planilha -->
         <div class="example-card">
           <div class="example-preview">
-            <div class="doc-mockup">
-              <div class="doc-mockup-line title"></div>
-              <div class="doc-mockup-line"></div>
-              <div style="height:25px; background:var(--primary-light); border-radius:3px; margin-top:4px;"></div>
-              <div class="doc-mockup-badge">PDF</div>
+            <img src="images/modelo-planilha.png" alt="Modelo de Planilha" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'doc-mockup\'><div class=\'doc-mockup-line title\'></div><div style=\'display:grid; grid-template-columns:1fr 1fr; gap:3px; margin-top:4px;\'><div style=\'background:#e2e8f0; height:12px;\'></div><div style=\'background:#e2e8f0; height:12px;\'></div><div style=\'background:#f1f5f9; height:12px;\'></div><div style=\'background:#f1f5f9; height:12px;\'></div></div><div class=\'doc-mockup-badge\'>XLS</div></div>';">
+          </div>
+          <div class="example-body">
+            <div class="example-tag">Demonstrativo</div>
+            <h3>Modelo de Planilha</h3>
+            <p>Tabelas organizadas para acompanhamento financeiro, orçamentos, estoque e registros diários.</p>
+            <div class="example-actions">
+              <button class="btn btn-secondary" onclick="openImageModal('images/modelo-planilha.png', 'Modelo de Planilha')">Visualizar modelo</button>
+              <button class="btn btn-primary" onclick="useModel('planilha_simples', 'Modelo de Planilha')">Usar este modelo</button>
             </div>
+          </div>
+        </div>
+
+        <!-- Modelo 6: Relatório -->
+        <div class="example-card">
+          <div class="example-preview">
+            <img src="images/modelo-relatorio.png" alt="Modelo de Relatório" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'doc-mockup\'><div class=\'doc-mockup-line title\'></div><div class=\'doc-mockup-line\'></div><div style=\'height:25px; background:var(--primary-light); border-radius:3px; margin-top:4px;\'></div><div class=\'doc-mockup-badge\'>PDF</div></div>';">
           </div>
           <div class="example-body">
             <div class="example-tag">Demonstrativo</div>
             <h3>Modelo de Relatório</h3>
             <p>Apresentação profissional de dados, prestação de contas, laudos ou pareceres com gráficos e tabelas.</p>
-            <button class="btn btn-secondary" onclick="useModel('pdf_personalizado', 'Modelo de Relatório')">Usar este modelo</button>
+            <div class="example-actions">
+              <button class="btn btn-secondary" onclick="openImageModal('images/modelo-relatorio.png', 'Modelo de Relatório')">Visualizar modelo</button>
+              <button class="btn btn-primary" onclick="useModel('pdf_personalizado', 'Modelo de Relatório')">Usar este modelo</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modelo 7: Folha de Ponto -->
+        <div class="example-card">
+          <div class="example-preview">
+            <img src="images/modelo-folha-ponto.png" alt="Modelo de Folha de Ponto" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'doc-mockup\'><div class=\'doc-mockup-line title\'></div><div class=\'doc-mockup-line\'></div><div class=\'doc-mockup-badge\'>PONTO</div></div>';">
+          </div>
+          <div class="example-body">
+            <div class="example-tag">Demonstrativo</div>
+            <h3>Modelo de Folha de Ponto</h3>
+            <p>Controle impresso ou digital de horários de entrada, saída e registros de colaboradores.</p>
+            <div class="example-actions">
+              <button class="btn btn-secondary" onclick="openImageModal('images/modelo-folha-ponto.png', 'Modelo de Folha de Ponto')">Visualizar modelo</button>
+              <button class="btn btn-primary" onclick="useModel('formularios_pers', 'Modelo de Folha de Ponto')">Usar este modelo</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modelo 8: Documento Personalizado -->
+        <div class="example-card">
+          <div class="example-preview">
+            <img src="images/modelo-documento.png" alt="Modelo de Documento Geral" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'doc-mockup\'><div class=\'doc-mockup-line title\'></div><div class=\'doc-mockup-line\'></div><div class=\'doc-mockup-badge\'>DOC</div></div>';">
+          </div>
+          <div class="example-body">
+            <div class="example-tag">Demonstrativo</div>
+            <h3>Modelo de Documento Geral</h3>
+            <p>Ajuste e criação de contratos, declarações e comunicados institucionais com formatação limpa.</p>
+            <div class="example-actions">
+              <button class="btn btn-secondary" onclick="openImageModal('images/modelo-documento.png', 'Modelo de Documento Geral')">Visualizar modelo</button>
+              <button class="btn btn-primary" onclick="useModel('criacao_doc', 'Modelo de Documento Geral')">Usar este modelo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL DE VISUALIZAÇÃO AMPLIADA DA IMAGEM -->
+      <div class="image-modal-overlay" id="imageModal">
+        <div class="image-modal-content">
+          <div class="image-modal-header">
+            <h3 id="imageModalTitle">Visualização do Modelo</h3>
+            <button type="button" class="image-modal-close" onclick="closeImageModal()">✕</button>
+          </div>
+          <div class="image-modal-body">
+            <img id="imageModalSrc" src="" alt="Modelo Ampliado">
           </div>
         </div>
       </div>
@@ -1332,7 +1470,7 @@
 
       <!-- TABELA DINÂMICA DE PREÇOS -->
       <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-        🏷️ Tabela Geral de Valores
+        🏷️️ Tabela Geral de Valores
       </h3>
       <div class="table-container">
         <table class="price-table">
@@ -1551,7 +1689,7 @@
             </div>
 
             <p style="font-size: 0.8rem; color: var(--text-muted);">
-              * Prazos especiais e de urgência estão sujeitos à disponibilidade técnica de agenda e aprovação.
+              * Prazos especiais e de urgência dependem de confirmação manual de disponibilidade. Não aceitamos nem prometemos automaticamente prazos especiais.
             </p>
           </div>
 
@@ -1706,729 +1844,514 @@
               </div>
 
               <div class="pix-key-container">
-                <input type="text" class="form-control pix-key-input" id="pixKey" value="ws8530135@gmail.com" readonly>
+                <input type="text" class="form-control pix-key-input" id="pixKey" value="00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB" readonly>
                 <button type="button" class="btn btn-secondary" id="btnCopyPix" onclick="copyPixKey()" style="padding: 8px 12px; font-size: 0.8rem;">📋 Copiar chave PIX</button>
               </div>
             </div>
-            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px;">Chave PIX Oficial: ws8530135@gmail.com</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px;">Chave PIX Oficial</p>
           </div>
 
           <!-- INSTRUÇÕES -->
           <div class="payment-card">
             <div>
               <h3>📌 Instruções para Pagamento</h3>
-              <ol style="text-align: left; font-size: 0.88rem; color: var(--text-muted); padding-left: 20px; margin-top: 10px; line-height: 1.6;">
-                <li>Aguarde a análise e confirmação do valor final pelo WhatsApp.</li>
-                <li>Efetue o pagamento usando a chave PIX ou QR Code acima.</li>
-                <li>Envie o comprovante de pagamento para início do serviço.</li>
+              <ol style="text-align: left; font-size: 0.88rem; margin: 15px 0 15px 20px; color: var(--text-main);">
+                <li style="margin-bottom: 8px;">Aguarde o contato de confirmação do nosso atendimento com o valor final do seu pedido.</li>
+                <li style="margin-bottom: 8px;">Realize a transferência via PIX no valor exato combinado.</li>
+                <li style="margin-bottom: 8px;">Envie o comprovante de pagamento para nosso WhatsApp oficial.</li>
+                <li>Assim que confirmado, iniciaremos a produção imediatamente.</li>
               </ol>
-            </div>
-            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed var(--border-color);">
-              <a href="https://wa.me/5541999682836?text=Ol%C3%A1!%20Enviei%20meu%20pedido%20pelo%20site%20e%20gostaria%20de%20confirmar%20o%20or%C3%A7amento." target="_blank" class="btn btn-primary" style="background: #25d366; border: none; width: 100%;">💬 Enviar Comprovante no WhatsApp</a>
             </div>
           </div>
         </div>
       </section>
     </div>
 
-    <!-- ABA 6: DÚVIDAS FREQUENTES (FAQ) -->
+    <!-- ABA 6: FAQ -->
     <div id="pane-faq" class="tab-content">
-      <h2 class="section-title">❓ Dúvidas Frequentes</h2>
-      
+      <h2 class="section-title">Dúvidas Frequentes</h2>
       <div class="faq-grid">
         <div class="faq-card">
-          <h3>O que significa sob encomenda?</h3>
-          <p>Cada projeto é analisado e preparado conforme as necessidades informadas por você. Não vendemos arquivos genéricos ou prontos para download imediato.</p>
+          <h3>Como funciona o processo de orçamento?</h3>
+          <p>Você preenche os detalhes no formulário e nosso sistema calcula uma estimativa em tempo real. Em seguida, nossa equipe analisa o material e confirma o valor final e prazo.</p>
         </div>
-
         <div class="faq-card">
-          <h3>Qual é o prazo habitual?</h3>
-          <p>A previsão habitual é de 3 a 5 dias úteis, dependendo do serviço e da complexidade. O prazo exato é verificado após envio da solicitação.</p>
+          <h3>Qual o prazo médio de entrega?</h3>
+          <p>A maioria dos projetos é finalizada em 3 a 5 dias úteis. Projetos urgentes podem ser ajustados mediante confirmação prévia de disponibilidade.</p>
         </div>
-
         <div class="faq-card">
-          <h3>Como funciona o uso de modelos da vitrine?</h3>
-          <p>A vitrine é demonstrativa. Ao escolher um modelo, você o utiliza como referência inicial e pode solicitar as personalizações e textos que desejar.</p>
+          <h3>Posso pedir alterações após a entrega?</h3>
+          <p>Sim! Incluímos revisões para garantir que o resultado final fique exatamente como você precisa.</p>
         </div>
-
         <div class="faq-card">
-          <h3>Como funciona o orçamento automático?</h3>
-          <p>A calculadora gera uma estimativa visual em tempo real com base na tabela de preços configurada. Se houver algum item "sob consulta", o valor final exigirá validação manual.</p>
-        </div>
-
-        <div class="faq-card">
-          <h3>Quando devo realizar o pagamento?</h3>
-          <p>Apenas após o envio do pedido e a confirmação final do orçamento pelo nosso atendimento via WhatsApp ou e-mail.</p>
+          <h3>Quais formatos de arquivo vou receber?</h3>
+          <p>Você pode optar por receber em PDF pronto para uso e/ou arquivo editável (DOCX, XLSX) conforme a sua solicitação.</p>
         </div>
       </div>
     </div>
 
   </div>
 
+  <!-- JAVASCRIPT PRINCIPAL -->
   <script>
     /* ==========================================================================
-       1. TABELA DE PREÇOS E CONFIGURAÇÃO DE SERVIÇOS (CENTRALIZADA)
-       ==========================================================================
-       COMO EDITAR PREÇOS E SERVIÇOS:
-       - Para definir um preço real, substitua 'null' pelo número (ex: 15.00 ou 50).
-       - 'null' indica que o serviço está ativo mas depende de orçamento sob consulta.
-       - tipoCobranca: "porPagina", "porUnidade", "porProjeto" ou "fixo".
-       - ativo: 'true' para exibir no site ou 'false' para desativar temporariamente.
+       CONFIGURAÇÃO CENTRAL DE PREÇOS E ADICIONAIS (ATUALIZADA)
        ========================================================================== */
     const CONFIG_PRECOS = {
-      moeda: "BRL",
-      simbolo: "R$",
-      servicos: {
-        // --- CATEGORIA: DOCUMENTOS E TEXTOS ---
-        digitacao_doc: {
-          nome: "Digitação de documentos",
-          categoria: "Documentos e Textos",
-          tipoCobranca: "porPagina",
-          preco: null, // Ex: 5.00
-          ativo: true,
-          descricao: "Digitação e conversão de manuscritos ou imagens para texto editável."
-        },
-        formatacao_word_pdf: {
-          nome: "Formatação de Word e PDF",
-          categoria: "Documentos e Textos",
-          tipoCobranca: "porPagina",
-          preco: null, // Ex: 4.00
-          ativo: true,
-          descricao: "Ajuste de margens, fontes, espaçamentos e títulos conforme normas."
-        },
-        edicao_doc_existente: {
-          nome: "Edição de documento existente",
-          categoria: "Documentos e Textos",
-          tipoCobranca: "porPagina",
-          preco: null,
-          ativo: true,
-          descricao: "Alterações pontuais em documentos existentes fornecidos pelo cliente."
-        },
-        revisao_digitacao: {
-          nome: "Revisão básica de digitação",
-          categoria: "Documentos e Textos",
-          tipoCobranca: "porPagina",
-          preco: null,
-          ativo: true,
-          descricao: "Correção ortográfica e de concordância em textos prontos."
-        },
-        conversao_formatos: {
-          nome: "Conversão entre formatos",
-          categoria: "Documentos e Textos",
-          tipoCobranca: "porProjeto",
-          preco: null,
-          ativo: true,
-          descricao: "Conversão entre Word, PDF, JPG, Excel e outros formatos."
-        },
-        criacao_doc: {
-          nome: "Criação de documento do zero",
-          categoria: "Documentos e Textos",
-          tipoCobranca: "porProjeto",
-          preco: null,
-          ativo: true,
-          descricao: "Montagem completa de declarações e modelos com base nas informações."
-        },
-
-        // --- CATEGORIA: CURRÍCULOS E EMPREGO ---
-        curriculo_zero: {
-          nome: "Criação de currículo do zero",
-          categoria: "Currículos e Emprego",
-          tipoCobranca: "fixo",
-          preco: null, // Ex: 35.00
-          ativo: true,
-          descricao: "Elaboração completa com estrutura moderna e otimizada."
-        },
-        curriculo_atualizacao: {
-          nome: "Atualização de currículo existente",
-          categoria: "Currículos e Emprego",
-          tipoCobranca: "fixo",
-          preco: null,
-          ativo: true,
-          descricao: "Inclusão de novas experiências, cursos ou dados no CV atual."
-        },
-        carta_apresentacao: {
-          nome: "Carta de apresentação",
-          categoria: "Currículos e Emprego",
-          tipoCobranca: "fixo",
-          preco: null,
-          ativo: true,
-          descricao: "Redação de carta de apresentação personalizada para vagas."
-        },
-        pacote_curriculo_completo: {
-          nome: "Pacote Currículo + Carta",
-          categoria: "Currículos e Emprego",
-          tipoCobranca: "fixo",
-          preco: null,
-          ativo: true,
-          descricao: "Currículo moderno + carta de apresentação combinados."
-        },
-
-        // --- CATEGORIA: FORMULÁRIOS E PLANILHAS ---
-        formularios_pers: {
-          nome: "Criação de formulário/ficha",
-          categoria: "Formulários e Planilhas",
-          tipoCobranca: "porProjeto",
-          preco: 5.00,
-          ativo: true,
-          descricao: "Fichas de atendimento, cadastro ou recibos personalizados."
-        },
-        planilha_simples: {
-          nome: "Criação de planilha simples",
-          categoria: "Formulários e Planilhas",
-          tipoCobranca: "porProjeto",
-          preco: 5.00,
-          ativo: true,
-          descricao: "Tabelas organizadas de controle, relatórios e folhas de ponto."
-        },
-
-        // --- CATEGORIA: PDF E ARQUIVOS DIGITAIS ---
-        pdf_uniao_divisao: {
-          nome: "União / Separação de PDF",
-          categoria: "PDF e Arquivos Digitais",
-          tipoCobranca: "porProjeto",
-          preco: 0.00,
-          ativo: true,
-          descricao: "Juntar, separar, reorganizar páginas ou compactar arquivo PDF."
-        },
-        pdf_personalizado: {
-          nome: "Criar PDF personalizado",
-          categoria: "PDF e Arquivos Digitais",
-          tipoCobranca: "porProjeto",
-          preco: 0.00,
-          ativo: true,
-          descricao: "Preparação de materiais e relatórios para visualização digital/impressão."
-        }
-      },
-
-      adicionais: {
-        entrega_editavel: {
-          nome: "Entrega de arquivo editável (DOCX/XLSX)",
-          preco: 10.00, // Ex: 10.00
-          ativo: true,
-          descricao: "Disponibiliza o arquivo fonte para edição futura."
-        },
-        versao_pdf: {
-          nome: "Versão final pronta em PDF",
-          preco: 0.00,
-          ativo: true,
-          descricao: "Envio de arquivo fechado e pronto para impressão/envio."
-        },
-        insercao_logo: {
-          nome: "Inserção de logotipo fornecido",
-          preco: 15.00,
-          ativo: true,
-          descricao: "Aplicação de marca no cabeçalho ou marca d'água."
-        },
-        cabecalho_rodape: {
-          nome: "Inclusão de cabeçalho e rodapé",
-          preco: 25.00,
-          ativo: true,
-          descricao: "Padronização com contatos, números de página e dados formais."
-        },
-        tabelas_campos: {
-          nome: "Inserção de tabelas ou campos especiais",
-          preco: 15.00,
-          ativo: true,
-          descricao: "Adição de campos para preenchimento ou tabelas personalizadas."
-        },
-        prazo_urgencia: {
-          nome: "Solicitação de prazo especial/urgência",
-          preco: 30.00,
-          ativo: true,
-          descricao: "Priorização de entrega (sujeito à disponibilidade)."
-        }
-      }
+      servicos: [
+        { id: 'digitacao_docs', nome: 'Digitação de documentos', tipo: 'pagina', preco: 3.00, desc: 'R$ 3,00 por página' },
+        { id: 'digitacao_manuscritos', nome: 'Digitação de manuscritos ou imagens', tipo: 'pagina', preco: 5.00, desc: 'R$ 5,00 por página' },
+        { id: 'formatacao_word_pdf', nome: 'Formatação de Word e PDF', tipo: 'pagina', preco: 3.00, desc: 'R$ 3,00 por página' },
+        { id: 'edicao_existente', nome: 'Edição de documento existente', tipo: 'pagina', preco: 2.50, desc: 'R$ 2,50 por página' },
+        { id: 'revisao_basica', nome: 'Revisão básica de digitação', tipo: 'pagina', preco: 3.00, desc: 'R$ 3,00 por página' },
+        { id: 'conversao_formatos', nome: 'Conversão entre formatos', tipo: 'projeto', preco: 3.00, desc: 'R$ 3,00 por projeto' },
+        { id: 'criacao_zero', nome: 'Criação de documento do zero', tipo: 'projeto', preco: 10.00, desc: 'R$ 10,00 por projeto' },
+        { id: 'curriculo_zero', nome: 'Criação de currículo do zero', tipo: 'fixo', preco: 20.00, desc: 'R$ 20,00 preço fixo' },
+        { id: 'curriculo_existente', nome: 'Atualização de currículo existente', tipo: 'fixo', preco: 10.00, desc: 'R$ 10,00 preço fixo' },
+        { id: 'carta_apresentacao', nome: 'Carta de apresentação', tipo: 'fixo', preco: 12.00, desc: 'R$ 12,00 preço fixo' },
+        { id: 'pacote_curriculo_carta', nome: 'Pacote currículo + carta', tipo: 'fixo', preco: 28.00, desc: 'R$ 28,00 preço fixo' },
+        { id: 'formularios_pers', nome: 'Criação de formulário ou ficha', tipo: 'projeto', preco: 10.00, desc: 'R$ 10,00 por projeto' },
+        { id: 'planilha_simples', nome: 'Criação de planilha simples', tipo: 'projeto', preco: 15.00, desc: 'R$ 15,00 por projeto' },
+        { id: 'organizacao_pdf', nome: 'União, separação ou reorganização simples de PDF', tipo: 'projeto', preco: 5.00, desc: 'R$ 5,00 por projeto' },
+        { id: 'pdf_personalizado', nome: 'Criação de PDF personalizado', tipo: 'projeto', preco: 10.00, desc: 'A partir de R$ 10,00 por projeto' }
+      ],
+      adicionais: [
+        { id: 'adc_editable', nome: 'Entrega de arquivo editável DOCX/XLSX', preco: 5.00, tipo: 'fixo' },
+        { id: 'adc_pdf', nome: 'Versão final em PDF', preco: 0.00, tipo: 'incluido', obs: 'Incluída quando fizer parte da entrega combinada' },
+        { id: 'adc_logo', nome: 'Inserção de logotipo fornecido pelo cliente', preco: 8.00, tipo: 'fixo' },
+        { id: 'adc_header_footer', nome: 'Inclusão simples de cabeçalho e rodapé', preco: 5.00, tipo: 'fixo' },
+        { id: 'adc_tables', nome: 'Inserção de tabelas ou campos especiais simples', preco: 8.00, tipo: 'fixo' },
+        { id: 'adc_urgency', nome: 'Prazo especial/urgência', preco: 0.00, tipo: 'urgencia', obs: '50% do pedido (mínimo de R$ 10,00) - mediante confirmação manual' }
+      ]
     };
 
-    /* ==========================================================================
-       ESTADO GLOBAL E VARIÁVEIS
-       ========================================================================== */
+    /* ESTADO DA APLICAÇÃO */
     let currentStep = 1;
     const totalSteps = 7;
     let selectedFiles = [];
-    let selectedModelName = '';
+    let chosenModelName = "Nenhum (Solicitação personalizada)";
 
     /* ==========================================================================
-       INICIALIZAÇÃO E GERENCIAMENTO DE TEMAS
+       INICIALIZAÇÃO DA PÁGINA E TABELA DE PREÇOS
        ========================================================================== */
-    const themeToggleBtn = document.getElementById('themeToggle');
-    const themeIcon = document.getElementById('themeIcon');
-    const themeText = document.getElementById('themeText');
+    document.addEventListener("DOMContentLoaded", () => {
+      initTheme();
+      renderPriceTable();
+      renderServiceOptions();
+      renderAdditionalOptions();
+      recalcularOrcamento();
+    });
 
+    /* ALTERNÂNCIA DE TEMA CLARO / ESCURO */
     function initTheme() {
-      const savedTheme = localStorage.getItem('welgrafx_theme');
+      const toggleBtn = document.getElementById("themeToggle");
+      const savedTheme = localStorage.getItem("welgrafx_theme");
       if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.documentElement.setAttribute("data-theme", savedTheme);
         updateThemeUI(savedTheme);
-      } else {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        updateThemeUI(prefersDark ? 'dark' : 'light');
       }
-    }
-
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme') || 
-                      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      const next = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('welgrafx_theme', next);
-      updateThemeUI(next);
+      toggleBtn.addEventListener("click", () => {
+        const current = document.documentElement.getAttribute("data-theme") || "light";
+        const next = current === "light" ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("welgrafx_theme", next);
+        updateThemeUI(next);
+      });
     }
 
     function updateThemeUI(theme) {
-      if (theme === 'dark') {
-        themeIcon.textContent = '☀️';
-        themeText.textContent = 'Modo Claro';
-      } else {
-        themeIcon.textContent = '🌙';
-        themeText.textContent = 'Modo Escuro';
-      }
+      document.getElementById("themeIcon").textContent = theme === "dark" ? "☀️" : "🌙";
+      document.getElementById("themeText").textContent = theme === "dark" ? "Modo Claro" : "Modo Escuro";
     }
 
-    themeToggleBtn.addEventListener('click', toggleTheme);
-    initTheme();
+    /* RENDERIZAR TABELA GERAL DE VALORES */
+    function renderPriceTable() {
+      const tbody = document.getElementById("priceTableBody");
+      let html = "";
 
-    /* ==========================================================================
-       MONTAGEM DINÂMICA DA TABELA E OPÇÕES A PARTIR DE CONFIG_PRECOS
-       ========================================================================== */
-    function formatarMoeda(valor) {
-      if (valor === null || valor === undefined) return "Orçamento sob consulta";
-      return `R$ ${parseFloat(valor).toFixed(2).replace('.', ',')}`;
+      CONFIG_PRECOS.servicos.forEach(s => {
+        let cobranca = "Por projeto";
+        if (s.tipo === "pagina") cobranca = "Por página";
+        if (s.tipo === "fixo") cobranca = "Preço fixo";
+
+        let valor = `R$ ${s.preco.toFixed(2).replace(".", ",")}`;
+        if (s.id === 'pdf_personalizado') valor = `A partir de R$ ${s.preco.toFixed(2).replace(".", ",")}`;
+
+        html += `
+          <tr>
+            <td><strong>${s.nome}</strong></td>
+            <td>${cobranca}</td>
+            <td><span class="price-tag">${valor}</span></td>
+            <td><span class="badge-included">Preço definido</span></td>
+          </tr>
+        `;
+      });
+
+      CONFIG_PRECOS.adicionais.forEach(a => {
+        let cobranca = "Adicional fixo";
+        let valor = `+ R$ ${a.preco.toFixed(2).replace(".", ",")}`;
+        let status = `<span class="badge-included">Adicional</span>`;
+
+        if (a.tipo === 'incluido') {
+          cobranca = "Incluso";
+          valor = "R$ 0,00";
+          status = `<span class="badge-included">Cortesia / Incluso</span>`;
+        } else if (a.tipo === 'urgencia') {
+          cobranca = "Percentual";
+          valor = "50% do pedido";
+          status = `<span class="price-pending">Mínimo R$ 10,00 (Aprovação prévia)</span>`;
+        }
+
+        html += `
+          <tr style="background: var(--primary-light);">
+            <td><strong>${a.nome}</strong></td>
+            <td>${cobranca}</td>
+            <td><span class="price-tag">${valor}</span></td>
+            <td>${status}</td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
     }
 
-    function formatarTipoCobranca(tipo) {
-      switch (tipo) {
-        case 'porPagina': return 'Por página';
-        case 'porUnidade': return 'Por unidade';
-        case 'porProjeto': return 'Por projeto';
-        case 'fixo': return 'Preço fixo';
-        default: return 'Por serviço';
-      }
+    /* RENDERIZAR OPÇÕES DE SERVIÇOS NO FORMULÁRIO */
+    function renderServiceOptions() {
+      const container = document.getElementById("serviceOptionsContainer");
+      let html = "";
+
+      CONFIG_PRECOS.servicos.forEach((s, idx) => {
+        const isChecked = idx === 0 ? "checked" : "";
+        html += `
+          <div class="custom-option">
+            <input type="radio" name="servico" id="srv_${s.id}" value="${s.id}" ${isChecked} onchange="recalcularOrcamento()">
+            <label for="srv_${s.id}" class="option-label">
+              <span>${s.nome}</span>
+              <span class="option-price-tag">${s.desc}</span>
+            </label>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
     }
 
-    function renderizarTabelaEFormulario() {
-      // 1. Renderizar Tabela Geral de Preços
-      const priceBody = document.getElementById('priceTableBody');
-      priceBody.innerHTML = '';
+    /* RENDERIZAR ADICIONAIS NO FORMULÁRIO */
+    function renderAdditionalOptions() {
+      const container = document.getElementById("additionalsContainer");
+      let html = "";
 
-      // Serviços
-      Object.keys(CONFIG_PRECOS.servicos).forEach(key => {
-        const srv = CONFIG_PRECOS.servicos[key];
-        if (!srv.ativo) return;
+      CONFIG_PRECOS.adicionais.forEach(a => {
+        let descPreco = `+ R$ ${a.preco.toFixed(2).replace(".", ",")}`;
+        if (a.tipo === 'incluido') descPreco = "Incluída";
+        if (a.tipo === 'urgencia') descPreco = "50% (Mínimo R$ 10,00)";
 
-        const tr = document.createElement('tr');
-        const temPreco = srv.preco !== null;
-
-        tr.innerHTML = `
-          <td><strong>${srv.nome}</strong><br><span style="font-size:0.8rem; color:var(--text-muted);">${srv.descricao}</span></td>
-          <td>${formatarTipoCobranca(srv.tipoCobranca)}</td>
-          <td class="${temPreco ? 'price-tag' : 'price-pending'}">${formatarMoeda(srv.preco)}</td>
-          <td>${temPreco ? '<span class="badge-included">Preço Fixo</span>' : '<span class="price-pending">Sob Análise</span>'}</td>
+        html += `
+          <div class="custom-option">
+            <input type="checkbox" name="adicionais" id="adc_${a.id}" value="${a.id}" onchange="recalcularOrcamento()">
+            <label for="adc_${a.id}" class="option-label">
+              <span>${a.nome}</span>
+              <span class="option-price-tag">${descPreco}</span>
+            </label>
+          </div>
         `;
-        priceBody.appendChild(tr);
       });
 
-      // Adicionais na Tabela
-      Object.keys(CONFIG_PRECOS.adicionais).forEach(key => {
-        const adc = CONFIG_PRECOS.adicionais[key];
-        if (!adc.ativo) return;
-
-        const tr = document.createElement('tr');
-        const temPreco = adc.preco !== null;
-
-        tr.innerHTML = `
-          <td><strong>➕ Adicional: ${adc.nome}</strong><br><span style="font-size:0.8rem; color:var(--text-muted);">${adc.descricao}</span></td>
-          <td>Adicional</td>
-          <td class="${temPreco ? 'price-tag' : 'price-pending'}">${formatarMoeda(adc.preco)}</td>
-          <td>${temPreco ? '<span class="badge-included">Configurado</span>' : '<span class="price-pending">Sob Consulta</span>'}</td>
-        `;
-        priceBody.appendChild(tr);
-      });
-
-      // 2. Renderizar Opções de Serviços no Formulário (Etapa 1)
-      const serviceContainer = document.getElementById('serviceOptionsContainer');
-      serviceContainer.innerHTML = '';
-
-      Object.keys(CONFIG_PRECOS.servicos).forEach((key, index) => {
-        const srv = CONFIG_PRECOS.servicos[key];
-        if (!srv.ativo) return;
-
-        const div = document.createElement('div');
-        div.className = 'custom-option';
-        const isChecked = index === 0 ? 'checked' : '';
-        const precoStr = srv.preco !== null ? formatarMoeda(srv.preco) : 'Sob consulta';
-
-        div.innerHTML = `
-          <input type="radio" name="servico" id="srv_${key}" value="${srv.nome}" data-key="${key}" ${isChecked} onchange="recalcularOrcamento()">
-          <label for="srv_${key}" class="option-label">
-            <span>${srv.nome}</span>
-            <span class="option-price-tag">${precoStr}</span>
-          </label>
-        `;
-        serviceContainer.appendChild(div);
-      });
-
-      // 3. Renderizar Adicionais Selecionáveis (Etapa 5)
-      const addContainer = document.getElementById('additionalsContainer');
-      addContainer.innerHTML = '';
-
-      Object.keys(CONFIG_PRECOS.adicionais).forEach(key => {
-        const adc = CONFIG_PRECOS.adicionais[key];
-        if (!adc.ativo) return;
-
-        const div = document.createElement('div');
-        div.className = 'custom-option';
-        const precoStr = adc.preco !== null ? `+${formatarMoeda(adc.preco)}` : '+Sob consulta';
-
-        div.innerHTML = `
-          <input type="checkbox" name="adicionais_sel" id="adc_${key}" value="${adc.nome}" data-key="${key}" onchange="recalcularOrcamento()">
-          <label for="adc_${key}" class="option-label">
-            <span>☐ ${adc.nome}</span>
-            <span class="option-price-tag">${precoStr}</span>
-          </label>
-        `;
-        addContainer.appendChild(div);
-      });
-    }
-
-    renderizarTabelaEFormulario();
-
-    /* ==========================================================================
-       GERENCIAMENTO DE ABAS
-       ========================================================================== */
-    function switchTab(tabId) {
-      const buttons = document.querySelectorAll('.tab-btn');
-      buttons.forEach(btn => btn.classList.remove('active'));
-      const activeBtn = document.getElementById(`tab-${tabId}`);
-      if (activeBtn) activeBtn.classList.add('active');
-
-      const panes = document.querySelectorAll('.tab-content');
-      panes.forEach(pane => pane.classList.remove('active'));
-      const activePane = document.getElementById(`pane-${tabId}`);
-      if (activePane) activePane.classList.add('active');
+      container.innerHTML = html;
     }
 
     /* ==========================================================================
-       INTEGRAÇÃO VITRINE -> FORMULÁRIO (MODELOS DEMONSTRATIVOS)
+       MODAL DE VISUALIZAÇÃO AMPLIADA DA VITRINE
        ========================================================================== */
-    function useModel(serviceKey, modelName) {
-      selectedModelName = modelName;
-      
-      document.getElementById('selectedModelBanner').style.display = 'flex';
-      document.getElementById('selectedModelName').textContent = modelName;
-      document.getElementById('hiddenModeloEscolhido').value = modelName;
-      document.getElementById('descStep2').textContent = `Você escolheu o "${modelName}". Descreva as personalizações, textos e cores que você deseja alterar.`;
+    function openImageModal(imgSrc, title) {
+      document.getElementById('imageModalSrc').src = imgSrc;
+      document.getElementById('imageModalTitle').textContent = title;
+      document.getElementById('imageModal').classList.add('active');
+    }
 
-      // Selecionar o rádio correspondente se existir
-      const radioTarget = document.getElementById(`srv_${serviceKey}`);
-      if (radioTarget) {
-        radioTarget.checked = true;
+    function closeImageModal() {
+      document.getElementById('imageModal').classList.remove('active');
+    }
+
+    /* ==========================================================================
+       LÓGICA DA CALCULADORA E ORÇAMENTO
+       ========================================================================== */
+    function recalcularOrcamento() {
+      const selectedSrvRadio = document.querySelector('input[name="servico"]:checked');
+      if (!selectedSrvRadio) return;
+
+      const srvId = selectedSrvRadio.value;
+      const srvConfig = CONFIG_PRECOS.servicos.find(s => s.id === srvId);
+      const qtdInput = parseInt(document.getElementById("qtdPaginasInput").value) || 1;
+
+      let subtotalServico = 0;
+      let isPending = false;
+
+      // Cálculo do Serviço Principal
+      if (srvConfig) {
+        if (srvConfig.tipo === 'pagina') {
+          subtotalServico = srvConfig.preco * qtdInput;
+        } else if (srvConfig.tipo === 'projeto' || srvConfig.tipo === 'fixo') {
+          subtotalServico = srvConfig.preco;
+        }
       }
 
-      recalcularOrcamento();
+      // Cálculo dos Adicionais Selecionados
+      let subtotalAdicionais = 0;
+      let adicionaisNomes = [];
+      const selectedAdcBoxes = document.querySelectorAll('input[name="adicionais"]:checked');
+
+      let hasUrgency = false;
+
+      selectedAdcBoxes.forEach(box => {
+        const adcId = box.value;
+        const adcConfig = CONFIG_PRECOS.adicionais.find(a => a.id === adcId);
+        if (adcConfig) {
+          if (adcConfig.tipo === 'fixo') {
+            subtotalAdicionais += adcConfig.preco;
+            adicionaisNomes.push(adcConfig.nome);
+          } else if (adcConfig.tipo === 'incluido') {
+            adicionaisNomes.push(`${adcConfig.nome} (Incluído)`);
+          } else if (adcConfig.tipo === 'urgencia') {
+            hasUrgency = true;
+            adicionaisNomes.push(`${adcConfig.nome} (Sujeito à confirmação)`);
+          }
+        }
+      });
+
+      // Cálculo de Urgência (50% do subtotal elegível, mínimo de R$ 10,00)
+      if (hasUrgency) {
+        const subtotalElegivel = subtotalServico + subtotalAdicionais;
+        let valorUrgencia = subtotalElegivel * 0.50;
+        if (valorUrgencia < 10.00) valorUrgencia = 10.00;
+        subtotalAdicionais += valorUrgencia;
+        isPending = true; // Urgência requer confirmação manual
+      }
+
+      const totalGeral = subtotalServico + subtotalAdicionais;
+
+      // Atualizar interface do resumo
+      document.getElementById("sum-modelo").textContent = chosenModelName;
+      document.getElementById("sum-servico").textContent = srvConfig ? srvConfig.nome : "-";
+      document.getElementById("sum-subtotal-servico").textContent = `R$ ${subtotalServico.toFixed(2).replace(".", ",")}`;
+      document.getElementById("sum-adicionais-lista").textContent = adicionaisNomes.length > 0 ? adicionaisNomes.join(", ") : "Nenhum";
+      document.getElementById("sum-subtotal-adicionais").textContent = `R$ ${subtotalAdicionais.toFixed(2).replace(".", ",")}`;
+      document.getElementById("sum-arquivos").textContent = `${selectedFiles.length} arquivo(s)`;
+
+      const totalStr = `R$ ${totalGeral.toFixed(2).replace(".", ",")}`;
+      document.getElementById("sum-total-final").textContent = totalStr;
+      document.getElementById("hiddenOrcamentoCalculado").value = totalStr + (isPending ? " (Aguardando Confirmação)" : "");
+
+      document.getElementById("calcPendingWarning").style.display = isPending ? "block" : "none";
+    }
+
+    /* ==========================================================================
+       USO DE MODELOS DA VITRINE
+       ========================================================================== */
+    function useModel(serviceId, modelName) {
+      chosenModelName = modelName;
+      document.getElementById("selectedModelName").textContent = modelName;
+      document.getElementById("selectedModelBanner").style.display = "flex";
+      document.getElementById("hiddenModeloEscolhido").value = modelName;
+
+      // Marcar o serviço correspondente
+      const srvRadio = document.getElementById(`srv_${serviceId}`);
+      if (srvRadio) {
+        srvRadio.checked = true;
+      }
+
       switchTab('solicitar');
-      document.getElementById('solicitar').scrollIntoView({ behavior: 'smooth' });
+      recalcularOrcamento();
     }
 
     function clearModelChoice() {
-      selectedModelName = '';
-      document.getElementById('selectedModelBanner').style.display = 'none';
-      document.getElementById('selectedModelName').textContent = 'Nenhum';
-      document.getElementById('hiddenModeloEscolhido').value = 'Nenhum (Solicitação personalizada)';
-      document.getElementById('descStep2').textContent = 'Explique o que você deseja criar, editar ou personalizar neste projeto.';
+      chosenModelName = "Nenhum (Solicitação personalizada)";
+      document.getElementById("selectedModelBanner").style.display = "none";
+      document.getElementById("hiddenModeloEscolhido").value = chosenModelName;
       recalcularOrcamento();
     }
 
     function requestFromScratch() {
       clearModelChoice();
       switchTab('solicitar');
-      document.getElementById('solicitar').scrollIntoView({ behavior: 'smooth' });
     }
 
     /* ==========================================================================
-       CALCULADORA DE ORÇAMENTO AUTOMÁTICO EM TEMPO REAL
+       NAVEGAÇÃO ENTRE ABAS DA PÁGINA
        ========================================================================== */
-    function recalcularOrcamento() {
-      const servicoRadio = document.querySelector('input[name="servico"]:checked');
-      if (!servicoRadio) return;
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
 
-      const servKey = servicoRadio.getAttribute('data-key');
-      const srvObj = CONFIG_PRECOS.servicos[servKey];
-      
-      const qtdInput = parseInt(document.getElementById('qtdPaginasInput').value) || 1;
-      let orcamentoPendente = false;
-      let subtotalServico = 0;
+      const targetPane = document.getElementById(`pane-${tabId}`);
+      const targetBtn = document.getElementById(`tab-${tabId}`);
 
-      // Atualizar label da quantidade
-      const labelQtd = document.getElementById('labelQtdInput');
-      if (srvObj.tipoCobranca === 'porPagina') {
-        labelQtd.innerHTML = `Quantidade de Páginas <span class="required">*</span>`;
-      } else if (srvObj.tipoCobranca === 'porUnidade') {
-        labelQtd.innerHTML = `Quantidade de Unidades <span class="required">*</span>`;
-      } else {
-        labelQtd.innerHTML = `Quantidade do Projeto <span class="required">*</span>`;
-      }
+      if (targetPane) targetPane.classList.add("active");
+      if (targetBtn) targetBtn.classList.add("active");
 
-      // Cálculo do Serviço Principal
-      if (srvObj.preco === null) {
-        orcamentoPendente = true;
-      } else {
-        if (srvObj.tipoCobranca === 'porPagina' || srvObj.tipoCobranca === 'porUnidade') {
-          subtotalServico = srvObj.preco * qtdInput;
-        } else {
-          subtotalServico = srvObj.preco;
-        }
-      }
-
-      // Cálculo dos Adicionais
-      let subtotalAdicionais = 0;
-      const adicionaisChecados = document.querySelectorAll('input[name="adicionais_sel"]:checked');
-      const listaAdicionaisNomes = [];
-
-      adicionaisChecados.forEach(chk => {
-        const adcKey = chk.getAttribute('data-key');
-        const adcObj = CONFIG_PRECOS.adicionais[adcKey];
-        listaAdicionaisNomes.push(adcObj.nome);
-
-        if (adcObj.preco === null) {
-          orcamentoPendente = true;
-        } else {
-          subtotalAdicionais += adcObj.preco;
-        }
-      });
-
-      // Valor Total
-      const totalGeral = subtotalServico + subtotalAdicionais;
-
-      // Atualizar no DOM do Resumo (Etapa 7)
-      document.getElementById('sum-servico').textContent = `${srvObj.nome} (${formatarTipoCobranca(srvObj.tipoCobranca)})`;
-      document.getElementById('sum-subtotal-servico').textContent = srvObj.preco !== null ? formatarMoeda(subtotalServico) : "Orçamento sob consulta";
-      
-      document.getElementById('sum-adicionais-lista').textContent = listaAdicionaisNomes.length > 0 ? listaAdicionaisNomes.join(", ") : "Nenhum";
-      document.getElementById('sum-subtotal-adicionais').textContent = formatarMoeda(subtotalAdicionais);
-
-      const elTotal = document.getElementById('sum-total-final');
-      const elWarning = document.getElementById('calcPendingWarning');
-
-      if (orcamentoPendente) {
-        elTotal.textContent = "Orçamento sujeito à confirmação";
-        elTotal.style.color = "#d97706";
-        elWarning.style.display = "block";
-        document.getElementById('hiddenOrcamentoCalculado').value = "Sujeito à Confirmação do Atendimento";
-      } else {
-        elTotal.textContent = formatarMoeda(totalGeral);
-        elTotal.style.color = "var(--primary)";
-        elWarning.style.display = "none";
-        document.getElementById('hiddenOrcamentoCalculado').value = formatarMoeda(totalGeral);
-      }
-
-      // Preencher dados na tela de pagamento pré-formatados
-      document.getElementById('paySummaryValorCalculado').textContent = orcamentoPendente ? "Sob Consulta" : formatarMoeda(totalGeral);
-      document.getElementById('paySummaryStatus').textContent = orcamentoPendente ? "Aguardando Confirmação Manual" : "Estimado (Aguardando Aprovação)";
+      window.scrollTo({ top: 300, behavior: 'smooth' });
     }
 
     /* ==========================================================================
-       WIZARD E NAVEGAÇÃO DE ETAPAS
+       NAVEGAÇÃO DO FORMULÁRIO WIZARD (PASSOS)
        ========================================================================== */
     function changeStep(delta) {
-      if (delta > 0 && !validateStep(currentStep)) {
-        return;
-      }
+      if (delta > 0 && !validateStep(currentStep)) return;
 
       currentStep += delta;
       if (currentStep < 1) currentStep = 1;
       if (currentStep > totalSteps) currentStep = totalSteps;
 
-      updateWizardUI();
+      updateStepView();
     }
 
-    function updateWizardUI() {
-      const steps = document.querySelectorAll('.form-step');
-      steps.forEach(step => {
-        if (parseInt(step.dataset.step) === currentStep) {
-          step.classList.add('active');
-        } else {
-          step.classList.remove('active');
-        }
-      });
+    function updateStepView() {
+      document.querySelectorAll(".form-step").forEach(el => el.classList.remove("active"));
+      const currentEl = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+      if (currentEl) currentEl.classList.add("active");
 
+      // Atualizar progresso
       const percent = Math.round((currentStep / totalSteps) * 100);
-      document.getElementById('stepProgressText').textContent = `Etapa ${currentStep} de ${totalSteps}`;
-      document.getElementById('stepPercentText').textContent = `${percent}%`;
-      document.getElementById('progressBarFill').style.width = `${percent}%`;
+      document.getElementById("stepProgressText").textContent = `Etapa ${currentStep} de ${totalSteps}`;
+      document.getElementById("stepPercentText").textContent = `${percent}%`;
+      document.getElementById("progressBarFill").style.width = `${percent}%`;
 
-      document.getElementById('btnPrev').style.display = currentStep === 1 ? 'none' : 'inline-flex';
-      
+      // Atualizar botões
+      document.getElementById("btnPrev").style.display = currentStep === 1 ? "none" : "inline-flex";
+      document.getElementById("btnNext").style.display = currentStep === totalSteps ? "none" : "inline-flex";
+      document.getElementById("btnSubmit").style.display = currentStep === totalSteps ? "inline-flex" : "none";
+
       if (currentStep === totalSteps) {
-        document.getElementById('btnNext').style.display = 'none';
-        document.getElementById('btnSubmit').style.display = 'inline-flex';
         updateSummary();
-      } else {
-        document.getElementById('btnNext').style.display = 'inline-flex';
-        document.getElementById('btnSubmit').style.display = 'none';
       }
     }
 
     function validateStep(step) {
-      let valid = true;
+      let isValid = true;
 
       if (step === 1) {
-        const servicoChecked = document.querySelector('input[name="servico"]:checked');
-        const err = document.getElementById('err-servico');
-        if (!servicoChecked) {
-          err.style.display = 'block';
-          valid = false;
-        } else {
-          err.style.display = 'none';
-        }
+        const srvSelected = document.querySelector('input[name="servico"]:checked');
+        const err = document.getElementById("err-servico");
+        if (!srvSelected) { err.style.display = "block"; isValid = false; } else { err.style.display = "none"; }
       }
 
       if (step === 2) {
-        const desc = document.getElementById('descricao').value.trim();
-        const err = document.getElementById('err-descricao');
-        if (!desc) {
-          err.style.display = 'block';
-          valid = false;
-        } else {
-          err.style.display = 'none';
-        }
+        const desc = document.getElementById("descricao").value.trim();
+        const err = document.getElementById("err-descricao");
+        if (!desc) { err.style.display = "block"; isValid = false; } else { err.style.display = "none"; }
       }
 
-      if (step === 7) {
-        const nome = document.getElementById('nomeCliente').value.trim();
-        const whatsapp = document.getElementById('whatsappCliente').value.trim();
-        const confirmacao = document.getElementById('confirmacao').checked;
-
-        document.getElementById('err-nome').style.display = nome ? 'none' : 'block';
-        document.getElementById('err-whatsapp').style.display = whatsapp ? 'none' : 'block';
-        document.getElementById('err-confirmacao').style.display = confirmacao ? 'none' : 'block';
-
-        if (!nome || !whatsapp || !confirmacao) valid = false;
-      }
-
-      return valid;
+      return isValid;
     }
 
-    /* ==========================================================================
-       RESUMO DINÂMICO DOS DADOS DO CLIENTE
-       ========================================================================== */
     function updateSummary() {
       recalcularOrcamento();
-      const servicoChecked = document.querySelector('input[name="servico"]:checked');
-      const servicoVal = servicoChecked ? servicoChecked.value : '-';
-      const nomeVal = document.getElementById('nomeCliente').value.trim() || '-';
-
-      document.getElementById('sum-modelo').textContent = selectedModelName || 'Nenhum (Do zero)';
-      document.getElementById('sum-arquivos').textContent = `${selectedFiles.length} arquivo(s)`;
-
-      // Preencher painel de pagamento
-      document.getElementById('paySummaryServico').textContent = servicoVal;
-      document.getElementById('paySummaryModelo').textContent = selectedModelName || 'Nenhum (Personalizado)';
-      document.getElementById('paySummaryCliente').textContent = nomeVal;
     }
 
     /* ==========================================================================
-       MANIPULAÇÃO DE ARQUIVOS
+       GERENCIAMENTO DE ARQUIVOS ANEXADOS
        ========================================================================== */
     function handleFileSelect(event) {
       const files = Array.from(event.target.files);
-      files.forEach(file => {
-        if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
-          selectedFiles.push(file);
-        }
-      });
+      selectedFiles = selectedFiles.concat(files);
       renderFileList();
+      recalcularOrcamento();
+    }
+
+    function renderFileList() {
+      const container = document.getElementById("fileList");
+      if (selectedFiles.length === 0) {
+        container.innerHTML = "";
+        return;
+      }
+
+      let html = "";
+      selectedFiles.forEach((file, index) => {
+        html += `
+          <div class="file-item">
+            <div class="file-info">
+              <span>📎</span>
+              <span class="file-name">${file.name}</span>
+              <span style="color: var(--text-muted); font-size: 0.75rem;">(${Math.round(file.size / 1024)} KB)</span>
+            </div>
+            <button type="button" class="btn-remove-file" onclick="removeFile(${index})">✕ Remover</button>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
     }
 
     function removeFile(index) {
       selectedFiles.splice(index, 1);
       renderFileList();
+      recalcularOrcamento();
     }
 
-    function renderFileList() {
-      const listContainer = document.getElementById('fileList');
-      listContainer.innerHTML = '';
-
-      selectedFiles.forEach((file, index) => {
-        const item = document.createElement('div');
-        item.className = 'file-item';
-        
-        const sizeFormatted = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
-
-        item.innerHTML = `
-          <div class="file-info">
-            <span>📎</span>
-            <span class="file-name">${file.name}</span>
-            <span style="color:var(--text-muted); font-size:0.75rem;">(${sizeFormatted})</span>
-          </div>
-          <button type="button" class="btn-remove-file" onclick="removeFile(${index})">✕</button>
-        `;
-        listContainer.appendChild(item);
-      });
-      document.getElementById('sum-arquivos').textContent = `${selectedFiles.length} arquivo(s)`;
-    }
-
+    /* AUXILIARES DE CAMPOS */
     function toggleTamanhoCustom(val) {
-      document.getElementById('groupTamanhoCustom').style.display = (val === 'Personalizado') ? 'block' : 'none';
+      document.getElementById("groupTamanhoCustom").style.display = val === "Personalizado" ? "block" : "none";
     }
 
     function toggleDataEspecifica(show) {
-      document.getElementById('groupDataEspecifica').style.display = show ? 'block' : 'none';
+      document.getElementById("groupDataEspecifica").style.display = show ? "block" : "none";
     }
 
     /* ==========================================================================
-       SUBMISSÃO DO FORMULÁRIO E LIBERAÇÃO DA ABA DE PAGAMENTO
+       ENVIO REAL DO FORMULÁRIO E SUCESSO
        ========================================================================== */
     function submitFormReal() {
-      if (!validateStep(7)) return;
+      const nome = document.getElementById("nomeCliente").value.trim();
+      const whatsapp = document.getElementById("whatsappCliente").value.trim();
+      const confirmacao = document.getElementById("confirmacao").checked;
 
-      const form = document.getElementById('requestForm');
-      
-      // Ocultar formulário e exibir tela de sucesso
-      form.style.display = 'none';
-      document.getElementById('progressBarContainer').style.display = 'none';
-      document.getElementById('successScreen').classList.add('active');
+      let valid = true;
+      if (!nome) { document.getElementById("err-nome").style.display = "block"; valid = false; } else { document.getElementById("err-nome").style.display = "none"; }
+      if (!whatsapp) { document.getElementById("err-whatsapp").style.display = "block"; valid = false; } else { document.getElementById("err-whatsapp").style.display = "none"; }
+      if (!confirmacao) { document.getElementById("err-confirmacao").style.display = "block"; valid = false; } else { document.getElementById("err-confirmacao").style.display = "none"; }
 
-      // Revelar a aba de pagamento após envio bem-sucedido
-      document.getElementById('tab-pagamento').style.display = 'flex';
+      if (!valid) return;
 
-      // Disparar o envio real pelo FormSubmit
+      // Exibir tela de sucesso localmente e simular a navegação para o pagamento
+      document.getElementById("requestForm").style.display = "none";
+      document.getElementById("progressBarContainer").style.display = "none";
+      document.getElementById("successScreen").classList.add("active");
+
+      // Atualizar o resumo na aba de pagamento
+      document.getElementById("paySummaryServico").textContent = document.getElementById("sum-servico").textContent;
+      document.getElementById("paySummaryModelo").textContent = chosenModelName;
+      document.getElementById("paySummaryCliente").textContent = nome;
+      document.getElementById("paySummaryValorCalculado").textContent = document.getElementById("sum-total-final").textContent;
+
+      // Liberar aba de pagamento
+      document.getElementById("tab-pagamento").style.display = "inline-flex";
+
+      // Submeter formulário via FormSubmit em segundo plano
+      const form = document.getElementById("requestForm");
       const formData = new FormData(form);
+
       fetch(form.action, {
-        method: 'POST',
+        method: "POST",
         body: formData,
-        headers: {
-          'Accept': 'application/json'
-        }
-      }).catch(err => console.log('Envio registrado:', err));
+        headers: { 'Accept': 'application/json' }
+      }).catch(err => console.log("Envio em segundo plano executado."));
     }
 
     function goToPaymentAfterSuccess() {
       switchTab('pagamento');
-      document.getElementById('pane-pagamento').scrollIntoView({ behavior: 'smooth' });
     }
 
-    /* ==========================================================================
-       CÓPIA DA CHAVE PIX
-       ========================================================================== */
+    /* COPIAR CHAVE PIX */
     function copyPixKey() {
-      const pixInput = document.getElementById('pixKey');
-      if (!pixInput || !pixInput.value) {
-        alert('A chave PIX não está configurada.');
-        return;
-      }
+      const pixInput = document.getElementById("pixKey");
+      pixInput.select();
+      pixInput.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(pixInput.value);
 
-      navigator.clipboard.writeText(pixInput.value).then(() => {
-        const btn = document.getElementById('btnCopyPix');
-        btn.textContent = '✅ Copiado!';
-        setTimeout(() => {
-          btn.textContent = '📋 Copiar chave PIX';
-        }, 3000);
-      }).catch(() => {
-        pixInput.select();
-        document.execCommand('copy');
-        alert('Chave PIX copiada!');
-      });
+      const btn = document.getElementById("btnCopyPix");
+      btn.textContent = "✅ Copiado!";
+      setTimeout(() => {
+        btn.textContent = "📋 Copiar chave PIX";
+      }, 2500);
     }
   </script>
 </body>
