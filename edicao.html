@@ -617,14 +617,22 @@
       margin-bottom: 4px;
     }
 
+    /* Destaque para o Cartão Criar do Zero na Vitrine */
     .zero-request-card {
-      background: var(--bg-card);
-      border: 2px dashed var(--border-color);
+      background: linear-gradient(135deg, var(--bg-card), var(--primary-light));
+      border: 2px dashed var(--primary);
       border-radius: var(--radius-md);
       padding: 25px;
       text-align: center;
       margin-top: 10px;
       margin-bottom: 30px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .zero-request-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--border-focus);
     }
 
     /* MODAL DE VISUALIZAÇÃO AMPLIADA DA IMAGEM DO MODELO */
@@ -1203,7 +1211,7 @@
         </ul>
       </div>
 
-      <button class="btn btn-primary" onclick="switchTab('solicitar')">🚀 Fazer pedido do zero</button>
+      <button class="btn btn-primary" onclick="requestFromScratch()">🚀 Fazer pedido do zero</button>
       <button class="btn btn-secondary" onclick="switchTab('precos')" style="margin-left: 8px;">📊 Ver Serviços e Preços</button>
     </section>
 
@@ -1272,7 +1280,7 @@
             <p>Comprovante formal personalizável com campos para assinatura, dados de pagamento e marca.</p>
             <div class="example-actions">
               <button class="btn btn-secondary" onclick="openImageModal('images/modelo-recibo.png', 'Modelo de Recibo')">Visualizar modelo</button>
-              <button class="btn btn-primary" onclick="useModel('criacao_doc', 'Modelo de Recibo')">Usar este modelo</button>
+              <button class="btn btn-primary" onclick="useModel('criacao_zero', 'Modelo de Recibo')">Usar este modelo</button>
             </div>
           </div>
         </div>
@@ -1352,7 +1360,7 @@
             <p>Ajuste e criação de contratos, declarações e comunicados institucionais com formatação limpa.</p>
             <div class="example-actions">
               <button class="btn btn-secondary" onclick="openImageModal('images/modelo-documento.png', 'Modelo de Documento Geral')">Visualizar modelo</button>
-              <button class="btn btn-primary" onclick="useModel('criacao_doc', 'Modelo de Documento Geral')">Usar este modelo</button>
+              <button class="btn btn-primary" onclick="useModel('criacao_zero', 'Modelo de Documento Geral')">Usar este modelo</button>
             </div>
           </div>
         </div>
@@ -1371,17 +1379,17 @@
         </div>
       </div>
 
-      <!-- OPÇÃO DE SOLICITAR DO ZERO -->
+      <!-- CARTÃO VISUAL DE DESTAQUE: NÃO ENCONTROU O QUE PRECISA / CRIAR DO ZERO -->
       <div class="zero-request-card">
-        <h3>✨ Prefere criar algo totalmente personalizado?</h3>
-        <p style="color: var(--text-muted); margin-bottom: 15px; font-size: 0.95rem;">
-          Você não precisa obrigatoriamente usar um modelo da vitrine. Podemos criar seu documento do zero com base nas suas especificações.
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary); margin-bottom: 8px;">✨ Não encontrou o que precisa?</h3>
+        <p style="color: var(--text-main); margin-bottom: 16px; font-size: 0.95rem;">
+          Descreva sua ideia e solicite a criação de um material exclusivo, feito conforme suas necessidades. Você não precisa escolher um modelo pronto.
         </p>
-        <button class="btn btn-primary" onclick="requestFromScratch()">🚀 Solicitar trabalho do zero</button>
+        <button class="btn btn-primary" onclick="requestFromScratch()">💡 Descrever minha ideia</button>
       </div>
     </div>
 
-    <!-- ABA 2: SERVIÇOS E PREÇOS (NOVA SEÇÃO) -->
+    <!-- ABA 2: SERVIÇOS E PREÇOS -->
     <div id="pane-precos" class="tab-content">
       <h2 class="section-title">Catálogo de Serviços & Tabela de Preços</h2>
       <p style="text-align: center; color: var(--text-muted); margin-bottom: 25px; max-width: 700px; margin-left: auto; margin-right: auto;">
@@ -1470,7 +1478,7 @@
 
       <!-- TABELA DINÂMICA DE PREÇOS -->
       <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-        🏷️️ Tabela Geral de Valores
+        🏷 Tabela Geral de Valores
       </h3>
       <div class="table-container">
         <table class="price-table">
@@ -1488,7 +1496,7 @@
         </table>
       </div>
       <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-bottom: 20px;">
-        * Serviços com "Orçamento sob consulta" exigem envio prévio de arquivos ou detalhes para avaliação técnica.
+        * Serviços com "Orçamento sob consulta" ou "Análise prévia" exigem envio de detalhes para avaliação.
       </p>
     </div>
 
@@ -1524,7 +1532,7 @@
           <!-- ETAPA 1: SERVIÇO -->
           <div class="form-step active" data-step="1">
             <div class="step-title">1. Qual serviço você precisa? <span class="required">*</span></div>
-            <div class="step-desc">Selecione uma das opções configuradas do nosso catálogo:</div>
+            <div class="step-desc">Selecione uma das opções configuradas do nosso catálogo ou crie algo totalmente personalizado:</div>
             
             <div class="options-grid" id="serviceOptionsContainer">
               <!-- Gerado via JS a partir de CONFIG_PRECOS -->
@@ -1534,21 +1542,25 @@
 
           <!-- ETAPA 2: DETALHES DA SOLICITAÇÃO E QUANTIDADES -->
           <div class="form-step" data-step="2">
-            <div class="step-title">2. Detalhes e Quantidade <span class="required">*</span></div>
+            <div class="step-title" id="titleStep2">2. Detalhes e Quantidade <span class="required">*</span></div>
             <div class="step-desc" id="descStep2">Explique o que você deseja criar, editar ou personalizar neste projeto.</div>
             
-            <div class="form-group">
-              <label for="descricao">Explique a sua necessidade com detalhes <span class="required">*</span></label>
-              <textarea class="form-control" id="descricao" name="descricao" placeholder="Descreva os textos, cores, dados ou alterações que você deseja..." required oninput="recalcularOrcamento()"></textarea>
-              <div class="error-msg" id="err-descricao">Por favor, detalhe sua solicitação.</div>
+            <!-- CAMPOS DINÂMICOS PARA "CRIAR DO ZERO" -->
+            <div id="dynamicFieldsContainer">
+              <div class="form-group">
+                <label for="descricao" id="labelDescricao">Explique a sua necessidade com detalhes <span class="required">*</span></label>
+                <textarea class="form-control" id="descricao" name="descricao" placeholder="Descreva os textos, cores, dados ou alterações que você deseja..." required oninput="recalcularOrcamento()"></textarea>
+                <div class="error-msg" id="err-descricao">Por favor, detalhe sua solicitação.</div>
+              </div>
+
+              <div class="form-group" id="groupFinalidade">
+                <label for="finalidade">Qual é a finalidade do material? (opcional)</label>
+                <input type="text" class="form-control" id="finalidade" name="finalidade" placeholder="Ex: Para que e onde o material será utilizado...">
+              </div>
             </div>
 
-            <div class="form-group">
-              <label for="finalidade">Finalidade do material / Público (opcional)</label>
-              <input type="text" class="form-control" id="finalidade" name="finalidade" placeholder="Ex: Uso comercial, envio para clientes, impresso...">
-            </div>
-
-            <div class="form-group">
+            <!-- CAMPO DE QUANTIDADE -->
+            <div class="form-group" id="groupQtdInput">
               <label for="qtdPaginasInput" id="labelQtdInput">Quantidade (Páginas / Unidades / Projetos) <span class="required">*</span></label>
               <input type="number" class="form-control" id="qtdPaginasInput" name="qtdPaginas" value="1" min="1" oninput="recalcularOrcamento()" onchange="recalcularOrcamento()">
               <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Utilizado para o cálculo de serviços cobrados por página ou unidade.</p>
@@ -1558,12 +1570,12 @@
           <!-- ETAPA 3: ARQUIVOS E REFERÊNCIAS -->
           <div class="form-step" data-step="3">
             <div class="step-title">3. Arquivos e Referências</div>
-            <div class="step-desc">Envie arquivos que nos ajudem a entender seu projeto (PDF, DOC, DOCX, JPG, PNG, WEBP, XLS, XLSX).</div>
+            <div class="step-desc">Possui referências? Envie arquivos ou imagens que ajudem a explicar sua ideia (PDF, DOC, DOCX, JPG, PNG, WEBP, XLS, XLSX).</div>
             
             <div class="file-upload-zone">
               <input type="file" name="attachment" id="fileInput" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.xls,.xlsx" onchange="handleFileSelect(event)">
               <p><strong>Clique aqui ou arraste seus arquivos</strong></p>
-              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Você pode adicionar múltiplos arquivos.</p>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Você pode adicionar múltiplos arquivos de referência.</p>
             </div>
 
             <div class="file-list" id="fileList"></div>
@@ -1655,15 +1667,15 @@
             </div>
 
             <div class="form-group">
-              <label for="preferencias">Preferências visuais ou observações específicas</label>
-              <textarea class="form-control" id="preferencias" name="preferencias" placeholder="Cores de preferência, estilo visual, observações gerais..."></textarea>
+              <label for="preferencias" id="labelPreferencias">Como gostaria que fosse? (Aparência, cores, estilo) ou Informações adicionais</label>
+              <textarea class="form-control" id="preferencias" name="preferencias" placeholder="Cores de preferência, estilo visual, observações gerais ou detalhes que não se encaixaram anteriormente..."></textarea>
             </div>
           </div>
 
           <!-- ETAPA 6: PRAZO E URGÊNCIA -->
           <div class="form-step" data-step="6">
             <div class="step-title">6. Expectativa de Prazo</div>
-            <div class="step-desc">A previsão habitual é de 3 a 5 dias úteis após confirmação do orçamento.</div>
+            <div class="step-desc">Qual é o prazo desejado? A data limite depende de confirmação prévia após a análise.</div>
 
             <div class="form-group">
               <label>Quando você precisa do material?</label>
@@ -1684,7 +1696,7 @@
             </div>
 
             <div class="form-group" id="groupDataEspecifica" style="display: none;">
-              <label for="dataPrazo">Qual a data limite?</label>
+              <label for="dataPrazo">Qual a data limite desejada?</label>
               <input type="date" class="form-control" id="dataPrazo" name="dataPrazo">
             </div>
 
@@ -1696,7 +1708,7 @@
           <!-- ETAPA 7: DADOS E RESUMO DO ORÇAMENTO -->
           <div class="form-step" data-step="7">
             <div class="step-title">7. Dados do Cliente & Resumo do Orçamento</div>
-            <div class="step-desc">Informe seus dados para contato e confira a estimativa do seu pedido.</div>
+            <div class="step-desc">Informe seus dados para contato e confira o resumo da sua solicitação.</div>
 
             <div class="form-group">
               <label for="nomeCliente">Nome completo <span class="required">*</span></label>
@@ -1715,9 +1727,9 @@
               <input type="email" class="form-control" id="emailCliente" name="emailCliente" placeholder="seu@email.com">
             </div>
 
-            <div class="budget-box">
+            <div class="budget-box" id="budgetBoxContainer">
               <div class="budget-title" id="budgetTitleText">💰 Estimativa do Orçamento</div>
-              <p style="font-size: 0.85rem; color: var(--text-muted);">
+              <p style="font-size: 0.85rem; color: var(--text-muted);" id="budgetNoticeText">
                 A estimativa calculada no navegador é uma referência inicial. O valor e o prazo oficiais serão validados pelo nosso atendimento.
               </p>
             </div>
@@ -1825,11 +1837,16 @@
         <!-- RESUMO COMPLETO DO PEDIDO -->
         <div class="summary-card" id="paymentSummaryBox">
           <h3 style="font-size: 1.05rem; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">📋 Resumo do Pedido Solicitado</h3>
-          <div class="summary-item"><span class="summary-label">Serviço:</span><span class="summary-value" id="paySummaryServico">Solicitação Enviada</span></div>
+          <div class="summary-item"><span class="summary-label">Tipo / Serviço:</span><span class="summary-value" id="paySummaryServico">Solicitação Enviada</span></div>
           <div class="summary-item"><span class="summary-label">Modelo Escolhido:</span><span class="summary-value" id="paySummaryModelo">Nenhum</span></div>
           <div class="summary-item"><span class="summary-label">Cliente:</span><span class="summary-value" id="paySummaryCliente">-</span></div>
-          <div class="summary-item"><span class="summary-label">Estimativa Calculada:</span><span class="summary-value" id="paySummaryValorCalculado">R$ 0,00</span></div>
-          <div class="summary-item" style="margin-top: 8px; font-weight: 700; color: var(--primary);"><span class="summary-label" style="color: var(--primary);">Status do Orçamento:</span><span class="summary-value" id="paySummaryStatus">Aguardando confirmação do orçamento</span></div>
+          <div class="summary-item"><span class="summary-label">Estimativa / Valor:</span><span class="summary-value" id="paySummaryValorCalculado">Aguardando análise</span></div>
+          <div class="summary-item" style="margin-top: 8px; font-weight: 700; color: var(--primary);"><span class="summary-label" style="color: var(--primary);">Status do Orçamento:</span><span class="summary-value" id="paySummaryStatus">Aguardando análise e definição do valor</span></div>
+          <div class="summary-item"><span class="summary-label">Prazo Estimado:</span><span class="summary-value" id="paySummaryPrazo">A combinar após análise</span></div>
+          <div class="summary-item" id="paySummaryDescBox" style="display: none; flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border-color);">
+            <span class="summary-label">Descrição da Ideia enviada:</span>
+            <span class="summary-value" id="paySummaryDescText" style="max-width: 100%; text-align: left; font-weight: normal; font-size: 0.85rem; color: var(--text-main);"></span>
+          </div>
         </div>
 
         <div class="payment-grid">
@@ -1873,7 +1890,7 @@
       <div class="faq-grid">
         <div class="faq-card">
           <h3>Como funciona o processo de orçamento?</h3>
-          <p>Você preenche os detalhes no formulário e nosso sistema calcula uma estimativa em tempo real. Em seguida, nossa equipe analisa o material e confirma o valor final e prazo.</p>
+          <p>Você preenche os detalhes no formulário e nosso sistema calcula uma estimativa em tempo real (quando aplicável). Em seguida, nossa equipe analisa o material e confirma o valor final e prazo.</p>
         </div>
         <div class="faq-card">
           <h3>Qual o prazo médio de entrega?</h3>
@@ -1895,17 +1912,18 @@
   <!-- JAVASCRIPT PRINCIPAL -->
   <script>
     /* ==========================================================================
-       CONFIGURAÇÃO CENTRAL DE PREÇOS E ADICIONAIS (ATUALIZADA)
+       CONFIGURAÇÃO CENTRAL DE PREÇOS E ADICIONAIS
        ========================================================================== */
     const CONFIG_PRECOS = {
       servicos: [
+        { id: 'criar_do_zero', nome: '✨ Criar do zero — Sua ideia, do seu jeito', tipo: 'orcamento', preco: 15.00, desc: 'R$ 15,00 preço fixo' },
         { id: 'digitacao_docs', nome: 'Digitação de documentos', tipo: 'pagina', preco: 3.00, desc: 'R$ 3,00 por página' },
         { id: 'digitacao_manuscritos', nome: 'Digitação de manuscritos ou imagens', tipo: 'pagina', preco: 5.00, desc: 'R$ 5,00 por página' },
         { id: 'formatacao_word_pdf', nome: 'Formatação de Word e PDF', tipo: 'pagina', preco: 3.00, desc: 'R$ 3,00 por página' },
         { id: 'edicao_existente', nome: 'Edição de documento existente', tipo: 'pagina', preco: 2.50, desc: 'R$ 2,50 por página' },
         { id: 'revisao_basica', nome: 'Revisão básica de digitação', tipo: 'pagina', preco: 3.00, desc: 'R$ 3,00 por página' },
         { id: 'conversao_formatos', nome: 'Conversão entre formatos', tipo: 'projeto', preco: 3.00, desc: 'R$ 3,00 por projeto' },
-        { id: 'criacao_zero', nome: 'Criação de documento do zero', tipo: 'projeto', preco: 10.00, desc: 'R$ 10,00 por projeto' },
+        { id: 'criacao_zero', nome: 'Criação de documento simples do zero', tipo: 'projeto', preco: 10.00, desc: 'R$ 10,00 por projeto' },
         { id: 'curriculo_zero', nome: 'Criação de currículo do zero', tipo: 'fixo', preco: 20.00, desc: 'R$ 20,00 preço fixo' },
         { id: 'curriculo_existente', nome: 'Atualização de currículo existente', tipo: 'fixo', preco: 10.00, desc: 'R$ 10,00 preço fixo' },
         { id: 'carta_apresentacao', nome: 'Carta de apresentação', tipo: 'fixo', preco: 12.00, desc: 'R$ 12,00 preço fixo' },
@@ -1973,16 +1991,23 @@
         let cobranca = "Por projeto";
         if (s.tipo === "pagina") cobranca = "Por página";
         if (s.tipo === "fixo") cobranca = "Preço fixo";
+        if (s.tipo === "orcamento") cobranca = "Sob análise";
 
         let valor = `R$ ${s.preco.toFixed(2).replace(".", ",")}`;
+        let status = `<span class="badge-included">Preço definido</span>`;
+
         if (s.id === 'pdf_personalizado') valor = `A partir de R$ ${s.preco.toFixed(2).replace(".", ",")}`;
+        if (s.tipo === 'orcamento') {
+          valor = "Sob consulta";
+          status = `<span class="price-pending">Aguardando análise</span>`;
+        }
 
         html += `
           <tr>
             <td><strong>${s.nome}</strong></td>
             <td>${cobranca}</td>
             <td><span class="price-tag">${valor}</span></td>
-            <td><span class="badge-included">Preço definido</span></td>
+            <td>${status}</td>
           </tr>
         `;
       });
@@ -2022,10 +2047,11 @@
 
       CONFIG_PRECOS.servicos.forEach((s, idx) => {
         const isChecked = idx === 0 ? "checked" : "";
+        const isHighlight = s.id === 'criar_do_zero' ? 'style="border: 2px solid var(--primary); background: var(--primary-light);"' : '';
         html += `
           <div class="custom-option">
             <input type="radio" name="servico" id="srv_${s.id}" value="${s.id}" ${isChecked} onchange="recalcularOrcamento()">
-            <label for="srv_${s.id}" class="option-label">
+            <label for="srv_${s.id}" class="option-label" ${isHighlight}>
               <span>${s.nome}</span>
               <span class="option-price-tag">${s.desc}</span>
             </label>
@@ -2048,8 +2074,8 @@
 
         html += `
           <div class="custom-option">
-            <input type="checkbox" name="adicionais" id="adc_${a.id}" value="${a.id}" onchange="recalcularOrcamento()">
-            <label for="adc_${a.id}" class="option-label">
+            <input type="checkbox" name="adicionais" id="${a.id}" value="${a.id}" onchange="recalcularOrcamento()">
+            <label for="${a.id}" class="option-label">
               <span>${a.nome}</span>
               <span class="option-price-tag">${descPreco}</span>
             </label>
@@ -2060,107 +2086,31 @@
       container.innerHTML = html;
     }
 
-    /* ==========================================================================
-       MODAL DE VISUALIZAÇÃO AMPLIADA DA VITRINE
-       ========================================================================== */
-    function openImageModal(imgSrc, title) {
-      document.getElementById('imageModalSrc').src = imgSrc;
-      document.getElementById('imageModalTitle').textContent = title;
-      document.getElementById('imageModal').classList.add('active');
+    /* NAVEGAÇÃO ENTRE ABAS */
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+
+      const targetPane = document.getElementById("pane-" + tabId);
+      const targetBtn = document.getElementById("tab-" + tabId);
+
+      if (targetPane) targetPane.classList.add("active");
+      if (targetBtn) targetBtn.classList.add("active");
+
+      window.scrollTo({ top: targetPane ? targetPane.offsetTop - 80 : 0, behavior: 'smooth' });
     }
 
-    function closeImageModal() {
-      document.getElementById('imageModal').classList.remove('active');
-    }
-
-    /* ==========================================================================
-       LÓGICA DA CALCULADORA E ORÇAMENTO
-       ========================================================================== */
-    function recalcularOrcamento() {
-      const selectedSrvRadio = document.querySelector('input[name="servico"]:checked');
-      if (!selectedSrvRadio) return;
-
-      const srvId = selectedSrvRadio.value;
-      const srvConfig = CONFIG_PRECOS.servicos.find(s => s.id === srvId);
-      const qtdInput = parseInt(document.getElementById("qtdPaginasInput").value) || 1;
-
-      let subtotalServico = 0;
-      let isPending = false;
-
-      // Cálculo do Serviço Principal
-      if (srvConfig) {
-        if (srvConfig.tipo === 'pagina') {
-          subtotalServico = srvConfig.preco * qtdInput;
-        } else if (srvConfig.tipo === 'projeto' || srvConfig.tipo === 'fixo') {
-          subtotalServico = srvConfig.preco;
-        }
-      }
-
-      // Cálculo dos Adicionais Selecionados
-      let subtotalAdicionais = 0;
-      let adicionaisNomes = [];
-      const selectedAdcBoxes = document.querySelectorAll('input[name="adicionais"]:checked');
-
-      let hasUrgency = false;
-
-      selectedAdcBoxes.forEach(box => {
-        const adcId = box.value;
-        const adcConfig = CONFIG_PRECOS.adicionais.find(a => a.id === adcId);
-        if (adcConfig) {
-          if (adcConfig.tipo === 'fixo') {
-            subtotalAdicionais += adcConfig.preco;
-            adicionaisNomes.push(adcConfig.nome);
-          } else if (adcConfig.tipo === 'incluido') {
-            adicionaisNomes.push(`${adcConfig.nome} (Incluído)`);
-          } else if (adcConfig.tipo === 'urgencia') {
-            hasUrgency = true;
-            adicionaisNomes.push(`${adcConfig.nome} (Sujeito à confirmação)`);
-          }
-        }
-      });
-
-      // Cálculo de Urgência (50% do subtotal elegível, mínimo de R$ 10,00)
-      if (hasUrgency) {
-        const subtotalElegivel = subtotalServico + subtotalAdicionais;
-        let valorUrgencia = subtotalElegivel * 0.50;
-        if (valorUrgencia < 10.00) valorUrgencia = 10.00;
-        subtotalAdicionais += valorUrgencia;
-        isPending = true; // Urgência requer confirmação manual
-      }
-
-      const totalGeral = subtotalServico + subtotalAdicionais;
-
-      // Atualizar interface do resumo
-      document.getElementById("sum-modelo").textContent = chosenModelName;
-      document.getElementById("sum-servico").textContent = srvConfig ? srvConfig.nome : "-";
-      document.getElementById("sum-subtotal-servico").textContent = `R$ ${subtotalServico.toFixed(2).replace(".", ",")}`;
-      document.getElementById("sum-adicionais-lista").textContent = adicionaisNomes.length > 0 ? adicionaisNomes.join(", ") : "Nenhum";
-      document.getElementById("sum-subtotal-adicionais").textContent = `R$ ${subtotalAdicionais.toFixed(2).replace(".", ",")}`;
-      document.getElementById("sum-arquivos").textContent = `${selectedFiles.length} arquivo(s)`;
-
-      const totalStr = `R$ ${totalGeral.toFixed(2).replace(".", ",")}`;
-      document.getElementById("sum-total-final").textContent = totalStr;
-      document.getElementById("hiddenOrcamentoCalculado").value = totalStr + (isPending ? " (Aguardando Confirmação)" : "");
-
-      document.getElementById("calcPendingWarning").style.display = isPending ? "block" : "none";
-    }
-
-    /* ==========================================================================
-       USO DE MODELOS DA VITRINE
-       ========================================================================== */
+    /* USO DE MODELO DA VITRINE */
     function useModel(serviceId, modelName) {
       chosenModelName = modelName;
       document.getElementById("selectedModelName").textContent = modelName;
       document.getElementById("selectedModelBanner").style.display = "flex";
       document.getElementById("hiddenModeloEscolhido").value = modelName;
 
-      // Marcar o serviço correspondente
-      const srvRadio = document.getElementById(`srv_${serviceId}`);
-      if (srvRadio) {
-        srvRadio.checked = true;
-      }
+      const radio = document.getElementById("srv_" + serviceId);
+      if (radio) radio.checked = true;
 
-      switchTab('solicitar');
+      switchTab("solicitar");
       recalcularOrcamento();
     }
 
@@ -2171,114 +2121,93 @@
       recalcularOrcamento();
     }
 
+    /* AÇÃO: SOLICITAR TRABALHO DO ZERO */
     function requestFromScratch() {
       clearModelChoice();
-      switchTab('solicitar');
+      const radio = document.getElementById("srv_criar_do_zero");
+      if (radio) radio.checked = true;
+
+      switchTab("solicitar");
+      recalcularOrcamento();
     }
 
-    /* ==========================================================================
-       NAVEGAÇÃO ENTRE ABAS DA PÁGINA
-       ========================================================================== */
-    function switchTab(tabId) {
-      document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
-      document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
-
-      const targetPane = document.getElementById(`pane-${tabId}`);
-      const targetBtn = document.getElementById(`tab-${tabId}`);
-
-      if (targetPane) targetPane.classList.add("active");
-      if (targetBtn) targetBtn.classList.add("active");
-
-      window.scrollTo({ top: 300, behavior: 'smooth' });
+    /* MODAL DE IMAGEM */
+    function openImageModal(src, title) {
+      document.getElementById("imageModalSrc").src = src;
+      document.getElementById("imageModalTitle").textContent = title;
+      document.getElementById("imageModal").classList.add("active");
     }
 
-    /* ==========================================================================
-       NAVEGAÇÃO DO FORMULÁRIO WIZARD (PASSOS)
-       ========================================================================== */
-    function changeStep(delta) {
-      if (delta > 0 && !validateStep(currentStep)) return;
-
-      currentStep += delta;
-      if (currentStep < 1) currentStep = 1;
-      if (currentStep > totalSteps) currentStep = totalSteps;
-
-      updateStepView();
+    function closeImageModal() {
+      document.getElementById("imageModal").classList.remove("active");
     }
 
-    function updateStepView() {
+    /* WIZARD FORMULÁRIO - TROCA DE ETAPAS */
+    function updateStepUI() {
       document.querySelectorAll(".form-step").forEach(el => el.classList.remove("active"));
       const currentEl = document.querySelector(`.form-step[data-step="${currentStep}"]`);
       if (currentEl) currentEl.classList.add("active");
 
-      // Atualizar progresso
-      const percent = Math.round((currentStep / totalSteps) * 100);
       document.getElementById("stepProgressText").textContent = `Etapa ${currentStep} de ${totalSteps}`;
-      document.getElementById("stepPercentText").textContent = `${percent}%`;
-      document.getElementById("progressBarFill").style.width = `${percent}%`;
+      const percent = Math.round((currentStep / totalSteps) * 100);
+      document.getElementById("stepPercentText").textContent = percent + "%";
+      document.getElementById("progressBarFill").style.width = percent + "%";
 
-      // Atualizar botões
-      document.getElementById("btnPrev").style.display = currentStep === 1 ? "none" : "inline-flex";
-      document.getElementById("btnNext").style.display = currentStep === totalSteps ? "none" : "inline-flex";
-      document.getElementById("btnSubmit").style.display = currentStep === totalSteps ? "inline-flex" : "none";
-
+      document.getElementById("btnPrev").style.display = currentStep > 1 ? "inline-flex" : "none";
       if (currentStep === totalSteps) {
-        updateSummary();
+        document.getElementById("btnNext").style.display = "none";
+        document.getElementById("btnSubmit").style.display = "inline-flex";
+      } else {
+        document.getElementById("btnNext").style.display = "inline-flex";
+        document.getElementById("btnSubmit").style.display = "none";
       }
+
+      window.scrollTo({ top: document.getElementById("solicitar").offsetTop - 50, behavior: 'smooth' });
     }
 
-    function validateStep(step) {
-      let isValid = true;
+    function changeStep(delta) {
+      if (delta > 0 && !validateCurrentStep()) return;
+      currentStep += delta;
+      if (currentStep < 1) currentStep = 1;
+      if (currentStep > totalSteps) currentStep = totalSteps;
+      updateStepUI();
+    }
 
-      if (step === 1) {
-        const srvSelected = document.querySelector('input[name="servico"]:checked');
+    /* VALIDAÇÃO POR ETAPA */
+    function validateCurrentStep() {
+      let valid = true;
+
+      if (currentStep === 1) {
+        const selectedSrv = document.querySelector('input[name="servico"]:checked');
         const err = document.getElementById("err-servico");
-        if (!srvSelected) { err.style.display = "block"; isValid = false; } else { err.style.display = "none"; }
-      }
-
-      if (step === 2) {
+        if (!selectedSrv) { err.style.display = "block"; valid = false; }
+        else { err.style.display = "none"; }
+      } else if (currentStep === 2) {
         const desc = document.getElementById("descricao").value.trim();
-        const err = document.getElementById("err-descricao");
-        if (!desc) { err.style.display = "block"; isValid = false; } else { err.style.display = "none"; }
+        const errDesc = document.getElementById("err-descricao");
+        if (!desc) { errDesc.style.display = "block"; valid = false; }
+        else { errDesc.style.display = "none"; }
+      } else if (currentStep === 7) {
+        const nome = document.getElementById("nomeCliente").value.trim();
+        const whatsapp = document.getElementById("whatsappCliente").value.trim();
+        const confirmacao = document.getElementById("confirmacao").checked;
+
+        document.getElementById("err-nome").style.display = nome ? "none" : "block";
+        document.getElementById("err-whatsapp").style.display = whatsapp ? "none" : "block";
+        document.getElementById("err-confirmacao").style.display = confirmacao ? "none" : "block";
+
+        if (!nome || !whatsapp || !confirmacao) valid = false;
       }
 
-      return isValid;
+      return valid;
     }
 
-    function updateSummary() {
-      recalcularOrcamento();
-    }
-
-    /* ==========================================================================
-       GERENCIAMENTO DE ARQUIVOS ANEXADOS
-       ========================================================================== */
+    /* UPLOAD DE ARQUIVOS */
     function handleFileSelect(event) {
       const files = Array.from(event.target.files);
       selectedFiles = selectedFiles.concat(files);
       renderFileList();
       recalcularOrcamento();
-    }
-
-    function renderFileList() {
-      const container = document.getElementById("fileList");
-      if (selectedFiles.length === 0) {
-        container.innerHTML = "";
-        return;
-      }
-
-      let html = "";
-      selectedFiles.forEach((file, index) => {
-        html += `
-          <div class="file-item">
-            <div class="file-info">
-              <span>📎</span>
-              <span class="file-name">${file.name}</span>
-              <span style="color: var(--text-muted); font-size: 0.75rem;">(${Math.round(file.size / 1024)} KB)</span>
-            </div>
-            <button type="button" class="btn-remove-file" onclick="removeFile(${index})">✕ Remover</button>
-          </div>
-        `;
-      });
-      container.innerHTML = html;
     }
 
     function removeFile(index) {
@@ -2287,57 +2216,191 @@
       recalcularOrcamento();
     }
 
-    /* AUXILIARES DE CAMPOS */
-    function toggleTamanhoCustom(val) {
-      document.getElementById("groupTamanhoCustom").style.display = val === "Personalizado" ? "block" : "none";
+    function renderFileList() {
+      const container = document.getElementById("fileList");
+      let html = "";
+      selectedFiles.forEach((file, idx) => {
+        html += `
+          <div class="file-item">
+            <div class="file-info">
+              <span>📎</span>
+              <span class="file-name">${file.name}</span>
+              <span style="color:var(--text-muted); font-size:0.75rem;">(${(file.size / 1024).toFixed(1)} KB)</span>
+            </div>
+            <button type="button" class="btn-remove-file" onclick="removeFile(${idx})">Remover</button>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+      document.getElementById("sum-arquivos").textContent = `${selectedFiles.length} arquivo(s)`;
+    }
+
+    /* VISIBILIDADE DE CAMPOS DE FORMATO E PRAZO */
+    function toggleTamanhoCustom(value) {
+      document.getElementById("groupTamanhoCustom").style.display = value === "Personalizado" ? "block" : "none";
     }
 
     function toggleDataEspecifica(show) {
       document.getElementById("groupDataEspecifica").style.display = show ? "block" : "none";
     }
 
-    /* ==========================================================================
-       ENVIO REAL DO FORMULÁRIO E SUCESSO
-       ========================================================================== */
+    /* CALCULADORA CENTRAL E ADAPTAÇÃO DINÂMICA DO "CRIAR DO ZERO" */
+    function recalcularOrcamento() {
+      const selectedSrvRadio = document.querySelector('input[name="servico"]:checked');
+      if (!selectedSrvRadio) return;
+
+      const srvId = selectedSrvRadio.value;
+      const srvConfig = CONFIG_PRECOS.servicos.find(s => s.id === srvId);
+
+      const labelDesc = document.getElementById("labelDescricao");
+      const labelQtd = document.getElementById("labelQtdInput");
+      const groupQtd = document.getElementById("groupQtdInput");
+      const labelPref = document.getElementById("labelPreferencias");
+      const calcPendingWarning = document.getElementById("calcPendingWarning");
+
+      const isZero = srvId === 'criar_do_zero';
+
+      if (isZero) {
+        labelDesc.innerHTML = 'O que você quer criar? <span class="required">*</span>';
+        document.getElementById("descricao").placeholder = "Descreva detalhadamente a sua ideia para criarmos do zero...";
+        if (groupQtd) groupQtd.style.display = "none";
+        labelPref.textContent = "Como gostaria que fosse? (Aparência, cores, estilo) ou Informações adicionais";
+      } else {
+        labelDesc.innerHTML = 'Explique a sua necessidade com detalhes <span class="required">*</span>';
+        document.getElementById("descricao").placeholder = "Descreva os textos, cores, dados ou alterações que você deseja...";
+        if (groupQtd) groupQtd.style.display = "block";
+        labelPref.textContent = "Preferências visuais ou observações específicas";
+      }
+
+      let subtotalServico = 0;
+      let qtd = parseInt(document.getElementById("qtdPaginasInput").value) || 1;
+      if (qtd < 1) qtd = 1;
+
+      if (srvConfig) {
+        if (srvConfig.tipo === 'pagina') {
+          subtotalServico = srvConfig.preco * qtd;
+        } else if (srvConfig.tipo === 'projeto' || srvConfig.tipo === 'fixo') {
+          subtotalServico = srvConfig.preco;
+        } else if (srvConfig.tipo === 'orcamento') {
+          subtotalServico = 0;
+        }
+      }
+
+      // Adicionais selecionados
+      const selectedAddons = Array.from(document.querySelectorAll('input[name="adicionais"]:checked')).map(el => el.value);
+      let subtotalAdicionais = 0;
+      let addonNames = [];
+      let temUrgencia = false;
+
+      selectedAddons.forEach(addId => {
+        const addConfig = CONFIG_PRECOS.adicionais.find(a => a.id === addId);
+        if (addConfig) {
+          if (addConfig.tipo === 'fixo') {
+            subtotalAdicionais += addConfig.preco;
+            addonNames.push(addConfig.nome);
+          } else if (addConfig.tipo === 'incluido') {
+            addonNames.push(addConfig.nome + " (Incluso)");
+          } else if (addConfig.tipo === 'urgencia') {
+            temUrgencia = true;
+            addonNames.push(addConfig.nome + " (Aprovação prévia)");
+          }
+        }
+      });
+
+      let totalFinal = subtotalServico + subtotalAdicionais;
+
+      // Atualização no DOM
+      document.getElementById("sum-modelo").textContent = chosenModelName;
+      document.getElementById("sum-servico").textContent = srvConfig ? srvConfig.nome : "-";
+
+      if (isZero) {
+        document.getElementById("sum-subtotal-servico").textContent = "Sob análise";
+        document.getElementById("sum-subtotal-adicionais").textContent = subtotalAdicionais > 0 ? `+ R$ ${subtotalAdicionais.toFixed(2).replace(".", ",")}` : "R$ 0,00";
+        document.getElementById("sum-total-final").textContent = "Aguardando Análise";
+        document.getElementById("budgetTitleText").textContent = "✨ Orçamento Personalizado";
+        document.getElementById("budgetNoticeText").innerHTML = "<strong>O valor será definido após a análise da sua ideia.</strong> Avaliaremos a complexidade, o conteúdo, os recursos necessários e o prazo solicitado antes de apresentar o orçamento.";
+        calcPendingWarning.style.display = "block";
+        calcPendingWarning.innerHTML = "ℹ️ <strong>Orçamento Personalizado:</strong> O valor e prazo exatos serão definidos e enviados após a avaliação da sua ideia.";
+        document.getElementById("hiddenOrcamentoCalculado").value = "Aguardando Análise (Projeto do Zero)";
+      } else {
+        document.getElementById("sum-subtotal-servico").textContent = `R$ ${subtotalServico.toFixed(2).replace(".", ",")}`;
+        document.getElementById("sum-subtotal-adicionais").textContent = `R$ ${subtotalAdicionais.toFixed(2).replace(".", ",")}`;
+        document.getElementById("sum-total-final").textContent = `R$ ${totalFinal.toFixed(2).replace(".", ",")}`;
+        document.getElementById("budgetTitleText").textContent = "💰 Estimativa do Orçamento";
+        document.getElementById("budgetNoticeText").textContent = "A estimativa calculada no navegador é uma referência inicial. O valor e o prazo oficiais serão validados pelo nosso atendimento.";
+
+        if (srvConfig && srvConfig.tipo === 'orcamento') {
+          calcPendingWarning.style.display = "block";
+          document.getElementById("hiddenOrcamentoCalculado").value = "Sob Consulta";
+        } else if (temUrgencia) {
+          calcPendingWarning.style.display = "block";
+          calcPendingWarning.innerHTML = "⚠️ <strong>Aviso:</strong> Prazo de urgência incluído. Sujeito a taxa de 50% (mínimo R$ 10,00) mediante confirmação manual.";
+          document.getElementById("hiddenOrcamentoCalculado").value = `R$ ${totalFinal.toFixed(2).replace(".", ",")} + Taxa de Urgência (Pendente)`;
+        } else {
+          calcPendingWarning.style.display = "none";
+          document.getElementById("hiddenOrcamentoCalculado").value = `R$ ${totalFinal.toFixed(2).replace(".", ",")}`;
+        }
+      }
+
+      document.getElementById("sum-adicionais-lista").textContent = addonNames.length > 0 ? addonNames.join(", ") : "Nenhum";
+      updateSummary();
+    }
+
+    function updateSummary() {
+      // Atualiza valores para o resumo de pagamento
+      const srvRadio = document.querySelector('input[name="servico"]:checked');
+      const isZero = srvRadio && srvRadio.value === 'criar_do_zero';
+      const nome = document.getElementById("nomeCliente").value || "-";
+
+      document.getElementById("paySummaryCliente").textContent = nome;
+
+      if (isZero) {
+        document.getElementById("paySummaryServico").textContent = "Criação do zero — projeto personalizado";
+        document.getElementById("paySummaryValorCalculado").textContent = "Aguardando análise";
+        document.getElementById("paySummaryStatus").textContent = "Aguardando análise e definição do valor";
+        document.getElementById("paySummaryPrazo").textContent = "A combinar após análise (3 a 5 dias quando aplicável)";
+        
+        const ideaDesc = document.getElementById("descricao").value.trim();
+        if (ideaDesc) {
+          document.getElementById("paySummaryDescBox").style.display = "flex";
+          document.getElementById("paySummaryDescText").textContent = ideaDesc;
+        } else {
+          document.getElementById("paySummaryDescBox").style.display = "none";
+        }
+      } else {
+        const srvConfig = CONFIG_PRECOS.servicos.find(s => s.id === (srvRadio ? srvRadio.value : ''));
+        document.getElementById("paySummaryServico").textContent = srvConfig ? srvConfig.nome : "Solicitação Enviada";
+        document.getElementById("paySummaryModelo").textContent = chosenModelName;
+        document.getElementById("paySummaryValorCalculado").textContent = document.getElementById("sum-total-final").textContent;
+        document.getElementById("paySummaryStatus").textContent = "Aguardando confirmação do orçamento";
+        document.getElementById("paySummaryPrazo").textContent = "3 a 5 dias úteis após confirmação";
+        document.getElementById("paySummaryDescBox").style.display = "none";
+      }
+    }
+
+    /* ENVIO DO FORMULÁRIO */
     function submitFormReal() {
-      const nome = document.getElementById("nomeCliente").value.trim();
-      const whatsapp = document.getElementById("whatsappCliente").value.trim();
-      const confirmacao = document.getElementById("confirmacao").checked;
+      if (!validateCurrentStep()) return;
 
-      let valid = true;
-      if (!nome) { document.getElementById("err-nome").style.display = "block"; valid = false; } else { document.getElementById("err-nome").style.display = "none"; }
-      if (!whatsapp) { document.getElementById("err-whatsapp").style.display = "block"; valid = false; } else { document.getElementById("err-whatsapp").style.display = "none"; }
-      if (!confirmacao) { document.getElementById("err-confirmacao").style.display = "block"; valid = false; } else { document.getElementById("err-confirmacao").style.display = "none"; }
-
-      if (!valid) return;
-
-      // Exibir tela de sucesso localmente e simular a navegação para o pagamento
+      const form = document.getElementById("requestForm");
+      
+      // Feedback imediato de sucesso no front e liberação da aba de pagamento
       document.getElementById("requestForm").style.display = "none";
       document.getElementById("progressBarContainer").style.display = "none";
       document.getElementById("successScreen").classList.add("active");
-
-      // Atualizar o resumo na aba de pagamento
-      document.getElementById("paySummaryServico").textContent = document.getElementById("sum-servico").textContent;
-      document.getElementById("paySummaryModelo").textContent = chosenModelName;
-      document.getElementById("paySummaryCliente").textContent = nome;
-      document.getElementById("paySummaryValorCalculado").textContent = document.getElementById("sum-total-final").textContent;
-
-      // Liberar aba de pagamento
       document.getElementById("tab-pagamento").style.display = "inline-flex";
 
-      // Submeter formulário via FormSubmit em segundo plano
-      const form = document.getElementById("requestForm");
+      // Disparo real do FormSubmit via API nativa do browser
       const formData = new FormData(form);
-
       fetch(form.action, {
         method: "POST",
         body: formData,
         headers: { 'Accept': 'application/json' }
-      }).catch(err => console.log("Envio em segundo plano executado."));
+      }).catch(err => console.log("FormSubmit enviado.", err));
     }
 
     function goToPaymentAfterSuccess() {
-      switchTab('pagamento');
+      switchTab("pagamento");
     }
 
     /* COPIAR CHAVE PIX */
@@ -2348,10 +2411,9 @@
       navigator.clipboard.writeText(pixInput.value);
 
       const btn = document.getElementById("btnCopyPix");
-      btn.textContent = "✅ Copiado!";
-      setTimeout(() => {
-        btn.textContent = "📋 Copiar chave PIX";
-      }, 2500);
+      const originalText = btn.textContent;
+      btn.textContent = "✅ Chave Copiada!";
+      setTimeout(() => { btn.textContent = originalText; }, 3000);
     }
   </script>
 </body>
