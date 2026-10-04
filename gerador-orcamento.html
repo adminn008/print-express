@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WelGrafx - Gerador de Orçamento Profissional</title>
+    <script>
+        // Apply saved theme immediately to prevent flashing
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="/print-express/images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/print-express/images/favicon-32x32.png">
@@ -214,25 +227,46 @@
                         </h2>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nome da Empresa / Profissional</label>
-                            <input type="text" id="companyName" oninput="updatePreview()" value="" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                            <input type="text" id="companyName" oninput="updatePreview()" value="" placeholder="Ex: WelGrafx Design & Tech" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">CNPJ / CPF</label>
-                                <input type="text" id="companyDoc" oninput="updatePreview()" value="" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                                <input type="text" id="companyDoc" oninput="updatePreview()" value="" placeholder="00.000.000/0000-00" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Telefone / WhatsApp</label>
-                                <input type="text" id="companyPhone" oninput="updatePreview()" value="" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                                <input type="text" id="companyPhone" oninput="updatePreview()" value="" placeholder="(00) 00000-0000" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">E-mail de Contato</label>
-                            <input type="email" id="companyEmail" oninput="updatePreview()" value="" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                            <input type="email" id="companyEmail" oninput="updatePreview()" value="" placeholder="contato@empresa.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Endereço Completo</label>
-                            <input type="text" id="companyAddress" oninput="updatePreview()" value="" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                            <input type="text" id="companyAddress" oninput="updatePreview()" value="" placeholder="Rua, Número, Bairro, Cidade - UF" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+
+                        <!-- Provider Saved Data Options -->
+                        <div class="pt-3 border-t border-slate-200 dark:border-slate-700 space-y-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button type="button" onclick="saveProviderData()" class="px-3 py-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg transition-colors flex items-center gap-1.5">
+                                    <i class="fa-solid fa-floppy-disk"></i>
+                                    <span>Salvar meus dados para próximos orçamentos</span>
+                                </button>
+                                <button id="loadProviderBtn" type="button" onclick="loadSavedProviderData()" class="px-3 py-1.5 text-xs font-semibold bg-brand-50 hover:bg-brand-100 dark:bg-brand-900/40 dark:hover:bg-brand-900/60 text-brand-600 dark:text-brand-300 rounded-lg transition-colors hidden flex items-center gap-1.5">
+                                    <i class="fa-solid fa-download"></i>
+                                    <span>Usar dados salvos</span>
+                                </button>
+                                <button id="deleteProviderBtn" type="button" onclick="deleteSavedProviderData()" class="px-2.5 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors hidden flex items-center gap-1">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                    <span>Excluir dados salvos</span>
+                                </button>
+                            </div>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                                <i class="fa-solid fa-shield-halved mr-1"></i>Seus dados do prestador são armazenados apenas no navegador deste dispositivo e não são sincronizados em outros aparelhos.
+                            </p>
                         </div>
                     </div>
 
@@ -243,21 +277,21 @@
                         </h2>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nome do Cliente ou Razão Social</label>
-                            <input type="text" id="clientName" oninput="updatePreview()" value="" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                            <input type="text" id="clientName" oninput="updatePreview()" value="" placeholder="Ex: Cliente Exemplo Ltda" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">CPF / CNPJ</label>
-                                <input type="text" id="clientDoc" oninput="updatePreview()" value="" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                                <input type="text" id="clientDoc" oninput="updatePreview()" value="" placeholder="00.000.000/0000-00" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Telefone</label>
-                                <input type="text" id="clientPhone" oninput="updatePreview()" value="" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                                <input type="text" id="clientPhone" oninput="updatePreview()" value="" placeholder="(00) 00000-0000" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">E-mail</label>
-                            <input type="email" id="clientEmail" oninput="updatePreview()" value="" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                            <input type="email" id="clientEmail" oninput="updatePreview()" value="" placeholder="cliente@exemplo.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                         </div>
                     </div>
 
@@ -269,11 +303,11 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Número do Orçamento</label>
-                                <input type="text" id="quoteNumber" oninput="updatePreview()" value="" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                                <input type="text" id="quoteNumber" oninput="updatePreview()" value="" placeholder="Ex: #ORC-001" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Validade da Proposta</label>
-                                <input type="text" id="quoteValidity" oninput="updatePreview()" value="" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                                <input type="text" id="quoteValidity" oninput="updatePreview()" value="" placeholder="Ex: 15 dias" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                             </div>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -283,7 +317,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Prazo de Entrega Estimado</label>
-                                <input type="text" id="quoteDelivery" oninput="updatePreview()" value="" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                                <input type="text" id="quoteDelivery" oninput="updatePreview()" value="" placeholder="Ex: 10 dias úteis" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                             </div>
                         </div>
                     </div>
@@ -292,7 +326,7 @@
                     <div id="step4" class="wizard-step hidden space-y-4">
                         <div class="flex items-center justify-between">
                             <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <i class="fa-solid fa-list-check text-brand-600 dark:text-brand-400"></i> Servicos / Produtos
+                                <i class="fa-solid fa-list-check text-brand-600 dark:text-brand-400"></i> Serviços / Produtos
                             </h2>
                             <button onclick="addItem()" class="px-3 py-1.5 bg-brand-50 text-brand-600 dark:bg-brand-900/40 dark:text-brand-300 hover:bg-brand-100 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1">
                                 <i class="fa-solid fa-plus"></i> Adicionar Item
@@ -320,15 +354,15 @@
                         </h2>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Forma de Pagamento Principal</label>
-                            <input type="text" id="paymentMethod" oninput="updatePreview()" value="" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                            <input type="text" id="paymentMethod" oninput="updatePreview()" value="" placeholder="Ex: PIX / Transferência (50% entrada, 50% na entrega)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Chave PIX / Dados Bancários</label>
-                            <input type="text" id="pixKey" oninput="updatePreview()" value="" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                            <input type="text" id="pixKey" oninput="updatePreview()" value="" placeholder="Ex: CNPJ: 00.000.000/0001-00 ou E-mail" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Termos, Observações & Garantia</label>
-                            <textarea id="termsNotes" oninput="updatePreview()" rows="3" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none"></textarea>
+                            <textarea id="termsNotes" oninput="updatePreview()" rows="3" placeholder="Ex: Proposta válida pelo período informado." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none"></textarea>
                         </div>
                     </div>
 
@@ -355,6 +389,14 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Step-specific clear button -->
+                <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60">
+                    <button type="button" onclick="resetCurrentStep()" class="text-xs font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-eraser"></i>
+                        <span>Limpar informações desta etapa</span>
+                    </button>
                 </div>
 
                 <!-- Navigation Controls -->
@@ -396,14 +438,14 @@
                         <!-- Header Section -->
                         <div class="flex justify-between items-start border-b-2 border-slate-800 pb-6 mb-6 pdf-page-break-avoid">
                             <div>
-                                <h2 id="prevCompanyName" class="text-2xl font-bold text-slate-900 tracking-tight">WelGrafx Design & Tech</h2>
-                                <p id="prevCompanyDoc" class="text-xs text-slate-500 mt-1">CNPJ: 12.345.678/0001-90</p>
-                                <p id="prevCompanyContact" class="text-xs text-slate-500">(41) 99999-8888 | contato@welgrafx.com.br</p>
-                                <p id="prevCompanyAddress" class="text-xs text-slate-500">Av. das Américas, 1000 - PR</p>
+                                <h2 id="prevCompanyName" class="text-2xl font-bold text-slate-900 tracking-tight">-</h2>
+                                <p id="prevCompanyDoc" class="text-xs text-slate-500 mt-1">CNPJ/CPF: -</p>
+                                <p id="prevCompanyContact" class="text-xs text-slate-500">-</p>
+                                <p id="prevCompanyAddress" class="text-xs text-slate-500">-</p>
                             </div>
                             <div class="text-right">
                                 <span class="inline-block px-3 py-1 bg-slate-900 text-white font-bold text-xs uppercase tracking-widest rounded mb-2">ORÇAMENTO</span>
-                                <h3 id="prevQuoteNumber" class="text-lg font-bold text-slate-800">#ORC-2026-042</h3>
+                                <h3 id="prevQuoteNumber" class="text-lg font-bold text-slate-800">#ORC-001</h3>
                                 <p class="text-xs text-slate-500">Data: <span id="prevQuoteDate" class="font-medium text-slate-700">-</span></p>
                             </div>
                         </div>
@@ -412,14 +454,14 @@
                         <div class="grid grid-cols-2 gap-6 p-4 bg-slate-50 rounded-xl mb-6 border border-slate-100 pdf-page-break-avoid">
                             <div>
                                 <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Cliente</h4>
-                                <p id="prevClientName" class="font-bold text-slate-800 text-base">Acme Corporation Ltda</p>
-                                <p id="prevClientDoc" class="text-xs text-slate-600 mt-0.5">CPF/CNPJ: 98.765.432/0001-10</p>
-                                <p id="prevClientContact" class="text-xs text-slate-600">financeiro@acme.com | (41) 98888-7777</p>
+                                <p id="prevClientName" class="font-bold text-slate-800 text-base">-</p>
+                                <p id="prevClientDoc" class="text-xs text-slate-600 mt-0.5">CPF/CNPJ: -</p>
+                                <p id="prevClientContact" class="text-xs text-slate-600">-</p>
                             </div>
                             <div class="border-l border-slate-200 pl-6 space-y-1">
                                 <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Condições Gerais</h4>
-                                <p class="text-xs text-slate-600"><span class="font-semibold text-slate-700">Validade:</span> <span id="prevQuoteValidity">15 dias</span></p>
-                                <p class="text-xs text-slate-600"><span class="font-semibold text-slate-700">Prazo de Entrega:</span> <span id="prevQuoteDelivery">10 dias úteis</span></p>
+                                <p class="text-xs text-slate-600"><span class="font-semibold text-slate-700">Validade:</span> <span id="prevQuoteValidity">-</span></p>
+                                <p class="text-xs text-slate-600"><span class="font-semibold text-slate-700">Prazo de Entrega:</span> <span id="prevQuoteDelivery">-</span></p>
                             </div>
                         </div>
 
@@ -466,12 +508,12 @@
                         <div class="grid grid-cols-1 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100 text-xs text-slate-600 mb-8 pdf-page-break-avoid">
                             <div>
                                 <span class="font-bold text-slate-800 uppercase block mb-1">Forma de Pagamento:</span>
-                                <p id="prevPaymentMethod">PIX / Transferência (50% entrada, 50% na entrega)</p>
-                                <p id="prevPixKey" class="text-slate-500 mt-0.5">Chave: CNPJ: 12.345.678/0001-90</p>
+                                <p id="prevPaymentMethod">-</p>
+                                <p id="prevPixKey" class="text-slate-500 mt-0.5">Chave: -</p>
                             </div>
                             <div class="border-t border-slate-200 pt-2">
                                 <span class="font-bold text-slate-800 uppercase block mb-1">Termos & Garantia:</span>
-                                <p id="prevTermsNotes">Proposta válida pelo período informado.</p>
+                                <p id="prevTermsNotes">-</p>
                             </div>
                         </div>
                     </div>
@@ -481,16 +523,16 @@
                         <div class="grid grid-cols-2 gap-12 text-center text-xs">
                             <div>
                                 <div class="border-b border-slate-400 mb-1 h-8"></div>
-                                <p class="font-bold text-slate-800" id="prevSigCompany">WelGrafx Design & Tech</p>
+                                <p class="font-bold text-slate-800" id="prevSigCompany">-</p>
                                 <p class="text-slate-400 text-[10px]">Emitente</p>
                             </div>
                             <div>
                                 <div class="border-b border-slate-400 mb-1 h-8"></div>
-                                <p class="font-bold text-slate-800" id="prevSigClient">Acme Corporation Ltda</p>
+                                <p class="font-bold text-slate-800" id="prevSigClient">-</p>
                                 <p class="text-slate-400 text-[10px]">Aceito / Aceite Digital</p>
                             </div>
                         </div>
-                        <p class="text-center text-[10px] text-slate-400 mt-6">Documento gerado digitalmente pela WelGrafx. Os valores e as condições estão sujeitos à confirmação entre as partes.</p>
+                        <p class="text-center text-[10px] text-slate-400 mt-6">Documento gerado digitalmente. Os valores e as condições estão sujeitos à confirmação entre as partes.</p>
                     </div>
 
                 </div>
@@ -528,31 +570,61 @@
     <script>
         // State variables
         let currentStep = 1;
-        let items = [
-            { id: 1, description: "Desenvolvimento Website Responsivo", qty: 1, price: 2500.00 },
-            { id: 2, description: "Criação de Identidade Visual e Branding", qty: 1, price: 1200.00 }
-        ];
+        let items = [];
 
         // Format Currency BRL
         function formatMoney(value) {
-            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+            const num = parseFloat(value);
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(isNaN(num) ? 0 : num);
+        }
+
+        // Generate sequential quote number
+        function generateNextQuoteNumber() {
+            const year = new Date().getFullYear();
+            const randomId = Math.floor(100 + Math.random() * 900);
+            return `#ORC-${year}-${randomId}`;
         }
 
         // Initialize App
         window.addEventListener('DOMContentLoaded', () => {
+            // Check provider saved data visibility
+            checkSavedProviderDataState();
+
+            // Auto load saved provider info if available
+            const savedData = localStorage.getItem('provider_data');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    if (data.name) document.getElementById('companyName').value = data.name;
+                    if (data.doc) document.getElementById('companyDoc').value = data.doc;
+                    if (data.phone) document.getElementById('companyPhone').value = data.phone;
+                    if (data.email) document.getElementById('companyEmail').value = data.email;
+                    if (data.address) document.getElementById('companyAddress').value = data.address;
+                } catch(e) {}
+            }
+
             // Set current date if empty
             const dateInput = document.getElementById('quoteDate');
             if (!dateInput.value) {
-                const today = new Date().toISOString().split('T')[0];
-                dateInput.value = today;
+                dateInput.value = new Date().toISOString().split('T')[0];
             }
+
+            // Set default quote number if empty
+            const quoteNumInput = document.getElementById('quoteNumber');
+            if (!quoteNumInput.value) {
+                quoteNumInput.value = generateNextQuoteNumber();
+            }
+
             renderItems();
             updatePreview();
         });
 
-        // Theme Toggle
+        // Theme Toggle & Persistence
         function toggleTheme() {
-            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.toggle('dark');
+            try {
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            } catch (e) {}
         }
 
         // Navigation Steps Logic
@@ -563,7 +635,6 @@
 
         function changeStep(delta) {
             if (currentStep === 6 && delta === 1) {
-                // Finalize Action triggered on last step
                 openFinalizeModal();
                 return;
             }
@@ -575,19 +646,16 @@
         }
 
         function updateStepUI() {
-            // Hide all steps
             for (let i = 1; i <= 6; i++) {
                 document.getElementById(`step${i}`).classList.add('hidden');
                 const btn = document.getElementById(`stepBtn${i}`);
                 btn.className = "step-dot-btn px-2 py-1 text-xs rounded-lg font-medium text-slate-400 hover:text-slate-600 dark:hover:text-slate-300";
             }
 
-            // Show active step
             document.getElementById(`step${currentStep}`).classList.remove('hidden');
             const activeBtn = document.getElementById(`stepBtn${currentStep}`);
             activeBtn.className = "step-dot-btn px-2 py-1 text-xs rounded-lg font-medium bg-brand-50 text-brand-600 dark:bg-brand-900/40 dark:text-brand-300";
 
-            // Update Progress Bar & Headers
             const titles = [
                 "Informações da Empresa",
                 "Dados do Cliente",
@@ -600,7 +668,6 @@
             document.getElementById('stepTitleText').textContent = titles[currentStep - 1];
             document.getElementById('progressBar').style.width = `${(currentStep / 6) * 100}%`;
 
-            // Buttons visibility
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
 
@@ -624,12 +691,21 @@
             const container = document.getElementById('itemsContainer');
             container.innerHTML = '';
 
-            items.forEach((item, index) => {
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <p class="text-xs text-slate-400 dark:text-slate-500 italic text-center py-4">
+                        Nenhum item adicionado. Clique em "Adicionar Item" acima.
+                    </p>
+                `;
+                return;
+            }
+
+            items.forEach((item) => {
                 const div = document.createElement('div');
                 div.className = "p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-600 space-y-2";
                 div.innerHTML = `
                     <div class="flex items-center justify-between gap-2">
-                        <input type="text" value="${item.description}" oninput="updateItem(${item.id}, 'description', this.value)" placeholder="Descrição do item/serviço" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-xs outline-none">
+                        <input type="text" value="${item.description || ''}" oninput="updateItem(${item.id}, 'description', this.value)" placeholder="Descrição do item/serviço" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-xs outline-none">
                         <button onclick="removeItem(${item.id})" class="text-rose-500 hover:text-rose-700 p-1 rounded transition-colors" title="Remover Item">
                             <i class="fa-solid fa-trash-can text-sm"></i>
                         </button>
@@ -637,11 +713,11 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400">Qtd</label>
-                            <input type="number" min="1" value="${item.qty}" oninput="updateItem(${item.id}, 'qty', this.value)" class="w-full px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-xs outline-none">
+                            <input type="number" min="1" value="${item.qty ?? 1}" oninput="updateItem(${item.id}, 'qty', this.value)" class="w-full px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-xs outline-none">
                         </div>
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-500 dark:text-slate-400">Preço Unitário (R$)</label>
-                            <input type="number" step="0.01" min="0" value="${item.price}" oninput="updateItem(${item.id}, 'price', this.value)" class="w-full px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-xs outline-none">
+                            <input type="number" step="0.01" min="0" value="${item.price ?? 0}" oninput="updateItem(${item.id}, 'price', this.value)" class="w-full px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-xs outline-none">
                         </div>
                     </div>
                 `;
@@ -651,16 +727,12 @@
 
         function addItem() {
             const newId = items.length ? Math.max(...items.map(i => i.id)) + 1 : 1;
-            items.push({ id: newId, description: "Novo Serviço / Produto", qty: 1, price: 100.00 });
+            items.push({ id: newId, description: "", qty: 1, price: 0 });
             renderItems();
             updatePreview();
         }
 
         function removeItem(id) {
-            if (items.length <= 1) {
-                alert("O orçamento deve conter pelo menos um item.");
-                return;
-            }
             items = items.filter(i => i.id !== id);
             renderItems();
             updatePreview();
@@ -669,67 +741,98 @@
         function updateItem(id, field, value) {
             const item = items.find(i => i.id === id);
             if (!item) return;
-            if (field === 'qty') item.qty = parseFloat(value) || 0;
-            else if (field === 'price') item.price = parseFloat(value) || 0;
-            else item.description = value;
+            if (field === 'qty') {
+                const parsed = parseFloat(value);
+                item.qty = isNaN(parsed) ? 0 : parsed;
+            } else if (field === 'price') {
+                const parsed = parseFloat(value);
+                item.price = isNaN(parsed) ? 0 : parsed;
+            } else {
+                item.description = value;
+            }
             updatePreview();
         }
 
         // Live Document Preview Synchronization
         function updatePreview() {
             // Company info
-            const companyName = document.getElementById('companyName').value || 'WelGrafx';
-            document.getElementById('prevCompanyName').textContent = companyName;
-            document.getElementById('prevSigCompany').textContent = companyName;
-            document.getElementById('prevCompanyDoc').textContent = 'CNPJ/CPF: ' + (document.getElementById('companyDoc').value || '-');
-            document.getElementById('prevCompanyContact').textContent = `${document.getElementById('companyPhone').value || ''} | ${document.getElementById('companyEmail').value || ''}`;
-            document.getElementById('prevCompanyAddress').textContent = document.getElementById('companyAddress').value || '-';
+            const companyName = document.getElementById('companyName').value.trim();
+            const companyDoc = document.getElementById('companyDoc').value.trim();
+            const companyPhone = document.getElementById('companyPhone').value.trim();
+            const companyEmail = document.getElementById('companyEmail').value.trim();
+            const companyAddress = document.getElementById('companyAddress').value.trim();
+
+            document.getElementById('prevCompanyName').textContent = companyName || '-';
+            document.getElementById('prevSigCompany').textContent = companyName || '-';
+            document.getElementById('prevCompanyDoc').textContent = 'CNPJ/CPF: ' + (companyDoc || '-');
+            
+            const contactParts = [companyPhone, companyEmail].filter(Boolean);
+            document.getElementById('prevCompanyContact').textContent = contactParts.length ? contactParts.join(' | ') : '-';
+            document.getElementById('prevCompanyAddress').textContent = companyAddress || '-';
 
             // Client info
-            const clientName = document.getElementById('clientName').value || 'Cliente';
-            document.getElementById('prevClientName').textContent = clientName;
-            document.getElementById('prevSigClient').textContent = clientName;
-            document.getElementById('summaryClient').textContent = clientName;
-            document.getElementById('prevClientDoc').textContent = 'CPF/CNPJ: ' + (document.getElementById('clientDoc').value || '-');
-            document.getElementById('prevClientContact').textContent = `${document.getElementById('clientEmail').value || ''} | ${document.getElementById('clientPhone').value || ''}`;
+            const clientName = document.getElementById('clientName').value.trim();
+            const clientDoc = document.getElementById('clientDoc').value.trim();
+            const clientPhone = document.getElementById('clientPhone').value.trim();
+            const clientEmail = document.getElementById('clientEmail').value.trim();
+
+            document.getElementById('prevClientName').textContent = clientName || '-';
+            document.getElementById('prevSigClient').textContent = clientName || '-';
+            document.getElementById('summaryClient').textContent = clientName || '-';
+            document.getElementById('prevClientDoc').textContent = 'CPF/CNPJ: ' + (clientDoc || '-');
+
+            const clientContactParts = [clientEmail, clientPhone].filter(Boolean);
+            document.getElementById('prevClientContact').textContent = clientContactParts.length ? clientContactParts.join(' | ') : '-';
 
             // Details
-            const quoteNum = document.getElementById('quoteNumber').value || '#ORC-001';
+            const quoteNum = document.getElementById('quoteNumber').value.trim() || '#ORC-001';
             document.getElementById('prevQuoteNumber').textContent = quoteNum;
             document.getElementById('summaryNumber').textContent = quoteNum;
-            document.getElementById('prevQuoteValidity').textContent = document.getElementById('quoteValidity').value || '-';
+            document.getElementById('prevQuoteValidity').textContent = document.getElementById('quoteValidity').value.trim() || '-';
             
             const rawDate = document.getElementById('quoteDate').value;
             if (rawDate) {
                 const parts = rawDate.split('-');
-                document.getElementById('prevQuoteDate').textContent = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                document.getElementById('prevQuoteDate').textContent = (parts.length === 3) ? `${parts[2]}/${parts[1]}/${parts[0]}` : '-';
             } else {
                 document.getElementById('prevQuoteDate').textContent = '-';
             }
-            document.getElementById('prevQuoteDelivery').textContent = document.getElementById('quoteDelivery').value || '-';
+            document.getElementById('prevQuoteDelivery').textContent = document.getElementById('quoteDelivery').value.trim() || '-';
 
             // Items Table
             const tbody = document.getElementById('prevItemsBody');
             tbody.innerHTML = '';
             let subtotal = 0;
 
-            items.forEach(item => {
-                const rowTotal = item.qty * item.price;
-                subtotal += rowTotal;
+            if (items.length === 0) {
                 const tr = document.createElement('tr');
                 tr.className = "border-b border-slate-100";
-                tr.innerHTML = `
-                    <td class="py-2.5 pr-2 font-medium text-slate-800">${item.description || '-'}</td>
-                    <td class="py-2.5 text-center">${item.qty}</td>
-                    <td class="py-2.5 text-right">${formatMoney(item.price)}</td>
-                    <td class="py-2.5 text-right font-semibold text-slate-800">${formatMoney(rowTotal)}</td>
-                `;
+                tr.innerHTML = `<td colspan="4" class="py-3 text-center text-slate-400 italic">Nenhum item incluído.</td>`;
                 tbody.appendChild(tr);
-            });
+            } else {
+                items.forEach(item => {
+                    const qty = isNaN(item.qty) ? 0 : item.qty;
+                    const price = isNaN(item.price) ? 0 : item.price;
+                    const rowTotal = qty * price;
+                    subtotal += rowTotal;
+
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-slate-100";
+                    tr.innerHTML = `
+                        <td class="py-2.5 pr-2 font-medium text-slate-800">${item.description.trim() || '-'}</td>
+                        <td class="py-2.5 text-center">${qty}</td>
+                        <td class="py-2.5 text-right">${formatMoney(price)}</td>
+                        <td class="py-2.5 text-right font-semibold text-slate-800">${formatMoney(rowTotal)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
 
             // Calculations
-            const discount = parseFloat(document.getElementById('discountInput').value) || 0;
-            const shipping = parseFloat(document.getElementById('shippingInput').value) || 0;
+            const rawDiscount = parseFloat(document.getElementById('discountInput').value);
+            const rawShipping = parseFloat(document.getElementById('shippingInput').value);
+            const discount = isNaN(rawDiscount) ? 0 : Math.max(0, rawDiscount);
+            const shipping = isNaN(rawShipping) ? 0 : Math.max(0, rawShipping);
             const total = Math.max(0, subtotal - discount + shipping);
 
             document.getElementById('prevSubtotal').textContent = formatMoney(subtotal);
@@ -739,40 +842,154 @@
             document.getElementById('summaryTotal').textContent = formatMoney(total);
 
             // Payment and Terms
-            document.getElementById('prevPaymentMethod').textContent = document.getElementById('paymentMethod').value || '-';
-            document.getElementById('prevPixKey').textContent = 'Chave: ' + (document.getElementById('pixKey').value || '-');
-            document.getElementById('prevTermsNotes').textContent = document.getElementById('termsNotes').value || '-';
+            document.getElementById('prevPaymentMethod').textContent = document.getElementById('paymentMethod').value.trim() || '-';
+            
+            const pixValue = document.getElementById('pixKey').value.trim();
+            document.getElementById('prevPixKey').textContent = 'Chave: ' + (pixValue || '-');
+            document.getElementById('prevTermsNotes').textContent = document.getElementById('termsNotes').value.trim() || '-';
         }
 
+        // 1. Genuine Clear Form
         function resetForm() {
-            if (confirm("Deseja realmente limpar os campos e reiniciar o formulário?")) {
-                document.getElementById('companyName').value = "WelGrafx Design & Tech";
-                document.getElementById('companyDoc').value = "12.345.678/0001-90";
-                document.getElementById('companyPhone').value = "(41) 99999-8888";
-                document.getElementById('companyEmail').value = "contato@welgrafx.com.br";
-                document.getElementById('companyAddress').value = "Av. das Américas, 1000 - PR";
+            if (!confirm("Deseja realmente limpar todos os campos e reiniciar o orçamento?")) {
+                return;
+            }
 
-                document.getElementById('clientName').value = "Acme Corporation Ltda";
-                document.getElementById('clientDoc').value = "98.765.432/0001-10";
-                document.getElementById('clientPhone').value = "(41) 98888-7777";
-                document.getElementById('clientEmail').value = "financeiro@acme.com";
+            document.getElementById('companyName').value = "";
+            document.getElementById('companyDoc').value = "";
+            document.getElementById('companyPhone').value = "";
+            document.getElementById('companyEmail').value = "";
+            document.getElementById('companyAddress').value = "";
 
-                document.getElementById('quoteNumber').value = "#ORC-2026-042";
-                document.getElementById('quoteValidity').value = "15 dias";
-                document.getElementById('quoteDelivery').value = "10 dias úteis";
-                document.getElementById('discountInput').value = "0";
-                document.getElementById('shippingInput').value = "0";
+            document.getElementById('clientName').value = "";
+            document.getElementById('clientDoc').value = "";
+            document.getElementById('clientPhone').value = "";
+            document.getElementById('clientEmail').value = "";
 
-                items = [{ id: 1, description: "Desenvolvimento Website Responsivo", qty: 1, price: 2500.00 }];
-                renderItems();
-                goToStep(1);
-                updatePreview();
+            document.getElementById('quoteNumber').value = generateNextQuoteNumber();
+            document.getElementById('quoteValidity').value = "";
+            document.getElementById('quoteDelivery').value = "";
+            document.getElementById('quoteDate').value = new Date().toISOString().split('T')[0];
+
+            document.getElementById('paymentMethod').value = "";
+            document.getElementById('pixKey').value = "";
+            document.getElementById('termsNotes').value = "";
+
+            document.getElementById('discountInput').value = "0";
+            document.getElementById('shippingInput').value = "0";
+
+            items = [];
+            renderItems();
+            goToStep(1);
+            updatePreview();
+        }
+
+        // 3. Clear information in active step only
+        function resetCurrentStep() {
+            if (!confirm("Deseja limpar apenas os dados preenchidos nesta etapa?")) {
+                return;
+            }
+
+            switch(currentStep) {
+                case 1:
+                    document.getElementById('companyName').value = "";
+                    document.getElementById('companyDoc').value = "";
+                    document.getElementById('companyPhone').value = "";
+                    document.getElementById('companyEmail').value = "";
+                    document.getElementById('companyAddress').value = "";
+                    break;
+                case 2:
+                    document.getElementById('clientName').value = "";
+                    document.getElementById('clientDoc').value = "";
+                    document.getElementById('clientPhone').value = "";
+                    document.getElementById('clientEmail').value = "";
+                    break;
+                case 3:
+                    document.getElementById('quoteNumber').value = generateNextQuoteNumber();
+                    document.getElementById('quoteValidity').value = "";
+                    document.getElementById('quoteDelivery').value = "";
+                    document.getElementById('quoteDate').value = new Date().toISOString().split('T')[0];
+                    break;
+                case 4:
+                    items = [];
+                    document.getElementById('discountInput').value = "0";
+                    document.getElementById('shippingInput').value = "0";
+                    renderItems();
+                    break;
+                case 5:
+                    document.getElementById('paymentMethod').value = "";
+                    document.getElementById('pixKey').value = "";
+                    document.getElementById('termsNotes').value = "";
+                    break;
+                case 6:
+                    break;
+            }
+
+            updatePreview();
+        }
+
+        // 4. Save and Reuse Provider Data
+        function saveProviderData() {
+            const providerData = {
+                name: document.getElementById('companyName').value.trim(),
+                doc: document.getElementById('companyDoc').value.trim(),
+                phone: document.getElementById('companyPhone').value.trim(),
+                email: document.getElementById('companyEmail').value.trim(),
+                address: document.getElementById('companyAddress').value.trim()
+            };
+
+            try {
+                localStorage.setItem('provider_data', JSON.stringify(providerData));
+                checkSavedProviderDataState();
+                alert("Dados do prestador salvos com sucesso no seu navegador!");
+            } catch(e) {
+                alert("Não foi possível salvar os dados no navegador.");
             }
         }
 
-        // ==========================================
-        // FIX 1: UNCLIPPED MULTI-PAGE A4 PDF EXPORT
-        // ==========================================
+        function loadSavedProviderData() {
+            try {
+                const savedData = localStorage.getItem('provider_data');
+                if (!savedData) return;
+
+                const data = JSON.parse(savedData);
+                document.getElementById('companyName').value = data.name || "";
+                document.getElementById('companyDoc').value = data.doc || "";
+                document.getElementById('companyPhone').value = data.phone || "";
+                document.getElementById('companyEmail').value = data.email || "";
+                document.getElementById('companyAddress').value = data.address || "";
+                
+                updatePreview();
+            } catch(e) {}
+        }
+
+        function deleteSavedProviderData() {
+            if (!confirm("Tem certeza de que deseja excluir permanentemente seus dados salvos do prestador?")) {
+                return;
+            }
+
+            try {
+                localStorage.removeItem('provider_data');
+                checkSavedProviderDataState();
+                alert("Dados salvos removidos com sucesso.");
+            } catch(e) {}
+        }
+
+        function checkSavedProviderDataState() {
+            const loadBtn = document.getElementById('loadProviderBtn');
+            const deleteBtn = document.getElementById('deleteProviderBtn');
+            const saved = localStorage.getItem('provider_data');
+
+            if (saved) {
+                if (loadBtn) loadBtn.classList.remove('hidden');
+                if (deleteBtn) deleteBtn.classList.remove('hidden');
+            } else {
+                if (loadBtn) loadBtn.classList.add('hidden');
+                if (deleteBtn) deleteBtn.classList.add('hidden');
+            }
+        }
+
+        // Multi-page PDF Export logic
         let isExportingPdf = false;
 
         function generatePDF() {
@@ -782,7 +999,6 @@
             const mainBtn = document.getElementById('mainPdfDownloadBtn');
             const modalBtn = document.getElementById('modalDownloadBtn');
 
-            // Disable buttons and show loading state
             if (mainBtn) {
                 mainBtn.disabled = true;
                 mainBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Gerando...`;
@@ -793,15 +1009,14 @@
             }
 
             const element = document.getElementById('quotationPreview');
-            const quoteNum = (document.getElementById('quoteNumber').value || 'Orcamento').replace(/[^a-zA-Z0-0\-_]/g, '');
+            const rawNum = document.getElementById('quoteNumber').value.trim() || 'Orcamento';
+            const quoteNum = rawNum.replace(/[^a-zA-Z0-9\-_]/g, '');
             const filename = `Orcamento_${quoteNum}.pdf`;
 
-            // Apply explicit export container configuration to prevent clipping
             element.classList.add('pdf-export-mode');
 
-            // Configure html2pdf with precise A4 dimensions, margins and break behavior
             const opt = {
-                margin:       [10, 10, 10, 10], // top, left, bottom, right in mm
+                margin:       [10, 10, 10, 10],
                 filename:     filename,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { 
@@ -844,9 +1059,7 @@
                 });
         }
 
-        // ==========================================
-        // FIX 2: CONFIRMATION MODAL ON LAST STEP
-        // ==========================================
+        // Finalize modal logic
         function openFinalizeModal() {
             const modal = document.getElementById('finalizeModal');
             modal.classList.remove('hidden');
