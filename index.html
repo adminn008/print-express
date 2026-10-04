@@ -900,6 +900,33 @@
         }    
         .btn-flutuante:hover { transform: scale(1.05); }
 
+        /* NOTIFICAÇÃO TOAST DE COOKIES */
+        .cookie-toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary);
+            padding: 12px 18px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 10005;
+            opacity: 0;
+            transform: translateY(16px) scale(0.95);
+            transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            max-width: calc(100vw - 48px);
+        }
+
+        .cookie-toast.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
         /* COOKIES & MODAL */
         .px-cookie-banner {
             position: fixed;
@@ -1406,6 +1433,7 @@
             .px-cookie-banner { bottom: 12px; width: calc(100% - 24px); padding: 16px; }
             .px-cookie-actions { width: 100%; justify-content: stretch; }
             .px-cookie-btn { flex: 1 1 auto; max-width: 100%; }
+            .cookie-toast { bottom: 16px; right: 16px; font-size: 12px; padding: 10px 14px; }
         }
 
         @media (max-width: 480px) {
@@ -1453,7 +1481,7 @@
             <p>Seu Painel de Impressões, Serviços e Solicitações Rápidas</p>
         </header>
 
-        <!-- ÁREA INSTITUCIONAL DE APRESENTAÇÃO WELGRAFX -->
+        <!-- 1. APRESENTAÇÃO PRINCIPAL -->
         <section class="institucional-box reveal-on-scroll">
             <div class="institucional-content">
                 <h3>WelGrafx</h3>
@@ -1464,14 +1492,55 @@
             </div>
         </section>
 
-        <!-- AVISO DE MUDANÇA NO INÍCIO -->
+        <!-- 2. AVISOS DE MUDANÇA -->
         <section class="notice-card reveal-on-scroll" aria-label="Aviso de Mudanças no Site">
             <h3>🆕 O WelGrafx está de cara nova!</h3>
             <p>O site recebeu melhorias, novas páginas, ferramentas e uma organização pensada para facilitar suas impressões e documentos.</p>
             <a href="#secaoFuturasAtualizacoes" class="btn-notice">✨ Ver Futuras Novidades</a>
         </section>
 
-        <!-- HERO / APRESENTAÇÃO -->
+        <!-- 3. STATUS DE FUNCIONAMENTO & HORÁRIOS DE ATENDIMENTO -->
+        <section class="status-box reveal-on-scroll">
+            <div class="status-header-live">
+                <div>
+                    <h3 style="font-size: 18px; color: var(--primary);">Status de Atendimento</h3>
+                    <p style="font-size: 12px; color: var(--text-muted);">Pedidos são recebidos 24 horas por dia.</p>
+                </div>
+                <div id="statusBadgeHome" class="status-badge-large status-open">
+                    <span class="status-indicator-dot"></span>
+                    <span id="statusIconHome">🟢</span> 
+                    <span id="statusTextoHome">Impressões ativas</span>
+                </div>
+            </div>
+            
+            <p id="statusDescHome" class="status-info-text">Estamos realizando impressões agora.</p>
+
+            <div class="tabela-responsive-wrapper">
+                <table class="tabela-horarios">
+                    <thead>
+                        <tr>
+                            <th>Dia da Semana</th>
+                            <th>Horário de Impressão</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="row-1"><td>Segunda-feira</td><td>17:00 — 21:00</td></tr>
+                        <tr id="row-2"><td>Terça-feira</td><td>17:00 — 21:00</td></tr>
+                        <tr id="row-3"><td>Quarta-feira</td><td>17:00 — 21:00</td></tr>
+                        <tr id="row-4"><td>Quinta-feira</td><td>17:00 — 21:00</td></tr>
+                        <tr id="row-5"><td>Sexta-feira</td><td>17:00 — 21:00</td></tr>
+                        <tr id="row-6"><td>Sábado</td><td>06:30 — 21:30</td></tr>
+                        <tr id="row-0"><td>Domingo</td><td>06:30 — 21:30</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="proximo-horario" id="proximoHorarioBox">
+                ⏰ <span id="proximoHorarioTexto">Calculando próximo horário de impressão...</span>
+            </div>
+        </section>
+
+        <!-- HERO / BANNER DE DESTAQUE -->
         <section id="hero" class="hero-card reveal-on-scroll">
             <span class="hero-brand">WelGrafx</span>
             <h2>Soluções gráficas e digitais para facilitar documentos, arquivos e serviços do dia a dia.</h2>
@@ -1518,6 +1587,66 @@
             </div>
         </section>
 
+        <!-- VITRINE 1 — IMPRESSÃO E SERVIÇOS GRÁFICOS -->
+        <section class="reveal-on-scroll">
+            <h3 class="section-title">🖨️ Impressão e Serviços Gráficos</h3>
+            <div class="servicos-grid">
+                <a href="impressao.html" class="servico-card">
+                    <div style="font-size:28px;">🖨️</div>
+                    <div style="font-weight:700; font-size:14px;">Impressão e Xerox</div>
+                    <div style="font-size:11px; color:var(--text-muted);">A4 P&B, Colorido e Documentos</div>
+                </a>
+
+                <a href="digitalizacao.html" class="servico-card">
+                    <div style="font-size:28px;">📲</div>
+                    <div style="font-weight:700; font-size:14px;">Digitalização de Documentos</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Arquivos PDF e Imagens Legíveis</div>
+                </a>
+
+                <a href="documentos.html" class="servico-card">
+                    <div style="font-size:28px;">📄</div>
+                    <div style="font-weight:700; font-size:14px;">Documentos Oficiais e Impressão</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Segunda Via, Boletos, CPF e RG</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- VITRINE 2 — SERVIÇOS DIGITAIS E PERSONALIZADOS -->
+        <section class="reveal-on-scroll">
+            <h3 class="section-title">💻 Serviços Digitais e Personalizados</h3>
+            <div class="servicos-grid">
+                <a href="curriculo.html" class="servico-card">
+                    <div style="font-size:28px;">💼</div>
+                    <div style="font-weight:700; font-size:14px;">Currículos Profissionais</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Criação, Edição e Atualização</div>
+                </a>
+
+                <a href="sos-documentos.html" class="servico-card">
+                    <div style="font-size:28px;">🔧</div>
+                    <div style="font-weight:700; font-size:14px;">Criação e Edição sob Encomenda</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Ajustes e Correção de Arquivos</div>
+                </a>
+
+                <a href="abnt.html" class="servico-card">
+                    <div style="font-size:28px;">🎓</div>
+                    <div style="font-weight:700; font-size:14px;">Geradores e Ferramentas Digitais</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Formatação ABNT e Trabalhos</div>
+                </a>
+
+                <a href="folha-ponto.html" class="servico-card">
+                    <div style="font-size:28px;">📑</div>
+                    <div style="font-weight:700; font-size:14px;">Modelos Digitais e Fichas</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Folhas de Ponto e Relatórios</div>
+                </a>
+
+                <a href="empresas.html" class="servico-card">
+                    <div style="font-size:28px;">🏢</div>
+                    <div style="font-weight:700; font-size:14px;">Soluções para Empresas</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Atendimento Corporativo Digital</div>
+                </a>
+            </div>
+        </section>
+
         <!-- SEÇÃO: POR QUE USAR A WELGRAFX? -->
         <section class="reveal-on-scroll">
             <h3 class="section-title">⭐ Por que usar a WelGrafx?</h3>
@@ -1542,85 +1671,6 @@
                     <span class="diferencial-icon">💬</span>
                     <span class="diferencial-texto">Atendimento pelo WhatsApp</span>
                 </div>
-            </div>
-        </section>
-
-        <!-- SEÇÃO: SERVIÇOS MAIS PROCURADOS -->
-        <section class="reveal-on-scroll">
-            <h3 class="section-title">📌 Serviços mais procurados</h3>
-            
-            <!-- FAIXA DE DESTAQUES RÁPIDOS -->
-            <div class="destaques-rapidos-bar" aria-label="Destaques Rápidos">
-                <a href="sos-documentos.html" class="destaque-pill">🔧 SOS Documento</a>
-                <a href="abnt.html" class="destaque-pill">🎓 Trabalhos e Formatação</a>
-                <a href="folha-ponto.html" class="destaque-pill">📑 Folhas e Fichas</a>
-                <a href="curriculo.html" class="destaque-pill">💼 Currículos</a>
-                <a href="impressao.html" class="destaque-pill">🖨️ Impressão</a>
-                <a href="digitalizacao.html" class="destaque-pill">📲 Digitalização</a>
-                <a href="empresas.html" class="destaque-pill">🏢 Soluções para Empresas</a>
-            </div>
-
-            <div class="servicos-grid">
-                <a href="impressao.html" class="servico-card">
-                    <div style="font-size:28px;">🖨️</div>
-                    <div style="font-weight:700; font-size:14px;">Impressão e Xerox</div>
-                    <div style="font-size:11px; color:var(--text-muted);">A4 P&B e Colorido</div>
-                </a>
-
-                <a href="curriculo.html" class="servico-card">
-                    <div style="font-size:28px;">💼</div>
-                    <div style="font-weight:700; font-size:14px;">Currículos</div>
-                    <div style="font-size:11px; color:var(--text-muted);">Criação e Atualização</div>
-                </a>
-
-                <a href="documentos.html" class="servico-card">
-                    <div style="font-size:28px;">📄</div>
-                    <div style="font-weight:700; font-size:14px;">Documentos</div>
-                    <div style="font-size:11px; color:var(--text-muted);">Boletos, CPF, RG, CRLV</div>
-                </a>
-
-                <a href="digitalizacao.html" class="servico-card">
-                    <div style="font-size:28px;">📲</div>
-                    <div style="font-weight:700; font-size:14px;">Digitalização</div>
-                    <div style="font-size:11px; color:var(--text-muted);">Arquivos PDF e Imagens</div>
-                </a>
-
-                <a href="sos-documentos.html" class="servico-card">
-                    <div style="font-size:28px;">🔧</div>
-                    <div style="font-weight:700; font-size:14px;">SOS Documento</div>
-                    <div style="font-size:11px; color:var(--text-muted);">Correção e Ajuste de Arquivos</div>
-                </a>
-
-                <a href="abnt.html" class="servico-card">
-                    <div style="font-size:28px;">🎓</div>
-                    <div style="font-weight:700; font-size:14px;">Trabalhos e Formatação</div>
-                    <div style="font-size:11px; color:var(--text-muted);">Normas ABNT e Acadêmico</div>
-                </a>
-            </div>
-        </section>
-
-        <!-- SEÇÃO: ENCONTRE SEU SERVIÇO -->
-        <!-- <section class="reveal-on-scroll">
-            <h3 class="section-title">🧭 Encontre seu serviço</h3>
-            <div class="quick-grid">
-                <a href="impressao.html" class="quick-card">
-                    <span>Quero imprimir algo →</span>
-                </a>
-                <a href="curriculo.html" class="quick-card">
-                    <span>Quero criar um currículo →</span>
-                </a>
-                <a href="sos-documentos.html" class="quick-card">
-                    <span>Meu arquivo está com problema →</span>
-                </a>
-                <a href="digitalizacao.html" class="quick-card">
-                    <span>Quero digitalizar documentos →</span>
-                </a>
-                <a href="folha-ponto.html" class="quick-card">
-                    <span>Preciso de uma ficha ou formulário →</span>
-                </a>
-                <a href="empresas.html" class="quick-card">
-                    <span>Preciso de algo para minha empresa →</span>
-                </a>
             </div>
         </section>
 
@@ -1664,7 +1714,7 @@
             <div class="carousel-slide" style="background-image: url('images/pedidos.jpg');">
                 <div class="carousel-card-overlay">
                     <span class="carousel-card-badge">Praticidade</span>
-                    <div class="carousel-card-title">⏱️ Pedidos Abertos 24 Horas</div>
+                    <div class="carousel-card-title">⏱️️ Pedidos Abertos 24 Horas</div>
                     <div class="carousel-card-desc">Envie seu pedido a qualquer momento. A produção segue os horários ativos.</div>
                 </div>
             </div>
@@ -1692,47 +1742,6 @@
                 <span class="dot" onclick="mudarSlide(6)"></span>
                 <span class="dot" onclick="mudarSlide(7)"></span>
             </div>    
-        </section>
-
-        <!-- STATUS DE FUNCIONAMENTO & HORÁRIOS -->
-        <section class="status-box reveal-on-scroll">
-            <div class="status-header-live">
-                <div>
-                    <h3 style="font-size: 18px; color: var(--primary);">Status de Atendimento</h3>
-                    <p style="font-size: 12px; color: var(--text-muted);">Pedidos são recebidos 24 horas por dia.</p>
-                </div>
-                <div id="statusBadgeHome" class="status-badge-large status-open">
-                    <span class="status-indicator-dot"></span>
-                    <span id="statusIconHome">🟢</span> 
-                    <span id="statusTextoHome">Impressões ativas</span>
-                </div>
-            </div>
-            
-            <p id="statusDescHome" class="status-info-text">Estamos realizando impressões agora.</p>
-
-            <div class="tabela-responsive-wrapper">
-                <table class="tabela-horarios">
-                    <thead>
-                        <tr>
-                            <th>Dia da Semana</th>
-                            <th>Horário de Impressão</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr id="row-1"><td>Segunda-feira</td><td>17:00 — 21:00</td></tr>
-                        <tr id="row-2"><td>Terça-feira</td><td>17:00 — 21:00</td></tr>
-                        <tr id="row-3"><td>Quarta-feira</td><td>17:00 — 21:00</td></tr>
-                        <tr id="row-4"><td>Quinta-feira</td><td>17:00 — 21:00</td></tr>
-                        <tr id="row-5"><td>Sexta-feira</td><td>17:00 — 21:00</td></tr>
-                        <tr id="row-6"><td>Sábado</td><td>06:30 — 21:30</td></tr>
-                        <tr id="row-0"><td>Domingo</td><td>06:30 — 21:30</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="proximo-horario" id="proximoHorarioBox">
-                ⏰ <span id="proximoHorarioTexto">Calculando próximo horário de impressão...</span>
-            </div>
         </section>
 
         <!-- PRAZOS E PEDIDOS 24H -->
@@ -1775,7 +1784,7 @@
             </div>
         </section>
 
-        <!-- NOVA VITRINE: ORGANIZAÇÃO E PREPARAÇÃO DE ARQUIVOS -->
+        <!-- VITRINE: ORGANIZAÇÃO & PRODUTIVIDADE COM ARQUIVOS (BOTÕES REMOVIDOS) -->
         <section class="vitrine-solucoes-container reveal-on-scroll" aria-label="Vitrine de Organização e Produtividade">
             <div class="vitrine-header">
                 <h2>📁 Organização & Produtividade com Arquivos</h2>
@@ -1789,7 +1798,6 @@
                         <div class="vitrine-card-title">Organização de arquivos</div>
                         <div class="vitrine-card-desc">Deixe seus documentos mais organizados e fáceis de encontrar no seu dia a dia.</div>
                     </div>
-                    <div class="vitrine-card-btn">Saiba mais →</div>
                 </div>
 
                 <!-- ESTRUTURAÇÃO DE DOCUMENTOS -->
@@ -1799,7 +1807,6 @@
                         <div class="vitrine-card-title">Organização de documentos</div>
                         <div class="vitrine-card-desc">Separe, reúna e estruture seus arquivos digitais conforme a sua necessidade.</div>
                     </div>
-                    <div class="vitrine-card-btn">Saiba mais →</div>
                 </div>
 
                 <!-- CONVERSÃO DE FORMATOS -->
@@ -1809,7 +1816,6 @@
                         <div class="vitrine-card-title">Conversão de arquivos</div>
                         <div class="vitrine-card-desc">Transforme seus arquivos entre formatos de forma rápida e totalmente segura.</div>
                     </div>
-                    <div class="vitrine-card-btn">Saiba mais →</div>
                 </div>
 
                 <!-- PREPARAÇÃO PARA ENVIO OU IMPRESSÃO -->
@@ -1819,7 +1825,6 @@
                         <div class="vitrine-card-title">Preparação de arquivos</div>
                         <div class="vitrine-card-desc">Prepare e otimize seus documentos antes de enviar, imprimir ou armazenar.</div>
                     </div>
-                    <div class="vitrine-card-btn">Saiba mais →</div>
                 </div>
 
                 <!-- RECURSOS PARA CELULAR -->
@@ -1829,7 +1834,6 @@
                         <div class="vitrine-card-title">Recursos para celular</div>
                         <div class="vitrine-card-desc">Ferramentas levas pensadas para facilitar tarefas diretamente pelo seu smartphone.</div>
                     </div>
-                    <div class="vitrine-card-btn">Saiba mais →</div>
                 </div>
 
                 <!-- FERRAMENTAS PRÁTICAS -->
@@ -1839,7 +1843,6 @@
                         <div class="vitrine-card-title">Ferramentas práticas</div>
                         <div class="vitrine-card-desc">Pequenos recursos e geradores para resolver tarefas específicas do seu cotidiano.</div>
                     </div>
-                    <div class="vitrine-card-btn">Saiba mais →</div>
                 </div>
             </div>
         </section>
@@ -1865,7 +1868,7 @@
             <hr style="border: 0; height: 1px; background: var(--border-color); margin: 24px 0 16px 0;">
             
             <p style="color: var(--primary); font-size: 12px; line-height: 1.6; opacity: 0.9; margin: 0; text-align: justify;">
-                Estamos preparando novas ferramentas e recursos para deixar a PrintExpress cada vez mais completa. Os recursos serão adicionados gradualmente conforme o desenvolvimento da plataforma. Algumas funcionalidades poderão ser gratuitas e outras poderão possuir recursos premium.
+                Estamos preparando novas ferramentas e recursos para deixar a WelGrafx cada vez mais completa. Os recursos serão adicionados gradualmente conforme o desenvolvimento da plataforma. Algumas funcionalidades poderão ser gratuitas e outras poderão possuir recursos premium.
             </p>
         </section>
 
@@ -1916,7 +1919,10 @@
         </div>
     </footer>
 
-    <!-- NOVO BANNER DE COOKIES -->
+    <!-- NOTIFICAÇÃO TOAST TEMPORÁRIA DE COOKIES -->
+    <div id="pxCookieToast" class="cookie-toast" role="status" aria-live="polite"></div>
+
+    <!-- BANNER DE COOKIES -->
     <div id="pxCookieBanner" class="px-cookie-banner" role="dialog" aria-live="polite" aria-label="Consentimento de Cookies">
         <div class="px-cookie-content">
             <div class="px-cookie-header">
@@ -2021,12 +2027,32 @@
             }
         }
 
-        function salvarConsentimento(consentimento) {
+        let toastTimeout = null;
+        function mostrarNotificacaoCookie(mensagem) {
+            const toast = document.getElementById('pxCookieToast');
+            if (!toast) return;
+
+            toast.innerText = mensagem;
+            toast.classList.add('show');
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function salvarConsentimento(consentimento, acao) {
             try {
                 localStorage.setItem(COOKIE_STORAGE_KEY, JSON.stringify(consentimento));
             } catch (e) {}
             esconderBannerCookies();
             fecharPreferenciasCookies();
+
+            if (acao === 'aceitar') {
+                mostrarNotificacaoCookie("Preferências de cookies salvas.");
+            } else if (acao === 'recusar') {
+                mostrarNotificacaoCookie("Você recusou os cookies não essenciais.");
+            }
         }
 
         function mostrarBannerCookies() {
@@ -2045,7 +2071,7 @@
                 analytics: true,
                 preferences: true,
                 timestamp: new Date().toISOString()
-            });
+            }, 'aceitar');
         }
 
         function recusarTodosCookies() {
@@ -2054,7 +2080,7 @@
                 analytics: false,
                 preferences: false,
                 timestamp: new Date().toISOString()
-            });
+            }, 'recusar');
         }
 
         function abrirPreferenciasCookies() {
@@ -2078,12 +2104,16 @@
             const chkAnalytics = document.getElementById('cookieCategoryAnalytics');
             const chkPreferences = document.getElementById('cookieCategoryPreferences');
 
+            const analytics = chkAnalytics ? chkAnalytics.checked : false;
+            const preferences = chkPreferences ? chkPreferences.checked : false;
+            const aceitouAlgo = analytics || preferences;
+
             salvarConsentimento({
                 necessary: true,
-                analytics: chkAnalytics ? chkAnalytics.checked : false,
-                preferences: chkPreferences ? chkPreferences.checked : false,
+                analytics: analytics,
+                preferences: preferences,
                 timestamp: new Date().toISOString()
-            });
+            }, aceitouAlgo ? 'aceitar' : 'recusar');
         }
 
         window.addEventListener('DOMContentLoaded', () => {
