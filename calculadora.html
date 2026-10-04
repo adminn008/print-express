@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Preços — WelGrafx</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/print-express/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/print-express/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/print-express/images/favicon-16x16.png">
+    <link rel="manifest" href="/print-express/images/site.webmanifest">
+    <meta name="theme-color" content="#0070f3">
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --accent: #38bdf8;
+            --accent-light: rgba(2, 132, 199, 0.08);
+            --green: #10b981;
+            --amber: #f59e0b;
+            --danger: #ef4444;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            --shadow-hover: 0 20px 30px -10px rgba(2, 132, 199, 0.15);
+            --font-scale: 1rem;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-light: rgba(56, 189, 248, 0.12);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 20px 30px -10px rgba(56, 189, 248, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+        }
+
+        html {
+            font-size: var(--font-scale);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 32px 16px 80px 16px;
+            line-height: 1.6;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 10px;
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            z-index: 10000;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .skip-link:focus { top: 10px; }
+
+        .container {
+            max-width: 960px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-on-scroll.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, .reveal-on-scroll {
+                transition: none !important;
+                animation: none !important;
+                transform: none !important;
+                opacity: 1 !important;
+            }
+        }
+
+        /* HEADER */
+        header { text-align: center; position: relative; width: 100%; }
+        .header-top { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 12px; 
+            gap: 12px; 
+            flex-wrap: wrap;
+        }
+        .header-controls { 
+            display: flex; 
+            gap: 8px; 
+            align-items: center; 
+            flex-wrap: wrap;
+        }
+
+        .theme-toggle, .access-btn, .nav-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .theme-toggle:hover, .access-btn:hover, .nav-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.12) 0%, rgba(56, 189, 248, 0.18) 100%);
+            border: 1px solid var(--accent);
+            border-radius: 24px;
+            padding: 32px 24px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-brand {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(2, 132, 199, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .hero-banner h1 {
+            color: var(--primary);
+            font-size: clamp(24px, 5vw, 32px);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-banner p {
+            color: var(--text-main);
+            font-size: clamp(14px, 3.2vw, 16px);
+            max-width: 680px;
+            font-weight: 500;
+        }
+
+        /* NAVEGAÇÃO DE CATEGORIAS */
+        .category-nav-bar {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 0 10px 0;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .cat-pill-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow);
+            flex-shrink: 0;
+        }
+
+        .cat-pill-btn:hover, .cat-pill-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* LAYOUT PRINCIPAL DA CALCULADORA */
+        .calc-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 860px) {
+            .calc-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* PAINEL DE SERVIÇOS */
+        .services-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .service-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+        }
+
+        .service-card.selected {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .service-title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .service-icon {
+            font-size: 26px;
+            background: var(--bg-input);
+            padding: 10px;
+            border-radius: 14px;
+            line-height: 1;
+        }
+
+        .service-title-group h3 {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .service-title-group p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 12px;
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            width: 100%;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .info-note {
+            background: var(--bg-input);
+            border-left: 3px solid var(--primary);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .price-badge-item {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--green);
+            align-self: flex-end;
+            margin-top: 4px;
+        }
+
+        /* PAINEL LATERAL / RESUMO DA CALCULADORA */
+        .summary-sidebar {
+            position: sticky;
+            top: 20px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 24px;
+            padding: 22px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .summary-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .summary-header h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .summary-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .summary-item {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+        }
+
+        .summary-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .summary-item-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .summary-item-price {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--primary);
+            text-align: right;
+        }
+
+        .remove-item-btn {
+            background: transparent;
+            border: none;
+            color: var(--danger);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 2px;
+            line-height: 1;
+        }
+
+        .summary-totals {
+            border-top: 1px solid var(--border-color);
+            padding-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .total-row.grand-total {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            border-top: 1px dashed var(--border-color);
+            padding-top: 10px;
+            margin-top: 4px;
+        }
+
+        .pending-quote-warning {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid var(--amber);
+            border-radius: 12px;
+            padding: 10px;
+            font-size: 12px;
+            color: var(--text-main);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-action-main {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            border-radius: 14px;
+            padding: 14px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+            text-decoration: none;
+        }
+
+        .btn-action-main:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-action-secondary {
+            background: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 10px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-action-secondary:hover {
+            background: var(--border-color);
+        }
+
+        /* MODAL DE RESUMO / PROSSEGUIR */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            max-width: 580px;
+            width: 100%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.show .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            background: var(--bg-card);
+        }
+
+        /* FOOTER INSTITUCIONAL */
+        .px-footer-container {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            padding: 40px 20px 24px;
+            border-top: 3px solid var(--primary);
+            margin-top: 40px;
+            border-radius: 20px 20px 0 0;
+            width: 100%;
+        }
+
+        .px-footer-content {
+            max-width: 960px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 28px;
+            margin-bottom: 28px;
+        }
+
+        .px-footer-brand-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .px-footer-brand-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .px-footer-bottom {
+            max-width: 960px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .btn-flutuante {
+            position: fixed;
+            bottom: 20px; right: 20px;
+            background: #25D366; color: white;
+            border-radius: 50px; padding: 12px 20px;
+            font-weight: 700; font-size: 14px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <a href="#calc-app" class="skip-link">Pular para a calculadora</a>
+
+    <div class="container">
+        <!-- HEADER -->
+        <header role="banner">
+            <div class="header-top">
+                <div style="font-weight: 800; font-size: 18px; color: var(--primary);">🖨️ WelGrafx</div>
+                <div class="header-controls">
+                    <a href="index.html" class="nav-btn"><span>🏠</span> <span>Início</span></a>
+                    <a href="geradores.html" class="nav-btn"><span>⚡</span> <span>Geradores</span></a>
+                    <button class="access-btn" id="btnFonte" onclick="alternarFonte()"><span>♿ Fonte</span></button>
+                    <button class="theme-toggle" id="themeToggleBtn" onclick="alternarTema()">
+                        <span id="themeIcon">🌙</span> <span id="themeText">Escuro</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="hero-banner reveal-on-scroll">
+                <span class="hero-brand">Simulador Oficial de Valores</span>
+                <h1>WelGrafx — Calculadora de Preços</h1>
+                <p>Consulte os valores, personalize seu pedido e descubra uma estimativa transparente antes de solicitar seu serviço.</p>
+            </div>
+        </header>
+
+        <!-- CATEGORIAS DE ACESSO RÁPIDO -->
+        <div class="category-nav-bar reveal-on-scroll">
+            <button class="cat-pill-btn active" onclick="filtrarCategoria('todas', this)">✨ Todos os Serviços</button>
+            <button class="cat-pill-btn" onclick="filtrarCategoria('impressao', this)">🖨️ Impressão e Xerox</button>
+            <button class="cat-pill-btn" onclick="filtrarCategoria('digitalizacao', this)">📲 Digitalização</button>
+            <button class="cat-pill-btn" onclick="filtrarCategoria('documentos', this)">📄 Documentos Oficiais</button>
+            <button class="cat-pill-btn" onclick="filtrarCategoria('digitacao', this)">✍️ Digitação e Edição</button>
+            <button class="cat-pill-btn" onclick="filtrarCategoria('curriculos', this)">💼 Currículos</button>
+            <button class="cat-pill-btn" onclick="filtrarCategoria('orcamento', this)">💡 Orçamento Personalizado</button>
+            <button class="cat-pill-btn" onclick="filtrarCategoria('modelos', this)">📑 Modelos Digitais</button>
+        </div>
+
+        <!-- PRINCIPAL - CALCULADORA -->
+        <div class="calc-layout" id="calc-app">
+            <!-- LISTA DE CARDS DE SERVIÇOS -->
+            <div class="services-container" id="servicesList">
+
+                <!-- 1. IMPRESSÃO E XEROX -->
+                <div class="service-card reveal-on-scroll" data-cat="impressao">
+                    <div class="service-header">
+                        <div class="service-title-group">
+                            <span class="service-icon">🖨️</span>
+                            <div>
+                                <h3>Impressão e Xerox</h3>
+                                <p>Impressão física A4 P&B e Colorida por folha</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Tipo de Impressão e Cobertura</label>
+                            <select id="impTipo" class="form-control" onchange="calcularImpressao()">
+                                <option value="pb_comum">P&B comum — texto, documentos e Xerox simples (R$ 0,50/folha)</option>
+                                <option value="pb_alta">P&B com alta cobertura de tinta (R$ 1,00/folha)</option>
+                                <option value="col_pouca">Colorida com pouca cobertura de cor (R$ 1,00/folha)</option>
+                                <option value="col_media">Colorida com média cobertura (R$ 1,35/folha | R$ 1,20 a partir de 6 folhas)</option>
+                                <option value="col_total">Colorida com cobertura total (R$ 2,00/folha)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Total de Páginas do Arquivo</label>
+                            <input type="number" id="impPaginas" class="form-control" value="1" min="1" oninput="calcularImpressao()">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Quantidade de Cópias</label>
+                            <input type="number" id="impCopias" class="form-control" value="1" min="1" oninput="calcularImpressao()">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Modo de Impressão</label>
+                            <select id="impModo" class="form-control" onchange="calcularImpressao()">
+                                <option value="frente">Somente Frente (1 página = 1 folha)</option>
+                                <option value="frente_verso">Frente e Verso (2 páginas = 1 folha)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="info-note" id="impNote">
+                        💡 <strong>Entenda o cálculo:</strong> Na impressão frente e verso, cada folha física comporta 2 páginas do arquivo.
+                    </div>
+
+                    <div class="service-header">
+                        <span class="price-badge-item" id="impPriceDisplay">R$ 0,50</span>
+                        <button type="button" class="btn-action-main" style="padding: 8px 16px; font-size: 13px;" onclick="adicionarImpressao()">+ Adicionar ao Pedido</button>
+                    </div>
+                </div>
+
+                <!-- 2. DIGITALIZAÇÃO -->
+                <div class="service-card reveal-on-scroll" data-cat="digitalizacao">
+                    <div class="service-header">
+                        <div class="service-title-group">
+                            <span class="service-icon">📲</span>
+                            <div>
+                                <h3>Digitalização de Documentos</h3>
+                                <p>Digitalização para PDF ou imagem com opções de OCR e organização</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Quantidade de Páginas Físicas</label>
+                            <input type="number" id="digPaginas" class="form-control" value="1" min="1" oninput="calcularDigitalizacao()">
+                        </div>
+
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Adicionais de Digitalização</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="digOcr" onchange="calcularDigitalizacao()"> OCR — Reconhecimento de texto (+ R$ 0,30 / página)
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="digOrgPdf" onchange="calcularDigitalizacao()"> Organização de PDF (+ R$ 2,00 fixo)
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="digSepDoc" onchange="calcularDigitalizacao()"> Separação de documentos (+ R$ 2,00 fixo)
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="digAjuste" onchange="calcularDigitalizacao()"> Ajuste de orientação (+ R$ 1,00 fixo)
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="digRemBranco" onchange="calcularDigitalizacao()"> Remoção de páginas em branco (+ R$ 1,00 fixo)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-note" id="digNote">
+                        📊 Tabela regressiva: 1 a 4 págs (R$ 2,00/pág) | 5 a 9 págs (R$ 1,50/pág) | 10+ págs (R$ 1,00/pág).
+                    </div>
+
+                    <div class="service-header">
+                        <span class="price-badge-item" id="digPriceDisplay">R$ 2,00</span>
+                        <button type="button" class="btn-action-main" style="padding: 8px 16px; font-size: 13px;" onclick="adicionarDigitalizacao()">+ Adicionar ao Pedido</button>
+                    </div>
+                </div>
+
+                <!-- 3. DOCUMENTOS OFICIAIS -->
+                <div class="service-card reveal-on-scroll" data-cat="documentos">
+                    <div class="service-header">
+                        <div class="service-title-group">
+                            <span class="service-icon">📄</span>
+                            <div>
+                                <h3>Documentos Oficiais</h3>
+                                <p>Auxílio na busca, emissão e impressão de documentos públicos</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Selecione o Documento e Serviço</label>
+                            <select id="docOficialSelect" class="form-control" onchange="calcularDocumentosOficiais()">
+                                <option value="crlv_busca">CRLV — Localização/emissão e impressão (R$ 12,20)</option>
+                                <option value="crlv_pdf">CRLV — Cliente já possui o PDF e quer impressão (R$ 8,00)</option>
+                                <option value="cpf_busca">CPF — Comprovante de situação cadastral (Localização/impressão) (R$ 3,50)</option>
+                                <option value="cpf_pdf">CPF — Comprovante de situação cadastral (Cliente tem PDF) (R$ 0,50)</option>
+                                <option value="cnpj_pb">CNPJ — Situação cadastral (Pesquisa e impressão P&B) (R$ 5,00)</option>
+                                <option value="cnpj_col">CNPJ — Situação cadastral (Pesquisa e impressão Colorida) (R$ 7,00)</option>
+                                <option value="antecedentes_pb">Certidão de Antecedentes Criminais (Pesquisa e impressão P&B) (R$ 5,00)</option>
+                                <option value="antecedentes_col">Certidão de Antecedentes Criminais (Pesquisa e impressão Colorida) (R$ 7,00)</option>
+                                <option value="eleitoral_pdf">Certidão de Quitação Eleitoral (Cliente tem PDF; P&B) (R$ 0,50)</option>
+                                <option value="cnh_pdf">Registro CNH Digital (Cliente tem PDF; P&B) (R$ 0,50)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="info-note">
+                        ⚠️ <strong>Aviso Importante:</strong> A WelGrafx presta serviço de auxílio na localização, organização e impressão de documentos fornecidos ou públicos. Não nos apresentamos como órgão emissor oficial e não garantimos aprovação ou regularidade junto aos órgãos.
+                    </div>
+
+                    <div class="service-header">
+                        <span class="price-badge-item" id="docOficialPriceDisplay">R$ 12,20</span>
+                        <button type="button" class="btn-action-main" style="padding: 8px 16px; font-size: 13px;" onclick="adicionarDocumentoOficial()">+ Adicionar ao Pedido</button>
+                    </div>
+                </div>
+
+                <!-- 4. DIGITAÇÃO, FORMATAÇÃO E EDIÇÃO -->
+                <div class="service-card reveal-on-scroll" data-cat="digitacao">
+                    <div class="service-header">
+                        <div class="service-title-group">
+                            <span class="service-icon">✍️</span>
+                            <div>
+                                <h3>Digitação, Formatação e Edição</h3>
+                                <p>Serviços textuais e edição de arquivos por página ou por projeto</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Tipo de Serviço Textual</label>
+                            <select id="editTipoSelect" class="form-control" onchange="calcularEdicaoTexto()">
+                                <option value="digitacao_doc">Digitação de documentos (R$ 3,00 / página)</option>
+                                <option value="digitacao_manuscrito">Digitação de manuscritos ou imagens (R$ 5,00 / página)</option>
+                                <option value="formatacao_word">Formatação de Word e PDF (R$ 3,00 / página)</option>
+                                <option value="edicao_existente">Edição de documento existente (R$ 2,50 / página)</option>
+                                <option value="revisao_basica">Revisão básica de digitação (R$ 3,00 / página)</option>
+                                <option value="conversao_formatos">Conversão entre formatos (R$ 3,00 / projeto)</option>
+                                <option value="doc_simples_zero">Criação de documento simples do zero (R$ 10,00 / projeto)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="editPaginasGroup">
+                            <label>Quantidade de Páginas</label>
+                            <input type="number" id="editPaginas" class="form-control" value="1" min="1" oninput="calcularEdicaoTexto()">
+                        </div>
+
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Adicionais Compatíveis</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label" id="addDocxBox">
+                                    <input type="checkbox" id="addDocx" onchange="calcularEdicaoTexto()"> Entrega de arquivo editável DOCX ou XLSX (+ R$ 5,00)
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="addLogo" onchange="calcularEdicaoTexto()"> Inserção de logotipo fornecido (+ R$ 8,00)
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="addCabecalho" onchange="calcularEdicaoTexto()"> Cabeçalho e rodapé simples (+ R$ 5,00)
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="addTabelas" onchange="calcularEdicaoTexto()"> Tabelas ou campos especiais simples (+ R$ 8,00)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="checkbox-label" style="color: var(--amber);">
+                                <input type="checkbox" id="addUrgencia" onchange="calcularEdicaoTexto()"> ⚡ Serviço Urgente (+50% do subtotal | mínimo R$ 10,00)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="info-note">
+                        📄 <strong>Versão final em PDF:</strong> Sempre inclusa gratuitamente em todos os serviços de digitação/edição. A urgência está sujeita à confirmação de disponibilidade.
+                    </div>
+
+                    <div class="service-header">
+                        <span class="price-badge-item" id="editPriceDisplay">R$ 3,00</span>
+                        <button type="button" class="btn-action-main" style="padding: 8px 16px; font-size: 13px;" onclick="adicionarEdicaoTexto()">+ Adicionar ao Pedido</button>
+                    </div>
+                </div>
+
+                <!-- 5. CURRÍCULOS E DOCUMENTOS PERSONALIZADOS -->
+                <div class="service-card reveal-on-scroll" data-cat="curriculos">
+                    <div class="service-header">
+                        <div class="service-title-group">
+                            <span class="service-icon">💼</span>
+                            <div>
+                                <h3>Currículos e Documentos Personalizados</h3>
+                                <p>Modelos profissionais para carreira e formulários sob medida</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Selecione o Serviço de Carreira / Documento</label>
+                            <select id="curriculoSelect" class="form-control" onchange="calcularCurriculos()">
+                                <option value="curr_zero">Criação de currículo do zero (R$ 20,00)</option>
+                                <option value="curr_atualiza">Atualização de currículo existente (R$ 10,00)</option>
+                                <option value="carta_apresentacao">Carta de apresentação (R$ 12,00)</option>
+                                <option value="pacote_curr_carta">Pacote Promo: Currículo + Carta de Apresentação (R$ 28,00)</option>
+                                <option value="cria_formulario">Criação de formulário ou ficha (R$ 10,00 / projeto)</option>
+                                <option value="cria_planilha">Criação de planilha simples (R$ 15,00 / projeto)</option>
+                                <option value="reorganiza_pdf">União, separação ou reorganização simples de PDF (R$ 5,00 / projeto)</option>
+                                <option value="pdf_personalizado">Criação de PDF personalizado (A partir de R$ 10,00 / projeto)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Quantidade de Projetos/Documentos</label>
+                            <input type="number" id="currQtd" class="form-control" value="1" min="1" oninput="calcularCurriculos()">
+                        </div>
+                    </div>
+
+                    <div class="info-note" id="currNote">
+                        💼 No pacote Currículo + Carta, o valor do combo (R$ 28,00) já se aplica diretamente sem duplicar valores individuais.
+                    </div>
+
+                    <div class="service-header">
+                        <span class="price-badge-item" id="currPriceDisplay">R$ 20,00</span>
+                        <button type="button" class="btn-action-main" style="padding: 8px 16px; font-size: 13px;" onclick="adicionarCurriculos()">+ Adicionar ao Pedido</button>
+                    </div>
+                </div>
+
+                <!-- 6. CRIAÇÃO DO ZERO — ORÇAMENTO PERSONALIZADO -->
+                <div class="service-card reveal-on-scroll" data-cat="orcamento">
+                    <div class="service-header">
+                        <div class="service-title-group">
+                            <span class="service-icon">💡</span>
+                            <div>
+                                <h3>Criação do Zero — Orçamento Personalizado</h3>
+                                <p>Sua ideia, do seu jeito. Descreva o que precisa para análise prévia</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Descrição Detalhada da sua Ideia ou Projeto</label>
+                            <textarea id="orcDescricao" class="form-control" rows="3" placeholder="Exemplo: Preciso criar um livreto personalizado com 12 páginas, incluindo layout para fotos e texto..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Páginas Estimadas (Opcional)</label>
+                            <input type="number" id="orcPaginas" class="form-control" placeholder="Ex: 5" min="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Formato Desejado</label>
+                            <select id="orcFormato" class="form-control">
+                                <option value="pdf">Apenas Arquivo Digital (PDF)</option>
+                                <option value="impresso">Impresso Física e Entregue</option>
+                                <option value="ambos">Arquivo Digital + Impressão</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="info-note" style="border-left-color: var(--amber);">
+                        📌 <strong>Orçamento pendente de análise:</strong> Este serviço não possui valor fixo imediato. Ele será incluído na lista do seu pedido como item pendente de avaliação manual pela nossa equipe.
+                    </div>
+
+                    <div class="service-header">
+                        <span class="price-badge-item" style="color: var(--amber);">Sob Consulta</span>
+                        <button type="button" class="btn-action-main" style="padding: 8px 16px; font-size: 13px; background: var(--amber);" onclick="adicionarOrcamentoPersonalizado()">+ Incluir no Orçamento</button>
+                    </div>
+                </div>
+
+                <!-- 7. FOLHAS DE PONTO E MODELOS DIGITAIS -->
+                <div class="service-card reveal-on-scroll" data-cat="modelos">
+                    <div class="service-header">
+                        <div class="service-title-group">
+                            <span class="service-icon">📑</span>
+                            <div>
+                                <h3>Modelos Digitais e Folhas de Ponto</h3>
+                                <p>Acesso e download de modelos prontos disponíveis no site</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Selecione o Modelo Digital</label>
+                            <select id="modeloSelect" class="form-control" onchange="calcularModelos()">
+                                <option value="folha_ponto_std">Folha de Ponto Padrão (Modelo Digital) (R$ 0,00 - Gratuito)</option>
+                                <option value="ficha_cadastral">Ficha Cadastral Simples (R$ 0,00 - Gratuito)</option>
+                                <option value="recibo_simples">Modelo de Recibo de Pagamento (R$ 0,00 - Gratuito)</option>
+                                <option value="modelo_custom">Modelo com Personalização de Dados/Logo (A partir de R$ 5,00)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="info-note">
+                        ℹ️ <strong>Atenção:</strong> A seleção de modelos digitais dá direito ao arquivo em PDF. Se necessitar da impressão física do modelo, inclua também o serviço de <strong>Impressão e Xerox</strong>.
+                    </div>
+
+                    <div class="service-header">
+                        <span class="price-badge-item" id="modeloPriceDisplay">Grátis</span>
+                        <button type="button" class="btn-action-main" style="padding: 8px 16px; font-size: 13px;" onclick="adicionarModelo()">+ Adicionar ao Pedido</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- PAINEL LATERAL / RESUMO -->
+            <aside class="summary-sidebar reveal-on-scroll">
+                <div class="summary-header">
+                    <h2>📋 Seu Pedido</h2>
+                    <span id="itemsCountBadge" style="font-size: 12px; font-weight: 800; background: var(--accent-light); color: var(--primary); padding: 4px 10px; border-radius: 12px;">0 itens</span>
+                </div>
+
+                <div class="summary-items-list" id="summaryItemsList">
+                    <div style="text-align: center; color: var(--text-muted); padding: 20px 10px; font-size: 13px;">
+                        Nenhum serviço selecionado ainda. Escolha os serviços ao lado e clique em "+ Adicionar ao Pedido".
+                    </div>
+                </div>
+
+                <div class="pending-quote-warning" id="pendingWarning" style="display: none;">
+                    ⚠️ Há itens pendentes de orçamento manual no seu pedido. O total abaixo é parcial.
+                </div>
+
+                <div class="summary-totals">
+                    <div class="total-row">
+                        <span>Subtotal de itens fixos:</span>
+                        <span id="subtotalFixedDisplay">R$ 0,00</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Adicionais e Taxas:</span>
+                        <span id="subtotalFeesDisplay">R$ 0,00</span>
+                    </div>
+                    <div class="total-row grand-total">
+                        <span>Total Estimado:</span>
+                        <span id="grandTotalDisplay">R$ 0,00</span>
+                    </div>
+                </div>
+
+                <div class="summary-actions">
+                    <button type="button" class="btn-action-main" id="btnProsseguir" onclick="abrirModalResumo()">
+                        🚀 Continuar com o Pedido
+                    </button>
+                    <button type="button" class="btn-action-secondary" onclick="limparPedidoCompleto()">
+                        🗑️ Limpar tudo
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- MODAL DE RESUMO E SOLICITAÇÃO -->
+    <div class="modal-overlay" id="modalResumo" role="dialog" aria-modal="true">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Resumo Completo do Pedido</h3>
+                <button type="button" style="background:transparent; border:none; font-size:18px; cursor:pointer; color:var(--text-muted);" onclick="fecharModalResumo()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBodyContent">
+                <!-- Conteúdo gerado dinamicamente -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-action-secondary" onclick="fecharModalResumo()">Voltar e Editar</button>
+                <a id="btnEnviarWhatsapp" href="#" target="_blank" class="btn-action-main" style="background: #25D366; text-decoration: none;">
+                    💬 Enviar pelo WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER INSTITUCIONAL -->
+    <footer class="px-footer-container">
+        <div class="px-footer-content">
+            <div>
+                <div class="px-footer-brand-title"><span>🖨️</span> WELGRAFX</div>
+                <p class="px-footer-brand-desc">
+                    Calculadora de preços e orçamentos para transparência total em seus serviços de impressão, digitalização e documentos.
+                </p>
+            </div>
+            <div>
+                <h5 style="font-size:13px; font-weight:700; margin-bottom:8px;">Links Rápidos</h5>
+                <p><a href="index.html" style="color:var(--text-muted); text-decoration:none; font-size:13px;">Página Inicial</a></p>
+                <p><a href="geradores.html" style="color:var(--text-muted); text-decoration:none; font-size:13px;">Central de Geradores</a></p>
+            </div>
+        </div>
+        <div class="px-footer-bottom">
+            <p>© 2026 WelGrafx. Todos os direitos reservados.</p>
+            <button type="button" class="nav-btn" onclick="window.scrollTo({top:0, behavior:'smooth'})">Voltar ao topo ↑</button>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/5541999682836?text=Olá,%20gostaria%20de%20tirar%20uma%20dúvida%20sobre%20os%20preços!" target="_blank" class="btn-flutuante">
+        💬 Dúvidas?
+    </a>
+
+    <!-- LÓGICA JAVASCRIPT DA CALCULADORA -->
+    <script>
+        // FORMATAÇÃO MONETÁRIA BRASILEIRA
+        const fmtBRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        // ESTADO GLOBAL DO PEDIDO
+        let pedidoItens = [];
+
+        // ESTRUTURA DE PREÇOS REAIS
+        const PRECOS = {
+            impressao: {
+                pb_comum: 0.50,
+                pb_alta: 1.00,
+                col_pouca: 1.00,
+                col_media_base: 1.35,
+                col_media_desconto: 1.20, // a partir de 6 folhas
+                col_total: 2.00
+            },
+            digitalizacao: {
+                f1_4: 2.00,
+                f5_9: 1.50,
+                f10_mais: 1.00,
+                ocr_pag: 0.30,
+                org_pdf: 2.00,
+                sep_doc: 2.00,
+                ajuste: 1.00,
+                rem_branco: 1.00
+            },
+            documentos: {
+                crlv_busca: 12.20,
+                crlv_pdf: 8.00,
+                cpf_busca: 3.50,
+                cpf_pdf: 0.50,
+                cnpj_pb: 5.00,
+                cnpj_col: 7.00,
+                antecedentes_pb: 5.00,
+                antecedentes_col: 7.00,
+                eleitoral_pdf: 0.50,
+                cnh_pdf: 0.50
+            },
+            editTexto: {
+                digitacao_doc: 3.00,
+                digitacao_manuscrito: 5.00,
+                formatacao_word: 3.00,
+                edicao_existente: 2.50,
+                revisao_basica: 3.00,
+                conversao_formatos: 3.00, // por projeto
+                doc_simples_zero: 10.00, // por projeto
+                add_docx: 5.00,
+                add_logo: 8.00,
+                add_cabecalho: 5.00,
+                add_tabelas: 8.00
+            },
+            curriculos: {
+                curr_zero: 20.00,
+                curr_atualiza: 10.00,
+                carta_apresentacao: 12.00,
+                pacote_curr_carta: 28.00,
+                cria_formulario: 10.00,
+                cria_planilha: 15.00,
+                reorganiza_pdf: 5.00,
+                pdf_personalizado: 10.00
+            },
+            modelos: {
+                folha_ponto_std: 0.00,
+                ficha_cadastral: 0.00,
+                recibo_simples: 0.00,
+                modelo_custom: 5.00
+            }
+        };
+
+        // --- CÁLCULOS DOS SERVIÇOS ---
+
+        // 1. IMPRESSÃO
+        function calcularImpressao() {
+            const tipo = document.getElementById('impTipo').value;
+            let paginas = parseInt(document.getElementById('impPaginas').value) || 1;
+            let copias = parseInt(document.getElementById('impCopias').value) || 1;
+            const modo = document.getElementById('impModo').value;
+
+            if (paginas < 1) paginas = 1;
+            if (copias < 1) copias = 1;
+
+            // Calcular folhas por cópia
+            let folhasPorCopia = (modo === 'frente_verso') ? Math.ceil(paginas / 2) : paginas;
+            let totalFolhas = folhasPorCopia * copias;
+
+            let precoUnitario = 0;
+            if (tipo === 'col_media') {
+                precoUnitario = (totalFolhas >= 6) ? PRECOS.impressao.col_media_desconto : PRECOS.impressao.col_media_base;
+            } else {
+                precoUnitario = PRECOS.impressao[tipo];
+            }
+
+            let total = totalFolhas * precoUnitario;
+            document.getElementById('impPriceDisplay').innerText = fmtBRL.format(total);
+
+            const note = document.getElementById('impNote');
+            if (tipo === 'col_media' && totalFolhas >= 6) {
+                note.innerHTML = `🎉 <strong>Desconto aplicado:</strong> Preço especial de R$ 1,20/folha ativado (${totalFolhas} folhas totais).`;
+            } else {
+                note.innerHTML = `💡 <strong>Entenda o cálculo:</strong> ${paginas} págs em modo ${modo === 'frente_verso' ? 'Frente e Verso' : 'Frente'} × ${copias} cópia(s) = <strong>${totalFolhas} folha(s) física(s)</strong>.`;
+            }
+
+            return { tipo, paginas, copias, modo, totalFolhas, precoUnitario, total };
+        }
+
+        // 2. DIGITALIZAÇÃO
+        function calcularDigitalizacao() {
+            let paginas = parseInt(document.getElementById('digPaginas').value) || 1;
+            if (paginas < 1) paginas = 1;
+
+            let tarifaPina = PRECOS.digitalizacao.f1_4;
+            if (paginas >= 10) {
+                tarifaPina = PRECOS.digitalizacao.f10_mais;
+            } else if (paginas >= 5) {
+                tarifaPina = PRECOS.digitalizacao.f5_9;
+            }
+
+            let custoBase = paginas * tarifaPina;
+            let custoAdicionais = 0;
+
+            if (document.getElementById('digOcr').checked) custoAdicionais += paginas * PRECOS.digitalizacao.ocr_pag;
+            if (document.getElementById('digOrgPdf').checked) custoAdicionais += PRECOS.digitalizacao.org_pdf;
+            if (document.getElementById('digSepDoc').checked) custoAdicionais += PRECOS.digitalizacao.sep_doc;
+            if (document.getElementById('digAjuste').checked) custoAdicionais += PRECOS.digitalizacao.ajuste;
+            if (document.getElementById('digRemBranco').checked) custoAdicionais += PRECOS.digitalizacao.rem_branco;
+
+            let total = custoBase + custoAdicionais;
+            document.getElementById('digPriceDisplay').innerText = fmtBRL.format(total);
+
+            document.getElementById('digNote').innerHTML = `📊 Faixa aplicada: <strong>${fmtBRL.format(tarifaPina)}/pág</strong> para ${paginas} página(s).`;
+
+            return { paginas, tarifaPina, custoBase, custoAdicionais, total };
+        }
+
+        // 3. DOCUMENTOS OFICIAIS
+        function calcularDocumentosOficiais() {
+            const sel = document.getElementById('docOficialSelect').value;
+            let total = PRECOS.documentos[sel] || 0;
+            document.getElementById('docOficialPriceDisplay').innerText = fmtBRL.format(total);
+            return { sel, total };
+        }
+
+        // 4. DIGITAÇÃO E EDIÇÃO TEXTUAL
+        function calcularEdicaoTexto() {
+            const tipo = document.getElementById('editTipoSelect').value;
+            let paginas = parseInt(document.getElementById('editPaginas').value) || 1;
+            if (paginas < 1) paginas = 1;
+
+            const editPaginasGroup = document.getElementById('editPaginasGroup');
+            const addDocxBox = document.getElementById('addDocxBox');
+
+            // Verificar se é cobrado por projeto ou página
+            const porProjeto = (tipo === 'conversao_formatos' || tipo === 'doc_simples_zero');
+            if (porProjeto) {
+                editPaginasGroup.style.opacity = '0.4';
+                document.getElementById('editPaginas').disabled = true;
+            } else {
+                editPaginasGroup.style.opacity = '1';
+                document.getElementById('editPaginas').disabled = false;
+            }
+
+            let subtotalBase = porProjeto ? PRECOS.editTexto[tipo] : (PRECOS.editTexto[tipo] * paginas);
+            let adicionais = 0;
+
+            if (document.getElementById('addDocx').checked) adicionais += PRECOS.editTexto.add_docx;
+            if (document.getElementById('addLogo').checked) adicionais += PRECOS.editTexto.add_logo;
+            if (document.getElementById('addCabecalho').checked) adicionais += PRECOS.editTexto.add_cabecalho;
+            if (document.getElementById('addTabelas').checked) adicionais += PRECOS.editTexto.add_tabelas;
+
+            let subtotalSemUrgencia = subtotalBase + adicionais;
+            let taxaUrgencia = 0;
+
+            if (document.getElementById('addUrgencia').checked) {
+                taxaUrgencia = Math.max(subtotalSemUrgencia * 0.50, 10.00);
+            }
+
+            let total = subtotalSemUrgencia + taxaUrgencia;
+            document.getElementById('editPriceDisplay').innerText = fmtBRL.format(total);
+
+            return { tipo, porProjeto, paginas, subtotalBase, adicionais, taxaUrgencia, total };
+        }
+
+        // 5. CURRÍCULOS
+        function calcularCurriculos() {
+            const sel = document.getElementById('curriculoSelect').value;
+            let qtd = parseInt(document.getElementById('currQtd').value) || 1;
+            if (qtd < 1) qtd = 1;
+
+            let total = PRECOS.curriculos[sel] * qtd;
+            document.getElementById('currPriceDisplay').innerText = fmtBRL.format(total);
+
+            const note = document.getElementById('currNote');
+            if (sel === 'pdf_personalizado') {
+                note.innerHTML = `📌 <strong>A partir de R$ 10,00:</strong> Trabalhos de maior complexidade serão analisados antes do valor final.`;
+            } else if (sel === 'pacote_curr_carta') {
+                note.innerHTML = `💼 <strong>Combo Especial:</strong> Currículo + Carta por R$ 28,00 (sem cobrança duplicada).`;
+            } else {
+                note.innerHTML = `💼 Preço unitário fixo sem cobranças ocultas.`;
+            }
+
+            return { sel, qtd, total };
+        }
+
+        // 6. MODELOS DIGITAIS
+        function calcularModelos() {
+            const sel = document.getElementById('modeloSelect').value;
+            let total = PRECOS.modelos[sel];
+            document.getElementById('modeloPriceDisplay').innerText = total === 0 ? "Grátis" : fmtBRL.format(total);
+            return { sel, total };
+        }
+
+        // --- ADICIONAR ITENS AO PEDIDO GLOBAL ---
+
+        function adicionarImpressao() {
+            const r = calcularImpressao();
+            const textTipo = document.getElementById('impTipo').options[document.getElementById('impTipo').selectedIndex].text;
+            pedidoItens.push({
+                nome: "Impressão e Xerox",
+                detalhe: `${r.paginas} pág(s) × ${r.copias} cópia(s) (${r.totalFolhas} folha(s) em ${r.modo}) - ${textTipo.split('(')[0]}`,
+                valor: r.total,
+                pendente: false
+            });
+            atualizarPainelResumo();
+        }
+
+        function adicionarDigitalizacao() {
+            const r = calcularDigitalizacao();
+            let adcs = [];
+            if (document.getElementById('digOcr').checked) adcs.push('OCR');
+            if (document.getElementById('digOrgPdf').checked) adcs.push('Org. PDF');
+            if (document.getElementById('digSepDoc').checked) adcs.push('Separação');
+            if (document.getElementById('digAjuste').checked) adcs.push('Ajuste');
+            if (document.getElementById('digRemBranco').checked) adcs.push('Rem. Brancos');
+
+            pedidoItens.push({
+                nome: "Digitalização de Documentos",
+                detalhe: `${r.paginas} pág(s) ${adcs.length > 0 ? '+ ' + adcs.join(', ') : ''}`,
+                valor: r.total,
+                pendente: false
+            });
+            atualizarPainelResumo();
+        }
+
+        function adicionarDocumentoOficial() {
+            const r = calcularDocumentosOficiais();
+            const textSel = document.getElementById('docOficialSelect').options[document.getElementById('docOficialSelect').selectedIndex].text;
+            pedidoItens.push({
+                nome: "Documento Oficial",
+                detalhe: textSel.split('(')[0],
+                valor: r.total,
+                pendente: false
+            });
+            atualizarPainelResumo();
+        }
+
+        function adicionarEdicaoTexto() {
+            const r = calcularEdicaoTexto();
+            const textTipo = document.getElementById('editTipoSelect').options[document.getElementById('editTipoSelect').selectedIndex].text;
+            let adcs = [];
+            if (r.taxaUrgencia > 0) adcs.push(`Urgência (${fmtBRL.format(r.taxaUrgencia)})`);
+
+            pedidoItens.push({
+                nome: "Digitação / Edição Textual",
+                detalhe: `${textTipo.split('(')[0]} (${r.porProjeto ? '1 projeto' : r.paginas + ' pág(s)'}) ${adcs.length > 0 ? '+ ' + adcs.join(', ') : ''}`,
+                valor: r.total,
+                pendente: false
+            });
+            atualizarPainelResumo();
+        }
+
+        function adicionarCurriculos() {
+            const r = calcularCurriculos();
+            const textSel = document.getElementById('curriculoSelect').options[document.getElementById('curriculoSelect').selectedIndex].text;
+            pedidoItens.push({
+                nome: "Currículo / Personalizado",
+                detalhe: `${textSel.split('(')[0]} (Qtd: ${r.qtd})`,
+                valor: r.total,
+                pendente: false
+            });
+            atualizarPainelResumo();
+        }
+
+        function adicionarOrcamentoPersonalizado() {
+            const desc = document.getElementById('orcDescricao').value.trim();
+            if (!desc) {
+                alert("Por favor, descreva brevemente a sua ideia no campo antes de adicionar.");
+                return;
+            }
+            const paginas = document.getElementById('orcPaginas').value;
+            const formato = document.getElementById('orcFormato').value;
+
+            pedidoItens.push({
+                nome: "Criação do Zero (Projeto Sob Medida)",
+                detalhe: `Ideia: "${desc.substring(0, 60)}..." | Formato: ${formato} ${paginas ? '| Págs: ' + paginas : ''}`,
+                valor: 0,
+                pendente: true
+            });
+            document.getElementById('orcDescricao').value = '';
+            atualizarPainelResumo();
+        }
+
+        function adicionarModelo() {
+            const r = calcularModelos();
+            const textSel = document.getElementById('modeloSelect').options[document.getElementById('modeloSelect').selectedIndex].text;
+            pedidoItens.push({
+                nome: "Modelo Digital / Folha de Ponto",
+                detalhe: textSel.split('(')[0],
+                valor: r.total,
+                pendente: false
+            });
+            atualizarPainelResumo();
+        }
+
+        // --- GERENCIAMENTO DA LISTA E PAINEL DA CALCULADORA ---
+
+        function removerItem(index) {
+            pedidoItens.splice(index, 1);
+            atualizarPainelResumo();
+        }
+
+        function limparPedidoCompleto() {
+            pedidoItens = [];
+            atualizarPainelResumo();
+        }
+
+        function atualizarPainelResumo() {
+            const container = document.getElementById('summaryItemsList');
+            const badgeCount = document.getElementById('itemsCountBadge');
+            const warningBox = document.getElementById('pendingWarning');
+
+            badgeCount.innerText = `${pedidoItens.length} ${pedidoItens.length === 1 ? 'item' : 'itens'}`;
+
+            if (pedidoItens.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: var(--text-muted); padding: 20px 10px; font-size: 13px;">
+                        Nenhum serviço selecionado ainda. Escolha os serviços ao lado e clique em "+ Adicionar ao Pedido".
+                    </div>
+                `;
+                warningBox.style.display = 'none';
+                document.getElementById('subtotalFixedDisplay').innerText = 'R$ 0,00';
+                document.getElementById('subtotalFeesDisplay').innerText = 'R$ 0,00';
+                document.getElementById('grandTotalDisplay').innerText = 'R$ 0,00';
+                return;
+            }
+
+            let html = '';
+            let somaFixo = 0;
+            let temPendente = false;
+
+            pedidoItens.forEach((item, idx) => {
+                if (item.pendente) temPendente = true;
+                else somaFixo += item.valor;
+
+                html += `
+                    <div class="summary-item">
+                        <div class="summary-item-header">
+                            <span>${item.nome}</span>
+                            <button class="remove-item-btn" onclick="removerItem(${idx})" title="Remover item">✕</button>
+                        </div>
+                        <div class="summary-item-desc">${item.detalhe}</div>
+                        <div class="summary-item-price">
+                            ${item.pendente ? '<span style="color:var(--amber);">Pendente de Orçamento</span>' : fmtBRL.format(item.valor)}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            warningBox.style.display = temPendente ? 'flex' : 'none';
+
+            document.getElementById('subtotalFixedDisplay').innerText = fmtBRL.format(somaFixo);
+            document.getElementById('subtotalFeesDisplay').innerText = 'R$ 0,00';
+            document.getElementById('grandTotalDisplay').innerText = fmtBRL.format(somaFixo) + (temPendente ? ' + Orçamento' : '');
+        }
+
+        // --- FILTRAGEM POR CATEGORIA ---
+        function filtrarCategoria(cat, btn) {
+            document.querySelectorAll('.cat-pill-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            const cards = document.querySelectorAll('.service-card');
+            cards.forEach(card => {
+                const cardCat = card.getAttribute('data-cat');
+                if (cat === 'todas' || cardCat === cat) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // --- MODAL DE RESUMO FINAL ---
+
+        function abrirModalResumo() {
+            if (pedidoItens.length === 0) {
+                alert("Sua lista de serviços está vazia! Adicione pelo menos um serviço para continuar.");
+                return;
+            }
+
+            const body = document.getElementById('modalBodyContent');
+            let somaTotal = 0;
+            let temPendente = false;
+
+            let textoWhatsapp = "Olá WelGrafx! Gostaria de solicitar um orçamento/atendimento para os seguintes serviços:\n\n";
+
+            let html = '<ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:10px;">';
+            pedidoItens.forEach((item, idx) => {
+                if (item.pendente) temPendente = true;
+                else somaTotal += item.valor;
+
+                html += `
+                    <li style="background:var(--bg-input); padding:10px 14px; border-radius:12px; border:1px solid var(--border-color);">
+                        <strong style="color:var(--primary); font-size:13px;">${idx + 1}. ${item.nome}</strong><br>
+                        <span style="font-size:12px; color:var(--text-muted);">${item.detalhe}</span><br>
+                        <span style="font-size:13px; font-weight:800; color:var(--text-main);">
+                            ${item.pendente ? 'Sob Análise' : fmtBRL.format(item.valor)}
+                        </span>
+                    </li>
+                `;
+
+                textoWhatsapp += `${idx + 1}. *${item.nome}*\n   ${item.detalhe}\n   Valor: ${item.pendente ? 'Sob Análise' : fmtBRL.format(item.valor)}\n\n`;
+            });
+            html += '</ul>';
+
+            html += `
+                <div style="background:var(--bg-input); padding:14px; border-radius:14px; border:1px solid var(--border-color); margin-top:10px;">
+                    <div style="display:flex; justify-content:space-between; font-weight:800; font-size:16px; color:var(--primary);">
+                        <span>Total Estimado:</span>
+                        <span>${fmtBRL.format(somaTotal)}${temPendente ? ' (+ Análise)' : ''}</span>
+                    </div>
+                    ${temPendente ? '<p style="font-size:11px; color:var(--amber); margin-top:4px;">* Itens pendentes serão avaliados e confirmados no atendimento via WhatsApp.</p>' : ''}
+                </div>
+            `;
+
+            textoWhatsapp += `*Total Estimado:* ${fmtBRL.format(somaTotal)}${temPendente ? ' (+ itens sob análise)' : ''}\n\nAguardo orientações para prosseguir!`;
+
+            body.innerHTML = html;
+
+            const btnWa = document.getElementById('btnEnviarWhatsapp');
+            btnWa.href = `https://wa.me/5541999682836?text=${encodeURIComponent(textoWhatsapp)}`;
+
+            document.getElementById('modalResumo').classList.add('show');
+        }
+
+        function fecharModalResumo() {
+            document.getElementById('modalResumo').classList.remove('show');
+        }
+
+        // --- UTILITÁRIOS DA INTERFACE ---
+
+        let fonteAmpliada = false;
+        function alternarFonte() {
+            fonteAmpliada = !fonteAmpliada;
+            document.documentElement.style.setProperty('--font-scale', fonteAmpliada ? '1.12rem' : '1rem');
+        }
+
+        function alternarTema() {
+            const atual = document.documentElement.getAttribute('data-theme') || 'light';
+            const novo = atual === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', novo);
+            localStorage.setItem('theme', novo);
+
+            document.getElementById('themeIcon').innerText = novo === 'dark' ? '☀️' : '🌙';
+            document.getElementById('themeText').innerText = novo === 'dark' ? 'Claro' : 'Escuro';
+        }
+
+        // INICIALIZAÇÃO
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeIcon').innerText = '☀️️';
+                document.getElementById('themeText').innerText = 'Claro';
+            }
+
+            // Animação de Entrada
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('revealed');
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+
+            // Executar cálculos iniciais
+            calcularImpressao();
+            calcularDigitalizacao();
+            calcularDocumentosOficiais();
+            calcularEdicaoTexto();
+            calcularCurriculos();
+            calcularModelos();
+        });
+    </script>
+</body>
+</html>
