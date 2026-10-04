@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central de Geradores & Ferramentas — WelGrafx</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/print-express/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/print-express/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/print-express/images/favicon-16x16.png">
+    <link rel="manifest" href="/print-express/images/site.webmanifest">
+    <meta name="theme-color" content="#0070f3">
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --accent: #38bdf8;
+            --accent-light: rgba(2, 132, 199, 0.08);
+            --green: #10b981;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            --shadow-hover: 0 20px 30px -10px rgba(2, 132, 199, 0.2);
+            --font-scale: 1rem;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-light: rgba(56, 189, 248, 0.12);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 20px 30px -10px rgba(56, 189, 248, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+        }
+
+        html {
+            font-size: var(--font-scale);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 32px 16px 80px 16px;
+            line-height: 1.6;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 10px;
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            z-index: 10000;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .skip-link:focus { top: 10px; }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* ANIMAÇÕES DE REVELAÇÃO */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-on-scroll.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, .reveal-on-scroll {
+                transition: none !important;
+                animation: none !important;
+                transform: none !important;
+                opacity: 1 !important;
+            }
+        }
+
+        /* CABEÇALHO */
+        header { text-align: center; position: relative; width: 100%; }
+        .header-top { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 16px; 
+            gap: 12px; 
+            flex-wrap: wrap;
+        }
+        .header-controls { 
+            display: flex; 
+            gap: 8px; 
+            align-items: center; 
+            flex-wrap: wrap;
+        }
+
+        .btn-header {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-header:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.12) 0%, rgba(56, 189, 248, 0.2) 100%);
+            border: 1px solid var(--accent);
+            border-radius: 24px;
+            padding: 32px 24px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-brand-badge {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(2, 132, 199, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .hero-banner h1 {
+            color: var(--primary);
+            font-size: clamp(24px, 5vw, 32px);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .hero-banner p {
+            color: var(--text-main);
+            font-size: clamp(14px, 3.2vw, 16px);
+            max-width: 620px;
+            font-weight: 500;
+        }
+
+        .hero-info-tag {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* CARROSSEL DE AVISOS — SEM SETAS */
+        .notice-carousel-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            touch-action: pan-y;
+            user-select: none;
+        }
+
+        .notice-carousel-wrapper {
+            display: flex;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 100%;
+        }
+
+        .notice-slide {
+            min-width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 4px;
+        }
+
+        .notice-icon-box {
+            font-size: 28px;
+            background: var(--accent-light);
+            padding: 12px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .notice-text-content h4 {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 2px;
+        }
+
+        .notice-text-content p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .notice-dots-container {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 14px;
+        }
+
+        .notice-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .notice-dot.active {
+            background: var(--primary);
+            width: 20px;
+            border-radius: 10px;
+        }
+
+        /* ORIENTAÇÕES RÁPIDAS */
+        .guide-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .guide-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .guide-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .guide-step-item {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            padding: 12px 14px;
+            border-radius: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .guide-step-num {
+            background: var(--primary);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 12px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .guide-step-text {
+            font-size: 12px;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        /* FILTROS E BUSCA */
+        .controls-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-input-wrapper span {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: var(--text-muted);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 14px 12px 40px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-input);
+            color: var(--text-main);
+            font-size: 14px;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .btn-clear-search {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0 16px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn-clear-search:hover {
+            color: var(--text-main);
+            border-color: var(--primary);
+        }
+
+        .categories-row {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: thin;
+        }
+
+        .category-pill {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .category-pill.active, .category-pill:hover {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        .results-meta-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 0 4px;
+        }
+
+        /* VITRINE DE GERADORES (BALÕES/CARTÕES) */
+        .section-header-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vitrine-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+            width: 100%;
+        }
+
+        .gerador-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 16px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .gerador-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .gerador-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .gerador-icon-wrapper {
+            font-size: 30px;
+            background: var(--bg-input);
+            padding: 10px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .gerador-category-tag {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--accent-light);
+            color: var(--primary);
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+
+        .gerador-card-body h3 {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .gerador-card-body p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        .gerador-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-open-gerador {
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .gerador-card:hover .btn-open-gerador {
+            color: var(--primary-hover);
+        }
+
+        /* DESTAQUE ESPECIAL */
+        .gerador-card.featured {
+            border-color: var(--accent);
+            background: linear-gradient(180deg, var(--bg-card) 0%, var(--accent-light) 100%);
+        }
+
+        .featured-badge {
+            font-size: 10px;
+            font-weight: 800;
+            background: var(--primary);
+            color: #ffffff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+
+        /* MENSAGEM VAZIA */
+        .empty-results-box {
+            display: none;
+            background: var(--bg-card);
+            border: 1px dashed var(--border-color);
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .empty-results-box.show {
+            display: flex;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+        }
+
+        .empty-results-box h4 {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .empty-results-box p {
+            font-size: 13px;
+            color: var(--text-muted);
+            max-width: 400px;
+        }
+
+        /* RODAPÉ INSTITUCIONAL */
+        .px-footer-container {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            padding: 40px 20px 24px;
+            border-top: 3px solid var(--primary);
+            margin-top: 40px;
+            border-radius: 20px 20px 0 0;
+            width: 100%;
+        }
+
+        .px-footer-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 28px;
+            margin-bottom: 28px;
+        }
+
+        .px-footer-brand-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .px-footer-brand-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .px-footer-heading {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .px-footer-nav-list { list-style: none; }
+        .px-footer-nav-item { margin-bottom: 8px; }
+        .px-footer-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .px-footer-link:hover { color: var(--primary); }
+
+        .px-footer-bottom {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* BOTÃO FLUTUANTE */
+        .btn-flutuante {
+            position: fixed;
+            bottom: 20px; right: 20px;
+            background: #25D366; color: white;
+            border-radius: 50px; padding: 12px 20px;
+            font-weight: 700; font-size: 14px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+            z-index: 999;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 16px 12px 80px 12px; }
+            .px-footer-content { grid-template-columns: 1fr; }
+            .search-row { flex-direction: column; }
+            .vitrine-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <a href="#vitrine" class="skip-link">Pular para os geradores</a>
+
+    <div class="container">
+        <!-- BARRA SUPERIOR E CONTROLES -->
+        <header role="banner">
+            <div class="header-top">
+                <div style="font-weight: 800; font-size: 18px; color: var(--primary);">🖨️ WelGrafx</div>
+                <div class="header-controls">
+                    <a href="index.html" class="btn-header" aria-label="Voltar para a Página Inicial">
+                        <span>🏠</span> <span>Início</span>
+                    </a>
+                    <a href="blog.html" class="btn-header" aria-label="Acessar o Blog">
+                        <span>📰</span> <span>Blog</span>
+                    </a>
+                    <button class="btn-header" id="btnFonte" type="button" onclick="alternarTamanhoFonte()" aria-label="Aumentar Fonte">
+                        <span>♿ Acessibilidade</span>
+                    </button>
+                    <button class="btn-header" id="themeToggleBtn" type="button" aria-label="Alternar Tema">
+                        <span id="themeIcon">🌙</span> <span id="themeText">Escuro</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- APRESENTAÇÃO PRINCIPAL -->
+            <div class="hero-banner reveal-on-scroll">
+                <span class="hero-brand-badge">Central de Ferramentas WelGrafx</span>
+                <h1>Central de Geradores</h1>
+                <p>Ferramentas práticas para criar documentos, formatar arquivos e facilitar suas tarefas do dia a dia.</p>
+                <span class="hero-info-tag">⚡ Escolha uma ferramenta abaixo e comece a utilizar imediatamente</span>
+            </div>
+        </header>
+
+        <!-- CARROSSEL DE AVISOS — SEM SETAS -->
+        <section class="notice-carousel-container reveal-on-scroll" aria-label="Avisos Importantes">
+            <div class="notice-carousel-wrapper" id="noticeWrapper">
+                <div class="notice-slide">
+                    <div class="notice-icon-box">✍️</div>
+                    <div class="notice-text-content">
+                        <h4>Preenchimento Rápido e Descomplicado</h4>
+                        <p>Escolha um gerador e comece a preencher seus dados diretamente no formulário interativo.</p>
+                    </div>
+                </div>
+                <div class="notice-slide">
+                    <div class="notice-icon-box">🔍</div>
+                    <div class="notice-text-content">
+                        <h4>Confira suas Informações</h4>
+                        <p>Revise os dados inseridos antes de finalizar ou gerar a cópia do seu documento.</p>
+                    </div>
+                </div>
+                <div class="notice-slide">
+                    <div class="notice-icon-box">🛠️</div>
+                    <div class="notice-text-content">
+                        <h4>Soluções Digitais em Um Só Lugar</h4>
+                        <p>Utilize as ferramentas disponíveis para simplificar suas tarefas diárias de impressão e arquivos.</p>
+                    </div>
+                </div>
+                <div class="notice-slide">
+                    <div class="notice-icon-box">🚀</div>
+                    <div class="notice-text-content">
+                        <h4>Evolução Contínua</h4>
+                        <p>Novas ferramentas e geradores poderão ser adicionados a esta central futuramente.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="notice-dots-container" id="noticeDots">
+                <span class="notice-dot active" onclick="irParaSlideAviso(0)"></span>
+                <span class="notice-dot" onclick="irParaSlideAviso(1)"></span>
+                <span class="notice-dot" onclick="irParaSlideAviso(2)"></span>
+                <span class="notice-dot" onclick="irParaSlideAviso(3)"></span>
+            </div>
+        </section>
+
+        <!-- GUIA DE ORIENTAÇÃO RÁPIDA -->
+        <section class="guide-box reveal-on-scroll">
+            <div class="guide-title">
+                <span>💡</span> Como utilizar a Central de Geradores?
+            </div>
+            <div class="guide-steps">
+                <div class="guide-step-item">
+                    <span class="guide-step-num">1</span>
+                    <span class="guide-step-text">Localize a ferramenta desejada através da busca ou categorias.</span>
+                </div>
+                <div class="guide-step-item">
+                    <span class="guide-step-num">2</span>
+                    <span class="guide-step-text">Clique em "Abrir gerador" para acessar a página específica.</span>
+                </div>
+                <div class="guide-step-item">
+                    <span class="guide-step-num">3</span>
+                    <span class="guide-step-text">Preencha os campos informados para gerar seu arquivo pronto.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- BUSCA E FILTROS -->
+        <section class="controls-card reveal-on-scroll">
+            <div class="search-row">
+                <div class="search-input-wrapper">
+                    <span>🔎</span>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar gerador ou ferramenta..." oninput="filtrarGeradores()">
+                </div>
+                <button type="button" class="btn-clear-search" onclick="limparFiltros()">✕ Limpar</button>
+            </div>
+
+            <div class="categories-row" id="categoriesRow">
+                <button type="button" class="category-pill active" onclick="filtrarCategoria('todas', this)">Todas</button>
+                <button type="button" class="category-pill" onclick="filtrarCategoria('destaque', this)">⭐ Em Destaque</button>
+                <button type="button" class="category-pill" onclick="filtrarCategoria('documentos', this)">📄 Documentos & Carreira</button>
+                <button type="button" class="category-pill" onclick="filtrarCategoria('formularios', this)">📑 Formulários & Gestão</button>
+                <button type="button" class="category-pill" onclick="filtrarCategoria('academico', this)">🎓 Acadêmico</button>
+                <button type="button" class="category-pill" onclick="filtrarCategoria('otimizacao', this)">🔧 Otimização de Arquivos</button>
+            </div>
+
+            <div class="results-meta-bar">
+                <span id="counterText">Exibindo todas as ferramentas</span>
+                <span id="totalCountBadge" style="color: var(--primary); font-weight: 800;">8 ferramentas</span>
+            </div>
+        </section>
+
+        <!-- VITRINE DE GERADORES -->
+        <section id="vitrine" class="reveal-on-scroll">
+            <h2 class="section-header-title">📌 Ferramentas & Geradores Disponíveis</h2>
+
+            <div class="vitrine-grid" id="vitrineGrid">
+                <!-- 1. CURRÍCULO -->
+                <a href="curriculo.html" class="gerador-card featured" data-title="gerador de currículos profissionais currículo" data-category="documentos destaque">
+                    <div>
+                        <div class="gerador-card-header">
+                            <div class="gerador-icon-wrapper">💼</div>
+                            <span class="gerador-category-tag">Carreira</span>
+                        </div>
+                        <div class="gerador-card-body" style="margin-top: 12px;">
+                            <span class="featured-badge">Mais Acessado</span>
+                            <h3>Gerador de Currículos</h3>
+                            <p>Crie e atualize seu currículo profissional com modelos modernos em PDF na hora.</p>
+                        </div>
+                    </div>
+                    <div class="gerador-card-footer">
+                        <span class="btn-open-gerador">Abrir gerador →</span>
+                    </div>
+                </a>
+
+                <!-- 2. FOLHA DE PONTO -->
+                <a href="folha-ponto.html" class="gerador-card featured" data-title="gerador de folha de ponto fichas relatorios modelos" data-category="formularios destaque">
+                    <div>
+                        <div class="gerador-card-header">
+                            <div class="gerador-icon-wrapper">📑</div>
+                            <span class="gerador-category-tag">Formulários</span>
+                        </div>
+                        <div class="gerador-card-body" style="margin-top: 12px;">
+                            <span class="featured-badge">Destaque</span>
+                            <h3>Gerador de Folhas de Ponto</h3>
+                            <p>Crie fichas de ponto, relatórios de presença e modelos organizados para impressão ou PDF.</p>
+                        </div>
+                    </div>
+                    <div class="gerador-card-footer">
+                        <span class="btn-open-gerador">Abrir gerador →</span>
+                    </div>
+                </a>
+
+                <!-- 3. FORMATADOR ABNT -->
+                <a href="abnt.html" class="gerador-card" data-title="formatador abnt trabalhos academicos formatacao" data-category="academico">
+                    <div>
+                        <div class="gerador-card-header">
+                            <div class="gerador-icon-wrapper">🎓</div>
+                            <span class="gerador-category-tag">Acadêmico</span>
+                        </div>
+                        <div class="gerador-card-body" style="margin-top: 12px;">
+                            <h3>Formatador ABNT</h3>
+                            <p>Ferramenta para adequar trabalhos acadêmicos, capas e margens às normas ABNT oficiais.</p>
+                        </div>
+                    </div>
+                    <div class="gerador-card-footer">
+                        <span class="btn-open-gerador">Abrir gerador →</span>
+                    </div>
+                </a>
+
+                <!-- 4. SOS DOCUMENTOS -->
+                <a href="sos-documentos.html" class="gerador-card" data-title="sos documento ajuste edicao correcao de arquivos" data-category="otimizacao">
+                    <div>
+                        <div class="gerador-card-header">
+                            <div class="gerador-icon-wrapper">🔧</div>
+                            <span class="gerador-category-tag">Otimização</span>
+                        </div>
+                        <div class="gerador-card-body" style="margin-top: 12px;">
+                            <h3>SOS Documento</h3>
+                            <p>Solicite correções, conversão de formatos e ajustes em arquivos corrompidos ou desconfigurados.</p>
+                        </div>
+                    </div>
+                    <div class="gerador-card-footer">
+                        <span class="btn-open-gerador">Abrir ferramenta →</span>
+                    </div>
+                </a>
+
+                <!-- 5. DIGITALIZAÇÃO -->
+                <a href="digitalizacao.html" class="gerador-card" data-title="digitalizacao de documentos digitalizar pdf fotos" data-category="documentos">
+                    <div>
+                        <div class="gerador-card-header">
+                            <div class="gerador-icon-wrapper">📲</div>
+                            <span class="gerador-category-tag">Documentos</span>
+                        </div>
+                        <div class="gerador-card-body" style="margin-top: 12px;">
+                            <h3>Painel de Digitalização</h3>
+                            <p>Envie documentos físicos para receber arquivos digitalizados nítidos em PDF no WhatsApp.</p>
+                        </div>
+                    </div>
+                    <div class="gerador-card-footer">
+                        <span class="btn-open-gerador">Abrir serviço →</span>
+                    </div>
+                </a>
+
+                <!-- 6. IMPRESSÃO E XEROX -->
+                <a href="impressao.html" class="gerador-card" data-title="impressao xerox monte seu pedido a4 colorido" data-category="documentos">
+                    <div>
+                        <div class="gerador-card-header">
+                            <div class="gerador-icon-wrapper">🖨️</div>
+                            <span class="gerador-category-tag">Impressão</span>
+                        </div>
+                        <div class="gerador-card-body" style="margin-top: 12px;">
+                            <h3>Calculador de Impressão</h3>
+                            <p>Monte seu pedido de cópias e impressões em A4 P&B ou colorido com orçamento na hora.</p>
+                        </div>
+                    </div>
+                    <div class="gerador-card-footer">
+                        <span class="btn-open-gerador">Abrir montador →</span>
+                    </div>
+                </a>
+
+                <!-- 7. DOCUMENTOS OFICIAIS -->
+                <a href="documentos.html" class="gerador-card" data-title="documentos oficiais boletos cpf rg crlv segunda via" data-category="documentos">
+                    <div>
+                        <div class="gerador-card-header">
+                            <div class="gerador-icon-wrapper">📄</div>
+                            <span class="gerador-category-tag">Utilidades</span>
+                        </div>
+                        <div class="gerador-card-body" style="margin-top: 12px;">
+                            <h3>Documentos e Boletos</h3>
+                            <p>Preparação e impressão rápida de boletos, comprovantes, CPF, RG e documentos veiculares.</p>
+                        </div>
+                    </div>
+                    <div class="gerador-card-footer">
+                        <span class="btn-open-gerador">Abrir módulo →</span>
+                    </div>
+                </a>
+
+                <!-- 8. EMPRESAS -->
+                <a href="empresas.html" class="gerador-card" data-title="solucoes para empresas corporativo impressoes e formularios" data-category="formularios">
+                    <div>
+                        <div class="gerador-card-header">
+                            <div class="gerador-icon-wrapper">🏢</div>
+                            <span class="gerador-category-tag">Corporativo</span>
+                        </div>
+                        <div class="gerador-card-body" style="margin-top: 12px;">
+                            <h3>Soluções para Empresas</h3>
+                            <p>Gerador e atendimento dedicado para demandas corporativas, faturamento e cópias recorrentes.</p>
+                        </div>
+                    </div>
+                    <div class="gerador-card-footer">
+                        <span class="btn-open-gerador">Abrir painel →</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- MENSAGEM QUANDO NENHUM RESULTADO FOR ENCONTRADO -->
+            <div class="empty-results-box" id="emptyResultsBox">
+                <div class="empty-icon">🔍</div>
+                <h4>Nenhum gerador encontrado</h4>
+                <p>Não encontramos ferramentas que correspondam à sua pesquisa. Tente buscar por outros termos ou limpe os filtros.</p>
+                <button type="button" class="btn-clear-search" onclick="limparFiltros()" style="margin-top: 8px;">Restaurar todas as ferramentas</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- RODAPÉ -->
+    <footer class="px-footer-container">
+        <div class="px-footer-content">
+            <div>
+                <div class="px-footer-brand-title">
+                    <span>🖨️</span> WELGRAFX
+                </div>
+                <p class="px-footer-brand-desc">
+                    Central de geradores e soluções digitais desenvolvidas para facilitar a preparação de documentos com agilidade e qualidade.
+                </p>
+            </div>
+            <div>
+                <h5 class="px-footer-heading">Navegação</h5>
+                <ul class="px-footer-nav-list">
+                    <li class="px-footer-nav-item"><a href="index.html" class="px-footer-link">Página Inicial</a></li>
+                    <li class="px-footer-nav-item"><a href="sobre.html" class="px-footer-link">Sobre o WelGrafx</a></li>
+                    <li class="px-footer-nav-item"><a href="blog.html" class="px-footer-link">Blog & Dicas</a></li>
+                    <li class="px-footer-nav-item"><a href="termos.html" class="px-footer-link">Termos de Uso</a></li>
+                    <li class="px-footer-nav-item"><a href="privacidade.html" class="px-footer-link">Política de Privacidade</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="px-footer-bottom">
+            <p>© 2026 WelGrafx. Todos os direitos reservados.</p>
+            <button type="button" class="btn-header" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">Voltar ao topo ↑</button>
+        </div>
+    </footer>
+
+    <!-- BOTÃO FLUTUANTE WHATSAPP -->
+    <a href="https://wa.me/5541999682836?text=Olá,%20tenho%20uma%20dúvida%20sobre%20os%20geradores!" target="_blank" class="btn-flutuante" aria-label="Suporte WhatsApp">
+        💬 Suporte WhatsApp
+    </a>
+
+    <!-- SCRIPTS DE INTERAÇÃO -->
+    <script>
+        // ACESSIBILIDADE - FONTE
+        let fonteAmpliada = false;
+        function alternarTamanhoFonte() {
+            fonteAmpliada = !fonteAmpliada;
+            document.documentElement.style.setProperty('--font-scale', fonteAmpliada ? '1.12rem' : '1rem');
+        }
+
+        // TEMA CLARO / ESCURO
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+
+        function aplicarTema(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            if (theme === 'dark') {
+                themeIcon.innerText = '☀️';
+                themeText.innerText = 'Claro';
+            } else {
+                themeIcon.innerText = '🌙';
+                themeText.innerText = 'Escuro';
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        aplicarTema(savedTheme);
+
+        themeToggleBtn.addEventListener('click', () => {
+            const atual = document.documentElement.getAttribute('data-theme');
+            aplicarTema(atual === 'dark' ? 'light' : 'dark');
+        });
+
+        // REVELAÇÃO AO ROLAR
+        document.addEventListener("DOMContentLoaded", () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+        });
+
+        // CARROSSEL DE AVISOS — AUTOMÁTICO SEM SETAS + TOUCH SWIPE
+        let avisoIndex = 0;
+        const noticeWrapper = document.getElementById('noticeWrapper');
+        const noticeDots = document.querySelectorAll('.notice-dot');
+        const totalAvisos = noticeDots.length;
+        let avisoTimer = null;
+
+        function irParaSlideAviso(index) {
+            avisoIndex = index;
+            if (avisoIndex >= totalAvisos) avisoIndex = 0;
+            if (avisoIndex < 0) avisoIndex = totalAvisos - 1;
+
+            noticeWrapper.style.transform = `translateX(-${avisoIndex * 100}%)`;
+
+            noticeDots.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === avisoIndex);
+            });
+        }
+
+        function iniciarCarrosselAvisos() {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            pararCarrosselAvisos();
+            avisoTimer = setInterval(() => {
+                irParaSlideAviso(avisoIndex + 1);
+            }, 4500);
+        }
+
+        function pararCarrosselAvisos() {
+            if (avisoTimer) clearInterval(avisoTimer);
+        }
+
+        const noticeContainer = document.querySelector('.notice-carousel-container');
+        noticeContainer.addEventListener('mouseenter', pararCarrosselAvisos);
+        noticeContainer.addEventListener('mouseleave', iniciarCarrosselAvisos);
+
+        // SUPORTE A SWIPE (TOQUE NO CELULAR)
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        noticeContainer.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            pararCarrosselAvisos();
+        }, { passive: true });
+
+        noticeContainer.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 40) {
+                irParaSlideAviso(avisoIndex + 1);
+            } else if (touchEndX - touchStartX > 40) {
+                irParaSlideAviso(avisoIndex - 1);
+            }
+            iniciarCarrosselAvisos();
+        }, { passive: true });
+
+        iniciarCarrosselAvisos();
+
+        // FILTROS, BUSCA E CONTADOR DE FERRAMENTAS
+        let categoriaAtiva = 'todas';
+
+        function filtrarGeradores() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.gerador-card');
+            let visiveis = 0;
+
+            cards.forEach(card => {
+                const titleData = card.getAttribute('data-title').toLowerCase();
+                const categoryData = card.getAttribute('data-category');
+
+                const bateBusca = !query || titleData.includes(query);
+                const bateCategoria = (categoriaAtiva === 'todas') || categoryData.includes(categoriaAtiva);
+
+                if (bateBusca && bateCategoria) {
+                    card.style.display = 'flex';
+                    visiveis++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            const emptyBox = document.getElementById('emptyResultsBox');
+            const totalBadge = document.getElementById('totalCountBadge');
+            const counterText = document.getElementById('counterText');
+
+            totalBadge.innerText = `${visiveis} ${visiveis === 1 ? 'ferramenta' : 'ferramentas'}`;
+
+            if (visiveis === 0) {
+                emptyBox.classList.add('show');
+            } else {
+                emptyBox.classList.remove('show');
+            }
+
+            if (query) {
+                counterText.innerText = `Resultados para "${query}"`;
+            } else if (categoriaAtiva !== 'todas') {
+                counterText.innerText = `Filtrado por categoria`;
+            } else {
+                counterText.innerText = `Exibindo todas as ferramentas`;
+            }
+        }
+
+        function filtrarCategoria(categoria, element) {
+            categoriaAtiva = categoria;
+            document.querySelectorAll('.category-pill').forEach(pill => pill.classList.remove('active'));
+            if (element) element.classList.add('active');
+            filtrarGeradores();
+        }
+
+        function limparFiltros() {
+            document.getElementById('searchInput').value = '';
+            categoriaAtiva = 'todas';
+            document.querySelectorAll('.category-pill').forEach((pill, idx) => {
+                pill.classList.toggle('active', idx === 0);
+            });
+            filtrarGeradores();
+        }
+    </script>
+</body>
+</html>
