@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Orçamentos e Propostas | WelGrafx</title>
+    
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#e6f0ff',
+                            100: '#cce1ff',
+                            400: '#3385ff',
+                            500: '#0066ff',
+                            600: '#0052cc',
+                            700: '#003d99',
+                            cyan: '#00d2ff',
+                            dark: '#0a192f',
+                            cardDark: '#112240',
+                            borderDark: '#233554'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- FontAwesome for UI icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- html2pdf.js for Client-Side PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .dark .glass-panel {
+            background: rgba(17, 34, 64, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+
+        /* A4 Document Dimensions & Print Optimization */
+        .a4-preview {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            color: #0f172a;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .a4-preview {
+                width: 100% !important;
+                min-height: auto !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+            }
+            @page {
+                size: A4;
+                margin: 12mm;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-brand-dark text-slate-800 dark:text-slate-100 min-h-screen flex flex-col antialiased">
+
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-brand-dark/90 backdrop-blur-md border-b border-slate-200 dark:border-brand-borderDark no-print transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand Logo / Title -->
+            <div class="flex items-center space-x-3">
+                <a href="/print-express/" class="flex items-center space-x-2 text-brand-500 hover:text-brand-600 transition-colors">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-500 to-brand-cyan flex items-center justify-center text-white font-black text-xl shadow-md">
+                        W
+                    </div>
+                    <span class="font-bold text-lg tracking-tight hidden sm:inline text-slate-900 dark:text-white">WelGrafx</span>
+                </a>
+                <span class="text-slate-300 dark:text-slate-600 hidden sm:inline">|</span>
+                <span class="text-xs sm:text-sm font-medium bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-cyan px-2.5 py-1 rounded-full border border-brand-500/20">
+                    Gerador de Orçamentos
+                </span>
+            </div>
+
+            <!-- Top Actions & Options -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Home Link -->
+                <a href="/print-express/" class="p-2 text-slate-500 hover:text-brand-500 dark:text-slate-400 dark:hover:text-brand-cyan transition-colors rounded-lg" title="Página Inicial">
+                    <i class="fa-solid fa-house text-lg"></i>
+                </a>
+
+                <!-- Theme Switcher -->
+                <button id="themeToggle" class="p-2 text-slate-500 hover:text-brand-500 dark:text-slate-400 dark:hover:text-brand-cyan transition-colors rounded-lg" title="Alternar Tema">
+                    <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+                </button>
+
+                <!-- Mobile Preview Modal Toggle -->
+                <button id="btnToggleMobilePreview" class="lg:hidden px-3 py-1.5 text-xs sm:text-sm font-semibold text-brand-600 dark:text-brand-cyan bg-brand-50 dark:bg-brand-500/20 border border-brand-200 dark:border-brand-500/30 rounded-lg hover:bg-brand-100 dark:hover:bg-brand-500/30 transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-file-invoice text-xs"></i>
+                    <span>Ver Prévia</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="bg-gradient-to-r from-brand-600 via-brand-500 to-brand-cyan text-white py-6 px-4 no-print shadow-inner">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight">Gerador de Orçamentos Profissionais</h1>
+                <p class="text-xs sm:text-sm text-blue-100 mt-1">Monte, customize e exporte suas propostas comerciais com transparência e elegância em segundos.</p>
+            </div>
+            <!-- Action Quick Bar -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button id="btnNewDoc" class="px-3.5 py-2 text-xs font-semibold bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg transition-all flex items-center gap-1.5 backdrop-blur-sm">
+                    <i class="fa-solid fa-plus text-xs"></i> Novo
+                </button>
+                <button id="btnSaveDraft" class="px-3.5 py-2 text-xs font-semibold bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg transition-all flex items-center gap-1.5 backdrop-blur-sm">
+                    <i class="fa-solid fa-floppy-disk text-xs"></i> Salvar Rascunho
+                </button>
+                <button id="btnPrint" class="px-3.5 py-2 text-xs font-semibold bg-white/20 hover:bg-white/30 border border-white/30 rounded-lg transition-all flex items-center gap-1.5 backdrop-blur-sm">
+                    <i class="fa-solid fa-print text-xs"></i> Imprimir
+                </button>
+                <button id="btnDownloadPDF" class="px-4 py-2 text-xs font-bold bg-white text-brand-600 hover:bg-brand-50 rounded-lg shadow-md transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-file-pdf text-xs"></i> Baixar PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <div class="lg:col-span-7 space-y-6 no-print">
+                
+                <!-- Stepper Progress Bar -->
+                <div class="bg-white dark:bg-brand-cardDark p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-brand-borderDark transition-colors">
+                    <div class="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">
+                        <span id="stepCounterText">Etapa 1 de 6</span>
+                        <span id="stepTitleText" class="text-brand-500 dark:text-brand-cyan">Dados do Prestador</span>
+                    </div>
+                    <!-- Bar Track -->
+                    <div class="w-full h-2 bg-slate-100 dark:bg-slate-700/50 rounded-full overflow-hidden">
+                        <div id="stepProgressBar" class="h-full bg-gradient-to-r from-brand-500 to-brand-cyan transition-all duration-300" style="width: 16.66%;"></div>
+                    </div>
+                    <!-- Steps Navigation Buttons -->
+                    <div class="flex justify-between items-center mt-4 overflow-x-auto py-1 gap-1 border-t border-slate-100 dark:border-slate-800/80 pt-3">
+                        <button data-step-nav="1" class="step-btn px-2.5 py-1 text-xs rounded-lg font-medium transition-all bg-brand-500 text-white shadow-sm">1. Prestador</button>
+                        <button data-step-nav="2" class="step-btn px-2.5 py-1 text-xs rounded-lg font-medium transition-all text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">2. Cliente</button>
+                        <button data-step-nav="3" class="step-btn px-2.5 py-1 text-xs rounded-lg font-medium transition-all text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">3. Detalhes</button>
+                        <button data-step-nav="4" class="step-btn px-2.5 py-1 text-xs rounded-lg font-medium transition-all text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">4. Itens</button>
+                        <button data-step-nav="5" class="step-btn px-2.5 py-1 text-xs rounded-lg font-medium transition-all text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">5. Valores</button>
+                        <button data-step-nav="6" class="step-btn px-2.5 py-1 text-xs rounded-lg font-medium transition-all text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">6. Condições</button>
+                    </div>
+                </div>
+
+                <!-- Form Steps Containers -->
+                <form id="quoteForm" onsubmit="return false;" class="space-y-6">
+                    
+                    <!-- STEP 1: PRESTADOR DE SERVIÇOS -->
+                    <div id="step-1" class="step-content bg-white dark:bg-brand-cardDark p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-brand-borderDark transition-colors">
+                        <div class="flex items-center gap-3 mb-5 border-b border-slate-100 dark:border-slate-800 pb-3">
+                            <div class="w-8 h-8 rounded-lg bg-brand-50 dark:bg-brand-500/20 text-brand-500 dark:text-brand-cyan flex items-center justify-center font-bold">1</div>
+                            <div>
+                                <h2 class="text-base font-bold text-slate-900 dark:text-white">Informações do Prestador de Serviço</h2>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Insira seus dados profissionais ou os da sua empresa.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Logo Upload -->
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Logotipo da Empresa (Opcional)</label>
+                                <div class="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-300 dark:border-slate-700">
+                                    <div id="logoPreviewContainer" class="w-16 h-16 rounded-lg bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden border border-slate-300 dark:border-slate-700 text-slate-400 flex-shrink-0">
+                                        <i class="fa-solid fa-image text-2xl"></i>
+                                    </div>
+                                    <div class="flex-grow text-xs">
+                                        <input type="file" id="logoUpload" accept="image/*" class="hidden">
+                                        <button type="button" onclick="document.getElementById('logoUpload').click()" class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 font-medium text-xs transition-colors shadow-sm">
+                                            Escolher imagem
+                                        </button>
+                                        <button type="button" id="btnRemoveLogo" class="hidden ml-2 px-2.5 py-1.5 bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400 rounded-lg hover:bg-red-100 font-medium text-xs transition-colors">
+                                            Remover
+                                        </button>
+                                        <p class="text-slate-400 dark:text-slate-500 mt-1">Formatos suportados: PNG, JPG ou WEBP (Max 2MB).</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Nome / Razao Social -->
+                            <div class="md:col-span-2">
+                                <label for="providerName" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                                    Nome Profissional ou Empresa <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="providerName" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-colors" placeholder="Ex: WelGrafx Design & Impressão" required>
+                            </div>
+
+                            <!-- CPF ou CNPJ -->
+                            <div>
+                                <label for="providerDoc" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">CPF ou CNPJ</label>
+                                <input type="text" id="providerDoc" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-colors" placeholder="00.000.000/0001-00">
+                            </div>
+
+                            <!-- WhatsApp / Telefone -->
+                            <div>
+                                <label for="providerPhone" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">WhatsApp / Telefone</label>
+                                <input type="text" id="providerPhone" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-colors" placeholder="(00) 00000-0000">
+                            </div>
+
+                            <!-- E-mail -->
+                            <div>
+                                <label for="providerEmail" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">E-mail Profissional</label>
+                                <input type="email" id="providerEmail" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-colors" placeholder="contato@empresa.com.br">
+                            </div>
+
+                            <!-- Endereço / Cidade -->
+                            <div>
+                                <label for="providerAddress" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Endereço / Cidade - UF</label>
+                                <input type="text" id="providerAddress" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-colors" placeholder="Rua das Flores, 123 - Curitiba / PR">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: DADOS DO CLIENTE -->
+                    <div id="step-2" class="step-content hidden bg-white dark:bg-brand-cardDark p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-brand-borderDark transition-colors">
+                        <div class="flex items-center gap-3 mb-5 border-b border-slate-100 dark:border-slate-800 pb-3">
+                            <div class="w-8 h-8 rounded-lg bg-brand-50 dark:bg-brand-500/20 text-brand-500 dark:text-brand-cyan flex items-center justify-center font-bold">2</div>
+                            <div>
+                                <h2 class="text-base font-bold text-slate-900 dark:text-white">Informações do Cliente</h2>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Identifique a pessoa ou empresa destinatária da proposta.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Nome / Cliente -->
+                            <div class="md:col-span-2">
+                                <label for="clientName" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                                    Nome do Cliente ou Razão Social <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="clientName" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-colors" placeholder="Ex: João da Silva / Loja Exemplo LTDA" required>
+                            </div>
+
+                            <!-- CPF ou CNPJ -->
+                            <div>
+                                <label for="clientDoc" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">CPF ou CNPJ do Cliente</label>
+                                <input type="text" id="clientDoc" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-colors" placeholder="000.000.000-00">
+                            </div>
+
+                            <!-- Telefone / WhatsApp -->
+                            <div>
+                                <label for="clientPhone" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Telefone ou WhatsApp</label>
+                                <input type="text" id="clientPhone" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-colors" placeholder="(00) 00000-0000">
+                            </div>
+
+                            <!-- E-mail -->
+                            <div>
+                                <label for="clientEmail" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">E-mail do Cliente</label>
+                                <input type="email" id="clientEmail" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-colors" placeholder="cliente@email.com">
+                            </div>
+
+                            <!-- Endereço -->
+                            <div>
+                                <label for="clientAddress" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Endereço do Cliente</label>
+                                <input type="text" id="clientAddress" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none transition-colors" placeholder="Av. Principal, 500 - São Paulo / SP">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: DETALHES DO ORÇAMENTO -->
+                    <div id="step-3" class="step-content hidden bg-white dark:bg-brand-cardDark p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-brand-borderDark transition-colors">
+                        <div class="flex items-center gap-3 mb-5 border-b border-slate-100 dark:border-slate-800 pb-3">
+                            <div class="w-8 h-8 rounded-lg bg-brand-50 dark:bg-brand-500/20 text-brand-500 dark:text-brand-cyan flex items-center justify-center font-bold">3</div>
+                            <div>
+                                <h2 class="text-base font-bold text-slate-900 dark:text-white">Detalhes do Orçamento</h2>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Configure número, datas e informações gerais do projeto.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Nº Orçamento -->
+                            <div>
+                                <label for="quoteNumber" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                                    Nº do Orçamento <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="quoteNumber" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none font-mono" placeholder="ORC-0001" required>
+                            </div>
+
+                            <!-- Data de Emissão -->
+                            <div>
+                                <label for="issueDate" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Data de Emissão</label>
+                                <input type="date" id="issueDate" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                            </div>
+
+                            <!-- Validade da Proposta -->
+                            <div>
+                                <label for="validityDate" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Data de Validade</label>
+                                <input type="date" id="validityDate" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                            </div>
+
+                            <!-- Título do Projeto -->
+                            <div class="md:col-span-3">
+                                <label for="projectTitle" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Título do Projeto / Serviço</label>
+                                <input type="text" id="projectTitle" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Ex: Criação de Identidade Visual e Impressão de Cartões">
+                            </div>
+
+                            <!-- Descrição Geral -->
+                            <div class="md:col-span-3">
+                                <label for="projectDescription" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Descrição Geral do Escopo</label>
+                                <textarea id="projectDescription" rows="3" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none resize-y" placeholder="Resumo dos objetivos e do trabalho a ser executado..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: ITENS & SERVIÇOS -->
+                    <div id="step-4" class="step-content hidden bg-white dark:bg-brand-cardDark p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-brand-borderDark transition-colors">
+                        <div class="flex items-center justify-between gap-3 mb-5 border-b border-slate-100 dark:border-slate-800 pb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-brand-50 dark:bg-brand-500/20 text-brand-500 dark:text-brand-cyan flex items-center justify-center font-bold">4</div>
+                                <div>
+                                    <h2 class="text-base font-bold text-slate-900 dark:text-white">Itens e Serviços</h2>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">Adicione os produtos ou serviços inclusos no orçamento.</p>
+                                </div>
+                            </div>
+                            <button type="button" id="btnAddItem" class="px-3 py-1.5 text-xs font-semibold bg-brand-500 hover:bg-brand-600 text-white rounded-lg transition-colors flex items-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-plus"></i> Adicionar
+                            </button>
+                        </div>
+
+                        <!-- Dynamic Items Container -->
+                        <div id="itemsContainer" class="space-y-4">
+                            <!-- Items inserted dynamically via JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- STEP 5: DESCONTOS E TAXAS -->
+                    <div id="step-5" class="step-content hidden bg-white dark:bg-brand-cardDark p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-brand-borderDark transition-colors">
+                        <div class="flex items-center gap-3 mb-5 border-b border-slate-100 dark:border-slate-800 pb-3">
+                            <div class="w-8 h-8 rounded-lg bg-brand-50 dark:bg-brand-500/20 text-brand-500 dark:text-brand-cyan flex items-center justify-center font-bold">5</div>
+                            <div>
+                                <h2 class="text-base font-bold text-slate-900 dark:text-white">Descontos e Taxas Adicionais</h2>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Configure descontos, frete ou taxas complementares.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Tipo de Desconto -->
+                            <div>
+                                <label for="discountType" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Tipo de Desconto</label>
+                                <select id="discountType" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                                    <option value="fixed">Valor Fixo (R$)</option>
+                                    <option value="percent">Porcentagem (%)</option>
+                                </select>
+                            </div>
+
+                            <!-- Valor do Desconto -->
+                            <div>
+                                <label for="discountValue" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Valor do Desconto</label>
+                                <input type="number" id="discountValue" min="0" step="0.01" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none" placeholder="0,00">
+                            </div>
+
+                            <!-- Taxa de Entrega / Frete -->
+                            <div>
+                                <label for="shippingFee" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Taxa de Entrega / Frete (R$)</label>
+                                <input type="number" id="shippingFee" min="0" step="0.01" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none" placeholder="0,00">
+                            </div>
+
+                            <!-- Outras Taxas / Acréscimos -->
+                            <div>
+                                <label for="extraFee" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Outros Acréscimos (R$)</label>
+                                <input type="number" id="extraFee" min="0" step="0.01" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none" placeholder="0,00">
+                            </div>
+
+                            <!-- Observação sobre Taxas -->
+                            <div class="md:col-span-2">
+                                <label for="feeNotes" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Justificativa das Taxas / Descontos (Opcional)</label>
+                                <input type="text" id="feeNotes" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Ex: Desconto de fidelidade ou frete via Sedex">
+                            </div>
+                        </div>
+
+                        <!-- Total Preview Box -->
+                        <div class="mt-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-2 text-xs">
+                            <div class="flex justify-between text-slate-600 dark:text-slate-400">
+                                <span>Subtotal dos Itens:</span>
+                                <span id="summarySubtotal" class="font-semibold">R$ 0,00</span>
+                            </div>
+                            <div class="flex justify-between text-red-500">
+                                <span>Desconto Aplicado:</span>
+                                <span id="summaryDiscount" class="font-semibold">- R$ 0,00</span>
+                            </div>
+                            <div class="flex justify-between text-slate-600 dark:text-slate-400">
+                                <span>Frete e Acréscimos:</span>
+                                <span id="summaryFees" class="font-semibold">+ R$ 0,00</span>
+                            </div>
+                            <div class="flex justify-between text-sm sm:text-base font-bold text-slate-900 dark:text-white border-t border-slate-200 dark:border-slate-700 pt-2">
+                                <span>Total Final:</span>
+                                <span id="summaryTotal" class="text-brand-600 dark:text-brand-cyan">R$ 0,00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 6: PAGAMENTO & CONDIÇÕES -->
+                    <div id="step-6" class="step-content hidden bg-white dark:bg-brand-cardDark p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-brand-borderDark transition-colors">
+                        <div class="flex items-center gap-3 mb-5 border-b border-slate-100 dark:border-slate-800 pb-3">
+                            <div class="w-8 h-8 rounded-lg bg-brand-50 dark:bg-brand-500/20 text-brand-500 dark:text-brand-cyan flex items-center justify-center font-bold">6</div>
+                            <div>
+                                <h2 class="text-base font-bold text-slate-900 dark:text-white">Forma de Pagamento e Condições</h2>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Defina métodos, parcelamento, entrada e prazos de entrega.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Forma de Pagamento -->
+                            <div>
+                                <label for="paymentMethod" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Forma de Pagamento</label>
+                                <select id="paymentMethod" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                                    <option value="PIX / Transferência">PIX / Transferência Bancária</option>
+                                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                    <option value="Boleto Bancário">Boleto Bancário</option>
+                                    <option value="Dinheiro">Dinheiro</option>
+                                    <option value="A combinar">A combinar</option>
+                                </select>
+                            </div>
+
+                            <!-- Condições de Pagamento -->
+                            <div>
+                                <label for="paymentTerms" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Condições</label>
+                                <input type="text" id="paymentTerms" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Ex: 50% de entrada + 50% na entrega">
+                            </div>
+
+                            <!-- Valor de Sinal / Entrada -->
+                            <div>
+                                <label for="depositAmount" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Valor da Entrada / Sinal (R$)</label>
+                                <input type="number" id="depositAmount" min="0" step="0.01" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none" placeholder="0,00">
+                            </div>
+
+                            <!-- Saldo Restante Calculado -->
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Saldo Restante Calculado</label>
+                                <div id="displayRemainingBalance" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-semibold border border-slate-200 dark:border-slate-700">
+                                    R$ 0,00
+                                </div>
+                            </div>
+
+                            <!-- Prazo de Entrega -->
+                            <div>
+                                <label for="deliveryTime" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Prazo de Entrega Estimado</label>
+                                <input type="text" id="deliveryTime" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Ex: 5 dias úteis após aprovação da arte">
+                            </div>
+
+                            <!-- Garantia ou Revisões -->
+                            <div>
+                                <label for="warrantyTerms" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Garantia / Revisões</label>
+                                <input type="text" id="warrantyTerms" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Ex: Até 3 alterações sem custo adicional">
+                            </div>
+
+                            <!-- Observações Finais -->
+                            <div class="md:col-span-2">
+                                <label for="additionalNotes" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Observações Adicionais ou Termos</label>
+                                <textarea id="additionalNotes" rows="3" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-brand-500 outline-none resize-y" placeholder="Qualquer outra observação comercial importante..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Legal Notice -->
+                        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-4 italic">
+                            * Este orçamento é uma proposta comercial e não garante a reserva do produto/serviço sem a confirmação e aceite formal do cliente.
+                        </p>
+                    </div>
+
+                    <!-- STEP NAVIGATION BUTTONS -->
+                    <div class="flex items-center justify-between pt-2">
+                        <button type="button" id="btnPrevStep" class="px-4 py-2.5 text-xs font-semibold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
+                            <i class="fa-solid fa-arrow-left"></i> Anterior
+                        </button>
+                        
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="btnShareWhatsApp" class="px-3.5 py-2.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-colors flex items-center gap-2 shadow-sm">
+                                <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
+                            </button>
+                            
+                            <button type="button" id="btnNextStep" class="px-5 py-2.5 text-xs font-bold bg-brand-500 hover:bg-brand-600 text-white rounded-xl transition-colors flex items-center gap-2 shadow-md">
+                                Próximo <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div id="previewColumn" class="lg:col-span-5 w-full flex flex-col items-center">
+                <!-- Preview Header Card -->
+                <div class="w-full max-w-[210mm] bg-white dark:bg-brand-cardDark p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-brand-borderDark mb-4 flex items-center justify-between no-print">
+                    <div class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>Prévia ao Vivo do Documento</span>
+                    </div>
+                    <span class="text-[11px] text-slate-400">Formato A4</span>
+                </div>
+
+                <!-- A4 Document Wrapper -->
+                <div class="w-full overflow-x-auto flex justify-center pb-6">
+                    <div id="quotationDocument" class="a4-preview p-8 md:p-10 text-xs text-slate-800 font-sans relative flex flex-col justify-between">
+                        
+                        <!-- Document Top Section -->
+                        <div>
+                            <!-- Header Row -->
+                            <div class="flex justify-between items-start border-b-2 border-brand-500 pb-6 mb-6">
+                                <!-- Provider Info / Logo -->
+                                <div class="space-y-1 max-w-[60%]">
+                                    <div id="docLogoWrapper" class="mb-3 hidden">
+                                        <img id="docLogoImg" src="" alt="Logo" class="max-h-16 object-contain">
+                                    </div>
+                                    <h2 id="docProviderName" class="text-base font-extrabold text-slate-900 uppercase tracking-wide">
+                                        NOME DO PRESTADOR
+                                    </h2>
+                                    <p id="docProviderDoc" class="text-slate-600 hidden"></p>
+                                    <p id="docProviderPhone" class="text-slate-600 hidden"></p>
+                                    <p id="docProviderEmail" class="text-slate-600 hidden"></p>
+                                    <p id="docProviderAddress" class="text-slate-600 hidden"></p>
+                                </div>
+
+                                <!-- Quotation Meta Info -->
+                                <div class="text-right space-y-1">
+                                    <span class="inline-block px-3 py-1 bg-brand-50 text-brand-600 font-bold rounded-md text-xs mb-1">
+                                        ORÇAMENTO
+                                    </span>
+                                    <p id="docQuoteNumber" class="text-sm font-mono font-bold text-slate-900">ORC-0001</p>
+                                    <p class="text-[11px] text-slate-500">
+                                        Emissão: <span id="docIssueDate" class="font-medium text-slate-700">-</span>
+                                    </p>
+                                    <p id="docValidityWrapper" class="text-[11px] text-slate-500 hidden">
+                                        Validade: <span id="docValidityDate" class="font-medium text-slate-700">-</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Customer Box -->
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6">
+                                <h3 class="text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-2">DESTINATÁRIO / CLIENTE</h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                                    <div>
+                                        <p class="text-slate-400 text-[10px]">Nome / Empresa:</p>
+                                        <p id="docClientName" class="font-bold text-slate-900">Nome do Cliente</p>
+                                    </div>
+                                    <div id="docClientDocWrapper" class="hidden">
+                                        <p class="text-slate-400 text-[10px]">CPF / CNPJ:</p>
+                                        <p id="docClientDoc" class="font-medium text-slate-800">-</p>
+                                    </div>
+                                    <div id="docClientPhoneWrapper" class="hidden">
+                                        <p class="text-slate-400 text-[10px]">Contato:</p>
+                                        <p id="docClientPhone" class="font-medium text-slate-800">-</p>
+                                    </div>
+                                    <div id="docClientEmailWrapper" class="hidden">
+                                        <p class="text-slate-400 text-[10px]">E-mail:</p>
+                                        <p id="docClientEmail" class="font-medium text-slate-800">-</p>
+                                    </div>
+                                    <div id="docClientAddressWrapper" class="sm:col-span-2 hidden">
+                                        <p class="text-slate-400 text-[10px]">Endereço:</p>
+                                        <p id="docClientAddress" class="font-medium text-slate-800">-</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Project Title & Scope -->
+                            <div id="docProjectWrapper" class="mb-6 hidden">
+                                <h3 id="docProjectTitle" class="text-sm font-bold text-slate-900 mb-1"></h3>
+                                <p id="docProjectDescription" class="text-slate-600 text-xs whitespace-pre-line"></p>
+                            </div>
+
+                            <!-- Items Table -->
+                            <div class="mb-6 overflow-hidden rounded-xl border border-slate-200">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-slate-100 text-slate-700 text-[11px] font-bold uppercase tracking-wider border-b border-slate-200">
+                                            <th class="py-2.5 px-3">Item / Descrição</th>
+                                            <th class="py-2.5 px-3 text-center w-16">Qtd</th>
+                                            <th class="py-2.5 px-3 text-center w-16">Unid</th>
+                                            <th class="py-2.5 px-3 text-right w-24">V. Unit.</th>
+                                            <th class="py-2.5 px-3 text-right w-24">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="docItemsBody" class="divide-y divide-slate-100 text-xs">
+                                        <!-- Rendered dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Calculations & Summary Box -->
+                            <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
+                                <div class="text-[11px] text-slate-500 max-w-xs space-y-1">
+                                    <p id="docFeeNotes" class="italic hidden"></p>
+                                </div>
+                                <div class="w-full sm:w-64 space-y-1.5 bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs">
+                                    <div class="flex justify-between text-slate-600">
+                                        <span>Subtotal:</span>
+                                        <span id="docSubtotal" class="font-semibold">R$ 0,00</span>
+                                    </div>
+                                    <div id="docDiscountRow" class="flex justify-between text-red-600 hidden">
+                                        <span>Desconto:</span>
+                                        <span id="docDiscount" class="font-semibold">- R$ 0,00</span>
+                                    </div>
+                                    <div id="docShippingRow" class="flex justify-between text-slate-600 hidden">
+                                        <span>Frete:</span>
+                                        <span id="docShipping" class="font-semibold">+ R$ 0,00</span>
+                                    </div>
+                                    <div id="docExtraFeeRow" class="flex justify-between text-slate-600 hidden">
+                                        <span>Acréscimo:</span>
+                                        <span id="docExtraFee" class="font-semibold">+ R$ 0,00</span>
+                                    </div>
+                                    <div class="flex justify-between font-bold text-slate-900 text-sm border-t border-slate-200 pt-1.5">
+                                        <span>Total Geral:</span>
+                                        <span id="docTotal" class="text-brand-600">R$ 0,00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment & Delivery Details -->
+                            <div id="docConditionsWrapper" class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6 space-y-2 text-xs hidden">
+                                <h3 class="text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-1">CONDIÇÕES DE PAGAMENTO E ENTREGA</h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    <div id="docPaymentMethodWrapper" class="hidden">
+                                        <span class="text-slate-400">Forma de Pagamento:</span>
+                                        <span id="docPaymentMethod" class="font-medium text-slate-800 ml-1"></span>
+                                    </div>
+                                    <div id="docPaymentTermsWrapper" class="hidden">
+                                        <span class="text-slate-400">Condições:</span>
+                                        <span id="docPaymentTerms" class="font-medium text-slate-800 ml-1"></span>
+                                    </div>
+                                    <div id="docDepositWrapper" class="hidden">
+                                        <span class="text-slate-400">Sinal / Entrada:</span>
+                                        <span id="docDeposit" class="font-medium text-slate-800 ml-1"></span>
+                                    </div>
+                                    <div id="docRemainingBalanceWrapper" class="hidden">
+                                        <span class="text-slate-400">Saldo Restante:</span>
+                                        <span id="docRemainingBalance" class="font-medium text-slate-800 ml-1"></span>
+                                    </div>
+                                    <div id="docDeliveryTimeWrapper" class="hidden">
+                                        <span class="text-slate-400">Prazo de Entrega:</span>
+                                        <span id="docDeliveryTime" class="font-medium text-slate-800 ml-1"></span>
+                                    </div>
+                                    <div id="docWarrantyWrapper" class="hidden">
+                                        <span class="text-slate-400">Garantia / Revisões:</span>
+                                        <span id="docWarranty" class="font-medium text-slate-800 ml-1"></span>
+                                    </div>
+                                </div>
+                                <div id="docAdditionalNotesWrapper" class="border-t border-slate-200 pt-2 mt-2 hidden">
+                                    <p class="text-slate-400 text-[10px]">Observações:</p>
+                                    <p id="docAdditionalNotes" class="text-slate-700 whitespace-pre-line"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Document Footer -->
+                        <div class="border-t border-slate-200 pt-4 mt-auto text-center text-[10px] text-slate-400 space-y-1">
+                            <p id="docFooterText">Agradecemos a oportunidade de apresentar esta proposta comercial.</p>
+                            <p class="italic">Documento gerado digitalmente por WelGrafx - Ferramenta de Orçamentos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none no-print"></div>
+
+    <div id="confirmModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white dark:bg-brand-cardDark rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 dark:border-brand-borderDark space-y-4">
+            <div class="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl mx-auto">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="text-center">
+                <h3 id="confirmModalTitle" class="text-base font-bold text-slate-900 dark:text-white">Criar Novo Orçamento?</h3>
+                <p id="confirmModalText" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Isso apagará os dados atuais não salvos do formulário.</p>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button id="btnConfirmCancel" class="w-1/2 py-2 text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                    Cancelar
+                </button>
+                <button id="btnConfirmAction" class="w-1/2 py-2 text-xs font-semibold bg-red-600 hover:bg-red-700 text-white rounded-xl transition-colors shadow-sm">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* State Variables */
+        let currentStep = 1;
+        const totalSteps = 6;
+
+        let quotationData = {
+            provider: { logo: '', name: '', doc: '', phone: '', email: '', address: '' },
+            client: { name: '', doc: '', phone: '', email: '', address: '' },
+            details: { number: 'ORC-0001', issueDate: new Date().toISOString().split('T')[0], validityDate: '', title: '', description: '' },
+            items: [
+                { id: Date.now(), description: 'Serviço Exemplo de Design & Grafia', quantity: 1, unit: 'un', price: 150.00, notes: '' }
+            ],
+            financials: { discountType: 'fixed', discountValue: 0, shippingFee: 0, extraFee: 0, feeNotes: '' },
+            terms: { paymentMethod: 'PIX / Transferência', paymentTerms: '50% entrada + 50% entrega', depositAmount: 0, deliveryTime: '5 dias úteis', warrantyTerms: '', additionalNotes: '' }
+        };
+
+        /* DOM Elements Initialization */
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initDateDefaults();
+            initMasks();
+            renderItemsForm();
+            updateCalculations();
+            updateLivePreview();
+            loadDraftFromLocalStorage();
+
+            // Event Listeners for Dynamic Updates
+            setupEventListeners();
+        });
+
+        function initTheme() {
+            const themeToggleBtn = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+
+            const savedTheme = localStorage.getItem('welgrafx_theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                themeIcon.className = 'fa-solid fa-sun text-lg';
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeIcon.className = 'fa-solid fa-moon text-lg';
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('welgrafx_theme', isDark ? 'dark' : 'light');
+                themeIcon.className = isDark ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
+            });
+        }
+
+        /* Default Dates Initialization */
+        function initDateDefaults() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('issueDate').value = today;
+            quotationData.details.issueDate = today;
+
+            // Default Validity: +15 Days
+            const validity = new Date();
+            validity.setDate(validity.getDate() + 15);
+            const validityFormatted = validity.toISOString().split('T')[0];
+            document.getElementById('validityDate').value = validityFormatted;
+            quotationData.details.validityDate = validityFormatted;
+        }
+
+        function initMasks() {
+            // Document Mask (CPF/CNPJ)
+            const maskDoc = (e) => {
+                let v = e.target.value.replace(/\D/g, '');
+                if (v.length <= 11) {
+                    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                    v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                } else {
+                    v = v.replace(/^(\d{2})(\d)/, '$1.$2');
+                    v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+                    v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
+                    v = v.replace(/(\d{4})(\d)/, '$1-$2');
+                }
+                e.target.value = v.substring(0, 18);
+            };
+
+            // Phone Mask
+            const maskPhone = (e) => {
+                let v = e.target.value.replace(/\D/g, '');
+                v = v.replace(/^(\d{2})(\d)/g, '($1) $2');
+                v = v.replace(/(\d)(\d{4})$/, '$1-$2');
+                e.target.value = v.substring(0, 15);
+            };
+
+            document.getElementById('providerDoc').addEventListener('input', maskDoc);
+            document.getElementById('clientDoc').addEventListener('input', maskDoc);
+            document.getElementById('providerPhone').addEventListener('input', maskPhone);
+            document.getElementById('clientPhone').addEventListener('input', maskPhone);
+        }
+
+        function setupEventListeners() {
+            // Step Navigation Buttons
+            document.getElementById('btnNextStep').addEventListener('click', () => navigateStep(currentStep + 1));
+            document.getElementById('btnPrevStep').addEventListener('click', () => navigateStep(currentStep - 1));
+
+            document.querySelectorAll('.step-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const stepNum = parseInt(e.target.getAttribute('data-step-nav'));
+                    navigateStep(stepNum);
+                });
+            });
+
+            // Action Bar Buttons
+            document.getElementById('btnSaveDraft').addEventListener('click', saveDraftToLocalStorage);
+            document.getElementById('btnNewDoc').addEventListener('click', promptNewQuotation);
+            document.getElementById('btnPrint').addEventListener('click', () => window.print());
+            document.getElementById('btnDownloadPDF').addEventListener('click', downloadPDF);
+            document.getElementById('btnShareWhatsApp').addEventListener('click', shareWhatsApp);
+
+            // Mobile Preview Toggle
+            document.getElementById('btnToggleMobilePreview').addEventListener('click', () => {
+                const previewCol = document.getElementById('previewColumn');
+                previewCol.classList.toggle('hidden');
+                if (!previewCol.classList.contains('hidden')) {
+                    previewCol.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+
+            // Logo Upload & Remove
+            const logoUpload = document.getElementById('logoUpload');
+            logoUpload.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    if (file.size > 2 * 1024 * 1024) {
+                        showToast('A imagem excede o tamanho máximo de 2MB.', 'error');
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        quotationData.provider.logo = evt.target.result;
+                        updateLogoUI();
+                        updateLivePreview();
+                        showToast('Logotipo adicionado com sucesso!');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            document.getElementById('btnRemoveLogo').addEventListener('click', () => {
+                quotationData.provider.logo = '';
+                logoUpload.value = '';
+                updateLogoUI();
+                updateLivePreview();
+                showToast('Logotipo removido.');
+            });
+
+            // Inputs Sync with State
+            const bindInput = (id, obj, prop) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', (e) => {
+                        obj[prop] = e.target.value;
+                        updateCalculations();
+                        updateLivePreview();
+                    });
+                }
+            };
+
+            bindInput('providerName', quotationData.provider, 'name');
+            bindInput('providerDoc', quotationData.provider, 'doc');
+            bindInput('providerPhone', quotationData.provider, 'phone');
+            bindInput('providerEmail', quotationData.provider, 'email');
+            bindInput('providerAddress', quotationData.provider, 'address');
+
+            bindInput('clientName', quotationData.client, 'name');
+            bindInput('clientDoc', quotationData.client, 'doc');
+            bindInput('clientPhone', quotationData.client, 'phone');
+            bindInput('clientEmail', quotationData.client, 'email');
+            bindInput('clientAddress', quotationData.client, 'address');
+
+            bindInput('quoteNumber', quotationData.details, 'number');
+            bindInput('issueDate', quotationData.details, 'issueDate');
+            bindInput('validityDate', quotationData.details, 'validityDate');
+            bindInput('projectTitle', quotationData.details, 'title');
+            bindInput('projectDescription', quotationData.details, 'description');
+
+            bindInput('discountType', quotationData.financials, 'discountType');
+            bindInput('discountValue', quotationData.financials, 'discountValue');
+            bindInput('shippingFee', quotationData.financials, 'shippingFee');
+            bindInput('extraFee', quotationData.financials, 'extraFee');
+            bindInput('feeNotes', quotationData.financials, 'feeNotes');
+
+            bindInput('paymentMethod', quotationData.terms, 'paymentMethod');
+            bindInput('paymentTerms', quotationData.terms, 'paymentTerms');
+            bindInput('depositAmount', quotationData.terms, 'depositAmount');
+            bindInput('deliveryTime', quotationData.terms, 'deliveryTime');
+            bindInput('warrantyTerms', quotationData.terms, 'warrantyTerms');
+            bindInput('additionalNotes', quotationData.terms, 'additionalNotes');
+
+            // Add Item Button
+            document.getElementById('btnAddItem').addEventListener('click', () => {
+                quotationData.items.push({
+                    id: Date.now(),
+                    description: '',
+                    quantity: 1,
+                    unit: 'un',
+                    price: 0,
+                    notes: ''
+                });
+                renderItemsForm();
+                updateCalculations();
+                updateLivePreview();
+            });
+        }
+
+        function updateLogoUI() {
+            const container = document.getElementById('logoPreviewContainer');
+            const removeBtn = document.getElementById('btnRemoveLogo');
+            if (quotationData.provider.logo) {
+                container.innerHTML = `<img src="${quotationData.provider.logo}" class="w-full h-full object-contain">`;
+                removeBtn.classList.remove('hidden');
+            } else {
+                container.innerHTML = `<i class="fa-solid fa-image text-2xl"></i>`;
+                removeBtn.classList.add('hidden');
+            }
+        }
+
+        function navigateStep(targetStep) {
+            if (targetStep < 1 || targetStep > totalSteps) return;
+
+            // Form validation before leaving step 1 & 2
+            if (targetStep > currentStep) {
+                if (currentStep === 1 && !document.getElementById('providerName').value.trim()) {
+                    showToast('Por favor, preencha o Nome do Prestador de Serviço.', 'error');
+                    document.getElementById('providerName').focus();
+                    return;
+                }
+                if (currentStep === 2 && !document.getElementById('clientName').value.trim()) {
+                    showToast('Por favor, preencha o Nome do Cliente.', 'error');
+                    document.getElementById('clientName').focus();
+                    return;
+                }
+            }
+
+            document.getElementById(`step-${currentStep}`).classList.add('hidden');
+            currentStep = targetStep;
+            document.getElementById(`step-${currentStep}`).classList.remove('hidden');
+
+            // Update Header & Progress Bar
+            const titles = [
+                'Dados do Prestador',
+                'Dados do Cliente',
+                'Detalhes do Orçamento',
+                'Itens & Serviços',
+                'Valores & Descontos',
+                'Condições & Pagamento'
+            ];
+
+            document.getElementById('stepCounterText').innerText = `Etapa ${currentStep} de ${totalSteps}`;
+            document.getElementById('stepTitleText').innerText = titles[currentStep - 1];
+            document.getElementById('stepProgressBar').style.width = `${(currentStep / totalSteps) * 100}%`;
+
+            // Update Navigation Buttons
+            document.querySelectorAll('.step-btn').forEach((btn, idx) => {
+                if (idx + 1 === currentStep) {
+                    btn.className = 'step-btn px-2.5 py-1 text-xs rounded-lg font-medium transition-all bg-brand-500 text-white shadow-sm';
+                } else {
+                    btn.className = 'step-btn px-2.5 py-1 text-xs rounded-lg font-medium transition-all text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800';
+                }
+            });
+
+            document.getElementById('btnPrevStep').disabled = currentStep === 1;
+            if (currentStep === totalSteps) {
+                document.getElementById('btnNextStep').innerHTML = `Finalizar <i class="fa-solid fa-check"></i>`;
+            } else {
+                document.getElementById('btnNextStep').innerHTML = `Próximo <i class="fa-solid fa-arrow-right"></i>`;
+            }
+        }
+
+        function renderItemsForm() {
+            const container = document.getElementById('itemsContainer');
+            container.innerHTML = '';
+
+            if (quotationData.items.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-6 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
+                        <p class="text-xs text-slate-400">Nenhum item adicionado ao orçamento.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            quotationData.items.forEach((item, index) => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-3';
+                itemEl.innerHTML = `
+                    <div class="flex justify-between items-center text-xs font-semibold text-slate-500">
+                        <span>Item #${index + 1}</span>
+                        ${quotationData.items.length > 1 ? `
+                            <button type="button" onclick="removeItem(${item.id})" class="text-red-500 hover:text-red-600 transition-colors">
+                                <i class="fa-solid fa-trash-can"></i> Remover
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                        <div class="md:col-span-6">
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Descrição</label>
+                            <input type="text" value="${escapeHtml(item.description)}" oninput="updateItem(${item.id}, 'description', this.value)" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white focus:ring-1 focus:ring-brand-500 outline-none" placeholder="Ex: Criação de Logotipo">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Qtd.</label>
+                            <input type="number" min="0.01" step="any" value="${item.quantity}" oninput="updateItem(${item.id}, 'quantity', this.value)" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white focus:ring-1 focus:ring-brand-500 outline-none">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Unidade</label>
+                            <select onchange="updateItem(${item.id}, 'unit', this.value)" class="w-full px-2 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white focus:ring-1 focus:ring-brand-500 outline-none">
+                                <option value="un" ${item.unit === 'un' ? 'selected' : ''}>unidade</option>
+                                <option value="hora" ${item.unit === 'hora' ? 'selected' : ''}>hora</option>
+                                <option value="página" ${item.unit === 'página' ? 'selected' : ''}>página</option>
+                                <option value="diária" ${item.unit === 'diária' ? 'selected' : ''}>diária</option>
+                                <option value="serviço" ${item.unit === 'serviço' ? 'selected' : ''}>serviço</option>
+                                <option value="kg" ${item.unit === 'kg' ? 'selected' : ''}>kg</option>
+                                <option value="m²" ${item.unit === 'm²' ? 'selected' : ''}>m²</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">Preço Unit. (R$)</label>
+                            <input type="number" min="0" step="0.01" value="${item.price}" oninput="updateItem(${item.id}, 'price', this.value)" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white focus:ring-1 focus:ring-brand-500 outline-none">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(itemEl);
+            });
+        }
+
+        window.updateItem = function(id, field, value) {
+            const item = quotationData.items.find(i => i.id === id);
+            if (item) {
+                if (field === 'quantity' || field === 'price') {
+                    item[field] = parseFloat(value) || 0;
+                } else {
+                    item[field] = value;
+                }
+                updateCalculations();
+                updateLivePreview();
+            }
+        };
+
+        window.removeItem = function(id) {
+            quotationData.items = quotationData.items.filter(i => i.id !== id);
+            renderItemsForm();
+            updateCalculations();
+            updateLivePreview();
+        };
+
+        function updateCalculations() {
+            let subtotal = 0;
+            quotationData.items.forEach(item => {
+                subtotal += (item.quantity || 0) * (item.price || 0);
+            });
+
+            const discountType = document.getElementById('discountType').value;
+            const discountValInput = parseFloat(document.getElementById('discountValue').value) || 0;
+            const shippingFee = parseFloat(document.getElementById('shippingFee').value) || 0;
+            const extraFee = parseFloat(document.getElementById('extraFee').value) || 0;
+            const depositAmount = parseFloat(document.getElementById('depositAmount').value) || 0;
+
+            let calculatedDiscount = 0;
+            if (discountType === 'percent') {
+                calculatedDiscount = (subtotal * Math.min(discountValInput, 100)) / 100;
+            } else {
+                calculatedDiscount = Math.min(discountValInput, subtotal);
+            }
+
+            const total = Math.max(0, subtotal - calculatedDiscount + shippingFee + extraFee);
+            const remainingBalance = Math.max(0, total - depositAmount);
+
+            // Update Summary UI Box
+            document.getElementById('summarySubtotal').innerText = formatCurrency(subtotal);
+            document.getElementById('summaryDiscount').innerText = `- ${formatCurrency(calculatedDiscount)}`;
+            document.getElementById('summaryFees').innerText = `+ ${formatCurrency(shippingFee + extraFee)}`;
+            document.getElementById('summaryTotal').innerText = formatCurrency(total);
+
+            // Remaining Balance Field
+            document.getElementById('displayRemainingBalance').innerText = formatCurrency(remainingBalance);
+
+            return { subtotal, calculatedDiscount, shippingFee, extraFee, total, remainingBalance };
+        }
+
+        function updateLivePreview() {
+            const calcs = updateCalculations();
+
+            // Provider
+            document.getElementById('docProviderName').innerText = quotationData.provider.name || 'NOME DA SUA EMPRESA / PROFISSIONAL';
+            toggleElement('docProviderDoc', quotationData.provider.doc, `CPF/CNPJ: ${quotationData.provider.doc}`);
+            toggleElement('docProviderPhone', quotationData.provider.phone, `WhatsApp/Tel: ${quotationData.provider.phone}`);
+            toggleElement('docProviderEmail', quotationData.provider.email, `E-mail: ${quotationData.provider.email}`);
+            toggleElement('docProviderAddress', quotationData.provider.address, `Endereço: ${quotationData.provider.address}`);
+
+            const logoImg = document.getElementById('docLogoImg');
+            const logoWrapper = document.getElementById('docLogoWrapper');
+            if (quotationData.provider.logo) {
+                logoImg.src = quotationData.provider.logo;
+                logoWrapper.classList.remove('hidden');
+            } else {
+                logoWrapper.classList.add('hidden');
+            }
+
+            // Client
+            document.getElementById('docClientName').innerText = quotationData.client.name || 'Nome do Cliente';
+            toggleWrapper('docClientDocWrapper', 'docClientDoc', quotationData.client.doc);
+            toggleWrapper('docClientPhoneWrapper', 'docClientPhone', quotationData.client.phone);
+            toggleWrapper('docClientEmailWrapper', 'docClientEmail', quotationData.client.email);
+            toggleWrapper('docClientAddressWrapper', 'docClientAddress', quotationData.client.address);
+
+            // Details
+            document.getElementById('docQuoteNumber').innerText = quotationData.details.number || 'ORC-0001';
+            document.getElementById('docIssueDate').innerText = formatDateBR(quotationData.details.issueDate);
+            
+            if (quotationData.details.validityDate) {
+                document.getElementById('docValidityDate').innerText = formatDateBR(quotationData.details.validityDate);
+                document.getElementById('docValidityWrapper').classList.remove('hidden');
+            } else {
+                document.getElementById('docValidityWrapper').classList.add('hidden');
+            }
+
+            // Project Title & Scope
+            const projectWrapper = document.getElementById('docProjectWrapper');
+            if (quotationData.details.title || quotationData.details.description) {
+                projectWrapper.classList.remove('hidden');
+                document.getElementById('docProjectTitle').innerText = quotationData.details.title || '';
+                document.getElementById('docProjectDescription').innerText = quotationData.details.description || '';
+            } else {
+                projectWrapper.classList.add('hidden');
+            }
+
+            // Items Table
+            const tbody = document.getElementById('docItemsBody');
+            tbody.innerHTML = '';
+
+            if (quotationData.items.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-400 italic">Nenhum item adicionado</td></tr>`;
+            } else {
+                quotationData.items.forEach(item => {
+                    const itemSubtotal = (item.quantity || 0) * (item.price || 0);
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="py-2.5 px-3 font-medium text-slate-900">${escapeHtml(item.description) || 'Sem descrição'}</td>
+                        <td class="py-2.5 px-3 text-center text-slate-600">${item.quantity || 0}</td>
+                        <td class="py-2.5 px-3 text-center text-slate-500">${escapeHtml(item.unit) || 'un'}</td>
+                        <td class="py-2.5 px-3 text-right text-slate-600">${formatCurrency(item.price || 0)}</td>
+                        <td class="py-2.5 px-3 text-right font-semibold text-slate-900">${formatCurrency(itemSubtotal)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // Financial Summary
+            document.getElementById('docSubtotal').innerText = formatCurrency(calcs.subtotal);
+            
+            if (calcs.calculatedDiscount > 0) {
+                document.getElementById('docDiscount').innerText = `- ${formatCurrency(calcs.calculatedDiscount)}`;
+                document.getElementById('docDiscountRow').classList.remove('hidden');
+            } else {
+                document.getElementById('docDiscountRow').classList.add('hidden');
+            }
+
+            if (calcs.shippingFee > 0) {
+                document.getElementById('docShipping').innerText = `+ ${formatCurrency(calcs.shippingFee)}`;
+                document.getElementById('docShippingRow').classList.remove('hidden');
+            } else {
+                document.getElementById('docShippingRow').classList.add('hidden');
+            }
+
+            if (calcs.extraFee > 0) {
+                document.getElementById('docExtraFee').innerText = `+ ${formatCurrency(calcs.extraFee)}`;
+                document.getElementById('docExtraFeeRow').classList.remove('hidden');
+            } else {
+                document.getElementById('docExtraFeeRow').classList.add('hidden');
+            }
+
+            document.getElementById('docTotal').innerText = formatCurrency(calcs.total);
+
+            // Fee Notes
+            const feeNotesEl = document.getElementById('docFeeNotes');
+            if (quotationData.financials.feeNotes) {
+                feeNotesEl.innerText = `Obs. Valores: ${quotationData.financials.feeNotes}`;
+                feeNotesEl.classList.remove('hidden');
+            } else {
+                feeNotesEl.classList.add('hidden');
+            }
+
+            // Payment & Terms
+            const termsWrapper = document.getElementById('docConditionsWrapper');
+            const hasTerms = quotationData.terms.paymentMethod || quotationData.terms.paymentTerms || 
+                             quotationData.terms.depositAmount > 0 || quotationData.terms.deliveryTime || 
+                             quotationData.terms.warrantyTerms || quotationData.terms.additionalNotes;
+
+            if (hasTerms) {
+                termsWrapper.classList.remove('hidden');
+                toggleSpanWrapper('docPaymentMethodWrapper', 'docPaymentMethod', quotationData.terms.paymentMethod);
+                toggleSpanWrapper('docPaymentTermsWrapper', 'docPaymentTerms', quotationData.terms.paymentTerms);
+                toggleSpanWrapper('docDepositWrapper', 'docDeposit', quotationData.terms.depositAmount > 0 ? formatCurrency(quotationData.terms.depositAmount) : '');
+                toggleSpanWrapper('docRemainingBalanceWrapper', 'docRemainingBalance', quotationData.terms.depositAmount > 0 ? formatCurrency(calcs.remainingBalance) : '');
+                toggleSpanWrapper('docDeliveryTimeWrapper', 'docDeliveryTime', quotationData.terms.deliveryTime);
+                toggleSpanWrapper('docWarrantyWrapper', 'docWarranty', quotationData.terms.warrantyTerms);
+
+                if (quotationData.terms.additionalNotes) {
+                    document.getElementById('docAdditionalNotes').innerText = quotationData.terms.additionalNotes;
+                    document.getElementById('docAdditionalNotesWrapper').classList.remove('hidden');
+                } else {
+                    document.getElementById('docAdditionalNotesWrapper').classList.add('hidden');
+                }
+            } else {
+                termsWrapper.classList.add('hidden');
+            }
+        }
+
+        /* Helper Utilities for Showing/Hiding Preview Elements */
+        function toggleElement(id, value, content) {
+            const el = document.getElementById(id);
+            if (value && value.trim() !== '') {
+                el.innerText = content || value;
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+
+        function toggleWrapper(wrapperId, textId, value) {
+            const wrapper = document.getElementById(wrapperId);
+            const textEl = document.getElementById(textId);
+            if (value && value.trim() !== '') {
+                textEl.innerText = value;
+                wrapper.classList.remove('hidden');
+            } else {
+                wrapper.classList.add('hidden');
+            }
+        }
+
+        function toggleSpanWrapper(wrapperId, spanId, value) {
+            const wrapper = document.getElementById(wrapperId);
+            const span = document.getElementById(spanId);
+            if (value && value.toString().trim() !== '') {
+                span.innerText = value;
+                wrapper.classList.remove('hidden');
+            } else {
+                wrapper.classList.add('hidden');
+            }
+        }
+
+        function saveDraftToLocalStorage() {
+            try {
+                localStorage.setItem('welgrafx_quote_draft', JSON.stringify(quotationData));
+                showToast('Rascunho salvo com sucesso no navegador!');
+            } catch (err) {
+                showToast('Erro ao salvar rascunho.', 'error');
+            }
+        }
+
+        function loadDraftFromLocalStorage() {
+            const saved = localStorage.getItem('welgrafx_quote_draft');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    quotationData = parsed;
+                    populateFormFromData();
+                    updateLogoUI();
+                    renderItemsForm();
+                    updateCalculations();
+                    updateLivePreview();
+                    showToast('Rascunho anterior restaurado automaticamente.');
+                } catch (e) {
+                    console.error('Falha ao ler rascunho salvo', e);
+                }
+            }
+        }
+
+        function populateFormFromData() {
+            document.getElementById('providerName').value = quotationData.provider.name || '';
+            document.getElementById('providerDoc').value = quotationData.provider.doc || '';
+            document.getElementById('providerPhone').value = quotationData.provider.phone || '';
+            document.getElementById('providerEmail').value = quotationData.provider.email || '';
+            document.getElementById('providerAddress').value = quotationData.provider.address || '';
+
+            document.getElementById('clientName').value = quotationData.client.name || '';
+            document.getElementById('clientDoc').value = quotationData.client.doc || '';
+            document.getElementById('clientPhone').value = quotationData.client.phone || '';
+            document.getElementById('clientEmail').value = quotationData.client.email || '';
+            document.getElementById('clientAddress').value = quotationData.client.address || '';
+
+            document.getElementById('quoteNumber').value = quotationData.details.number || 'ORC-0001';
+            document.getElementById('issueDate').value = quotationData.details.issueDate || '';
+            document.getElementById('validityDate').value = quotationData.details.validityDate || '';
+            document.getElementById('projectTitle').value = quotationData.details.title || '';
+            document.getElementById('projectDescription').value = quotationData.details.description || '';
+
+            document.getElementById('discountType').value = quotationData.financials.discountType || 'fixed';
+            document.getElementById('discountValue').value = quotationData.financials.discountValue || 0;
+            document.getElementById('shippingFee').value = quotationData.financials.shippingFee || 0;
+            document.getElementById('extraFee').value = quotationData.financials.extraFee || 0;
+            document.getElementById('feeNotes').value = quotationData.financials.feeNotes || '';
+
+            document.getElementById('paymentMethod').value = quotationData.terms.paymentMethod || 'PIX / Transferência';
+            document.getElementById('paymentTerms').value = quotationData.terms.paymentTerms || '';
+            document.getElementById('depositAmount').value = quotationData.terms.depositAmount || 0;
+            document.getElementById('deliveryTime').value = quotationData.terms.deliveryTime || '';
+            document.getElementById('warrantyTerms').value = quotationData.terms.warrantyTerms || '';
+            document.getElementById('additionalNotes').value = quotationData.terms.additionalNotes || '';
+        }
+
+        function promptNewQuotation() {
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('hidden');
+
+            const btnCancel = document.getElementById('btnConfirmCancel');
+            const btnAction = document.getElementById('btnConfirmAction');
+
+            const closeModal = () => modal.classList.add('hidden');
+
+            btnCancel.onclick = closeModal;
+            btnAction.onclick = () => {
+                closeModal();
+                localStorage.removeItem('welgrafx_quote_draft');
+                location.reload();
+            };
+        }
+
+        function downloadPDF() {
+            showToast('Gerando documento PDF...');
+            const element = document.getElementById('quotationDocument');
+
+            const opt = {
+                margin:       10,
+                filename:     `Orcamento_${quotationData.details.number || 'WelGrafx'}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            if (typeof html2pdf !== 'undefined') {
+                html2pdf().set(opt).from(element).save().then(() => {
+                    showToast('PDF baixado com sucesso!');
+                }).catch(() => {
+                    showToast('Falha na geração direta de PDF. Abrindo modo de impressão...', 'error');
+                    window.print();
+                });
+            } else {
+                window.print();
+            }
+        }
+
+        function shareWhatsApp() {
+            const calcs = updateCalculations();
+            const clientName = quotationData.client.name || 'Cliente';
+            const providerName = quotationData.provider.name || 'WelGrafx';
+            const quoteNum = quotationData.details.number || 'ORC-0001';
+            const total = formatCurrency(calcs.total);
+
+            let message = `Olá *${clientName}*,\n\nSegue o resumo do seu orçamento (*${quoteNum}*) preparado por *${providerName}*:\n\n`;
+            
+            if (quotationData.details.title) {
+                message += `📌 *Projeto:* ${quotationData.details.title}\n\n`;
+            }
+
+            message += `🛒 *Itens:* \n`;
+            quotationData.items.forEach(item => {
+                const sub = formatCurrency((item.quantity || 0) * (item.price || 0));
+                message += `• ${item.description || 'Item'} (${item.quantity} ${item.unit}) - ${sub}\n`;
+            });
+
+            message += `\n💰 *Valor Total:* ${total}\n`;
+
+            if (quotationData.terms.paymentTerms) {
+                message += `💳 *Condições:* ${quotationData.terms.paymentTerms}\n`;
+            }
+            if (quotationData.terms.deliveryTime) {
+                message += `🚚 *Prazo de Entrega:* ${quotationData.terms.deliveryTime}\n`;
+            }
+
+            message += `\nFico à disposição para esclarecer qualquer dúvida!`;
+
+            const encoded = encodeURIComponent(message);
+            const phone = quotationData.client.phone ? quotationData.client.phone.replace(/\D/g, '') : '';
+            const url = phone ? `https://wa.me/55${phone}?text=${encoded}` : `https://wa.me/?text=${encoded}`;
+
+            window.open(url, '_blank');
+        }
+
+        /* Utility Formatting Helpers */
+        function formatCurrency(val) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
+        }
+
+        function formatDateBR(dateStr) {
+            if (!dateStr) return '-';
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        /* Toast Notifications Engine */
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+
+            const bgClass = type === 'error' ? 'bg-red-600 text-white' : 'bg-slate-900 dark:bg-white dark:text-slate-900 text-white';
+            const icon = type === 'error' ? 'fa-triangle-exclamation' : 'fa-circle-check';
+
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-xs font-semibold transform transition-all duration-300 translate-y-2 opacity-0 ${bgClass}`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i> <span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
+```
