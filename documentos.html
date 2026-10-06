@@ -8,7 +8,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/print-express/images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/print-express/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/print-express/images/favicon-16x16.png">
-    <link rel="manifest" href="/print-express/manifest.json">
+    <link rel="manifest" href="/print-express/images/site.webmanifest">
     <meta name="theme-color" content="#0070f3">
     <style>
         :root {
@@ -817,7 +817,7 @@
                 </div>
 
                 <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">
-                    ℹ️ O valor presentedo é uma estimativa calculada dinamicamente conforme suas escolhas reais.
+                    ℹ️ O valor apresentado é uma estimativa calculada dinamicamente conforme suas escolhas reais.
                 </p>
             </div>
 
@@ -842,13 +842,6 @@
     </div>
 
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/print-express/service-worker.js')
-                    .catch(err => console.error('Erro ao registrar Service Worker:', err));
-            });
-        }
-
         // TABELA DE CÓPIAS ADICIONAIS (ESTRUTURA SEPARADA DO PREÇO-BASE DO SERVIÇO)
         // Valores das cópias adicionais facilmente configuráveis.
         // Se não possuir valor definido (null ou undefined), exibe como a definir no resumo.
@@ -1211,6 +1204,55 @@
 
             const tipoImp = document.querySelector('input[name="TipoImpressao"]:checked')?.value || "-";
             const ladoImp = document.querySelector('input[name="LadoImpressao"]:checked')?.value || "-";
+            const qtdCop = document.getElementById("qtd_copias").value || "1";
+            const orgCop = document.querySelector('input[name="OrganizacaoCopias"]:checked')?.value || "-";
+            const acab = document.querySelector('input[name="Acabamento"]:checked')?.value || "-";
+            const obsText = document.getElementById("observacoes").value.trim();
+
+            document.getElementById("confImpressao").innerText = tipoImp;
+            document.getElementById("confLado").innerText = ladoImp;
+            document.getElementById("confQtd").innerText = `${qtdCop} cópia(s) (${parseInt(qtdCop) > 1 ? '1 principal + ' + (parseInt(qtdCop)-1) + ' extra(s)' : '1 incluída'})`;
+            document.getElementById("confOrg").innerText = orgCop;
+            document.getElementById("confAcabamento").innerText = acab;
+
+            if (obsText) {
+                document.getElementById("confRowObs").style.display = "flex";
+                document.getElementById("confObs").innerText = obsText;
+            } else {
+                document.getElementById("confRowObs").style.display = "none";
+            }
+        }
+
+        selectPossuiDoc.addEventListener("change", calcularEAtualizarCampos);
+        selectTipo.addEventListener("change", calcularEAtualizarCampos);
+        optRedimensionar.addEventListener("change", calcularEAtualizarCampos);
+        optPdfWhats.addEventListener("change", calcularEAtualizarCampos);
+        optCopiaExtra.addEventListener("change", calcularEAtualizarCampos);
+        optRecorte.addEventListener("change", calcularEAtualizarCampos);
+        document.getElementById("qtd_copias").addEventListener("input", calcularEAtualizarCampos);
+        document.getElementById("observacoes").addEventListener("input", atualizarConferencia);
+
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener("change", calcularEAtualizarCampos);
+        });
+
+        calcularEAtualizarCampos();
+
+        const form = document.getElementById("formDoc");
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const calc = calcularEAtualizarCampos();
+            const pagamentoSel = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
+            const clienteNome = document.getElementById("nome").value;
+            const clienteWhats = document.getElementById("telefone").value;
+            const tipoDocText = selectTipo.options[selectTipo.selectedIndex].text;
+            const possuiDocText = selectPossuiDoc.options[selectPossuiDoc.selectedIndex].text;
+            const obs = document.getElementById("observacoes").value;
+
+            const tipoImp = document.querySelector('input[name="TipoImpressao"]:checked').value;
+            const ladoImp = document.querySelector('input[name="LadoImpressao"]:checked').value;
             const qtdCop = document.getElementById("qtd_copias").value;
             const orgCop = document.querySelector('input[name="OrganizacaoCopias"]:checked').value;
             const acab = document.querySelector('input[name="Acabamento"]:checked').value;
