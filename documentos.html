@@ -546,7 +546,7 @@
             </div>
         </div>
 
-        <form id="formDoc" class="step-card" action="https://formsubmit.co/seu-email@dominio.com" method="POST">
+        <form id="formDoc" class="step-card" action="https://formsubmit.co/contato@welgrafx.com.br" method="POST">
             
             <input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">
 
@@ -821,7 +821,7 @@
                 </p>
             </div>
 
-            <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido 🚀</button>
+            <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido via Formulário 🚀</button>
         </form>
 
         <div id="telaSucesso" class="sucesso-card hidden">
@@ -1242,10 +1242,10 @@
 
         form.addEventListener("submit", (e) => {
             const tipo = selectTipo.value;
-            const possuiDoc = selectPossuiDoc.value;
+            const precisaBusca = selectPossuiDoc.value === "nao";
 
-            // CASE C: "Outros" ("outras_certidoes") + customer needs a search ("nao")
-            if (tipo === "outras_certidoes" && possuiDoc === "nao") {
+            // Case C: "Outros" ("outras_certidoes") + customer needs a document search -> WhatsApp
+            if (tipo === "outras_certidoes" && precisaBusca) {
                 e.preventDefault();
 
                 const calc = calcularEAtualizarCampos();
@@ -1263,6 +1263,12 @@
                 const acab = document.querySelector('input[name="Acabamento"]:checked').value;
 
                 let detalhesBusca = "";
+                if (!inputPlaca.disabled && inputPlaca.value) detalhesBusca += `\n🚗 Placa: ${inputPlaca.value}`;
+                if (!inputRenavam.disabled && inputRenavam.value) detalhesBusca += `\n🔢 RENAVAM: ${inputRenavam.value}`;
+                if (!inputCpfTitular.disabled && inputCpfTitular.value) detalhesBusca += `\n🆔 CPF Titular: ${inputCpfTitular.value}`;
+                if (!inputDataNasc.disabled && inputDataNasc.value) detalhesBusca += `\n📅 Data Nasc.: ${inputDataNasc.value}`;
+                if (!inputNomeMae.disabled && inputNomeMae.value) detalhesBusca += `\n👩 Nome da Mãe: ${inputNomeMae.value}`;
+                if (!inputCnpj.disabled && inputCnpj.value) detalhesBusca += `\n🏢 CNPJ: ${inputCnpj.value}`;
                 if (!inputDescricaoOutro.disabled && inputDescricaoOutro.value) detalhesBusca += `\n📄 Descrição: ${inputDescricaoOutro.value}`;
 
                 let extras = [];
@@ -1286,12 +1292,12 @@
                     textoTotalWhats += " (+ valor das cópias adicionais a definir)";
                 }
 
-                let mensagemWhatsApp = `*NOVO PEDIDO - PRINNTEXPRESS*\n\n` +
+                let mensagemWhatsApp = `*NOVO PEDIDO - WELGRAFX*\n\n` +
                     `👤 *Cliente:* ${clienteNome}\n` +
                     `📱 *WhatsApp:* ${clienteWhats}\n` +
                     `📄 *Serviço:* ${tipoDocText} (R$ ${calc.valorBaseServico.toFixed(2).replace('.', ',')})\n` +
                     `📁 *Solicitação:* ${possuiDocText}\n` +
-                    (detalhesBusca ? `\n*DADOS PARA BUSCA:*${detalhesBusca}\n` : '') +
+                    (detalhesBusca ? `\n*DADOS PARA EMISSÃO:*${detalhesBusca}\n` : '') +
                     `\n🖨️ *CONFIGURAÇÕES DE IMPRESSÃO:*\n` +
                     `• Tipo: ${tipoImp}\n` +
                     `• Impressão: ${ladoImp}\n` +
@@ -1342,13 +1348,12 @@
 
                 telaSucesso.classList.remove("hidden");
                 telaSucesso.scrollIntoView({ behavior: 'smooth' });
-
-            } else {
-                // CASE A & CASE B: Allow normal FormSubmit submission
-                const calc = calcularEAtualizarCampos();
-                document.getElementById("hidden_total").value = `R$ ${calc.total.toFixed(2).replace('.', ',')}`;
-                permitirSaida = true;
+                return;
             }
+
+            // Cases A & B: Submit through FormSubmit natively
+            document.getElementById("hidden_total").value = document.getElementById("valorTotalExibicao").innerText;
+            permitirSaida = true;
         });
 
         function copiarPix() {
