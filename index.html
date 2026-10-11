@@ -515,8 +515,8 @@
             font-weight: 700;
             color: var(--primary);
             display: flex;
-            align-items: center;
-            gap: 8px;
+            flex-direction: column;
+            gap: 6px;
             overflow-wrap: break-word;
             word-break: break-word;
             border: 1px solid var(--border-color);
@@ -1481,14 +1481,14 @@
             <p>Seu Painel de Impressões, Serviços e Solicitações Rápidas</p>
         </header>
 
-        <!-- 1. APRESENTAÇÃO PRINCIPAL -->
+        <!-- 1. APRESENTAÇÃO PRINCIPAL (VITRINE PRINCIPAL ATUALIZADA) -->
         <section class="institucional-box reveal-on-scroll">
             <div class="institucional-content">
-                <h3>WelGrafx</h3>
-                <p>Serviços gráficos e soluções digitais para facilitar documentos, arquivos e tarefas do dia a dia.</p>
+                <h3>Soluções Inteligentes para Seus Documentos</h3>
+                <p>Facilite sua rotina com impressões de alta qualidade, digitalização profissional, organização e conversão de arquivos, além de soluções digitais sob medida para você ou sua empresa.</p>
             </div>
             <div class="institucional-badge">
-                Praticidade • Organização • Tecnologia
+                Agilidade • Qualidade • Eficiência
             </div>
         </section>
 
@@ -1515,11 +1515,16 @@
             
             <p id="statusDescHome" class="status-info-text">Estamos realizando impressões agora.</p>
 
+            <!-- DATA ATUAL EM TEMPO REAL -->
+            <div id="dataAtualBox" style="font-size: 14px; font-weight: 700; color: var(--primary); margin-top: 4px; margin-bottom: 4px;">
+                📅 <span id="dataAtualTexto">Calculando data atual...</span>
+            </div>
+
             <div class="tabela-responsive-wrapper">
                 <table class="tabela-horarios">
                     <thead>
                         <tr>
-                            <th>Dia da Semana</th>
+                            <th>Dia / Evento</th>
                             <th>Horário de Impressão</th>
                         </tr>
                     </thead>
@@ -1530,13 +1535,15 @@
                         <tr id="row-4"><td>Quinta-feira</td><td>17:00 — 21:00</td></tr>
                         <tr id="row-5"><td>Sexta-feira</td><td>17:00 — 21:00</td></tr>
                         <tr id="row-6"><td>Sábado</td><td>06:30 — 21:30</td></tr>
-                        <tr id="row-0"><td>Domingo</td><td>06:30 — 21:30</td></tr>
+                        <tr id="row-0"><td>Domingo</td><td>07:00 — 20:00</td></tr>
+                        <tr id="row-feriado"><td>Feriados (Horário Especial)</td><td>08:00 — 18:00</td></tr>
                     </tbody>
                 </table>
             </div>
 
             <div class="proximo-horario" id="proximoHorarioBox">
-                ⏰ <span id="proximoHorarioTexto">Calculando próximo horário de impressão...</span>
+                <div>⏰ <span id="proximoHorarioTexto">Calculando próximo horário de impressão...</span></div>
+                <div>🎉 <span id="proximoFeriadoTexto">Calculando próximo feriado...</span></div>
             </div>
         </section>
 
@@ -1687,7 +1694,7 @@
             <div class="carousel-slide" style="background-image: url('images/pedidos.jpg');">
                 <div class="carousel-card-overlay">
                     <span class="carousel-card-badge">Praticidade</span>
-                    <div class="carousel-card-title">⏱️️ Pedidos Abertos 24 Horas</div>
+                    <div class="carousel-card-title">⏱ Pedidos Abertos 24 Horas</div>
                     <div class="carousel-card-desc">Envie seu pedido a qualquer momento. A produção segue os horários ativos.</div>
                 </div>
             </div>
@@ -1726,7 +1733,7 @@
 
             <div class="info-card">
                 <h3>🖨️ Prazos de Impressão</h3>
-                <p><strong>Segunda a sexta:</strong> produção dentro do horário de atendimento. <br><small style="color:var(--primary); font-weight:700;">* Sábados e domingos: atendimentos realizados dentro da janela estendida informada.</small></p>
+                <p><strong>Segunda a sexta:</strong> produção dentro do horário de atendimento. <br><small style="color:var(--primary); font-weight:700;">* Sábados, domingos e feriados: atendimentos realizados dentro da janela estendida informada.</small></p>
             </div>
 
             <div class="info-card">
@@ -1757,7 +1764,7 @@
             </div>
         </section>
 
-        <!-- VITRINE: ORGANIZAÇÃO & PRODUTIVIDADE COM ARQUIVOS (BOTÕES REMOVIDOS) -->
+        <!-- VITRINE: ORGANIZAÇÃO & PRODUTIVIDADE COM ARQUIVOS -->
         <section class="vitrine-solucoes-container reveal-on-scroll" aria-label="Vitrine de Organização e Produtividade">
             <div class="vitrine-header">
                 <h2>📁 Organização & Produtividade com Arquivos</h2>
@@ -1805,7 +1812,7 @@
                     <div class="vitrine-card-top">
                         <div class="vitrine-icon">📱</div>
                         <div class="vitrine-card-title">Recursos para celular</div>
-                        <div class="vitrine-card-desc">Ferramentas levas pensadas para facilitar tarefas diretamente pelo seu smartphone.</div>
+                        <div class="vitrine-card-desc">Ferramentas leves pensadas para facilitar tarefas diretamente pelo seu smartphone.</div>
                     </div>
                 </div>
 
@@ -2147,7 +2154,7 @@
             mudarSlide(slideIndex + 1);
         }, 5000);
 
-        // HORÁRIOS AUTOMÁTICOS
+        // HORÁRIOS AUTOMÁTICOS, FERIADOS E DATA EM TEMPO REAL (BRASÍLIA)
         const HORARIOS = {
             1: { inicio: 17*60, fim: 21*60, nome: "Segunda-feira" },
             2: { inicio: 17*60, fim: 21*60, nome: "Terça-feira" },
@@ -2155,8 +2162,70 @@
             4: { inicio: 17*60, fim: 21*60, nome: "Quinta-feira" },
             5: { inicio: 17*60, fim: 21*60, nome: "Sexta-feira" },
             6: { inicio: 6*60 + 30, fim: 21*60 + 30, nome: "Sábado" },
-            0: { inicio: 6*60 + 30, fim: 21*60 + 30, nome: "Domingo" }
+            0: { inicio: 7*60, fim: 20*60, nome: "Domingo" }
         };
+
+        const HORARIO_FERIADO = { inicio: 8*60, fim: 18*60, nome: "Feriados" };
+
+        function getFeriadosAno(ano) {
+            // Feriados oficiais nacionais e municipais de São José dos Pinhais, PR
+            const feriados = [
+                { mes: 0, dia: 1, nome: "Confraternização Universal" },
+                { mes: 0, dia: 8, nome: "Emancipação Política de São José dos Pinhais" },
+                { mes: 2, dia: 19, nome: "Dia de São José (Padroeiro)" },
+                { mes: 3, dia: 21, nome: "Tiradentes" },
+                { mes: 4, dia: 1, nome: "Dia do Trabalho" },
+                { mes: 8, dia: 7, nome: "Independência do Brasil" },
+                { mes: 9, dia: 12, nome: "Nossa Senhora Aparecida" },
+                { mes: 10, dia: 2, nome: "Finados" },
+                { mes: 10, dia: 15, nome: "Proclamação da República" },
+                { mes: 10, dia: 20, nome: "Dia da Consciência Negra" },
+                { mes: 11, dia: 25, nome: "Natal" }
+            ];
+
+            // Inclusão de feriados móveis oficiais aplicáveis (ex: Sexta-feira Santa e Corpus Christi para 2026/2027)
+            if (ano === 2026) {
+                feriados.push({ mes: 3, dia: 3, nome: "Sexta-feira Santa" });
+                feriados.push({ mes: 5, dia: 4, nome: "Corpus Christi" });
+            } else if (ano === 2027) {
+                feriados.push({ mes: 2, dia: 26, nome: "Sexta-feira Santa" });
+                feriados.push({ mes: 4, dia: 27, nome: "Corpus Christi" });
+            }
+
+            return feriados.map(f => {
+                const data = new Date(ano, f.mes, f.dia);
+                return {
+                    dataStr: `${ano}-${String(f.mes + 1).padStart(2, '0')}-${String(f.dia).padStart(2, '0')}`,
+                    dataObj: data,
+                    nome: f.nome
+                };
+            });
+        }
+
+        function obterDataSaoPaulo() {
+            const options = { timeZone: 'America/Sao_Paulo', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', weekday: 'long' };
+            const formatter = new Intl.DateTimeFormat('pt-BR', options);
+            const parts = formatter.formatToParts(new Date());
+            
+            let dia = 1, mes = 0, ano = 2026, hora = 0, minuto = 0;
+            parts.forEach(p => {
+                if (p.type === 'day') dia = parseInt(p.value, 10);
+                if (p.type === 'month') mes = parseInt(p.value, 10) - 1;
+                if (p.type === 'year') ano = parseInt(p.value, 10);
+                if (p.type === 'hour') hora = parseInt(p.value, 10);
+                if (p.type === 'minute') minuto = parseInt(p.value, 10);
+            });
+
+            return {
+                dateObj: new Date(ano, mes, dia, hora, minuto),
+                dia,
+                mes,
+                ano,
+                hora,
+                minuto,
+                dataIso: `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`
+            };
+        }
 
         function formatarMinutos(minutosTotais) {
             const hrs = Math.floor(minutosTotais / 60);
@@ -2165,15 +2234,29 @@
         }
 
         function atualizarStatusAtendimento() {
-            const agora = new Date();
-            const diaSemana = agora.getDay();
-            const minutosAtuais = agora.getHours() * 60 + agora.getMinutes();
+            const sp = obterDataSaoPaulo();
+            const diaSemana = sp.dateObj.getDay();
+            const minutosAtuais = sp.hora * 60 + sp.minuto;
 
-            // Destacar o dia atual na tabela
+            // Exibir data atual em tempo real em português e fuso horário correto
+            const dataTextoEl = document.getElementById('dataAtualTexto');
+            if (dataTextoEl) {
+                const optionsFull = { timeZone: 'America/Sao_Paulo', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                const dataFormatada = new Intl.DateTimeFormat('pt-BR', optionsFull).format(new Date());
+                // Capitalizar primeira letra do dia da semana
+                const dataFormatadaCapitalizada = dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1);
+                dataTextoEl.innerText = `Hoje é ${dataFormatadaCapitalizada}`;
+            }
+
+            // Identificar se hoje é feriado oficial
+            const feriadosAno = getFeriadosAno(sp.ano);
+            const feriadoHoje = feriadosAno.find(f => f.dataStr === sp.dataIso);
+
+            // Destacar o dia atual na tabela (de forma independente)
             for (let i = 0; i <= 6; i++) {
                 const row = document.getElementById(`row-${i}`);
                 if (row) {
-                    if (i === diaSemana) {
+                    if (i === diaSemana && !feriadoHoje) {
                         row.classList.add('dia-atual');
                     } else {
                         row.classList.remove('dia-atual');
@@ -2181,38 +2264,71 @@
                 }
             }
 
-            const hHoje = HORARIOS[diaSemana];
+            // Destaque da linha de feriados (somente quando for feriado)
+            const rowFeriado = document.getElementById('row-feriado');
+            if (rowFeriado) {
+                if (feriadoHoje) {
+                    rowFeriado.classList.add('dia-atual');
+                } else {
+                    rowFeriado.classList.remove('dia-atual');
+                }
+            }
+
+            const hAtivo = feriadoHoje ? HORARIO_FERIADO : HORARIOS[diaSemana];
             const badge = document.getElementById('statusBadgeHome');
             const icon = document.getElementById('statusIconHome');
             const texto = document.getElementById('statusTextoHome');
             const desc = document.getElementById('statusDescHome');
             const proximoTexto = document.getElementById('proximoHorarioTexto');
+            const proximoFeriadoTexto = document.getElementById('proximoFeriadoTexto');
 
-            if (minutosAtuais >= hHoje.inicio && minutosAtuais < hHoje.fim) {
+            if (minutosAtuais >= hAtivo.inicio && minutosAtuais < hAtivo.fim) {
                 // Aberto agora
                 if (badge) { badge.className = 'status-badge-large status-open'; }
                 if (icon) icon.innerText = '🟢';
-                if (texto) texto.innerText = 'Impressões ativas';
-                if (desc) desc.innerText = `Estamos realizando impressões agora. Encerramento às ${formatarMinutos(hHoje.fim)}.`;
-                if (proximoTexto) proximoTexto.innerText = `Atendimento ativo hoje até às ${formatarMinutos(hHoje.fim)}.`;
-            } else if (minutosAtuais < hHoje.inicio) {
+                if (texto) texto.innerText = feriadoHoje ? 'Atendimento de Feriado Ativo' : 'Impressões ativas';
+                if (desc) desc.innerText = feriadoHoje ? `Feriado (${feriadoHoje.nome}). Atendimento ativo até às ${formatarMinutos(hAtivo.fim)}.` : `Estamos realizando impressões agora. Encerramento às ${formatarMinutos(hAtivo.fim)}.`;
+                if (proximoTexto) proximoTexto.innerText = `Atendimento ativo hoje até às ${formatarMinutos(hAtivo.fim)}.`;
+            } else if (minutosAtuais < hAtivo.inicio) {
                 // Abre hoje mais tarde
                 if (badge) { badge.className = 'status-badge-large status-closed'; }
                 if (icon) icon.innerText = '🔴';
                 if (texto) texto.innerText = 'Impressões pausadas';
-                if (desc) desc.innerText = `Próxima janela de impressão hoje das ${formatarMinutos(hHoje.inicio)} às ${formatarMinutos(hHoje.fim)}.`;
-                if (proximoTexto) proximoTexto.innerText = `Hoje (${hHoje.nome}) das ${formatarMinutos(hHoje.inicio)} às ${formatarMinutos(hHoje.fim)}`;
+                if (desc) desc.innerText = feriadoHoje ? `Feriado (${feriadoHoje.nome}). Próxima janela hoje das ${formatarMinutos(hAtivo.inicio)} às ${formatarMinutos(hAtivo.fim)}.` : `Próxima janela de impressão hoje das ${formatarMinutos(hAtivo.inicio)} às ${formatarMinutos(hAtivo.fim)}.`;
+                if (proximoTexto) proximoTexto.innerText = `Hoje das ${formatarMinutos(hAtivo.inicio)} às ${formatarMinutos(hAtivo.fim)}`;
             } else {
                 // Já fechou hoje, calcular o próximo dia
                 if (badge) { badge.className = 'status-badge-large status-closed'; }
                 if (icon) icon.innerText = '🔴';
                 if (texto) texto.innerText = 'Impressões pausadas';
                 
-                const proximoDia = (diaSemana + 1) % 7;
-                const hProximo = HORARIOS[proximoDia];
-                
-                if (desc) desc.innerText = `Próxima janela de impressão amanhã (${hProximo.nome}) das ${formatarMinutos(hProximo.inicio)} às ${formatarMinutos(hProximo.fim)}.`;
-                if (proximoTexto) proximoTexto.innerText = `Amanhã (${hProximo.nome}) das ${formatarMinutos(hProximo.inicio)} às ${formatarMinutos(hProximo.fim)}`;
+                const proximoDiaObj = new Date(sp.dateObj);
+                proximoDiaObj.setDate(proximoDiaObj.getDate() + 1);
+                const pDiaSemana = proximoDiaObj.getDay();
+                const pIso = `${proximoDiaObj.getFullYear()}-${String(proximoDiaObj.getMonth() + 1).padStart(2, '0')}-${String(proximoDiaObj.getDate()).padStart(2, '0')}`;
+                const todasFeriadosProx = [...feriadosAno, ...getFeriadosAno(proximoDiaObj.getFullYear())];
+                const pFeriado = todasFeriadosProx.find(f => f.dataStr === pIso);
+                const pH = pFeriado ? HORARIO_FERIADO : HORARIOS[pDiaSemana];
+                const nomeDiaStr = proximoDiaObj.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'long', day: 'numeric', month: 'numeric' });
+
+                if (desc) desc.innerText = `Próxima janela de impressão em ${nomeDiaStr} das ${formatarMinutos(pH.inicio)} às ${formatarMinutos(pH.fim)}.`;
+                if (proximoTexto) proximoTexto.innerText = `Próximo dia (${nomeDiaStr}): ${formatarMinutos(pH.inicio)} — ${formatarMinutos(pH.fim)}`;
+            }
+
+            // Indicar próximo feriado dinamicamente
+            if (proximoFeriadoTexto) {
+                const agoraTime = sp.dateObj.getTime();
+                let proxFeriado = feriadosAno.find(f => f.dataObj.getTime() > agoraTime && (!feriadoHoje || f.dataStr !== sp.dataIso));
+                if (!proxFeriado) {
+                    const feriadosProximoAno = getFeriadosAno(sp.ano + 1);
+                    proxFeriado = feriadosProximoAno[0];
+                }
+                if (proxFeriado) {
+                    const dataFeriadoFmt = proxFeriado.dataObj.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo', day: 'numeric', month: 'long', year: 'numeric' });
+                    proximoFeriadoTexto.innerText = `Próximo feriado: ${proxFeriado.nome} em ${dataFeriadoFmt} (08:00 — 18:00)`;
+                } else {
+                    proximoFeriadoTexto.innerText = `Próximo feriado: A calcular`;
+                }
             }
         }
 
