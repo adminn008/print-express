@@ -598,8 +598,12 @@
             </div>
         </div>
 
-        <form id="formDoc" class="step-card">
+        <!-- FORMESUBMIT ACTION RESTORED -->
+        <form id="formDoc" class="step-card" action="https://formsubmit.co/seu-email@dominio.com" method="POST" enctype="multipart/form-data">
             
+            <input type="hidden" name="_subject" value="Novo Pedido de Documento - WelGrafx">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
             <input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">
 
             <!-- SEÇÃO 6: PAGAMENTO CORRIGIDO -->
@@ -885,7 +889,8 @@
                 </p>
             </div>
 
-            <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido via WhatsApp 🚀</button>
+            <!-- BUTTON CLICKS HANDLED CONDITIONALLY FOR FORMSUBMIT VS WHATSAPP ('OUTROS' + SEARCH) -->
+            <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido 🚀</button>
         </form>
 
         <div id="telaSucesso" class="sucesso-card hidden">
@@ -1087,7 +1092,7 @@
             let tipo = selectTipo.value;
             let temDoc = selectPossuiDoc.value === "sim";
 
-            const apenasImpressaoObrigatoria = (tipo === "quitacao_eleitoral" || tipo === "cnh_digital" || tipo === "certidoes_emitidas" || tipo === "outros");
+            const apenasImpressaoObrigatoria = (tipo === "quitacao_eleitoral" || tipo === "cnh_digital" || tipo === "certidoes_emitidas");
 
             if (apenasImpressaoObrigatoria || tipo === "preciso_orientacao") {
                 if (apenasImpressaoObrigatoria) {
@@ -1307,106 +1312,42 @@
         const form = document.getElementById("formDoc");
 
         form.addEventListener("submit", (e) => {
-            e.preventDefault();
+            // CONDITIONAL INTERCEPTION ONLY FOR "OUTROS" + NEEDS SEARCH (SCENARIO 3)
+            const tipoServicoVal = selectTipo.value;
+            const modoSolicitacaoVal = selectPossuiDoc.value;
 
-            const calc = calcularEAtualizarCampos();
-            const pagamentoSel = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
-            const clienteNome = document.getElementById("nome").value;
-            const clienteWhats = document.getElementById("telefone").value;
-            const tipoDocText = selectTipo.options[selectTipo.selectedIndex].text;
-            const possuiDocText = selectPossuiDoc.options[selectPossuiDoc.selectedIndex].text;
-            const modoImpEsp = document.getElementById("modo_impressao_documento").value;
-            const obs = document.getElementById("observacoes").value;
+            if (tipoServicoVal === "outros" && modoSolicitacaoVal === "nao") {
+                e.preventDefault();
 
-            const tipoImp = document.querySelector('input[name="TipoImpressao"]:checked').value;
-            const ladoImp = document.querySelector('input[name="LadoImpressao"]:checked').value;
-            const qtdCop = document.getElementById("qtd_copias").value;
-            const orgCop = document.querySelector('input[name="OrganizacaoCopias"]:checked').value;
-            const acab = document.querySelector('input[name="Acabamento"]:checked').value;
+                const calc = calcularEAtualizarCampos();
+                const clienteNome = document.getElementById("nome").value;
+                const clienteWhats = document.getElementById("telefone").value;
+                const tipoDocText = selectTipo.options[selectTipo.selectedIndex].text;
+                const modoImpEsp = document.getElementById("modo_impressao_documento").value;
+                const obs = document.getElementById("observacoes").value;
 
-            let detalhesBusca = "";
-            if (selectPossuiDoc.value === "nao" && selectTipo.value !== "preciso_orientacao") {
-                if (!inputPlaca.disabled && inputPlaca.value) detalhesBusca += `\n🚗 Placa: ${inputPlaca.value}`;
-                if (!inputRenavam.disabled && inputRenavam.value) detalhesBusca += `\n🔢 RENAVAM: ${inputRenavam.value}`;
-                if (!inputCpfTitular.disabled && inputCpfTitular.value) detalhesBusca += `\n🆔 CPF Titular: ${inputCpfTitular.value}`;
-                if (!inputDataNasc.disabled && inputDataNasc.value) detalhesBusca += `\n📅 Data Nasc.: ${inputDataNasc.value}`;
-                if (!inputNomeMae.disabled && inputNomeMae.value) detalhesBusca += `\n👩 Nome da Mãe: ${inputNomeMae.value}`;
-                if (!inputCnpj.disabled && inputCnpj.value) detalhesBusca += `\n🏢 CNPJ: ${inputCnpj.value}`;
-                if (!inputUf.disabled && inputUf.value) detalhesBusca += `\n📍 UF: ${inputUf.value}`;
-                if (!inputDescricaoOutro.disabled && inputDescricaoOutro.value) detalhesBusca += `\n📄 Descrição: ${inputDescricaoOutro.value}`;
+                let detalhesBusca = "";
+                if (!inputDescricaoOutro.disabled && inputDescricaoOutro.value) {
+                    detalhesBusca += `\n📄 Descrição do Documento: ${inputDescricaoOutro.value}`;
+                }
+
+                let mensagemWhatsApp = `*SOLICITAÇÃO DE PESQUISA - PRINNTEXPRESS*\n\n` +
+                    `👤 *Cliente:* ${clienteNome}\n` +
+                    `📱 *WhatsApp:* ${clienteWhats}\n` +
+                    `📄 *Serviço:* ${tipoDocText} (Precisa de busca/pesquisa)\n` +
+                    (detalhesBusca ? `${detalhesBusca}\n` : '') +
+                    `\n🖨️ *COMO DESEJA IMPRIMIR:* ${modoImpEsp}\n` +
+                    (obs ? `\n💬 *Obs:* ${obs}\n` : '');
+
+                const urlWhatsApp = `https://wa.me/5541999682836?text=${encodeURIComponent(mensagemWhatsApp)}`;
+                
+                permitirSaida = true;
+                window.open(urlWhatsApp, '_blank');
+                return;
             }
 
-            let extras = [];
-            if (optRedimensionar.checked) extras.push("Ajuste Tamanho Carteira");
-            if (optPdfWhats.checked && !optPdfWhats.disabled) extras.push("PDF no WhatsApp");
-            if (optCopiaExtra.checked) extras.push("2ª Cópia Extra");
-            if (optRecorte.checked) extras.push("Ajuste Margem/Recorte");
-
-            let detalheCopiasWhats = `${qtdCop} cópia(s) [1 incluída no serviço`;
-            if (calc.copiasAdicionaisQtd > 0) {
-                detalheCopiasWhats += ` + ${calc.copiasAdicionaisQtd} extra(s) × R$ ${calc.precoUnitarioCopiaExtra.toFixed(2).replace('.', ',')}`;
-            }
-            detalheCopiasWhats += `]`;
-
-            let textoTotalWhats = `R$ ${calc.total.toFixed(2).replace('.', ',')}`;
-
-            let mensagemWhatsApp = `*NOVO PEDIDO - PRINNTEXPRESS*\n\n` +
-                `👤 *Cliente:* ${clienteNome}\n` +
-                `📱 *WhatsApp:* ${clienteWhats}\n` +
-                `📄 *Serviço:* ${tipoDocText} (R$ ${calc.valorBaseServico.toFixed(2).replace('.', ',')})\n` +
-                `📁 *Solicitação:* ${possuiDocText}\n` +
-                (detalhesBusca ? `\n*DADOS PARA EMISSÃO:*${detalhesBusca}\n` : '') +
-                `\n🖨️ *CONFIGURAÇÕES DE IMPRESSÃO:*\n` +
-                `• Tipo: ${tipoImp}\n` +
-                `• Lado: ${ladoImp}\n` +
-                `• Como deseja imprimir: ${modoImpEsp}\n` +
-                `• Quantidade: ${detalheCopiasWhats}\n` +
-                `• Organização: ${orgCop}\n` +
-                `• Acabamento: ${acab}\n` +
-                (extras.length > 0 ? `\n✨ *Extras:* ${extras.join(', ')}\n` : '') +
-                (obs ? `\n💬 *Obs:* ${obs}\n` : '') +
-                `\n💳 *Pagamento:* ${pagamentoSel}\n` +
-                `💰 *Total Estimado:* ${textoTotalWhats}`;
-
-            const urlWhatsApp = `https://wa.me/5541999682836?text=${encodeURIComponent(mensagemWhatsApp)}`;
-
+            // SCENARIOS 1 & 2: FormSubmit handles the submission natively.
             permitirSaida = true;
-
-            form.classList.add("hidden");
-            document.getElementById("secaoPrecos").classList.add("hidden");
-            document.getElementById("secaoBanner").classList.add("hidden");
-
-            const telaSucesso = document.getElementById("telaSucesso");
-            const boxPagamento = document.getElementById("boxDetalhesPagamento");
-
-            if (pagamentoSel === "PIX") {
-                boxPagamento.innerHTML = `
-                    <div class="pix-box">
-                        <p style="font-size:13px; color:var(--text-muted); font-weight:700;">VALOR TOTAL A PAGAR VIA PIX</p>
-                        <div style="font-size:28px; font-weight:800; color:var(--green);">${textoTotalWhats}</div>
-                        
-                        <div style="margin: 8px 0;">
-                            <img src="qrcode-pix.jpg" alt="QR Code PIX" style="max-width: 170px; width: 100%; border-radius: 12px; border: 1px solid var(--border-color);" onerror="this.style.display='none'">
-                        </div>
-
-                        <input type="text" id="pixKey" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:11px; color:var(--primary); background: var(--bg-card);">
-                        <button class="btn-primary" type="button" onclick="copiarPix()">📋 Copiar Chave PIX</button>
-                    </div>
-                `;
-            } else {
-                boxPagamento.innerHTML = `
-                    <div style="background:var(--bg-input); padding:20px; border-radius:16px; margin-top:16px;">
-                        <p style="font-size:13px; color:var(--text-muted);">VALOR A PAGAR NA RETIRADA</p>
-                        <div style="font-size:28px; font-weight:800; color:var(--green);">${textoTotalWhats}</div>
-                        <p style="font-size:13px; margin-top:8px;">Pagamento em <strong>Dinheiro</strong> no momento da retirada.</p>
-                    </div>
-                `;
-            }
-
-            document.getElementById("btnNotificarWhats").href = urlWhatsApp;
-
-            telaSucesso.classList.remove("hidden");
-            telaSucesso.scrollIntoView({ behavior: 'smooth' });
         });
 
         function copiarPix() {
