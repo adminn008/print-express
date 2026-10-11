@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WelGrafx - Documentos Oficiais</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="apple-touch-icon" sizes="180x180" href="/print-express/images/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/print-express/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/print-express/images/favicon-16x16.png">
-    <link rel="manifest" href="/print-express/images/site.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="/welgrafx/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/welgrafx/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/welgrafx/images/favicon-16x16.png">
+    <link rel="manifest" href="/welgrafx/images/site.webmanifest">
     <meta name="theme-color" content="#0070f3">
     <style>
         :root {
@@ -405,6 +405,7 @@
         }
         .btn-primary:hover { background: var(--primary-hover); }
         .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
         .hidden { display: none !important; }
 
@@ -572,8 +573,8 @@
             </div>
         </div>
 
-        <!-- FORMULÁRIO DE PEDIDO (FormSubmit para A e B; JS/WhatsApp para C) -->
-        <form id="formDoc" class="step-card" action="https://formsubmit.co/contato@welgrafx.com.br" method="POST">
+        <!-- FORMULÁRIO DE PEDIDO -->
+        <form id="formDoc" class="step-card" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="_template" value="table">
             <input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">
@@ -594,7 +595,7 @@
                 <input type="tel" id="telefone" name="WhatsApp" placeholder="(41) 99999-9999" maxlength="15" required>
             </div>
 
-            <!-- SEÇÃO 6: OPÇÕES E SUGESTÕES DE DOCUMENTOS -->
+            <!-- OPÇÕES E SUGESTÕES DE DOCUMENTOS -->
             <div class="form-group">
                 <label for="tipo_servico">Selecione o Documento / Serviço:</label>
                 <select id="tipo_servico" name="Tipo de Documento">
@@ -639,7 +640,7 @@
                 </div>
             </div>
 
-            <!-- SEÇÃO 5: CAMPOS DE BUSCA REVISADOS PARA O PARANÁ -->
+            <!-- CAMPOS DE BUSCA PARA O PARANÁ -->
             <div id="camposBusca" class="form-group" style="background: var(--bg-input); padding: 16px; border-radius: 14px; gap: 12px; border: 1px solid var(--border-color);">
                 <p style="font-size: 13px; font-weight: 700; color: var(--primary);">📋 Dados Necessários para Emissão no Paraná:</p>
                 
@@ -683,7 +684,7 @@
                 </div>
             </div>
 
-            <!-- SEÇÃO 3: OPÇÕES E EXPLICAÇÃO DE FRENTE E VERSO -->
+            <!-- OPÇÕES E EXPLICAÇÃO DE FRENTE E VERSO -->
             <div id="secaoConfigImpressao" class="form-group" style="gap: 14px;">
                 <h3>🖨️ Configurações de Impressão</h3>
 
@@ -841,6 +842,7 @@
             <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido 🚀</button>
         </form>
 
+        <!-- ABA / PÁGINA DE PAGAMENTOS -->
         <div id="telaSucesso" class="sucesso-card hidden">
             <div style="font-size: 50px; margin-bottom: 8px;">🎉</div>
             <h2 style="font-size: 22px; color: var(--primary);">Pedido Recebido com Sucesso!</h2>
@@ -1247,19 +1249,21 @@
         calcularEAtualizarCampos();
 
         const form = document.getElementById("formDoc");
+        const btnSubmit = document.getElementById("btnSubmit");
 
-        form.addEventListener("submit", (e) => {
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
             const tipo = selectTipo.value;
             const temDoc = selectPossuiDoc.value === "sim";
 
-            // Situação C — Opção "Outros" (outras_certidoes), sem PDF (temDoc === false) e com necessidade de busca -> encaminhar ao WhatsApp
+            // SITUAÇÃO C — Opção "Outros" sem PDF (busca necessária) -> encaminhar ao WhatsApp
             if (tipo === "outras_certidoes" && !temDoc) {
-                e.preventDefault();
                 const clienteNome = document.getElementById("nome").value;
                 const clienteWhats = document.getElementById("telefone").value;
                 const descOutro = inputDescricaoOutro.value || "Outro documento";
 
-                let mensagemWhatsApp = `*SOLICITAÇÃO DE AJUDA - PRINNTEXPRESS*\n\n` +
+                let mensagemWhatsApp = `*SOLICITAÇÃO DE AJUDA - WELGRAFX*\n\n` +
                     `👤 *Cliente:* ${clienteNome}\n` +
                     `📱 *WhatsApp:* ${clienteWhats}\n` +
                     `📄 *Serviço:* Outros Documentos / Certidões\n` +
@@ -1272,7 +1276,121 @@
                 return;
             }
 
-            // Situação A e B: Documento específico ou "Outros" com PDF disponível -> FormSubmit continua normalmente
+            // SITUAÇÕES A E B — Documentos específicos ou "Outros" com PDF -> Envio FormSubmit via AJAX em segundo plano
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "⏳ Enviando pedido em segundo plano...";
+
+            const calc = calcularEAtualizarCampos();
+            const pagamentoSel = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
+            const clienteNome = document.getElementById("nome").value;
+            const clienteWhats = document.getElementById("telefone").value;
+            const tipoDocText = selectTipo.options[selectTipo.selectedIndex].text;
+            const possuiDocText = selectPossuiDoc.options[selectPossuiDoc.selectedIndex].text;
+            const obs = document.getElementById("observacoes").value;
+
+            const tipoImp = document.querySelector('input[name="TipoImpressao"]:checked').value;
+            const layoutImp = document.getElementById("tipo_impressao_funcional").value;
+            const qtdCop = document.getElementById("qtd_copias").value;
+            const orgCop = document.querySelector('input[name="OrganizacaoCopias"]:checked').value;
+            const acab = document.querySelector('input[name="Acabamento"]:checked').value;
+
+            let detalhesBusca = "";
+            if (!temDoc) {
+                if (!inputPlaca.disabled && inputPlaca.value) detalhesBusca += `\n🚗 Placa: ${inputPlaca.value}`;
+                if (!inputRenavam.disabled && inputRenavam.value) detalhesBusca += `\n🔢 RENAVAM: ${inputRenavam.value}`;
+                if (!inputCpfTitular.disabled && inputCpfTitular.value) detalhesBusca += `\n🆔 CPF Titular: ${inputCpfTitular.value}`;
+                if (!inputDataNasc.disabled && inputDataNasc.value) detalhesBusca += `\n📅 Data Nasc.: ${inputDataNasc.value}`;
+                if (!inputNomeMae.disabled && inputNomeMae.value) detalhesBusca += `\n👩 Nome da Mãe: ${inputNomeMae.value}`;
+                if (!inputCnpj.disabled && inputCnpj.value) detalhesBusca += `\n🏢 CNPJ: ${inputCnpj.value}`;
+                if (!inputDescricaoOutro.disabled && inputDescricaoOutro.value) detalhesBusca += `\n📄 Descrição: ${inputDescricaoOutro.value}`;
+            }
+
+            let extras = [];
+            if (optRedimensionar.checked) extras.push("Ajuste Tamanho Carteira");
+            if (optPdfWhats.checked && !optPdfWhats.disabled) extras.push("PDF no WhatsApp");
+            if (optCopiaExtra.checked) extras.push("2ª Cópia Extra");
+            if (optRecorte.checked) extras.push("Ajuste Margem/Recorte");
+
+            let textoTotalWhats = `R$ ${calc.total.toFixed(2).replace('.', ',')}`;
+
+            let mensagemWhatsApp = `*NOVO PEDIDO - WELGRAFX*\n\n` +
+                `👤 *Cliente:* ${clienteNome}\n` +
+                `📱 *WhatsApp:* ${clienteWhats}\n` +
+                `📄 *Serviço:* ${tipoDocText} (R$ ${calc.valorBaseServico.toFixed(2).replace('.', ',')})\n` +
+                `📁 *Solicitação:* ${possuiDocText}\n` +
+                (detalhesBusca ? `\n*DADOS PARA EMISSÃO:*${detalhesBusca}\n` : '') +
+                `\n🖨️ *CONFIGURAÇÕES DE IMPRESSÃO:*\n` +
+                `• Tipo: ${tipoImp}\n` +
+                `• Layout: ${layoutImp}\n` +
+                `• Quantidade: ${qtdCop} cópia(s)\n` +
+                `• Organização: ${orgCop}\n` +
+                `• Acabamento: ${acab}\n` +
+                (extras.length > 0 ? `\n✨ *Extras:* ${extras.join(', ')}\n` : '') +
+                (obs ? `\n💬 *Obs:* ${obs}\n` : '') +
+                `\n💳 *Pagamento:* ${pagamentoSel}\n` +
+                `💰 *Total Estimado:* ${textoTotalWhats}`;
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch("https://formsubmit.co/ajax/ws8530135@gmail.com", {
+                    method: "POST",
+                    headers: { 
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    permitirSaida = true;
+
+                    // Esconde seções de formulário e preços
+                    form.classList.add("hidden");
+                    document.getElementById("secaoPrecos").classList.add("hidden");
+                    document.getElementById("secaoBanner").classList.add("hidden");
+
+                    const telaSucesso = document.getElementById("telaSucesso");
+                    const boxPagamento = document.getElementById("boxDetalhesPagamento");
+
+                    // Prepara a aba/seção de pagamentos que já existia no fluxo do site
+                    if (pagamentoSel === "PIX") {
+                        boxPagamento.innerHTML = `
+                            <div class="pix-box">
+                                <p style="font-size:13px; color:var(--text-muted); font-weight:700;">VALOR TOTAL A PAGAR VIA PIX</p>
+                                <div style="font-size:28px; font-weight:800; color:var(--green);">${textoTotalWhats}</div>
+                                
+                                <div style="margin: 8px 0;">
+                                    <img src="qrcode-pix.jpg" alt="QR Code PIX" style="max-width: 170px; width: 100%; border-radius: 12px; border: 1px solid var(--border-color);" onerror="this.style.display='none'">
+                                </div>
+
+                                <input type="text" id="pixKey" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:11px; color:var(--primary); background: var(--bg-card);">
+                                <button class="btn-primary" type="button" onclick="copiarPix()">📋 Copiar Chave PIX</button>
+                            </div>
+                        `;
+                    } else {
+                        boxPagamento.innerHTML = `
+                            <div style="background:var(--bg-input); padding:20px; border-radius:16px; margin-top:16px;">
+                                <p style="font-size:13px; color:var(--text-muted);">VALOR A PAGAR NA RETIRADA</p>
+                                <div style="font-size:28px; font-weight:800; color:var(--green);">${textoTotalWhats}</div>
+                                <p style="font-size:13px; margin-top:8px;">Pagamento em <strong>Dinheiro</strong> no momento da retirada.</p>
+                            </div>
+                        `;
+                    }
+
+                    const urlWhatsApp = `https://wa.me/5541999682836?text=${encodeURIComponent(mensagemWhatsApp)}`;
+                    document.getElementById("btnNotificarWhats").href = urlWhatsApp;
+
+                    // Exibe a tela de confirmação e encaminha automaticamente para o pagamento
+                    telaSucesso.classList.remove("hidden");
+                    telaSucesso.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    throw new Error("Falha no envio do formulário.");
+                }
+            } catch (err) {
+                alert("❌ Ocorreu um erro ao enviar seu pedido. Por favor, verifique sua conexão e tente novamente.");
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "Enviar Pedido 🚀";
+            }
         });
 
         function copiarPix() {
