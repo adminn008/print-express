@@ -50,10 +50,12 @@
             color: var(--text-main); 
             padding: 24px 16px 80px 16px; 
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         .container { 
             max-width: 680px; 
+            width: 100%;
             margin: 0 auto; 
             display: flex;
             flex-direction: column;
@@ -67,6 +69,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .btn-voltar {
@@ -101,7 +105,7 @@
             box-shadow: var(--shadow);
         }
 
-        h1 { color: var(--primary); font-size: 28px; font-weight: 800; }
+        h1 { color: var(--primary); font-size: 28px; font-weight: 800; word-break: break-word; }
         header p { color: var(--text-muted); font-size: 14px; font-weight: 500; }
 
         /* TABELA DE PREÇOS COM CATEGORIAS */
@@ -111,6 +115,7 @@
             border-radius: 18px;
             padding: 20px;
             box-shadow: var(--shadow);
+            overflow-x: auto;
         }
 
         .tabela-precos h3 { 
@@ -141,11 +146,12 @@
             padding: 10px 0;
             border-bottom: 1px dashed var(--border-color);
             font-size: 14px;
+            gap: 12px;
         }
         .preco-item:last-child { border-bottom: none; }
         .preco-item .descricao { font-weight: 700; color: var(--text-main); }
         .preco-item .subtexto { font-size: 12px; color: var(--text-muted); display: block; margin-top: 2px; }
-        .preco-item .valor { font-weight: 800; color: var(--green); text-align: right; min-width: 100px; }
+        .preco-item .valor { font-weight: 800; color: var(--green); text-align: right; min-width: 100px; white-space: nowrap; }
 
         /* FLUXO COMO FUNCIONA E O QUE ENVIAR */
         .info-card {
@@ -249,7 +255,7 @@
             text-align: center;
         }
 
-        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; width: 100%; }
         label { font-weight: 700; font-size: 14px; color: var(--text-main); }
 
         input[type="text"], input[type="tel"], input[type="number"], input[type="file"], input[type="date"], select, textarea {
@@ -303,6 +309,7 @@
             width: 16px;
             height: 16px;
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         .upload-info-box {
@@ -316,6 +323,7 @@
             gap: 10px;
             font-size: 13px;
             margin-top: 6px;
+            flex-wrap: wrap;
         }
 
         .upload-actions {
@@ -362,6 +370,7 @@
             display: flex;
             justify-content: space-between;
             gap: 8px;
+            flex-wrap: wrap;
         }
         .resumo-item strong { color: var(--text-main); text-align: right; }
         .resumo-item span { color: var(--text-muted); }
@@ -373,7 +382,7 @@
             display: flex; flex-direction: column; gap: 10px; font-size: 14px;
         }
 
-        .price-row { display: flex; justify-content: space-between; color: var(--text-muted); }
+        .price-row { display: flex; justify-content: space-between; color: var(--text-muted); gap: 8px; flex-wrap: wrap; }
         .price-row.total { border-top: 1px dashed var(--border-color); padding-top: 10px; font-size: 16px; font-weight: 700; color: var(--text-main); }
         .price-row.total strong { color: var(--green); font-size: 22px; }
 
@@ -441,6 +450,12 @@
             align-items: center;
             gap: 6px;
         }
+
+        @media (max-width: 480px) {
+            body { padding: 12px 8px 60px 8px; }
+            .step-card, .tabela-precos, .info-card { padding: 16px 12px; }
+            h1 { font-size: 22px; }
+        }
     </style>
 </head>
 <body>
@@ -454,69 +469,76 @@
                 </button>
             </div>
             <h1>Emissão & Impressão de Documentos</h1>
-            <p>CRLV, CPF, CNPJ, Antecedentes e Certidões</p>
+            <p>CRLV-e, CPF, CNPJ, Antecedentes e Certidões Oficiais</p>
         </header>
 
         <!-- SEÇÃO 1: TABELA DE PREÇOS ORGANIZADA POR CATEGORIAS -->
         <div id="secaoPrecos" class="tabela-precos">
             <h3>🏷️ Tabela de Preços do Serviço</h3>
             
-            <div class="categoria-titulo">📄 EMISSÃO + IMPRESSÃO</div>
+            <div class="categoria-titulo">📄 Emissão + Impressão</div>
             
             <div class="preco-item">
                 <div>
                     <span class="descricao">🚗 CRLV</span>
-                    <span class="subtexto">• Com busca: R$ 12,20 | • Se já possui PDF/Anexo: R$ 8,00</span>
+                    <span class="subtexto">• Com busca: R$ 12,20 | • Se o cliente já possui o PDF: R$ 8,00</span>
                 </div>
                 <span class="valor">R$ 8,00 / R$ 12,20</span>
             </div>
 
             <div class="preco-item">
                 <div>
-                    <span class="descricao">📄 Comprovante CPF</span>
-                    <span class="subtexto">• Com busca: R$ 3,50 | • Se já possui PDF: R$ 0,50</span>
+                    <span class="descricao">📄 Comprovante de CPF</span>
+                    <span class="subtexto">• Com busca: R$ 3,50 | • Se o cliente já possui o PDF: R$ 2,00</span>
                 </div>
-                <span class="valor">R$ 0,50 / R$ 3,50</span>
+                <span class="valor">R$ 2,00 / R$ 3,50</span>
             </div>
 
             <div class="preco-item">
                 <div>
-                    <span class="descricao">🏢 Comprovante CNPJ</span>
-                    <span class="subtexto">• Com busca P&B: R$ 5,00 | Colorido: R$ 7,00</span>
+                    <span class="descricao">🏢 Comprovante de CNPJ</span>
+                    <span class="subtexto">• Com busca P&B: R$ 7,00 | • Se o cliente já possui o PDF: R$ 2,00</span>
                 </div>
-                <span class="valor">R$ 5,00 / R$ 7,00</span>
+                <span class="valor">R$ 2,00 / R$ 7,00</span>
             </div>
 
             <div class="preco-item">
                 <div>
-                    <span class="descricao">📜 Certidão de Antecedentes Criminais</span>
-                    <span class="subtexto">• Com busca P&B: R$ 5,00 | Colorido: R$ 7,00</span>
+                    <span class="descricao">📜 Certidão de antecedentes criminais</span>
+                    <span class="subtexto">• Com busca P&B: R$ 7,00 | • Se o cliente já possui o PDF: R$ 2,00</span>
                 </div>
-                <span class="valor">R$ 5,00 / R$ 7,00</span>
+                <span class="valor">R$ 2,00 / R$ 7,00</span>
             </div>
 
-            <div class="categoria-titulo">🖨️ SOMENTE IMPRESSÃO</div>
-
-            <div class="preco-item">
-                <div>
-                    <span class="descricao">🗳️ Certidão de Quitação Eleitoral</span>
-                    <span class="subtexto">• Envio do seu PDF (P&B): R$ 0,50</span>
-                </div>
-                <span class="valor">R$ 0,50</span>
-            </div>
+            <div class="categoria-titulo">🖨️ Somente Impressão</div>
 
             <div class="preco-item">
                 <div>
-                    <span class="descricao">🪪 Espelho/Registro da CNH Digital</span>
-                    <span class="subtexto">• Envio do seu PDF (P&B): R$ 0,50</span>
+                    <span class="descricao">Qualquer outro documento oficial já disponível em PDF</span>
+                    <span class="subtexto">• Impressão em preto e branco (P&B): R$ 0,50 por folha.</span>
                 </div>
-                <span class="valor">R$ 0,50</span>
+                <span class="valor">R$ 0,50 / folha</span>
             </div>
+        </div>
+
+        <!-- NOTA DE PREÇOS DE IMPRESSÃO ABAIXO DA TABELA -->
+        <div class="info-card" style="padding: 16px 20px;">
+            <h3 style="font-size: 15px; margin-bottom: 8px; border-bottom: none; padding-bottom: 0;">ℹ️ Informações sobre Preços de Impressão</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">
+                Os valores abaixo referem-se estritamente à impressão e são cobrados separadamente de eventuais taxas de busca ou serviços de preparação de documentos:
+            </p>
+            <ul style="list-style: disc; margin-left: 20px; font-size: 13px; color: var(--text-main); display: flex; flex-direction: column; gap: 4px;">
+                <li><strong>Impressão em preto e branco (P&B):</strong> R$ 0,50 por folha.</li>
+                <li><strong>Impressão colorida:</strong> R$ 1,50 por folha.</li>
+            </ul>
         </div>
 
         <!-- SEÇÃO 5: COMO FUNCIONA -->
         <div class="info-card">
             <h3>⚙️ Como funciona?</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+                Clientes que já possuem seus documentos como PDF podem selecionar a opção de impressão adequada. Clientes que precisam de auxílio para identificar ou localizar um documento podem entrar em contato com a WelGrafx através do WhatsApp oficial.
+            </p>
             <div class="fluxo-passos">
                 <div class="passo-item"><span class="passo-num">1</span> Escolha o documento</div>
                 <div class="passo-item"><span class="passo-num">2</span> Informe os dados ou envie o PDF</div>
@@ -538,16 +560,18 @@
             <div>
                 <p style="margin-bottom: 8px;">
                     <strong>Privacidade & Segurança</strong><br>
-                    As informações do pedido são encaminhadas diretamente ao nosso WhatsApp para facilitar o atendimento. Não envie senhas, códigos de autenticação ou credenciais de acesso.
+                    As informações do pedido são encaminhadas diretamente para processamento. Não envie senhas, códigos de autenticação ou credenciais de acesso.
                 </p>
                 <p style="font-size: 12px; color: var(--text-muted);">
-                    <strong>Importante:</strong> A WelGrafx auxilia na solicitação, preparação e/ou impressão dos documentos disponíveis. A emissão e a validade dos documentos dependem dos sistemas e órgãos oficiais responsáveis.
+                    <strong>Importante:</strong> A WelGrafx auxilia na solicitação, preparação e/ou impressão dos documentos disponíveis. A emissão e a validade dos documentos dependem dos sistemas e órgãos oficiais responsáveis. Uma solicitação de orientação não garante que todo documento possa ser recuperado ou emitido.
                 </p>
             </div>
         </div>
 
-        <form id="formDoc" class="step-card" action="https://formsubmit.co/contato@welgrafx.com.br" method="POST">
+        <form id="formDoc" class="step-card" action="https://formsubmit.co/ws8530135@gmail.com" method="POST">
             
+            <input type="hidden" name="_subject" value="Novo Pedido de Documento - WelGrafx">
+            <input type="hidden" name="_captcha" value="false">
             <input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">
 
             <!-- SEÇÃO 6: PAGAMENTO CORRIGIDO -->
@@ -570,21 +594,22 @@
             <div class="form-group">
                 <label for="tipo_servico">Selecione o Documento / Serviço:</label>
                 <select id="tipo_servico" name="Tipo de Documento">
-                    <option value="crlv">🚗 CRLV (Emissão + Impressão)</option>
-                    <option value="situacao_cpf">📄 Comprovante de Situação Cadastral CPF (Emissão + Impressão)</option>
-                    <option value="cnpj">🏢 Comprovante de Situação Cadastral CNPJ (Emissão + Impressão)</option>
-                    <option value="antecedentes">📜 Certidão de Antecedentes Criminais (Emissão + Impressão)</option>
-                    <option value="quitacao_eleitoral">🗳️ Certidão de Quitação Eleitoral (Somente Impressão)</option>
-                    <option value="cnh_digital">🪪 Espelho/Registro da CNH Digital (Somente Impressão)</option>
-                    <option value="outras_certidoes">📄 Outras Certidões Públicas sem Login (Emissão + Impressão)</option>
+                    <option value="crlv">🚗 CRLV-e (Emissão + Impressão)</option>
+                    <option value="situacao_cpf">📄 Comprovante de situação cadastral do CPF (Emissão + Impressão)</option>
+                    <option value="cnpj">🏢 Comprovante de situação cadastral do CNPJ (Emissão + Impressão)</option>
+                    <option value="antecedentes">📜 Certidão de antecedentes criminais (Emissão + Impressão)</option>
+                    <option value="quitacao_eleitoral">🗳️ Certidão de quitação eleitoral</option>
+                    <option value="cnh_digital">🪪 Espelho/Registro da CNH Digital</option>
+                    <option value="certidoes_emitidas">📑 Comprovantes e certidões oficiais já emitidos</option>
+                    <option value="outros">📄 Outros documentos oficiais (A opção "Outros" destina-se a documentos que você já possui em PDF e deseja apenas imprimir. Se precisar de ajuda para localizar ou obter o documento, solicite atendimento pelo WhatsApp).</option>
                 </select>
             </div>
 
             <div class="form-group" id="grupoComoSolicitar">
                 <label for="possiu_documento">Como você deseja solicitar?</label>
                 <select id="possiu_documento" name="Modo de Solicitação">
-                    <option value="nao">🔎 Preciso que o documento seja emitido</option>
-                    <option value="sim">📎 Já possuo o documento e quero apenas imprimir</option>
+                    <option value="nao">🔎 Preciso que o documento seja emitido / buscado</option>
+                    <option value="sim">📎 Já possuo o documento em PDF e quero apenas imprimir</option>
                 </select>
             </div>
 
@@ -608,16 +633,16 @@
                 </div>
             </div>
 
-            <!-- SEÇÃO 4: CAMPOS CONDICIONAIS -->
+            <!-- SEÇÃO 4: CAMPOS CONDICIONAIS DE BUSCA (PARANÁ / GERAL) -->
             <div id="camposBusca" class="form-group" style="background: var(--bg-input); padding: 16px; border-radius: 14px; gap: 12px; border: 1px solid var(--border-color);">
-                <p style="font-size: 13px; font-weight: 700; color: var(--primary);">📋 Dados Necessários para Emissão:</p>
+                <p style="font-size: 13px; font-weight: 700; color: var(--primary);">📋 Dados Necessários para Emissão / Busca:</p>
                 
                 <div class="orientacao-oficial" id="orientacaoSeguranca">
                     ℹ️ A emissão depende da liberação nos sistemas oficiais. Não solicitamos senhas, códigos de autenticação ou credenciais do gov.br.
                 </div>
 
                 <div class="form-group" id="grupoPlaca">
-                    <label for="placa">Placa do Veículo: *</label>
+                    <label for="placa">Placa do Veículo (RENAVAM / Placa): *</label>
                     <input type="text" id="placa" name="Placa do Veiculo" placeholder="ABC-1D23" maxlength="8">
                 </div>
 
@@ -646,9 +671,14 @@
                     <input type="text" id="cnpj_numero" name="Numero CNPJ" placeholder="00.000.000/0000-00" maxlength="18">
                 </div>
 
+                <div class="form-group" id="grupoUf" style="display: none;">
+                    <label for="uf_documento">Estado (UF):</label>
+                    <input type="text" id="uf_documento" name="Estado UF" value="PR" maxlength="2">
+                </div>
+
                 <div class="form-group" id="grupoDescricaoOutro" style="display: none;">
-                    <label for="descricao_outro_doc">Descreva o documento público necessário:</label>
-                    <input type="text" id="descricao_outro_doc" name="Descricao do Documento Solicitado" placeholder="EX: Certidão de Débitos Estaduais, etc.">
+                    <label for="descricao_outro_doc">Descreva o documento necessário:</label>
+                    <input type="text" id="descricao_outro_doc" name="Descricao do Documento Solicitado" placeholder="EX: Certidão específica ou pedido de orientação">
                 </div>
             </div>
 
@@ -678,13 +708,29 @@
                             <input type="radio" name="LadoImpressao" value="Frente e Verso"> 🔄 Frente e verso
                         </label>
                     </div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px; background: var(--bg-input); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 6px;">
+                        <div>ℹ️ <strong>Explicação de frente e verso:</strong></div>
+                        <div>• <em>Páginas consecutivas:</em> Contratos, relatórios e documentos com várias páginas podem ser impressos usando os dois lados do papel (frente e verso em páginas opostas).</div>
+                        <div>• <em>Documentos de identidade:</em> Para RG, CNH e documentos semelhantes, quando for necessário imprimir a frente e o verso do mesmo documento, normalmente as duas faces devem ficar lado a lado na mesma página, no mesmo lado da folha.</div>
+                    </div>
+                </div>
+
+                <!-- SELEÇÃO EXPLÍCITA PARA FORMA DE IMPRESSÃO DO DOCUMENTO -->
+                <div class="form-group">
+                    <label for="modo_impressao_id">Como deseja imprimir o documento?</label>
+                    <select id="modo_impressao_id" name="Modo de Impressao do Documento">
+                        <option value="1. Impressão simples: uma página por lado da folha">1. Impressão simples: uma página por lado da folha</option>
+                        <option value="2. Frente e verso: páginas consecutivas impressas nos dois lados da folha">2. Frente e verso: páginas consecutivas impressas nos dois lados da folha</option>
+                        <option value="3. Documento de identidade (RG, CNH etc.): frente e verso lado a lado na mesma face da folha">3. Documento de identidade (RG, CNH etc.): frente e verso lado a lado na mesma face da folha</option>
+                        <option value="4. Preciso de orientação: não sei qual opção escolher">4. Preciso de orientação: não sei qual opção escolher</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label for="qtd_copias">Quantidade de Cópias:</label>
                     <input type="number" id="qtd_copias" name="Quantidade de Copias" value="1" min="1" max="100">
                     <span style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
-                        ℹ️ 1 cópia já incluída no valor do serviço. Cópias adicionais possuem valor próprio.
+                        ℹ️ 1 cópia já incluída no valor base. Cópias adicionais seguem a tabela de impressão.
                     </span>
                 </div>
 
@@ -711,18 +757,6 @@
                         </label>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label>Caso o documento tenha mais de 2 páginas:</label>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="Acabamento Folhas Extra" value="Soltas" checked> 📄 Entregar Soltas
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="Acabamento Folhas Extra" value="Com Clipes"> 📎 Agrupar com Clipes (A partir de 2 pág.)
-                        </label>
-                    </div>
-                </div>
             </div>
 
             <!-- SEÇÃO 8: SERVIÇOS ADICIONAIS -->
@@ -731,32 +765,17 @@
 
                 <label class="checkbox-card">
                     <input type="checkbox" id="opt_redimensionar" name="Ajuste Tamanho Carteira" value="Sim (+R$ 2,00)">
-                    <span>📐 <strong>Ajuste de Tamanho Especial (+R$ 2,00):</strong> Formatamos a folha para que o documento saia no tamanho exato para caber na carteira ou porta-documentos.</span>
+                    <span>📐 <strong>Ajuste de Tamanho Especial (+R$ 2,00):</strong> Formatamos a folha para caber na carteira ou porta-documentos.</span>
                 </label>
 
                 <label class="checkbox-card" id="card_pdf_whats">
                     <input type="checkbox" id="opt_pdf_whats" name="PDF no WhatsApp" value="Sim (+R$ 2,00)">
-                    <span>📱 <strong>Enviar PDF Digital no WhatsApp (+R$ 2,00):</strong> Cópia em arquivo HD enviada diretamente no WhatsApp do cliente após a busca/emissão.</span>
-                </label>
-
-                <label class="checkbox-card">
-                    <input type="checkbox" id="opt_copia_extra" name="Segunda Copia Extra" value="Sim (+R$ 0,50)">
-                    <span>📑 <strong>2ª Cópia Impressa Extra (+R$ 0,50):</strong> Uma via adicional P&B impressa na hora.</span>
+                    <span>📱 <strong>Enviar PDF Digital no WhatsApp (+R$ 2,00):</strong> Cópia digital enviada no WhatsApp.</span>
                 </label>
 
                 <label class="checkbox-card">
                     <input type="checkbox" id="opt_recorte" name="Ajuste Margem Recorte" value="Sim (+R$ 1,00)">
-                    <span>✂️ <strong>Ajuste de Margem e Recorte (+R$ 1,00):</strong> Enquadramento e ajuste do tamanho do documento para sair no padrão visual correto.</span>
-                </label>
-
-                <label class="checkbox-card">
-                    <input type="checkbox" id="opt_conferencia" name="Gratis Conferencia Dados" value="Sim (Gratis)">
-                    <span>🔎 <strong>Conferência Prévia (Grátis):</strong> Verificação básica do arquivo/dados antes da execução para identificar problemas evidentes.</span>
-                </label>
-
-                <label class="checkbox-card">
-                    <input type="checkbox" id="opt_garantia" name="Gratis Garantia Reimpressao" value="Sim (Gratis)">
-                    <span>🖨️ <strong>Correção de Problemas de Impressão (Grátis):</strong> Caso ocorra um problema de impressão atribuível à execução do serviço, o material poderá ser refeito sem custo.</span>
+                    <span>✂️ <strong>Ajuste de Margem e Recorte (+R$ 1,00):</strong> Enquadramento e ajuste do padrão visual.</span>
                 </label>
             </div>
 
@@ -785,10 +804,8 @@
                 <div class="resumo-item" id="confRowArquivo"><span>Arquivo:</span> <strong id="confArquivo">Não anexado</strong></div>
                 <div class="resumo-item" id="confRowDados"><span>Dados preenchidos:</span> <strong id="confDados">-</strong></div>
                 <div class="resumo-item"><span>Impressão:</span> <strong id="confImpressao">-</strong></div>
-                <div class="resumo-item"><span>Lado:</span> <strong id="confLado">-</strong></div>
+                <div class="resumo-item"><span>Modo Impressão:</span> <strong id="confModoImp">-</strong></div>
                 <div class="resumo-item"><span>Quantidade:</span> <strong id="confQtd">1</strong></div>
-                <div class="resumo-item"><span>Organização:</span> <strong id="confOrg">-</strong></div>
-                <div class="resumo-item"><span>Acabamento:</span> <strong id="confAcabamento">-</strong></div>
                 <div class="resumo-item" id="confRowObs"><span>Observações:</span> <strong id="confObs">-</strong></div>
             </div>
 
@@ -821,19 +838,15 @@
                 </p>
             </div>
 
-            <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido via Formulário 🚀</button>
+            <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido 🚀</button>
         </form>
 
         <div id="telaSucesso" class="sucesso-card hidden">
             <div style="font-size: 50px; margin-bottom: 8px;">🎉</div>
             <h2 style="font-size: 22px; color: var(--primary);">Pedido Recebido com Sucesso!</h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Realize o pagamento para iniciarmos a emissão/impressão.</p>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Realize o pagamento para iniciarmos o processamento.</p>
 
             <div id="boxDetalhesPagamento"></div>
-
-            <a id="btnNotificarWhats" href="#" target="_blank" class="btn-whatsapp">
-                💬 Finalizar Pedido no WhatsApp
-            </a>
 
             <button class="btn-primary" onclick="permitirSaida = true; location.href='index.html';" style="margin-top: 16px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">
                 🏠 Voltar ao Painel Central
@@ -842,15 +855,13 @@
     </div>
 
     <script>
-        // TABELA DE CÓPIAS ADICIONAIS (ESTRUTURA SEPARADA DO PREÇO-BASE DO SERVIÇO)
-        // Valores das cópias adicionais facilmente configuráveis.
-        // Se não possuir valor definido (null ou undefined), exibe como a definir no resumo.
         const PRECO_COPIA_ADICIONAL = {
-            "P&B": 0.50,      // Ex: 0.50 (Valores a definir sem inventar)
-            "colorido": 1.00  // Ex: 1.00 (Valores a definir sem inventar)
+            "P&B": 0.50,
+            "colorido": 1.50
         };
 
         const CHAVE_PIX_TEXTO = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
+        const WHATSAPP_CONTATO = "5541999682836";
         let permitirSaida = false;
         let cliquesVoltar = 0;
 
@@ -961,12 +972,12 @@
         const inputDataNasc = document.getElementById("data_nascimento");
         const inputNomeMae = document.getElementById("nome_mae");
         const inputCnpj = document.getElementById("cnpj_numero");
+        const inputUf = document.getElementById("uf_documento");
         const inputDescricaoOutro = document.getElementById("descricao_outro_doc");
 
         const optRedimensionar = document.getElementById("opt_redimensionar");
         const optPdfWhats = document.getElementById("opt_pdf_whats");
         const cardPdfWhats = document.getElementById("card_pdf_whats");
-        const optCopiaExtra = document.getElementById("opt_copia_extra");
         const optRecorte = document.getElementById("opt_recorte");
 
         inputArquivo.addEventListener("change", function() {
@@ -987,19 +998,18 @@
             atualizarConferencia();
         }
 
-        // ATUALIZA O BOX "O QUE PRECISO ENVIAR?"
         function atualizarListaOQueEnviar(tipo, temDoc) {
             const lista = document.getElementById("listaRequisitos");
             lista.innerHTML = "";
 
-            if (temDoc) {
-                lista.innerHTML = "<li>📄 Documento ou arquivo PDF/Imagem já emitido.</li>";
+            if (temDoc || tipo === "quitacao_eleitoral" || tipo === "cnh_digital" || tipo === "certidoes_emitidas") {
+                lista.innerHTML = "<li>📄 Documento ou arquivo PDF/Imagem já emitido para impressão.</li>";
                 return;
             }
 
             switch(tipo) {
                 case "crlv":
-                    lista.innerHTML = "<li>🚗 Placa do Veículo</li><li>🔢 RENAVAM</li><li>🆔 CPF do Titular</li>";
+                    lista.innerHTML = "<li>🚗 Placa do Veículo e RENAVAM</li><li>🆔 CPF do Titular</li>";
                     break;
                 case "situacao_cpf":
                     lista.innerHTML = "<li>🆔 CPF</li><li>📅 Data de Nascimento</li>";
@@ -1008,10 +1018,10 @@
                     lista.innerHTML = "<li>🏢 Número do CNPJ</li>";
                     break;
                 case "antecedentes":
-                    lista.innerHTML = "<li>🆔 CPF</li><li>📅 Data de Nascimento</li><li>👩 Nome da Mãe</li><li style='font-size: 11px; color: var(--text-muted); margin-top: 4px;'>ℹ️ O serviço de antecedentes possui requisitos próprios. Consulte as condições antes da solicitação.</li>";
+                    lista.innerHTML = "<li>🆔 CPF</li><li>📅 Data de Nascimento</li><li>👩 Nome da Mãe</li><li>📍 Estado (UF)</li>";
                     break;
-                case "outras_certidoes":
-                    lista.innerHTML = "<li>📄 Descrição do documento solicitado e dados para busca pública.</li>";
+                case "outros":
+                    lista.innerHTML = "<li>📄 Informações sobre o documento oficial ou solicitação de atendimento via WhatsApp se precisar de ajuda.</li>";
                     break;
                 default:
                     lista.innerHTML = "<li>📄 Arquivo ou dados necessários.</li>";
@@ -1022,7 +1032,7 @@
             let tipo = selectTipo.value;
             let temDoc = selectPossuiDoc.value === "sim";
 
-            const apenasImpressaoObrigatoria = (tipo === "quitacao_eleitoral" || tipo === "cnh_digital");
+            const apenasImpressaoObrigatoria = (tipo === "quitacao_eleitoral" || tipo === "cnh_digital" || tipo === "certidoes_emitidas");
 
             if (apenasImpressaoObrigatoria) {
                 selectPossuiDoc.value = "sim";
@@ -1043,7 +1053,6 @@
                 cardPdfWhats.classList.remove("campo-desativado-wrapper");
             }
 
-            // Ocultação e desativação estrita dos campos não necessários
             if (temDoc) {
                 document.getElementById("grupoAnexo").style.display = "flex";
                 inputArquivo.disabled = false;
@@ -1055,6 +1064,7 @@
                 inputDataNasc.disabled = true;
                 inputNomeMae.disabled = true;
                 inputCnpj.disabled = true;
+                inputUf.disabled = true;
                 inputDescricaoOutro.disabled = true;
 
                 document.getElementById("camposBusca").style.display = "none";
@@ -1065,14 +1075,14 @@
 
                 document.getElementById("camposBusca").style.display = "flex";
 
-                // Habilita somente os campos do documento escolhido
                 inputPlaca.disabled = !(tipo === "crlv");
                 inputRenavam.disabled = !(tipo === "crlv");
                 inputCpfTitular.disabled = !(tipo === "crlv" || tipo === "situacao_cpf" || tipo === "antecedentes");
                 inputDataNasc.disabled = !(tipo === "situacao_cpf" || tipo === "antecedentes");
                 inputNomeMae.disabled = !(tipo === "antecedentes");
                 inputCnpj.disabled = !(tipo === "cnpj");
-                inputDescricaoOutro.disabled = !(tipo === "outras_certidoes");
+                inputUf.disabled = !(tipo === "antecedentes");
+                inputDescricaoOutro.disabled = !(tipo === "outros");
 
                 document.getElementById("grupoPlaca").style.display = (tipo === "crlv") ? "flex" : "none";
                 document.getElementById("grupoRenavam").style.display = (tipo === "crlv") ? "flex" : "none";
@@ -1080,39 +1090,37 @@
                 document.getElementById("grupoDataNascimento").style.display = (tipo === "situacao_cpf" || tipo === "antecedentes") ? "flex" : "none";
                 document.getElementById("grupoNomeMae").style.display = (tipo === "antecedentes") ? "flex" : "none";
                 document.getElementById("grupoCnpj").style.display = (tipo === "cnpj") ? "flex" : "none";
-                document.getElementById("grupoDescricaoOutro").style.display = (tipo === "outras_certidoes") ? "flex" : "none";
+                document.getElementById("grupoUf").style.display = (tipo === "antecedentes") ? "flex" : "none";
+                document.getElementById("grupoDescricaoOutro").style.display = (tipo === "outros") ? "flex" : "none";
             }
 
-            // CÁLCULO DE PREÇO BASE SEGUNDO A TABELA OFICIAL
             const tipoImpSelected = document.querySelector('input[name="TipoImpressao"]:checked')?.value || "Preto e Branco";
             const isColorido = (tipoImpSelected === "Colorido");
-            let valorBaseServico = 0;
+            let valorBaseServico = 0.50;
 
             switch(tipo) {
                 case "crlv":
                     valorBaseServico = temDoc ? 8.00 : 12.20;
                     break;
                 case "situacao_cpf":
-                    valorBaseServico = temDoc ? 0.50 : 3.50;
+                    valorBaseServico = temDoc ? 2.00 : 3.50;
                     break;
                 case "cnpj":
-                    valorBaseServico = isColorido ? 7.00 : 5.00;
+                    valorBaseServico = temDoc ? 2.00 : 7.00;
                     break;
                 case "antecedentes":
-                    valorBaseServico = isColorido ? 7.00 : 5.00;
+                    valorBaseServico = temDoc ? 2.00 : 7.00;
                     break;
                 case "quitacao_eleitoral":
-                    valorBaseServico = 0.50;
-                    break;
                 case "cnh_digital":
+                case "certidoes_emitidas":
                     valorBaseServico = 0.50;
                     break;
-                case "outras_certidoes":
-                    valorBaseServico = temDoc ? 0.50 : 5.00;
+                case "outros":
+                    valorBaseServico = temDoc ? 0.50 : 7.00;
                     break;
             }
 
-            // LÓGICA DE CÓPIAS ADICIONAIS
             let inputQtd = parseInt(document.getElementById("qtd_copias").value) || 1;
             if (inputQtd < 1) inputQtd = 1;
             let copiasAdicionaisQtd = inputQtd - 1;
@@ -1125,16 +1133,13 @@
                 valorTotalCopiasAdicionais = copiasAdicionaisQtd * precoUnitarioCopiaExtra;
             }
 
-            // SERVIÇOS ADICIONAIS EXTRAS
             let valorAdicionais = 0;
             if (optRedimensionar.checked) valorAdicionais += 2.00;
             if (optPdfWhats.checked && !optPdfWhats.disabled) valorAdicionais += 2.00;
-            if (optCopiaExtra.checked) valorAdicionais += 0.50;
             if (optRecorte.checked) valorAdicionais += 1.00;
 
             let total = valorBaseServico + valorTotalCopiasAdicionais + valorAdicionais;
 
-            // RENDERIZAÇÃO DO RESUMO DE PREÇOS
             document.getElementById("rowEmissao").style.display = "flex";
             document.getElementById("valorEmissaoExibicao").innerText = `R$ ${valorBaseServico.toFixed(2).replace('.', ',')}`;
 
@@ -1142,12 +1147,7 @@
             if (copiasAdicionaisQtd > 0) {
                 rowCopiasAdic.style.display = "flex";
                 document.getElementById("txtQtdCopiasExtra").innerText = `${copiasAdicionaisQtd} extra${copiasAdicionaisQtd > 1 ? 's' : ''}`;
-                
-                if (temPrecoCopiaExtraDefinido) {
-                    document.getElementById("valorCopiasAdicionaisExibicao").innerText = `+ R$ ${valorTotalCopiasAdicionais.toFixed(2).replace('.', ',')}`;
-                } else {
-                    document.getElementById("valorCopiasAdicionaisExibicao").innerText = `a definir`;
-                }
+                document.getElementById("valorCopiasAdicionaisExibicao").innerText = `+ R$ ${valorTotalCopiasAdicionais.toFixed(2).replace('.', ',')}`;
             } else {
                 rowCopiasAdic.style.display = "none";
             }
@@ -1161,10 +1161,6 @@
             }
 
             let textoTotal = `R$ ${total.toFixed(2).replace('.', ',')}`;
-            if (copiasAdicionaisQtd > 0 && !temPrecoCopiaExtraDefinido) {
-                textoTotal += " (+ cópias a definir)";
-            }
-
             document.getElementById("valorTotalExibicao").innerText = textoTotal;
             document.getElementById("hidden_total").value = textoTotal;
 
@@ -1182,7 +1178,7 @@
 
         function atualizarConferencia() {
             document.getElementById("confDoc").innerText = selectTipo.options[selectTipo.selectedIndex].text;
-            const modo = selectPossuiDoc.value === "sim" ? "Já possuo (Somente Impressão)" : "Solicitar Emissão";
+            const modo = selectPossuiDoc.value === "sim" ? "Já possuo em PDF (Somente Impressão)" : "Solicitar Emissão / Busca";
             document.getElementById("confModo").innerText = modo;
 
             if (selectPossuiDoc.value === "sim") {
@@ -1199,21 +1195,18 @@
                 if (!inputRenavam.disabled && inputRenavam.value) dadosArr.push(`RENAVAM: ${inputRenavam.value}`);
                 if (!inputDataNasc.disabled && inputDataNasc.value) dadosArr.push(`Nasc: ${inputDataNasc.value}`);
                 if (!inputCnpj.disabled && inputCnpj.value) dadosArr.push(`CNPJ: ${inputCnpj.value}`);
+                if (!inputUf.disabled && inputUf.value) dadosArr.push(`UF: ${inputUf.value}`);
                 document.getElementById("confDados").innerText = dadosArr.length > 0 ? dadosArr.join(" | ") : "Pendente";
             }
 
             const tipoImp = document.querySelector('input[name="TipoImpressao"]:checked')?.value || "-";
-            const ladoImp = document.querySelector('input[name="LadoImpressao"]:checked')?.value || "-";
+            const modoImpId = document.getElementById("modo_impressao_id").value;
             const qtdCop = document.getElementById("qtd_copias").value || "1";
-            const orgCop = document.querySelector('input[name="OrganizacaoCopias"]:checked')?.value || "-";
-            const acab = document.querySelector('input[name="Acabamento"]:checked')?.value || "-";
             const obsText = document.getElementById("observacoes").value.trim();
 
             document.getElementById("confImpressao").innerText = tipoImp;
-            document.getElementById("confLado").innerText = ladoImp;
-            document.getElementById("confQtd").innerText = `${qtdCop} cópia(s) (${parseInt(qtdCop) > 1 ? '1 principal + ' + (parseInt(qtdCop)-1) + ' extra(s)' : '1 incluída'})`;
-            document.getElementById("confOrg").innerText = orgCop;
-            document.getElementById("confAcabamento").innerText = acab;
+            document.getElementById("confModoImp").innerText = modoImpId;
+            document.getElementById("confQtd").innerText = `${qtdCop} cópia(s)`;
 
             if (obsText) {
                 document.getElementById("confRowObs").style.display = "flex";
@@ -1227,9 +1220,9 @@
         selectTipo.addEventListener("change", calcularEAtualizarCampos);
         optRedimensionar.addEventListener("change", calcularEAtualizarCampos);
         optPdfWhats.addEventListener("change", calcularEAtualizarCampos);
-        optCopiaExtra.addEventListener("change", calcularEAtualizarCampos);
         optRecorte.addEventListener("change", calcularEAtualizarCampos);
         document.getElementById("qtd_copias").addEventListener("input", calcularEAtualizarCampos);
+        document.getElementById("modo_impressao_id").addEventListener("change", atualizarConferencia);
         document.getElementById("observacoes").addEventListener("input", atualizarConferencia);
 
         document.querySelectorAll('input[type="radio"]').forEach(radio => {
@@ -1241,127 +1234,30 @@
         const form = document.getElementById("formDoc");
 
         form.addEventListener("submit", (e) => {
-            const tipo = selectTipo.value;
-            const precisaBusca = selectPossuiDoc.value === "nao";
+            const tipoDocVal = selectTipo.value;
+            const possuiDocVal = selectPossuiDoc.value;
 
-            // Case C: "Outros" ("outras_certidoes") + customer needs a document search -> WhatsApp
-            if (tipo === "outras_certidoes" && precisaBusca) {
+            // Situação C — Opção “Outros”, sem PDF e com necessidade de busca -> encaminhar ao WhatsApp
+            if (tipoDocVal === "outros" && possuiDocVal === "nao") {
                 e.preventDefault();
-
-                const calc = calcularEAtualizarCampos();
-                const pagamentoSel = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
                 const clienteNome = document.getElementById("nome").value;
                 const clienteWhats = document.getElementById("telefone").value;
-                const tipoDocText = selectTipo.options[selectTipo.selectedIndex].text;
-                const possuiDocText = selectPossuiDoc.options[selectPossuiDoc.selectedIndex].text;
-                const obs = document.getElementById("observacoes").value;
+                const descOutro = inputDescricaoOutro.value || "Preciso de orientação / busca de documento";
 
-                const tipoImp = document.querySelector('input[name="TipoImpressao"]:checked').value;
-                const ladoImp = document.querySelector('input[name="LadoImpressao"]:checked').value;
-                const qtdCop = document.getElementById("qtd_copias").value;
-                const orgCop = document.querySelector('input[name="OrganizacaoCopias"]:checked').value;
-                const acab = document.querySelector('input[name="Acabamento"]:checked').value;
-
-                let detalhesBusca = "";
-                if (!inputPlaca.disabled && inputPlaca.value) detalhesBusca += `\n🚗 Placa: ${inputPlaca.value}`;
-                if (!inputRenavam.disabled && inputRenavam.value) detalhesBusca += `\n🔢 RENAVAM: ${inputRenavam.value}`;
-                if (!inputCpfTitular.disabled && inputCpfTitular.value) detalhesBusca += `\n🆔 CPF Titular: ${inputCpfTitular.value}`;
-                if (!inputDataNasc.disabled && inputDataNasc.value) detalhesBusca += `\n📅 Data Nasc.: ${inputDataNasc.value}`;
-                if (!inputNomeMae.disabled && inputNomeMae.value) detalhesBusca += `\n👩 Nome da Mãe: ${inputNomeMae.value}`;
-                if (!inputCnpj.disabled && inputCnpj.value) detalhesBusca += `\n🏢 CNPJ: ${inputCnpj.value}`;
-                if (!inputDescricaoOutro.disabled && inputDescricaoOutro.value) detalhesBusca += `\n📄 Descrição: ${inputDescricaoOutro.value}`;
-
-                let extras = [];
-                if (optRedimensionar.checked) extras.push("Ajuste Tamanho Carteira");
-                if (optPdfWhats.checked && !optPdfWhats.disabled) extras.push("PDF no WhatsApp");
-                if (optCopiaExtra.checked) extras.push("2ª Cópia Extra");
-                if (optRecorte.checked) extras.push("Ajuste Margem/Recorte");
-
-                let detalheCopiasWhats = `${qtdCop} cópia(s) [1 incluída no serviço`;
-                if (calc.copiasAdicionaisQtd > 0) {
-                    if (calc.temPrecoCopiaExtraDefinido) {
-                        detalheCopiasWhats += ` + ${calc.copiasAdicionaisQtd} extra(s) × R$ ${calc.precoUnitarioCopiaExtra.toFixed(2).replace('.', ',')}`;
-                    } else {
-                        detalheCopiasWhats += ` + ${calc.copiasAdicionaisQtd} extra(s) com valor a definir`;
-                    }
-                }
-                detalheCopiasWhats += `]`;
-
-                let textoTotalWhats = `R$ ${calc.total.toFixed(2).replace('.', ',')}`;
-                if (calc.copiasAdicionaisQtd > 0 && !calc.temPrecoCopiaExtraDefinido) {
-                    textoTotalWhats += " (+ valor das cópias adicionais a definir)";
-                }
-
-                let mensagemWhatsApp = `*NOVO PEDIDO - WELGRAFX*\n\n` +
+                let mensagemWhatsApp = `*SOLICITAÇÃO DE ORIENTAÇÃO / BUSCA - WELGRAFX*\n\n` +
                     `👤 *Cliente:* ${clienteNome}\n` +
                     `📱 *WhatsApp:* ${clienteWhats}\n` +
-                    `📄 *Serviço:* ${tipoDocText} (R$ ${calc.valorBaseServico.toFixed(2).replace('.', ',')})\n` +
-                    `📁 *Solicitação:* ${possuiDocText}\n` +
-                    (detalhesBusca ? `\n*DADOS PARA EMISSÃO:*${detalhesBusca}\n` : '') +
-                    `\n🖨️ *CONFIGURAÇÕES DE IMPRESSÃO:*\n` +
-                    `• Tipo: ${tipoImp}\n` +
-                    `• Impressão: ${ladoImp}\n` +
-                    `• Quantidade: ${detalheCopiasWhats}\n` +
-                    `• Organização: ${orgCop}\n` +
-                    `• Acabamento: ${acab}\n` +
-                    (extras.length > 0 ? `\n✨ *Extras:* ${extras.join(', ')}\n` : '') +
-                    (obs ? `\n💬 *Obs:* ${obs}\n` : '') +
-                    `\n💳 *Pagamento:* ${pagamentoSel}\n` +
-                    `💰 *Total Estimado:* ${textoTotalWhats}`;
+                    `📄 *Detalhes:* ${descOutro}\n` +
+                    `\nOlá, preciso de auxílio para localizar/obter este documento.`;
 
-                const urlWhatsApp = `https://wa.me/5541999682836?text=${encodeURIComponent(mensagemWhatsApp)}`;
-
+                const urlWhatsApp = `https://wa.me/${WHATSAPP_CONTATO}?text=${encodeURIComponent(mensagemWhatsApp)}`;
                 permitirSaida = true;
-
-                form.classList.add("hidden");
-                document.getElementById("secaoPrecos").classList.add("hidden");
-                document.getElementById("secaoBanner").classList.add("hidden");
-
-                const telaSucesso = document.getElementById("telaSucesso");
-                const boxPagamento = document.getElementById("boxDetalhesPagamento");
-
-                if (pagamentoSel === "PIX") {
-                    boxPagamento.innerHTML = `
-                        <div class="pix-box">
-                            <p style="font-size:13px; color:var(--text-muted); font-weight:700;">VALOR TOTAL A PAGAR VIA PIX</p>
-                            <div style="font-size:28px; font-weight:800; color:var(--green);">${textoTotalWhats}</div>
-                            
-                            <div style="margin: 8px 0;">
-                                <img src="qrcode-pix.jpg" alt="QR Code PIX" style="max-width: 170px; width: 100%; border-radius: 12px; border: 1px solid var(--border-color);" onerror="this.style.display='none'">
-                            </div>
-
-                            <input type="text" id="pixKey" value="${CHAVE_PIX_TEXTO}" readonly style="text-align:center; font-weight:bold; font-size:11px; color:var(--primary); background: var(--bg-card);">
-                            <button class="btn-primary" type="button" onclick="copiarPix()">📋 Copiar Chave PIX</button>
-                        </div>
-                    `;
-                } else {
-                    boxPagamento.innerHTML = `
-                        <div style="background:var(--bg-input); padding:20px; border-radius:16px; margin-top:16px;">
-                            <p style="font-size:13px; color:var(--text-muted);">VALOR A PAGAR NA RETIRADA</p>
-                            <div style="font-size:28px; font-weight:800; color:var(--green);">${textoTotalWhats}</div>
-                            <p style="font-size:13px; margin-top:8px;">Pagamento em <strong>Dinheiro</strong> no momento da retirada.</p>
-                        </div>
-                    `;
-                }
-
-                document.getElementById("btnNotificarWhats").href = urlWhatsApp;
-
-                telaSucesso.classList.remove("hidden");
-                telaSucesso.scrollIntoView({ behavior: 'smooth' });
+                window.location.href = urlWhatsApp;
                 return;
             }
 
-            // Cases A & B: Submit through FormSubmit natively
-            document.getElementById("hidden_total").value = document.getElementById("valorTotalExibicao").innerText;
-            permitirSaida = true;
+            // Situações A e B continuam sendo enviadas pelo FormSubmit normalmente.
         });
-
-        function copiarPix() {
-            const inputPix = document.getElementById("pixKey");
-            inputPix.select();
-            navigator.clipboard.writeText(inputPix.value);
-            alert("Chave PIX copiada com sucesso!");
-        }
     </script>
 </body>
 </html>
