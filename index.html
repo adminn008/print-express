@@ -10,8 +10,69 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/print-express/images/favicon-16x16.png">
     <link rel="manifest" href="/print-express/images/site.webmanifest">
     
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0066ff">
+    <!-- Banner Discreto de Instalação PWA WelGrafx -->
+<div id="pwa-install-container" style="display: none; position: fixed; bottom: 20px; right: 20px; left: 20px; max-width: 420px; margin: 0 auto; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 9999; color: #f0f6fc; font-family: system-ui, -apple-system, sans-serif;">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <img src="icons/icon-192.png" alt="WelGrafx Logo" style="width: 36px; height: 36px; border-radius: 8px;">
+      <strong style="font-size: 1.05rem; color: #00e5ff;">Tenha a WelGrafx na tela inicial!</strong>
+    </div>
+    <button id="pwa-close-btn" style="background: none; border: none; color: #8b949e; font-size: 1.3rem; cursor: pointer; padding: 0 4px;">&times;</button>
+  </div>
+  <p style="font-size: 0.88rem; color: #c9d1d9; margin: 0 0 12px 0; line-height: 1.4;">
+    Acesse impressão, documentos e digitalização mais rapidamente, sem precisar procurar o site toda vez.
+  </p>
+  <div style="display: flex; gap: 8px;">
+    <button id="pwa-install-btn" style="flex: 1; background: #00e5ff; color: #0d1117; border: none; padding: 10px 14px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;">
+      Instalar aplicativo
+    </button>
+  </div>
+</div>
+
+<script>
+  // Registro do Service Worker e Lógica do PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/print-express/service-worker.js')
+        .then(reg => console.log('Service Worker WelGrafx registrado com sucesso:', reg.scope))
+        .catch(err => console.error('Erro ao registrar Service Worker:', err));
+    });
+  }
+
+  let deferredPrompt;
+  const installContainer = document.getElementById('pwa-install-container');
+  const installBtn = document.getElementById('pwa-install-btn');
+  const closeBtn = document.getElementById('pwa-close-btn');
+
+  // Detecta se já está rodando instalado
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+  if (!isStandalone) {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installContainer.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          installContainer.style.display = 'none';
+        }
+        deferredPrompt = null;
+      } else {
+        // Fallback manual para iOS/Browsers sem prompt automático
+        alert('Para instalar o app WelGrafx:\n1. Toque no ícone de Compartilhar ou no Menu do navegador (⋮)\n2. Selecione "Adicionar à Tela Inicial".');
+      }
+    });
+
+    closeBtn.addEventListener('click', () => {
+      installContainer.style.display = 'none';
+    });
+  }
+</script>
     
     <meta name="theme-color" content="#0070f3">
     <style>
@@ -2354,59 +2415,71 @@
         atualizarStatusAtendimento();
         setInterval(atualizarStatusAtendimento, 60000);
     </script>
-    <!-- Banner de Instalação do App WelGrafx -->
-<div id="pwa-install-banner" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; padding: 14px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 9999; max-width: 90%; width: 380px; text-align: center; font-family: sans-serif;">
-  <p style="margin: 0 0 10px 0; font-size: 14px;">📲 <strong>Instalar o App WelGrafx?</strong><br>Acesse rápido direto da sua tela inicial!</p>
-  <div style="display: flex; gap: 10px; justify-content: center;">
-    <button id="btn-install-pwa" style="background: #2563eb; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">Baixar App</button>
-    <button id="btn-dismiss-pwa" style="background: transparent; color: #94a3b8; border: 1px solid #475569; padding: 8px 16px; border-radius: 6px; cursor: pointer;">Agora não</button>
+
+<!-- Banner Discreto de Instalação PWA WelGrafx -->
+<div id="pwa-install-container" style="display: none; position: fixed; bottom: 20px; right: 20px; left: 20px; max-width: 420px; margin: 0 auto; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 9999; color: #f0f6fc; font-family: system-ui, -apple-system, sans-serif;">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <img src="icons/icon-192.png" alt="WelGrafx Logo" style="width: 36px; height: 36px; border-radius: 8px;">
+      <strong style="font-size: 1.05rem; color: #00e5ff;">Tenha a WelGrafx na tela inicial!</strong>
+    </div>
+    <button id="pwa-close-btn" style="background: none; border: none; color: #8b949e; font-size: 1.3rem; cursor: pointer; padding: 0 4px;">&times;</button>
+  </div>
+  <p style="font-size: 0.88rem; color: #c9d1d9; margin: 0 0 12px 0; line-height: 1.4;">
+    Acesse impressão, documentos e digitalização mais rapidamente, sem precisar procurar o site toda vez.
+  </p>
+  <div style="display: flex; gap: 8px;">
+    <button id="pwa-install-btn" style="flex: 1; background: #00e5ff; color: #0d1117; border: none; padding: 10px 14px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;">
+      Instalar aplicativo
+    </button>
   </div>
 </div>
 
 <script>
-  // Registra o Service Worker
+  // Registro do Service Worker e Lógica do PWA
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(() => console.log('WelGrafx PWA Ativo!'))
-        .catch((err) => console.log('Erro no PWA:', err));
+      navigator.serviceWorker.register('/print-express/service-worker.js')
+        .then(reg => console.log('Service Worker WelGrafx registrado com sucesso:', reg.scope))
+        .catch(err => console.error('Erro ao registrar Service Worker:', err));
     });
   }
 
-  // Lógica da mensagem/banner de download
   let deferredPrompt;
-  const installBanner = document.getElementById('pwa-install-banner');
-  const installBtn = document.getElementById('btn-install-pwa');
-  const dismissBtn = document.getElementById('btn-dismiss-pwa');
+  const installContainer = document.getElementById('pwa-install-container');
+  const installBtn = document.getElementById('pwa-install-btn');
+  const closeBtn = document.getElementById('pwa-close-btn');
 
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    
-    // Verifica se o utilizador já recusou recentemente
-    if (!localStorage.getItem('welgrafx_pwa_dismissed')) {
-      installBanner.style.display = 'block';
-    }
-  });
+  // Detecta se já está rodando instalado
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
-  installBtn.addEventListener('click', () => {
-    installBanner.style.display = 'none';
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('Utilizador instalou o WelGrafx');
+  if (!isStandalone) {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installContainer.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          installContainer.style.display = 'none';
         }
         deferredPrompt = null;
-      });
-    }
-  });
+      } else {
+        // Fallback manual para iOS/Browsers sem prompt automático
+        alert('Para instalar o app WelGrafx:\n1. Toque no ícone de Compartilhar ou no Menu do navegador (⋮)\n2. Selecione "Adicionar à Tela Inicial".');
+      }
+    });
 
-  dismissBtn.addEventListener('click', () => {
-    installBanner.style.display = 'none';
-    // Guarda a recusa no navegador para não incomodar na mesma sessão
-    localStorage.setItem('welgrafx_pwa_dismissed', 'true');
-  });
+    closeBtn.addEventListener('click', () => {
+      installContainer.style.display = 'none';
+    });
+  }
 </script>
+
+    
 </body>
 </html>
