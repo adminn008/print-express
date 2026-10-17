@@ -1,44 +1,32 @@
-const CACHE_NAME = 'welgrafx-pwa-v2';
+const CACHE_NAME = 'welgrafx-pwa-v3';
 
-// Usa caminhos relativos para funcionar em qualquer subpasta do GitHub Pages
 const STATIC_ASSETS = [
-  './',
-  './index.html',
-  './impressao.html',
-  './documentos.html',
-  './digitalizacao.html',
-  './manifest.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/apple-touch-icon.png'
+  '/print-express/',
+  '/print-express/index.html',
+  '/print-express/impressao.html',
+  '/print-express/documentos.html',
+  '/print-express/digitalizacao.html',
+  '/print-express/manifest.json',
+  '/print-express/icons/icon-192.png',
+  '/print-express/icons/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS)).then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+    caches.keys().then((keys) => Promise.all(
+      keys.map((key) => key !== CACHE_NAME ? caches.delete(key) : null)
+    )).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', (event) => {
   const request = event.request;
-
-  // Não intercepta envios POST, FormSubmit ou WhatsApp
   if (
     request.method !== 'GET' ||
     request.url.includes('formsubmit.co') ||
@@ -48,27 +36,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network First para HTMLs
-  if (request.headers.get('accept')?.includes('text/html')) {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
-          return response;
-        })
-        .catch(() => caches.match(request) || caches.match('./index.html'))
-    );
-    return;
-  }
-
-  // Cache First para estáticos
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(request);
-    })
+    caches.match(request).then((cached) => cached || fetch(request))
   );
 });
