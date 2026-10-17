@@ -2354,5 +2354,59 @@
         atualizarStatusAtendimento();
         setInterval(atualizarStatusAtendimento, 60000);
     </script>
+    <!-- Banner de Instalação do App WelGrafx -->
+<div id="pwa-install-banner" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; padding: 14px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 9999; max-width: 90%; width: 380px; text-align: center; font-family: sans-serif;">
+  <p style="margin: 0 0 10px 0; font-size: 14px;">📲 <strong>Instalar o App WelGrafx?</strong><br>Acesse rápido direto da sua tela inicial!</p>
+  <div style="display: flex; gap: 10px; justify-content: center;">
+    <button id="btn-install-pwa" style="background: #2563eb; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">Baixar App</button>
+    <button id="btn-dismiss-pwa" style="background: transparent; color: #94a3b8; border: 1px solid #475569; padding: 8px 16px; border-radius: 6px; cursor: pointer;">Agora não</button>
+  </div>
+</div>
+
+<script>
+  // Registra o Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => console.log('WelGrafx PWA Ativo!'))
+        .catch((err) => console.log('Erro no PWA:', err));
+    });
+  }
+
+  // Lógica da mensagem/banner de download
+  let deferredPrompt;
+  const installBanner = document.getElementById('pwa-install-banner');
+  const installBtn = document.getElementById('btn-install-pwa');
+  const dismissBtn = document.getElementById('btn-dismiss-pwa');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    
+    // Verifica se o utilizador já recusou recentemente
+    if (!localStorage.getItem('welgrafx_pwa_dismissed')) {
+      installBanner.style.display = 'block';
+    }
+  });
+
+  installBtn.addEventListener('click', () => {
+    installBanner.style.display = 'none';
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('Utilizador instalou o WelGrafx');
+        }
+        deferredPrompt = null;
+      });
+    }
+  });
+
+  dismissBtn.addEventListener('click', () => {
+    installBanner.style.display = 'none';
+    // Guarda a recusa no navegador para não incomodar na mesma sessão
+    localStorage.setItem('welgrafx_pwa_dismissed', 'true');
+  });
+</script>
 </body>
 </html>
