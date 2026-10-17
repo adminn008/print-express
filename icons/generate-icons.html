@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerador de Ícones WelGrafx PWA</title>
+</head>
+<body style="background: #111; color: #fff; font-family: sans-serif; text-align: center; padding: 40px;">
+  <h2>Gerador de Ícones PWA - WelGrafx</h2>
+  <p>Os ícones PNG para o aplicativo estão sendo gerados...</p>
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <script>
+    function renderIcon(size, isMaskable = false) {
+      const canvas = document.getElementById('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      // Fundo escuro premium
+      ctx.fillStyle = '#0d1117';
+      if (isMaskable) {
+        ctx.fillRect(0, 0, size, size);
+      } else {
+        const radius = size * 0.18;
+        ctx.beginPath();
+        ctx.moveTo(radius, 0);
+        ctx.lineTo(size - radius, 0);
+        ctx.quadraticCurveTo(size, 0, size, radius);
+        ctx.lineTo(size, size - radius);
+        ctx.quadraticCurveTo(size, size, size - radius, size);
+        ctx.lineTo(radius, size);
+        ctx.quadraticCurveTo(0, size, 0, size - radius);
+        ctx.lineTo(0, radius);
+        ctx.quadraticCurveTo(0, 0, radius, 0);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // Texto/Logotipo "WG" com degradê Cyan/Neon
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#00e5ff');
+      gradient.addColorStop(1, '#0088ff');
+
+      ctx.fillStyle = gradient;
+      ctx.font = `bold ${size * 0.42}px system-ui, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('WG', size / 2, size / 2 - (size * 0.04));
+
+      // Subtexto "WelGrafx"
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `600 ${size * 0.11}px system-ui, sans-serif`;
+      ctx.fillText('WelGrafx', size / 2, size * 0.78);
+
+      return canvas.toDataURL('image/png');
+    }
+
+    function download(dataUrl, filename) {
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = filename;
+      a.click();
+    }
+
+    window.onload = () => {
+      setTimeout(() => download(renderIcon(192), 'icon-192.png'), 300);
+      setTimeout(() => download(renderIcon(512), 'icon-512.png'), 600);
+      setTimeout(() => download(renderIcon(512, true), 'maskable-512.png'), 900);
+      setTimeout(() => download(renderIcon(180), 'apple-touch-icon.png'), 1200);
+    };
+  </script>
+</body>
+</html>
