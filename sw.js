@@ -1,10 +1,10 @@
 const CACHE_NAME = 'welgrafx-v1';
 const urlsToCache = [
-  './',
-  './index.html',
-  './impressao.html',
-  './documentos.html',
-  './digitalizacao.html'
+  '',
+  'index.html',
+  'impressao.html',
+  'documentos.html',
+  'digitalizacao.html'
 ];
 
 self.addEventListener('install', (event) => {
