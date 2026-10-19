@@ -16,7 +16,7 @@
                             DEFAULT: '#000000',
                             dark: '#121212',
                             light: '#ffffff',
-                            accent: '#2563eb', // Azul padrão customizável
+                            accent: '#2563eb',
                             gray: '#4b5563'
                         }
                     }
@@ -30,7 +30,6 @@
         @media print {
             .no-print { display: none !important; }
         }
-        /* Transições suaves */
         .step-transition {
             transition: all 0.3s ease-in-out;
         }
@@ -62,7 +61,7 @@
     <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-8">
         
         <!-- Introdução ao Serviço -->
-        <section class="mb-10 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-sm">
+        <section id="intro-section" class="mb-10 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-sm">
             <div class="max-w-3xl">
                 <span class="inline-block text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 mb-3">
                     Serviço Especializado e Manual
@@ -86,20 +85,22 @@
         </section>
 
         <!-- Indicador de Progresso do Wizard -->
-        <div class="mb-8 overflow-x-auto pb-2">
+        <div id="progress-wrapper" class="mb-8 overflow-x-auto pb-2">
             <div class="flex items-center justify-between min-w-[700px] px-2" id="wizard-progress">
                 <!-- Preenchido via JavaScript -->
             </div>
         </div>
 
-        <!-- Formulário de Pedido (FormSubmit Integration) -->
-        <form id="resume-order-form" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-10 shadow-lg relative">
+        <!-- Alerta de Erro / Feedback de Submissão -->
+        <div id="submission-alert" class="hidden mb-6 p-4 rounded-xl text-sm font-medium"></div>
+
+        <!-- Formulário de Pedido -->
+        <form id="resume-order-form" class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-10 shadow-lg relative">
             
             <!-- Configurações ocultas do FormSubmit -->
             <input type="hidden" name="_subject" value="Novo Pedido de Currículo — WelGrafx">
             <input type="hidden" name="_template" value="table">
             <input type="hidden" name="_captcha" value="true">
-            <!-- Honeypot anti-spam -->
             <input type="text" name="_honey" style="display:none">
 
             <!-- STEP 1: Escolha do Serviço -->
@@ -107,9 +108,8 @@
                 <h2 class="text-2xl font-bold mb-2">1. Escolha o Serviço Desejado</h2>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Selecione a modalidade que melhor atende à sua necessidade atual.</p>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="service-options-container">
-                    <!-- Opções geradas por JS ou estruturadas -->
-                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 transition">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 transition">
                         <input type="radio" name="tipo_servico" value="Editar currículo existente" class="mt-1" checked required>
                         <div>
                             <span class="font-semibold block">Editar um currículo existente</span>
@@ -117,7 +117,7 @@
                         </div>
                     </label>
                     
-                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 transition">
+                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 transition">
                         <input type="radio" name="tipo_servico" value="Criar novo currículo do zero" class="mt-1">
                         <div>
                             <span class="font-semibold block">Criar novo currículo do zero</span>
@@ -125,7 +125,7 @@
                         </div>
                     </label>
 
-                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 transition">
+                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 transition">
                         <input type="radio" name="tipo_servico" value="Novo currículo e melhoria de versão antiga" class="mt-1">
                         <div>
                             <span class="font-semibold block">Criar novo + Melhorar versão antiga</span>
@@ -133,7 +133,7 @@
                         </div>
                     </label>
 
-                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 transition">
+                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 transition">
                         <input type="radio" name="tipo_servico" value="Atualizar currículo com novas informações" class="mt-1">
                         <div>
                             <span class="font-semibold block">Atualizar com novas informações</span>
@@ -141,7 +141,7 @@
                         </div>
                     </label>
 
-                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 transition">
+                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 transition">
                         <input type="radio" name="tipo_servico" value="Redesenho e reformatacao visual" class="mt-1">
                         <div>
                             <span class="font-semibold block">Redesenho e reformatação visual</span>
@@ -149,7 +149,7 @@
                         </div>
                     </label>
 
-                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 transition">
+                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 transition">
                         <input type="radio" name="tipo_servico" value="Criar multiplasversoes direcionadas" class="mt-1">
                         <div>
                             <span class="font-semibold block">Múltiplas versões direcionadas</span>
@@ -190,7 +190,7 @@
 
                         <div>
                             <label class="block text-sm font-medium mb-2">Instruções específicas de alteração, prazos ou preferências</label>
-                            <textarea name="instrucoes_alteracao" rows="3" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: Gostaria de destacar minha experiência em liderança e remover empregos antigos de 2010..."></textarea>
+                            <textarea name="instrucoes_alteracao" rows="3" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: Gostaria de destacar minha experiência em liderança..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -199,7 +199,7 @@
             <!-- STEP 3: Informações do Currículo (Dados Completos) -->
             <div class="wizard-step hidden" data-step="3">
                 <h2 class="text-2xl font-bold mb-2">3. Informações Profissionais</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Forneça os dados que deseja incluir no seu currículo. Campos não aplicáveis podem ficar em branco.</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Forneça os dados essenciais para identificação e montagem do seu currículo.</p>
                 
                 <div class="space-y-8">
                     <!-- Informações Pessoais -->
@@ -208,7 +208,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium mb-1">Nome Completo *</label>
-                                <input type="text" name="nome_completo" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: João da Silva">
+                                <input type="text" name="nome_completo" required class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: João da Silva">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Nome Profissional Preferido (Opcional)</label>
@@ -216,15 +216,15 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Cidade e Estado *</label>
-                                <input type="text" name="cidade_estado" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: Curitiba - PR">
+                                <input type="text" name="cidade_estado" required class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: Curitiba - PR">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Telefone / WhatsApp *</label>
-                                <input type="text" name="telefone" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: (41) 99999-9999">
+                                <input type="text" name="telefone" required class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: (41) 99999-9999">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">E-mail Profissional *</label>
-                                <input type="email" name="email_profissional" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: joao.silva@email.com">
+                                <input type="email" name="email_profissional" required class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: joao.silva@email.com">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">LinkedIn (URL ou perfil)</label>
@@ -247,7 +247,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium mb-1">Cargo ou Função Desejada *</label>
-                                <input type="text" name="cargo_desejado" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: Analista de Logística Pleno">
+                                <input type="text" name="cargo_desejado" required class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: Analista de Logística Pleno">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Nível de Carreira</label>
@@ -262,7 +262,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">Resumo atual ou principais pontos fortes (Se houver)</label>
-                            <textarea name="resumo_profissional" rows="3" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Escreva um breve resumo ou deixe que nossa equipe redija com base em sua trajetória..."></textarea>
+                            <textarea name="resumo_profissional" rows="3" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Escreva um breve resumo ou deixe que nossa equipe redija..."></textarea>
                         </div>
                     </div>
 
@@ -275,7 +275,6 @@
                             </button>
                         </div>
                         <div id="experience-container" class="space-y-4">
-                            <!-- Item de Experiência Exemplo -->
                             <div class="experience-item border border-gray-200 dark:border-zinc-800 p-4 rounded-xl relative space-y-3 bg-gray-50/50 dark:bg-zinc-900/50">
                                 <button type="button" class="remove-item absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm" title="Remover"><i class="fa-solid fa-trash"></i></button>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -294,13 +293,13 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-medium mb-1">Principais responsabilidades e conquistas</label>
-                                    <textarea name="exp_atribuicoes[]" rows="2" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Descreva suas atividades e resultados alcançados..."></textarea>
+                                    <textarea name="exp_atribuicoes[]" rows="2" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Descreva suas atividades..."></textarea>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Formação Acadêmica (Seção Repetível) -->
+                    <!-- Formação Acadêmica -->
                     <div class="space-y-4">
                         <div class="flex justify-between items-center border-b border-gray-200 dark:border-zinc-800 pb-2">
                             <h3 class="text-lg font-semibold">Formação Acadêmica</h3>
@@ -318,11 +317,11 @@
                                     </div>
                                     <div>
                                         <label class="block text-xs font-medium mb-1">Curso / Graduação</label>
-                                        <input type="text" name="edu_curso[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Ex: Administração de Empresas">
+                                        <input type="text" name="edu_curso[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Curso">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-medium mb-1">Ano de Conclusão / Previsão</label>
-                                        <input type="text" name="edu_ano[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Ex: 2024 ou Em andamento">
+                                        <input type="text" name="edu_ano[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Ano">
                                     </div>
                                 </div>
                             </div>
@@ -343,23 +342,23 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div>
                                         <label class="block text-xs font-medium mb-1">Curso / Certificação / Idioma</label>
-                                        <input type="text" name="curso_nome[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Ex: Excel Avançado / Inglês Intermediário">
+                                        <input type="text" name="curso_nome[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Nome">
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-medium mb-1">Instituição / Carga Horária / Nível</label>
-                                        <input type="text" name="curso_detalhe[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Ex: Udemy - 40h">
+                                        <label class="block text-xs font-medium mb-1">Instituição / Detalhes</label>
+                                        <input type="text" name="curso_detalhe[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Detalhes">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Habilidades e Competências -->
+                    <!-- Habilidades -->
                     <div class="space-y-4">
                         <h3 class="text-lg font-semibold border-b border-gray-200 dark:border-zinc-800 pb-2">Habilidades Técnicas e Comportamentais</h3>
                         <div>
                             <label class="block text-sm font-medium mb-1">Lista de Habilidades (Separadas por vírgula)</label>
-                            <input type="text" name="habilidades" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: Gestão de Projetos, Pacote Office, Atendimento ao Cliente, Python">
+                            <input type="text" name="habilidades" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: Gestão de Projetos, Pacote Office, Atendimento ao Cliente">
                         </div>
                     </div>
                 </div>
@@ -377,7 +376,7 @@
                             <label class="border border-gray-200 dark:border-zinc-700 p-4 rounded-xl cursor-pointer hover:border-blue-500 transition block">
                                 <input type="radio" name="modelo_curriculo" value="Classico Profissional" checked class="mb-2">
                                 <span class="font-semibold block text-sm">Clássico Profissional</span>
-                                <span class="text-xs text-gray-500 dark:text-gray-400">Ideal para áreas tradicionais, corporativas e administrativas.</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Ideal para áreas tradicionais e corporativas.</span>
                             </label>
                             <label class="border border-gray-200 dark:border-zinc-700 p-4 rounded-xl cursor-pointer hover:border-blue-500 transition block">
                                 <input type="radio" name="modelo_curriculo" value="Moderno Minimalista" class="mb-2">
@@ -430,12 +429,12 @@
                             <label class="border border-gray-200 dark:border-zinc-700 p-4 rounded-xl cursor-pointer hover:border-blue-500 transition block">
                                 <input type="radio" name="modalidade_entrega" value="Apenas PDF Digital" checked class="mb-2" id="del-pdf">
                                 <span class="font-semibold block text-sm">Apenas PDF Digital</span>
-                                <span class="text-xs text-gray-500 dark:text-gray-400">Enviado por e-mail/WhatsApp pronto para envio.</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Enviado por e-mail/WhatsApp pronto para uso.</span>
                             </label>
                             <label class="border border-gray-200 dark:border-zinc-700 p-4 rounded-xl cursor-pointer hover:border-blue-500 transition block">
                                 <input type="radio" name="modalidade_entrega" value="Apenas Impressão Física" class="mb-2" id="del-print">
                                 <span class="font-semibold block text-sm">Apenas Impressão Física</span>
-                                <span class="text-xs text-gray-500 dark:text-gray-400">Retirada ou entrega na região de São José dos Pinhais.</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Retirada ou entrega em São José dos Pinhais.</span>
                             </label>
                             <label class="border border-gray-200 dark:border-zinc-700 p-4 rounded-xl cursor-pointer hover:border-blue-500 transition block">
                                 <input type="radio" name="modalidade_entrega" value="PDF Digital + Impressão Física" class="mb-2" id="del-both">
@@ -478,21 +477,21 @@
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Potencialize sua candidatura com nossos complementos especializados.</p>
                 
                 <div class="space-y-3" id="addons-container">
-                    <!-- Gerados via JS com preços centralizados -->
+                    <!-- Gerados via JS -->
                 </div>
             </div>
 
             <!-- STEP 7: Pagamento -->
             <div class="wizard-step hidden" data-step="7">
                 <h2 class="text-2xl font-bold mb-2">7. Forma de Pagamento</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Selecione como deseja realizar o pagamento. Nenhuma cobrança automática é feita neste momento.</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Selecione como deseja realizar o pagamento. O pagamento real é efetuado após a submissão e confirmação do pedido.</p>
                 
                 <div class="space-y-4">
                     <label class="border border-gray-200 dark:border-zinc-700 p-4 rounded-xl flex items-start gap-3 cursor-pointer hover:border-blue-500 transition block">
                         <input type="radio" name="forma_pagamento" value="PIX" checked class="mt-1">
                         <div>
                             <span class="font-semibold block">PIX (Chave ou QR Code)</span>
-                            <span class="text-xs text-gray-500 dark:text-gray-400">Instruções e dados de pagamento serão enviados após a confirmação do pedido pelo responsável.</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Instruções completas serão exibidas após o envio bem-sucedido.</span>
                         </div>
                     </label>
 
@@ -513,7 +512,7 @@
                 
                 <div class="bg-gray-50 dark:bg-zinc-950 p-6 rounded-2xl border border-gray-200 dark:border-zinc-800 space-y-4 mb-6">
                     <div id="review-summary-content" class="text-sm space-y-2">
-                        <!-- Preenchido dinamicamente via JS -->
+                        <!-- Preenchido via JS -->
                     </div>
 
                     <div class="border-t border-gray-200 dark:border-zinc-800 pt-4 flex justify-between items-center font-bold text-base">
@@ -535,7 +534,7 @@
             </div>
 
             <!-- Botões de Navegação do Wizard -->
-            <div class="mt-8 pt-6 border-t border-gray-200 dark:border-zinc-800 flex justify-between items-center">
+            <div id="wizard-buttons-container" class="mt-8 pt-6 border-t border-gray-200 dark:border-zinc-800 flex justify-between items-center">
                 <button type="button" id="prev-btn" class="px-5 py-2.5 rounded-xl border border-gray-300 dark:border-zinc-700 text-sm font-semibold hover:bg-gray-100 dark:hover:bg-zinc-800 transition hidden">
                     <i class="fa-solid fa-arrow-left mr-2"></i> Anterior
                 </button>
@@ -550,8 +549,55 @@
             </div>
         </form>
 
-        <!-- Seção de FAQ e Informações -->
-        <section class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- TELA DE PAGAMENTO DEDICADA (Exibida APÓS Sucesso da Submissão) -->
+        <div id="payment-screen" class="hidden bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-10 shadow-lg space-y-6">
+            <div class="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-xl p-4 flex items-center gap-3">
+                <i class="fa-solid fa-circle-check text-green-600 dark:text-green-400 text-2xl"></i>
+                <div>
+                    <h3 class="font-bold text-green-800 dark:text-green-300">Pedido enviado com sucesso para a WelGrafx!</h3>
+                    <p class="text-xs text-green-700 dark:text-green-400">Sua solicitação foi recebida por ws8530135@gmail.com. Siga as instruções abaixo para concluir o pagamento.</p>
+                </div>
+            </div>
+
+            <div id="payment-details-container" class="space-y-4">
+                <!-- Conteúdo injetado via JS baseado no PIX ou Dinheiro -->
+            </div>
+
+            <div class="pt-4 border-t border-gray-200 dark:border-zinc-800 flex justify-end">
+                <button type="button" id="proceed-to-thanks-btn" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
+                    Concluir e Ver Resumo <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- TELA DE AGRADECIMENTO (Thank-You Screen) -->
+        <div id="thankyou-screen" class="hidden bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-10 shadow-lg space-y-6 text-center">
+            <div class="w-16 h-16 bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            
+            <h2 class="text-2xl font-bold">Obrigado por escolher a WelGrafx!</h2>
+            
+            <p class="text-sm text-gray-600 dark:text-gray-400 max-w-xl mx-auto leading-relaxed">
+                Seu pedido foi enviado. Confira as instruções de pagamento acima e aguarde a confirmação dos detalhes do serviço, quando necessária.
+            </p>
+
+            <div class="p-4 bg-gray-50 dark:bg-zinc-950 rounded-xl text-xs text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+                O início do trabalho depende da confirmação das informações, do preço final quando aplicável e das condições de pagamento combinadas.
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-4 pt-4">
+                <button type="button" id="new-order-btn" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
+                    <i class="fa-solid fa-rotate-right mr-2"></i> Fazer novo pedido
+                </button>
+                <a href="index.html" class="px-6 py-2.5 rounded-xl border border-gray-300 dark:border-zinc-700 text-sm font-semibold hover:bg-gray-100 dark:hover:bg-zinc-800 transition flex items-center justify-center">
+                    <i class="fa-solid fa-house mr-2"></i> Voltar ao site WelGrafx
+                </a>
+            </div>
+        </div>
+
+        <!-- FAQ e Informações -->
+        <section id="footer-info-sections" class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
                 <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-circle-question text-blue-500"></i> Perguntas Frequentes
@@ -594,13 +640,15 @@
         </div>
     </footer>
 
-    <!-- Script JavaScript Completo -->
+    <!-- Script JavaScript Completo e Robusto -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Configuração de Preços Centralizada
+            // Configuração Centralizada de Preços e Pagamento PIX
             const pricingConfig = {
                 basePrice: 10.00,
                 printingPerPage: 1.50,
+                pixKey: "ws8530135@gmail.com", // Chave PIX configurada pelo proprietário
+                pixRecipient: "WelGrafx Serviços Gráficos",
                 addons: {
                     'Revisão Ortográfica e Gramatical Avançada': 15.00,
                     'Reescrita Completa para Maior Impacto ATS': 25.00,
@@ -612,7 +660,7 @@
                 }
             };
 
-            // Renderizar lista de Add-ons
+            // Renderizar Add-ons
             const addonsContainer = document.getElementById('addons-container');
             for (const [name, price] of Object.entries(pricingConfig.addons)) {
                 const div = document.createElement('label');
@@ -635,6 +683,8 @@
             const nextBtn = document.getElementById('next-btn');
             const submitBtn = document.getElementById('submit-btn');
             const wizardProgress = document.getElementById('wizard-progress');
+            const formElement = document.getElementById('resume-order-form');
+            const submissionAlert = document.getElementById('submission-alert');
 
             const stepTitles = [
                 "Serviço", "Arquivo", "Dados", "Aparência", "Entrega", "Adicionais", "Pagamento", "Revisão"
@@ -683,18 +733,37 @@
                 window.scrollTo({ top: 200, behavior: 'smooth' });
             }
 
-            // Validação simples da etapa atual
+            // Validação estrita condicional por etapa
             function validateCurrentStep() {
                 const currentStepEl = document.querySelector(`.wizard-step[data-step="${currentStep}"]`);
                 const requiredInputs = currentStepEl.querySelectorAll('[required]');
+                
                 for (let input of requiredInputs) {
                     if (!input.value.trim()) {
                         input.focus();
-                        alert('Por favor, preencha os campos obrigatórios desta etapa.');
+                        showAlert('Por favor, preencha todos os campos obrigatórios desta etapa antes de continuar.', 'error');
+                        return false;
+                    }
+                    if (input.type === 'email' && !input.value.includes('@')) {
+                        input.focus();
+                        showAlert('Por favor, insira um endereço de e-mail válido.', 'error');
                         return false;
                     }
                 }
+                hideAlert();
                 return true;
+            }
+
+            function showAlert(message, type = 'error') {
+                submissionAlert.textContent = message;
+                submissionAlert.className = `mb-6 p-4 rounded-xl text-sm font-medium ${
+                    type === 'error' ? 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 border border-red-200 dark:border-red-800' : 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300 border border-green-200 dark:border-green-800'
+                }`;
+                submissionAlert.classList.remove('hidden');
+            }
+
+            function hideAlert() {
+                submissionAlert.classList.add('hidden');
             }
 
             nextBtn.addEventListener('click', () => {
@@ -713,7 +782,7 @@
                 }
             });
 
-            // Condicional de Entrega (Mostrar/Ocultar Print Options)
+            // Condicional de Entrega
             const deliveryRadios = document.querySelectorAll('input[name="modalidade_entrega"]');
             const printOptionsSection = document.getElementById('print-options-section');
 
@@ -731,21 +800,19 @@
             // Cálculo Dinâmico de Preço
             function calculateTotal() {
                 let total = pricingConfig.basePrice;
-
-                // Verificar se inclui impressão
                 const selectedDelivery = document.querySelector('input[name="modalidade_entrega"]:checked');
                 if (selectedDelivery && selectedDelivery.value.includes('Impressão')) {
                     const copiesInput = document.querySelector('input[name="qtd_copias"]');
                     const copies = copiesInput ? parseInt(copiesInput.value) || 1 : 1;
-                    total += copies * 5.00; // Custo estimado de impressão por cópia
+                    total += copies * 5.00;
                 }
 
-                // Somar Add-ons
                 document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
                     total += parseFloat(cb.dataset.price) || 0;
                 });
 
                 document.getElementById('estimated-total').textContent = `R$ ${total.toFixed(2).replace('.', ',')}*`;
+                return total;
             }
 
             document.querySelectorAll('.addon-checkbox, input[name="qtd_copias"]').forEach(el => {
@@ -754,9 +821,7 @@
 
             // Resumo de Revisão
             function updateReviewSummary() {
-                const formElement = document.getElementById('resume-order-form');
                 const formData = new FormData(formElement);
-                
                 let summaryHTML = `
                     <p><strong>Serviço:</strong> ${formData.get('tipo_servico') || 'Não informado'}</p>
                     <p><strong>Nome:</strong> ${formData.get('nome_completo') || 'Não informado'}</p>
@@ -780,7 +845,7 @@
                 calculateTotal();
             }
 
-            // Seções Repetíveis (Experiência, Educação, Cursos)
+            // Seções Repetíveis
             function setupRepeatable(buttonId, containerId, templateHTML) {
                 const addBtn = document.getElementById(buttonId);
                 const container = document.getElementById(containerId);
@@ -797,7 +862,6 @@
                 });
             }
 
-            // Delegação para remoção de itens iniciais
             document.addEventListener('click', (e) => {
                 if (e.target.closest('.remove-item')) {
                     const item = e.target.closest('.experience-item, .education-item, .course-item');
@@ -809,54 +873,174 @@
 
             setupRepeatable('add-experience', 'experience-container', `
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label class="block text-xs font-medium mb-1">Empresa</label>
-                        <input type="text" name="exp_empresa[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Nome da Empresa">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium mb-1">Cargo</label>
-                        <input type="text" name="exp_cargo[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Cargo exercido">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium mb-1">Período</label>
-                        <input type="text" name="exp_periodo[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Ex: 2021 - Presente">
-                    </div>
+                    <div><label class="block text-xs font-medium mb-1">Empresa</label><input type="text" name="exp_empresa[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Empresa"></div>
+                    <div><label class="block text-xs font-medium mb-1">Cargo</label><input type="text" name="exp_cargo[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Cargo"></div>
+                    <div><label class="block text-xs font-medium mb-1">Período</label><input type="text" name="exp_periodo[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Período"></div>
                 </div>
-                <div>
-                    <label class="block text-xs font-medium mb-1">Principais responsabilidades e conquistas</label>
-                    <textarea name="exp_atribuicoes[]" rows="2" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Descreva suas atividades..."></textarea>
-                </div>
+                <div><label class="block text-xs font-medium mb-1">Principais responsabilidades</label><textarea name="exp_atribuicoes[]" rows="2" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Atividades..."></textarea></div>
             `);
 
             setupRepeatable('add-education', 'education-container', `
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label class="block text-xs font-medium mb-1">Instituição de Ensino</label>
-                        <input type="text" name="edu_instituicao[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Nome da Faculdade/Escola">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium mb-1">Curso / Graduação</label>
-                        <input type="text" name="edu_curso[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Curso">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium mb-1">Ano de Conclusão / Previsão</label>
-                        <input type="text" name="edu_ano[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Ano">
-                    </div>
+                    <div><label class="block text-xs font-medium mb-1">Instituição</label><input type="text" name="edu_instituicao[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Instituição"></div>
+                    <div><label class="block text-xs font-medium mb-1">Curso</label><input type="text" name="edu_curso[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Curso"></div>
+                    <div><label class="block text-xs font-medium mb-1">Ano</label><input type="text" name="edu_ano[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Ano"></div>
                 </div>
             `);
 
             setupRepeatable('add-course', 'course-container', `
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-medium mb-1">Curso / Certificação / Idioma</label>
-                        <input type="text" name="curso_nome[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Nome">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium mb-1">Instituição / Detalhes</label>
-                        <input type="text" name="curso_detalhe[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Detalhes">
-                    </div>
+                    <div><label class="block text-xs font-medium mb-1">Curso / Certificação</label><input type="text" name="curso_nome[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Nome"></div>
+                    <div><label class="block text-xs font-medium mb-1">Detalhes</label><input type="text" name="curso_detalhe[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Detalhes"></div>
                 </div>
             `);
+
+            // SUBMISSÃO EM SEGUNDO PLANO (Background Submission via fetch para FormSubmit)
+            formElement.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                // Validação final completa de toda a ordem
+                const termsCheckbox = formElement.querySelector('input[name="concordo_termos"]');
+                if (!termsCheckbox.checked) {
+                    showAlert('Você precisa concordar com os termos antes de enviar o pedido.', 'error');
+                    return;
+                }
+
+                // Desabilitar botão para evitar cliques duplicados
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Enviando seu pedido com segurança...`;
+                showAlert('Enviando seu pedido com segurança...', 'info');
+
+                const formData = new FormData(formElement);
+
+                fetch('https://formsubmit.co/ajax/ws8530135@gmail.com', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('Falha na comunicação com o servidor.');
+                })
+                .then(data => {
+                    // Sucesso na submissão
+                    hideAlert();
+                    formElement.classList.add('hidden');
+                    document.getElementById('progress-wrapper').classList.add('hidden');
+                    document.getElementById('intro-section').classList.add('hidden');
+                    document.getElementById('footer-info-sections').classList.add('hidden');
+                    
+                    renderPaymentScreen(formData);
+                    document.getElementById('payment-screen').classList.remove('hidden');
+                    window.scrollTo({ top: 100, behavior: 'smooth' });
+                })
+                .catch(error => {
+                    console.error(error);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> Enviar Pedido`;
+                    showAlert('Ocorreu um erro ao enviar o pedido. Por favor, verifique sua conexão e tente novamente.', 'error');
+                });
+            });
+
+            // Renderizar Tela de Pagamento
+            function renderPaymentScreen(formData) {
+                const paymentContainer = document.getElementById('payment-details-container');
+                const paymentMethod = formData.get('forma_pagamento') || 'PIX';
+                const totalEstimated = document.getElementById('estimated-total').textContent;
+
+                let paymentHTML = `
+                    <div class="border border-gray-200 dark:border-zinc-800 p-4 rounded-xl space-y-3 bg-gray-50/50 dark:bg-zinc-900/50 text-sm">
+                        <p><strong>Serviço Solicitado:</strong> ${formData.get('tipo_servico')}</p>
+                        <p><strong>Cliente:</strong> ${formData.get('nome_completo')} (${formData.get('email_profissional')})</p>
+                        <p><strong>Valor Estimado:</strong> <span class="text-blue-600 dark:text-blue-400 font-bold">${totalEstimated}</span></p>
+                        <p><strong>Forma de Pagamento Escolhida:</strong> ${paymentMethod}</p>
+                    </div>
+                `;
+
+                if (paymentMethod === 'PIX') {
+                    paymentHTML += `
+                        <div class="space-y-4 border border-blue-200 dark:border-blue-900/50 bg-blue-50/30 dark:bg-blue-950/20 p-6 rounded-xl">
+                            <h4 class="font-bold text-blue-800 dark:text-blue-300 flex items-center gap-2">
+                                <i class="fa-solid fa-qrcode"></i> Instruções de Pagamento via PIX
+                            </h4>
+                            <p class="text-xs text-gray-600 dark:text-gray-400">
+                                Abra o aplicativo do seu banco, escolha a opção PIX Copia e Cola ou escaneie o QR Code abaixo.
+                            </p>
+                            
+                            <div class="flex flex-col sm:flex-row items-center gap-6">
+                                <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
+                                    <!-- Fallback graceful para imagem qrcode-pix.jpg -->
+                                    <img src="qrcode-pix.jpg" alt="QR Code PIX" class="w-32 h-32 object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-32 h-32 flex items-center justify-center bg-gray-100 text-xs text-gray-500 text-center p-2 rounded\'>QR Code indisponível.<br>Use a chave PIX abaixo.</div>';">
+                                </div>
+                                <div class="space-y-2 w-full">
+                                    <label class="block text-xs font-medium">Chave PIX (E-mail)</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="pix-key-input" readonly value="${pricingConfig.pixKey}" class="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm font-mono">
+                                        <button type="button" id="copy-pix-btn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition flex items-center gap-1">
+                                            <i class="fa-solid fa-copy"></i> Copiar
+                                        </button>
+                                    </div>
+                                    <p class="text-xs text-gray-500">Favorecido: ${pricingConfig.pixRecipient}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    paymentHTML += `
+                        <div class="space-y-3 border border-amber-200 dark:border-amber-900/50 bg-amber-50/30 dark:bg-amber-950/20 p-6 rounded-xl text-sm">
+                            <h4 class="font-bold text-amber-800 dark:text-amber-300 flex items-center gap-2">
+                                <i class="fa-solid fa-store"></i> Pagamento em Dinheiro (Presencial)
+                            </h4>
+                            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                                O pagamento em dinheiro requer um agendamento prévio confirmado com o responsável na WelGrafx, localizada em São José dos Pinhais, PR. O pedido foi enviado, e entraremos em contato para combinar a entrega física e o acerto.
+                            </p>
+                        </div>
+                    `;
+                }
+
+                paymentContainer.innerHTML = paymentHTML;
+
+                // Evento de Copiar Chave PIX
+                const copyBtn = document.getElementById('copy-pix-btn');
+                if (copyBtn) {
+                    copyBtn.addEventListener('click', () => {
+                        const pixInput = document.getElementById('pix-key-input');
+                        pixInput.select();
+                        navigator.clipboard.writeText(pixInput.value);
+                        copyBtn.innerHTML = `<i class="fa-solid fa-check"></i> Copiado!`;
+                        setTimeout(() => {
+                            copyBtn.innerHTML = `<i class="fa-solid fa-copy"></i> Copiar`;
+                        }, 2000);
+                    });
+                }
+            }
+
+            // Transição para tela de agradecimento
+            document.getElementById('proceed-to-thanks-btn').addEventListener('click', () => {
+                document.getElementById('payment-screen').classList.add('hidden');
+                document.getElementById('thankyou-screen').classList.remove('hidden');
+                window.scrollTo({ top: 100, behavior: 'smooth' });
+            });
+
+            // Fluxo de Novo Pedido (Reset completo)
+            document.getElementById('new-order-btn').addEventListener('click', () => {
+                formElement.reset();
+                currentStep = 1;
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane mr-2"></i> Enviar Pedido`;
+                
+                document.getElementById('thankyou-screen').classList.add('hidden');
+                formElement.classList.remove('hidden');
+                document.getElementById('progress-wrapper').classList.remove('hidden');
+                document.getElementById('intro-section').classList.remove('hidden');
+                document.getElementById('footer-info-sections').classList.remove('hidden');
+                
+                showStep(1);
+            });
 
             // Dark Mode Toggle
             const themeToggleBtn = document.getElementById('theme-toggle');
