@@ -974,9 +974,9 @@
                         🖨️ Solicitar Impressão
                     </a>
 
-                    <a href="https://wa.me/5541999682836?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20a%20edi%C3%A7%C3%A3o%20do%20meu%20curr%C3%ADculo%20pelo%20servi%C3%A7o%20da%20WelGrafx.%20Como%20devo%20enviar%20o%20arquivo%3F" target="_blank" rel="noopener noreferrer" class="btn-action-secondary">
+                    <button type="button" class="btn-action-secondary" onclick="abrirAlertaEditorExterno()">
                         ✏️ Solicitar Edição Profissional
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -1069,12 +1069,28 @@
         </div>
     </div>
 
+    <!-- MODAL DE AVISO DO EDITOR EXTERNO -->
+    <div class="toast-overlay" id="editorWarningModal">
+        <div class="toast-card" style="max-width: 480px;">
+            <div class="toast-icon">⚠️</div>
+            <div class="toast-title">Aviso Importante</div>
+            <div class="toast-msg" style="text-align: left; font-size: 13px; line-height: 1.5;">
+                Antes de continuar! Baixe o PDF do seu currículo antes de abrir o editor externo. Ao sair desta página, você poderá perder os dados e as personalizações que ainda não foram salvos. Depois de baixar o PDF, você poderá continuar com segurança.
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+                <button class="toast-btn" onclick="baixarPdfEProsseguirEditor()" style="background: var(--green); color: white;">Baixar PDF primeiro</button>
+                <button class="toast-btn" onclick="fecharAlertaEditorExterno()" style="background: var(--border); color: var(--text);">Voltar e continuar editando</button>
+            </div>
+        </div>
+    </div>
+
     <!-- SCRIPTS E LÓGICA DO GERADOR -->
     <script>
         let etapaAtual = 1;
         const totalEtapas = 11;
         let habilidadesArray = [];
         let idiomasArray = [];
+        const externalEditorUrl = "https://wa.me/5541999682836?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20a%20edi%C3%A7%C3%A3o%20do%20meu%20curr%C3%ADculo%20pelo%20servi%C3%A7o%20da%20WelGrafx.%20Como%20devo%20enviar%20o%20arquivo%3F";
 
         function mostrarToast(titulo, mensagem, icone = "⚠️") {
             document.getElementById('toastTitle').innerText = titulo;
@@ -1085,6 +1101,22 @@
 
         function fecharToast() {
             document.getElementById('customToast').classList.remove('active');
+        }
+
+        function abrirAlertaEditorExterno() {
+            document.getElementById('editorWarningModal').classList.add('active');
+        }
+
+        function fecharAlertaEditorExterno() {
+            document.getElementById('editorWarningModal').classList.remove('active');
+        }
+
+        function baixarPdfEProsseguirEditor() {
+            baixarPDFSemCorte();
+            fecharAlertaEditorExterno();
+            setTimeout(() => {
+                window.open(externalEditorUrl, '_blank');
+            }, 1500);
         }
 
         function alternarTema() {
@@ -1453,6 +1485,10 @@
 
         function mudarFonte(fonte) {
             document.documentElement.style.setProperty('--font-family-cv', fonte);
+            const folha = document.getElementById('curriculo-folha');
+            if (folha) {
+                folha.style.fontFamily = fonte;
+            }
         }
 
         function mudarPaleta(cor) {
