@@ -84,6 +84,44 @@
             </div>
         </section>
 
+        <!-- TABELA DE VALORES PÚBLICA — WELGRAFX (Seção Obrigatória 14A) -->
+        <section id="public-price-table-section" class="mb-12 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-sm">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
+                <div>
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-tags text-blue-500"></i> Tabela de Valores — WelGrafx
+                    </h2>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Consulte abaixo todos os serviços, opcionais e custos de impressão antes de realizar seu pedido.</p>
+                </div>
+                <span class="text-xs px-3 py-1 bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 rounded-lg font-semibold">
+                    Transparência Total
+                </span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-200 dark:border-zinc-800 text-xs text-gray-500 uppercase">
+                            <th class="py-3 px-4">Categoria / Serviço</th>
+                            <th class="py-3 px-4">Descrição</th>
+                            <th class="py-3 px-4">Unidade</th>
+                            <th class="py-3 px-4 text-right">Preço (R$)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="public-price-table-body" class="divide-y divide-gray-100 dark:divide-zinc-800/60 text-xs sm:text-sm">
+                        <!-- Injetado dinamicamente via JS a partir de pricingConfig -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-6 p-4 rounded-xl bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 text-xs text-gray-500 dark:text-gray-400 flex items-start gap-2">
+                <i class="fa-solid fa-circle-info text-blue-500 mt-0.5"></i>
+                <div>
+                    <strong>Nota sobre os valores:</strong> O preço base de edição inicia-se em R$ 10,00, sujeito à confirmação conforme a complexidade e aditivos selecionados. Serviços marcados como "Sob consulta" exigem avaliação prévia do especialista.
+                </div>
+            </div>
+        </section>
+
         <!-- Indicador de Progresso do Wizard -->
         <div id="progress-wrapper" class="mb-8 overflow-x-auto pb-2">
             <div class="flex items-center justify-between min-w-[700px] px-2" id="wizard-progress">
@@ -102,6 +140,23 @@
             <input type="hidden" name="_template" value="table">
             <input type="hidden" name="_captcha" value="true">
             <input type="text" name="_honey" style="display:none">
+
+            <!-- Campos financeiros ocultos obrigatórios para o e-mail -->
+            <input type="hidden" name="order_base_service" id="field-order_base_service">
+            <input type="hidden" name="order_base_price" id="field-order_base_price">
+            <input type="hidden" name="order_addons_breakdown" id="field-order_addons_breakdown">
+            <input type="hidden" name="order_printing_mode" id="field-order_printing_mode">
+            <input type="hidden" name="order_paper_type" id="field-order_paper_type">
+            <input type="hidden" name="order_printed_pages" id="field-order_printed_pages">
+            <input type="hidden" name="order_printed_copies" id="field-order_printed_copies">
+            <input type="hidden" name="order_printing_unit_price" id="field-order_printing_unit_price">
+            <input type="hidden" name="order_printing_subtotal" id="field-order_printing_subtotal">
+            <input type="hidden" name="order_subtotal" id="field-order_subtotal">
+            <input type="hidden" name="order_discounts" id="field-order_discounts" value="R$ 0,00">
+            <input type="hidden" name="order_final_total" id="field-order_final_total">
+            <input type="hidden" name="order_price_status" id="field-order_price_status" value="Estimado / Sujeito a Confirmação">
+            <input type="hidden" name="order_payment_method" id="field-order_payment_method">
+            <input type="hidden" name="order_payment_status" id="field-order_payment_status" value="Aguardando pagamento / Não confirmado">
 
             <!-- STEP 1: Escolha do Serviço -->
             <div class="wizard-step" data-step="1">
@@ -444,7 +499,7 @@
                         </div>
                     </div>
 
-                    <!-- Opções de Impressão (Condicionais) -->
+                    <!-- Opções de Impressão (Condicionais - Apenas Papel Sulfite A4 Branco Comum conforme Seção 14C) -->
                     <div id="print-options-section" class="space-y-4 p-4 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-900/50 hidden">
                         <h3 class="font-semibold text-sm">Especificações de Impressão</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -455,16 +510,14 @@
                             <div>
                                 <label class="block text-xs font-medium mb-1">Tipo de Impressão</label>
                                 <select name="tipo_impressao" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent">
-                                    <option value="Preto e Branco Alta Qualidade">Preto e Branco Alta Qualidade</option>
-                                    <option value="Colorido">Colorido</option>
+                                    <option value="Preto e Branco">Preto e Branco (R$ 1,50 por página)</option>
+                                    <option value="Colorido">Colorido (R$ 2,50 por página)</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-medium mb-1">Tipo de Papel</label>
-                                <select name="tipo_papel" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent">
-                                    <option value="Sulfite 90g (Profissional)">Sulfite 90g (Profissional)</option>
-                                    <option value="Papel Opaline 120g (Premium)">Papel Opaline 120g (Premium)</option>
-                                </select>
+                                <input type="text" name="tipo_papel_exibicao" readonly value="Papel sulfite A4 branco comum" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-gray-100 dark:bg-zinc-800 cursor-not-allowed">
+                                <input type="hidden" name="tipo_papel" value="Papel sulfite A4 branco comum">
                             </div>
                         </div>
                     </div>
@@ -508,15 +561,15 @@
             <!-- STEP 8: Revisão Final e Envio -->
             <div class="wizard-step hidden" data-step="8">
                 <h2 class="text-2xl font-bold mb-2">8. Revisão Final do Pedido</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Confira os dados informados antes de enviar o seu pedido.</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Confira o detalhamento financeiro e os dados informados antes de enviar o seu pedido.</p>
                 
                 <div class="bg-gray-50 dark:bg-zinc-950 p-6 rounded-2xl border border-gray-200 dark:border-zinc-800 space-y-4 mb-6">
-                    <div id="review-summary-content" class="text-sm space-y-2">
-                        <!-- Preenchido via JS -->
+                    <div id="review-summary-content" class="text-sm space-y-3">
+                        <!-- Preenchido via JS com itemização completa -->
                     </div>
 
                     <div class="border-t border-gray-200 dark:border-zinc-800 pt-4 flex justify-between items-center font-bold text-base">
-                        <span>Valor Estimado Total:</span>
+                        <span>Valor Final Estimado:</span>
                         <span id="estimated-total" class="text-blue-600 dark:text-blue-400 text-lg">R$ 10,00*</span>
                     </div>
                     <p class="text-xs text-gray-500">*Valores sujeitos a confirmação final conforme complexidade e aditivos selecionados.</p>
@@ -549,7 +602,7 @@
             </div>
         </form>
 
-        <!-- TELA DE PAGAMENTO DEDICADA (Exibida APÓS Sucesso da Submissão) -->
+        <!-- TELA DE PAGAMENTO DEDICADA -->
         <div id="payment-screen" class="hidden bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-10 shadow-lg space-y-6">
             <div class="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-xl p-4 flex items-center gap-3">
                 <i class="fa-solid fa-circle-check text-green-600 dark:text-green-400 text-2xl"></i>
@@ -560,7 +613,7 @@
             </div>
 
             <div id="payment-details-container" class="space-y-4">
-                <!-- Conteúdo injetado via JS baseado no PIX ou Dinheiro -->
+                <!-- Injetado via JS -->
             </div>
 
             <div class="pt-4 border-t border-gray-200 dark:border-zinc-800 flex justify-end">
@@ -640,37 +693,102 @@
         </div>
     </footer>
 
-    <!-- Script JavaScript Completo e Robusto -->
+    <!-- Script JavaScript Completo e Centralizado -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Configuração Centralizada de Preços e Pagamento PIX
+            // Objeto de Configuração Centralizada de Preços (Source of Truth — Seção 14B)
             const pricingConfig = {
-                basePrice: 10.00,
-                printingPerPage: 1.50,
-                pixKey: "ws8530135@gmail.com", // Chave PIX configurada pelo proprietário
-                pixRecipient: "WelGrafx Serviços Gráficos",
+                services: [
+                    { name: "Editar currículo existente", description: "Correção, refinamento e melhoria de um documento que você já possui.", price: 10.00, unit: "Por serviço", category: "Currículos" },
+                    { name: "Criar novo currículo do zero", description: "Desenvolvimento completo com base nas informações que você fornecer.", price: 25.00, unit: "Por serviço", category: "Currículos" },
+                    { name: "Novo currículo e melhoria de versão antiga", description: "Reestruturação profunda combinada com criação de nova versão.", price: 35.00, unit: "Por serviço", category: "Currículos" },
+                    { name: "Atualizar currículo com novas informações", description: "Adicionar novas experiências, cursos ou conquistas recentes.", price: 15.00, unit: "Por serviço", category: "Currículos" },
+                    { name: "Redesenho e reformatação visual", description: "Melhoria de layout e design sem alterar substancialmente o texto.", price: 20.00, unit: "Por serviço", category: "Currículos" },
+                    { name: "Múltiplas versões direcionadas", description: "Criação de variações de currículo para diferentes cargos ou áreas.", price: 40.00, unit: "Por serviço", category: "Currículos" }
+                ],
                 addons: {
-                    'Revisão Ortográfica e Gramatical Avançada': 15.00,
-                    'Reescrita Completa para Maior Impacto ATS': 25.00,
-                    'Criação de Carta de Apresentação Personalizada': 20.00,
-                    'Otimização Completa de Perfil LinkedIn': 30.00,
-                    'Versão Adicional Direcionada (Outro Cargo)': 15.00,
-                    'Envio de Versão Editável (DOCX)': 10.00,
-                    'Urgência (Entrega em até 12h)': 20.00
-                }
+                    'Revisão Ortográfica e Gramatical Avançada': { price: 15.00, description: "Correção minuciosa de português e coesão textual." },
+                    'Reescrita Completa para Maior Impacto ATS': { price: 25.00, description: "Otimização focada em algoritmos de recrutamento." },
+                    'Criação de Carta de Apresentação Personalizada': { price: 20.00, description: "Apresentação profissional sob medida para a vaga." },
+                    'Otimização Completa de Perfil LinkedIn': { price: 30.00, description: "Reestruturação do resumo e experiências para o LinkedIn." },
+                    'Versão Adicional Direcionada (Outro Cargo)': { price: 15.00, description: "Adaptação extra para outra função específica." },
+                    'Envio de Versão Editável (DOCX)': { price: 10.00, description: "Entrega do arquivo em formato Microsoft Word editável." },
+                    'Urgência (Entrega em até 12h)': { price: 20.00, description: "Prioridade máxima na fila de atendimento." },
+                    'Tradução de Currículo (Inglês/Espanhol)': { price: null, description: "Sujeito a disponibilidade e orçamento prévio.", quote: true },
+                    'Serviço Personalizado Especial': { price: null, description: "Sob consulta conforme exigência específica.", quote: true }
+                },
+                printing: {
+                    bwPerPage: 1.50,
+                    colorPerPage: 2.50,
+                    paperType: "Papel sulfite A4 branco comum"
+                },
+                delivery: {
+                    pdfDigital: 0.00,
+                    editableDocx: 10.00
+                },
+                pixKey: "ws8530135@gmail.com",
+                pixRecipient: "WelGrafx Serviços Gráficos"
             };
 
-            // Renderizar Add-ons
+            // Renderizar Tabela de Valores Pública (Seção 14A)
+            const tableBody = document.getElementById('public-price-table-body');
+            
+            // Renderizar Serviços
+            pricingConfig.services.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-gray-100 dark:border-zinc-800/40 hover:bg-gray-50/50 dark:hover:bg-zinc-900/50';
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">${s.name}</td>
+                    <td class="py-3 px-4 text-gray-500 dark:text-gray-400">${s.description}</td>
+                    <td class="py-3 px-4 text-gray-500">${s.unit}</td>
+                    <td class="py-3 px-4 text-right font-bold text-blue-600 dark:text-blue-400">R$ ${s.price.toFixed(2).replace('.', ',')}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            // Renderizar Add-ons na Tabela Pública
+            for (const [name, info] of Object.entries(pricingConfig.addons)) {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-gray-100 dark:border-zinc-800/40 hover:bg-gray-50/50 dark:hover:bg-zinc-900/50';
+                const priceFormatted = info.quote || info.price === null ? '<span class="text-amber-600 dark:text-amber-400 font-medium">Sob consulta</span>' : `R$ ${info.price.toFixed(2).replace('.', ',')}`;
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">${name}</td>
+                    <td class="py-3 px-4 text-gray-500 dark:text-gray-400">${info.description}</td>
+                    <td class="py-3 px-4 text-gray-500">Opcional</td>
+                    <td class="py-3 px-4 text-right font-bold">${priceFormatted}</td>
+                `;
+                tableBody.appendChild(tr);
+            }
+
+            // Renderizar Impressão na Tabela Pública
+            const printRows = [
+                { name: "Impressão Preto e Branco (A4)", desc: "Impressão de alta qualidade em Papel sulfite A4 branco comum", unit: "Por página", price: pricingConfig.printing.bwPerPage },
+                { name: "Impressão Colorida (A4)", desc: "Impressão colorida em Papel sulfite A4 branco comum", unit: "Por página", price: pricingConfig.printing.colorPerPage }
+            ];
+            printRows.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-gray-100 dark:border-zinc-800/40 hover:bg-gray-50/50 dark:hover:bg-zinc-900/50';
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-semibold text-gray-900 dark:text-gray-100">${p.name}</td>
+                    <td class="py-3 px-4 text-gray-500 dark:text-gray-400">${p.desc}</td>
+                    <td class="py-3 px-4 text-gray-500">${p.unit}</td>
+                    <td class="py-3 px-4 text-right font-bold text-blue-600 dark:text-blue-400">R$ ${p.price.toFixed(2).replace('.', ',')}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            // Renderizar Add-ons no Passo 6 do Wizard
             const addonsContainer = document.getElementById('addons-container');
-            for (const [name, price] of Object.entries(pricingConfig.addons)) {
+            for (const [name, info] of Object.entries(pricingConfig.addons)) {
+                if (info.quote) continue; // Apenas add-ons com preço fixo no formulário
                 const div = document.createElement('label');
                 div.className = 'border border-gray-200 dark:border-zinc-700 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-blue-500 transition block';
                 div.innerHTML = `
                     <div class="flex items-center gap-3">
-                        <input type="checkbox" name="adicionais[]" value="${name}" data-price="${price}" class="addon-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <input type="checkbox" name="adicionais[]" value="${name}" data-price="${info.price}" class="addon-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                         <span class="text-sm font-medium">${name}</span>
                     </div>
-                    <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">R$ ${price.toFixed(2).replace('.', ',')}</span>
+                    <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">R$ ${info.price.toFixed(2).replace('.', ',')}</span>
                 `;
                 addonsContainer.appendChild(div);
             }
@@ -797,52 +915,126 @@
                 });
             });
 
-            // Cálculo Dinâmico de Preço
+            // Cálculo Dinâmico de Preço e Sincronização com Campos Ocultos (Seção 14D & 14E)
             function calculateTotal() {
-                let total = pricingConfig.basePrice;
-                const selectedDelivery = document.querySelector('input[name="modalidade_entrega"]:checked');
-                if (selectedDelivery && selectedDelivery.value.includes('Impressão')) {
-                    const copiesInput = document.querySelector('input[name="qtd_copias"]');
-                    const copies = copiesInput ? parseInt(copiesInput.value) || 1 : 1;
-                    total += copies * 5.00;
+                const formData = new FormData(formElement);
+                const selectedServiceText = formData.get('tipo_servico') || 'Editar currículo existente';
+                
+                // Encontrar preço base no objeto de configuração
+                let basePrice = 10.00;
+                const matchedService = pricingConfig.services.find(s => s.name === selectedServiceText);
+                if (matchedService) {
+                    basePrice = matchedService.price;
                 }
 
+                let subtotalAddons = 0;
+                const addonsBreakdownList = [];
                 document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
-                    total += parseFloat(cb.dataset.price) || 0;
+                    const p = parseFloat(cb.dataset.price) || 0;
+                    subtotalAddons += p;
+                    addonsBreakdownList.push(`${cb.value} (R$ ${p.toFixed(2).replace('.', ',')})`);
                 });
 
-                document.getElementById('estimated-total').textContent = `R$ ${total.toFixed(2).replace('.', ',')}*`;
-                return total;
+                let printingSubtotal = 0;
+                let unitPricePrint = 0;
+                let copies = 0;
+                let pages = 1; // Estimativa padrão de 1 página por currículo
+                const selectedDelivery = formData.get('modalidade_entrega') || 'Apenas PDF Digital';
+                const printMode = formData.get('tipo_impressao') || 'Preto e Branco';
+
+                if (selectedDelivery.includes('Impressão')) {
+                    copies = parseInt(formData.get('qtd_copias')) || 5;
+                    unitPricePrint = printMode.includes('Colorido') ? pricingConfig.printing.colorPerPage : pricingConfig.printing.bwPerPage;
+                    printingSubtotal = copies * pages * unitPricePrint;
+                }
+
+                // Arredondamentos seguros para evitar erros de ponto flutuante
+                const estimatedSubtotal = Math.round((basePrice + subtotalAddons + printingSubtotal) * 100) / 100;
+
+                // Atualizar elementos visuais
+                document.getElementById('estimated-total').textContent = `R$ ${estimatedSubtotal.toFixed(2).replace('.', ',')}*`;
+
+                // Sincronizar com os campos ocultos exigidos para o FormSubmit (Seção 14E)
+                document.getElementById('field-order_base_service').value = selectedServiceText;
+                document.getElementById('field-order_base_price').value = `R$ ${basePrice.toFixed(2).replace('.', ',')}`;
+                document.getElementById('field-order_addons_breakdown').value = addonsBreakdownList.length > 0 ? addonsBreakdownList.join('; ') : 'Nenhum adicional selecionado';
+                document.getElementById('field-order_printing_mode').value = selectedDelivery.includes('Impressão') ? printMode : 'Não aplicável (Apenas Digital)';
+                document.getElementById('field-order_paper_type').value = pricingConfig.printing.paperType;
+                document.getElementById('field-order_printed_pages').value = pages;
+                document.getElementById('field-order_printed_copies').value = copies;
+                document.getElementById('field-order_printing_unit_price').value = selectedDelivery.includes('Impressão') ? `R$ ${unitPricePrint.toFixed(2).replace('.', ',')}` : 'R$ 0,00';
+                document.getElementById('field-order_printing_subtotal').value = `R$ ${printingSubtotal.toFixed(2).replace('.', ',')}`;
+                document.getElementById('field-order_subtotal').value = `R$ ${estimatedSubtotal.toFixed(2).replace('.', ',')}`;
+                document.getElementById('field-order_final_total').value = `R$ ${estimatedSubtotal.toFixed(2).replace('.', ',')}`;
+                const paymentMethod = formData.get('forma_pagamento') || 'PIX';
+                document.getElementById('field-order_payment_method').value = paymentMethod;
+
+                return estimatedSubtotal;
             }
 
-            document.querySelectorAll('.addon-checkbox, input[name="qtd_copias"]').forEach(el => {
+            document.querySelectorAll('.addon-checkbox, input[name="qtd_copias"], select[name="tipo_impressao"], input[name="modalidade_entrega"], input[name="tipo_servico"]').forEach(el => {
                 el.addEventListener('change', calculateTotal);
             });
 
-            // Resumo de Revisão
+            // Resumo de Revisão com Itemização Completa (Seção 14D & 14F)
             function updateReviewSummary() {
+                const total = calculateTotal();
                 const formData = new FormData(formElement);
+                
+                const selectedServiceText = formData.get('tipo_servico');
+                const matchedService = pricingConfig.services.find(s => s.name === selectedServiceText);
+                const baseP = matchedService ? matchedService.price : 10.00;
+
                 let summaryHTML = `
-                    <p><strong>Serviço:</strong> ${formData.get('tipo_servico') || 'Não informado'}</p>
-                    <p><strong>Nome:</strong> ${formData.get('nome_completo') || 'Não informado'}</p>
-                    <p><strong>E-mail:</strong> ${formData.get('email_profissional') || 'Não informado'}</p>
-                    <p><strong>Telefone:</strong> ${formData.get('telefone') || 'Não informado'}</p>
-                    <p><strong>Cargo Desejado:</strong> ${formData.get('cargo_desejado') || 'Não informado'}</p>
-                    <p><strong>Modelo:</strong> ${formData.get('modelo_curriculo') || 'Clássico'}</p>
-                    <p><strong>Entrega:</strong> ${formData.get('modalidade_entrega') || 'PDF'}</p>
-                    <p><strong>Pagamento:</strong> ${formData.get('forma_pagamento') || 'PIX'}</p>
+                    <div class="space-y-1 pb-3 border-b border-gray-200 dark:border-zinc-800">
+                        <p><strong>Serviço Base:</strong> ${selectedServiceText} — <span class="text-blue-600 dark:text-blue-400">R$ ${baseP.toFixed(2).replace('.', ',')}</span></p>
+                        <p><strong>Nome:</strong> ${formData.get('nome_completo') || 'Não informado'}</p>
+                        <p><strong>E-mail:</strong> ${formData.get('email_profissional') || 'Não informado'}</p>
+                        <p><strong>Telefone:</strong> ${formData.get('telefone') || 'Não informado'}</p>
+                        <p><strong>Cargo Desejado:</strong> ${formData.get('cargo_desejado') || 'Não informado'}</p>
+                        <p><strong>Modelo de Design:</strong> ${formData.get('modelo_curriculo') || 'Clássico'}</p>
+                    </div>
                 `;
 
+                // Adicionais na revisão
                 const selectedAddons = [];
+                let addonsTotal = 0;
                 document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
-                    selectedAddons.push(cb.value);
+                    const p = parseFloat(cb.dataset.price) || 0;
+                    addonsTotal += p;
+                    selectedAddons.push(`${cb.value} (R$ ${p.toFixed(2).replace('.', ',')})`);
                 });
+
                 if (selectedAddons.length > 0) {
-                    summaryHTML += `<p><strong>Adicionais:</strong> ${selectedAddons.join(', ')}</p>`;
+                    summaryHTML += `
+                        <div class="py-2 border-b border-gray-200 dark:border-zinc-800">
+                            <p><strong>Adicionais Selecionados:</strong></p>
+                            <ul class="list-disc list-inside text-xs text-gray-600 dark:text-gray-400 mt-1">
+                                ${selectedAddons.map(a => `<li>${a}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
                 }
 
+                // Impressão na revisão
+                const deliveryMode = formData.get('modalidade_entrega');
+                summaryHTML += `<div class="py-2 border-b border-gray-200 dark:border-zinc-800"><p><strong>Modalidade de Entrega:</strong> ${deliveryMode}</p>`;
+                if (deliveryMode.includes('Impressão')) {
+                    const copies = formData.get('qtd_copias') || 5;
+                    const printMode = formData.get('tipo_impressao');
+                    const unitP = printMode.includes('Colorido') ? pricingConfig.printing.colorPerPage : pricingConfig.printing.bwPerPage;
+                    const printSub = copies * 1 * unitP;
+                    summaryHTML += `
+                        <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                            • Tipo: ${printMode} | Papel: ${pricingConfig.printing.paperType}<br>
+                            • Quantidade: ${copies} cópias (1 pág cada) x R$ ${unitP.toFixed(2).replace('.', ',')} = <strong>R$ ${printSub.toFixed(2).replace('.', ',')}</strong>
+                        </p>
+                    `;
+                }
+                summaryHTML += `</div>`;
+                summaryHTML += `<p class="pt-2"><strong>Forma de Pagamento Preferida:</strong> ${formData.get('forma_pagamento') || 'PIX'}</p>`;
+
                 document.getElementById('review-summary-content').innerHTML = summaryHTML;
-                calculateTotal();
             }
 
             // Seções Repetíveis
@@ -899,14 +1091,14 @@
             formElement.addEventListener('submit', function (e) {
                 e.preventDefault();
 
-                // Validação final completa de toda a ordem
                 const termsCheckbox = formElement.querySelector('input[name="concordo_termos"]');
                 if (!termsCheckbox.checked) {
                     showAlert('Você precisa concordar com os termos antes de enviar o pedido.', 'error');
                     return;
                 }
 
-                // Desabilitar botão para evitar cliques duplicados
+                calculateTotal(); // Garantir que todos os campos ocultos financeiros estão sincronizados
+
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Enviando seu pedido com segurança...`;
                 showAlert('Enviando seu pedido com segurança...', 'info');
@@ -927,11 +1119,11 @@
                     throw new Error('Falha na comunicação com o servidor.');
                 })
                 .then(data => {
-                    // Sucesso na submissão
                     hideAlert();
                     formElement.classList.add('hidden');
                     document.getElementById('progress-wrapper').classList.add('hidden');
                     document.getElementById('intro-section').classList.add('hidden');
+                    document.getElementById('public-price-table-section').classList.add('hidden');
                     document.getElementById('footer-info-sections').classList.add('hidden');
                     
                     renderPaymentScreen(formData);
@@ -956,7 +1148,7 @@
                     <div class="border border-gray-200 dark:border-zinc-800 p-4 rounded-xl space-y-3 bg-gray-50/50 dark:bg-zinc-900/50 text-sm">
                         <p><strong>Serviço Solicitado:</strong> ${formData.get('tipo_servico')}</p>
                         <p><strong>Cliente:</strong> ${formData.get('nome_completo')} (${formData.get('email_profissional')})</p>
-                        <p><strong>Valor Estimado:</strong> <span class="text-blue-600 dark:text-blue-400 font-bold">${totalEstimated}</span></p>
+                        <p><strong>Valor Final Estimado:</strong> <span class="text-blue-600 dark:text-blue-400 font-bold">${totalEstimated}</span></p>
                         <p><strong>Forma de Pagamento Escolhida:</strong> ${paymentMethod}</p>
                     </div>
                 `;
@@ -973,7 +1165,6 @@
                             
                             <div class="flex flex-col sm:flex-row items-center gap-6">
                                 <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
-                                    <!-- Fallback graceful para imagem qrcode-pix.jpg -->
                                     <img src="qrcode-pix.jpg" alt="QR Code PIX" class="w-32 h-32 object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-32 h-32 flex items-center justify-center bg-gray-100 text-xs text-gray-500 text-center p-2 rounded\'>QR Code indisponível.<br>Use a chave PIX abaixo.</div>';">
                                 </div>
                                 <div class="space-y-2 w-full">
@@ -1004,7 +1195,6 @@
 
                 paymentContainer.innerHTML = paymentHTML;
 
-                // Evento de Copiar Chave PIX
                 const copyBtn = document.getElementById('copy-pix-btn');
                 if (copyBtn) {
                     copyBtn.addEventListener('click', () => {
@@ -1019,14 +1209,12 @@
                 }
             }
 
-            // Transição para tela de agradecimento
             document.getElementById('proceed-to-thanks-btn').addEventListener('click', () => {
                 document.getElementById('payment-screen').classList.add('hidden');
                 document.getElementById('thankyou-screen').classList.remove('hidden');
                 window.scrollTo({ top: 100, behavior: 'smooth' });
             });
 
-            // Fluxo de Novo Pedido (Reset completo)
             document.getElementById('new-order-btn').addEventListener('click', () => {
                 formElement.reset();
                 currentStep = 1;
@@ -1037,6 +1225,7 @@
                 formElement.classList.remove('hidden');
                 document.getElementById('progress-wrapper').classList.remove('hidden');
                 document.getElementById('intro-section').classList.remove('hidden');
+                document.getElementById('public-price-table-section').classList.remove('hidden');
                 document.getElementById('footer-info-sections').classList.remove('hidden');
                 
                 showStep(1);
@@ -1061,7 +1250,8 @@
                 document.documentElement.classList.add('dark');
             }
 
-            // Inicializar Wizard
+            // Inicializar Wizard e Preços
+            calculateTotal();
             showStep(1);
         });
     </script>
