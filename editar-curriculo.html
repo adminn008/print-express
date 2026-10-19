@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serviço Profissional de Currículos — WelGrafx</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            DEFAULT: '#000000',
+                            dark: '#121212',
+                            light: '#ffffff',
+                            accent: '#2563eb', // Azul padrão customizável
+                            gray: '#4b5563'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome para ícones profissionais -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+        }
+        /* Transições suaves */
+        .step-transition {
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+    <!-- Cabeçalho -->
+    <header class="bg-black text-white border-b border-zinc-800 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <a href="index.html" class="text-xl font-extrabold tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-print text-blue-500"></i> WelGrafx <span class="text-xs px-2 py-0.5 bg-blue-600 rounded text-white uppercase tracking-widest font-normal">Currículos</span>
+                </a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="index.html" class="text-sm text-gray-300 hover:text-white transition flex items-center gap-1">
+                    <i class="fa-solid fa-house"></i> Voltar ao Início
+                </a>
+                <button id="theme-toggle" class="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-gray-200 transition" aria-label="Alternar tema">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:block text-yellow-400"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-8">
+        
+        <!-- Introdução ao Serviço -->
+        <section class="mb-10 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-sm">
+            <div class="max-w-3xl">
+                <span class="inline-block text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 mb-3">
+                    Serviço Especializado e Manual
+                </span>
+                <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-4">Criação e Edição Profissional de Currículos</h1>
+                <p class="text-gray-600 dark:text-gray-400 text-base sm:text-lg leading-relaxed mb-6">
+                    Este é um serviço artesanal e personalizado executado diretamente pelo especialista da WelGrafx. Diferente de geradores automáticos, analisamos sua trajetória, otimizamos o conteúdo para sistemas ATS e destacamos seus pontos fortes no mercado de trabalho.
+                </p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300 border-t border-gray-100 dark:border-zinc-800 pt-6">
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-circle-check text-green-500 mt-1"></i>
+                        <span><strong>Diferença clara:</strong> Ferramentas gratuitas do site são auto-serviço; este serviço conta com revisão humana especializada.</span>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-1"></i>
+                        <span><strong>Aviso importante:</strong> O serviço otimiza sua apresentação profissional, mas não garante entrevistas ou empregos diretos.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Indicador de Progresso do Wizard -->
+        <div class="mb-8 overflow-x-auto pb-2">
+            <div class="flex items-center justify-between min-w-[700px] px-2" id="wizard-progress">
+                <!-- Preenchido via JavaScript -->
+            </div>
+        </div>
+
+        <!-- Formulário de Pedido (FormSubmit Integration) -->
+        <form id="resume-order-form" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-10 shadow-lg relative">
+            
+            <!-- Configurações ocultas do FormSubmit -->
+            <input type="hidden" name="_subject" value="Novo Pedido de Currículo — WelGrafx">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="true">
+            <!-- Honeypot anti-spam -->
+            <input type="text" name="_honey" style="display:none">
+
+            <!-- STEP 1: Escolha do Serviço -->
+            <div class="wizard-step" data-step="1">
+                <h2 class="text-2xl font-bold mb-2">1. Escolha o Serviço Desejado</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Selecione a modalidade que melhor atende à sua necessidade atual.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="service-options-container">
+                    <!-- Opções geradas por JS ou estruturadas -->
+                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 transition">
+                        <input type="radio" name="tipo_servico" value="Editar currículo existente" class="mt-1" checked required>
+                        <div>
+                            <span class="font-semibold block">Editar um currículo existente</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Correção, refinamento e melhoria de um documento que você já possui.</span>
+                        </div>
+                    </label>
+                    
+                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 transition">
+                        <input type="radio" name="tipo_servico" value="Criar novo currículo do zero" class="mt-1">
+                        <div>
+                            <span class="font-semibold block">Criar novo currículo do zero</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Desenvolvimento completo com base nas informações que você fornecer.</span>
+                        </div>
+                    </label>
+
+                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 transition">
+                        <input type="radio" name="tipo_servico" value="Novo currículo e melhoria de versão antiga" class="mt-1">
+                        <div>
+                            <span class="font-semibold block">Criar novo + Melhorar versão antiga</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Reestruturação profunda combinada com criação de nova versão.</span>
+                        </div>
+                    </label>
+
+                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 transition">
+                        <input type="radio" name="tipo_servico" value="Atualizar currículo com novas informações" class="mt-1">
+                        <div>
+                            <span class="font-semibold block">Atualizar com novas informações</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Adicionar novas experiências, cursos ou conquistas recentes.</span>
+                        </div>
+                    </label>
+
+                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 transition">
+                        <input type="radio" name="tipo_servico" value="Redesenho e reformatacao visual" class="mt-1">
+                        <div>
+                            <span class="font-semibold block">Redesenho e reformatação visual</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Melhoria de layout e design sem alterar substancialmente o texto.</span>
+                        </div>
+                    </label>
+
+                    <label class="border border-gray-200 dark:border-zinc-700 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 transition">
+                        <input type="radio" name="tipo_servico" value="Criar multiplasversoes direcionadas" class="mt-1">
+                        <div>
+                            <span class="font-semibold block">Múltiplas versões direcionadas</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Criação de variações de currículo para diferentes cargos ou áreas.</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="mt-6">
+                    <label class="block text-sm font-medium mb-2">Serviço personalizado ou exigência especial (Opcional)</label>
+                    <textarea name="requisito_especial" rows="3" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Descreva caso tenha alguma necessidade específica..."></textarea>
+                </div>
+            </div>
+
+            <!-- STEP 2: Currículo Existente ou Referência -->
+            <div class="wizard-step hidden" data-step="2">
+                <h2 class="text-2xl font-bold mb-2">2. Envio de Arquivo Atual ou Referência</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Envie seu currículo atual ou documento de referência para análise.</p>
+                
+                <div class="space-y-6">
+                    <div class="border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-2xl p-6 text-center">
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-blue-500 mb-3"></i>
+                        <label class="block font-semibold mb-1">Anexar arquivo (PDF, DOC, DOCX ou Imagem)</label>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Tamanho máximo recomendado: 10MB. Formatos aceitos: .pdf, .doc, .docx, .png, .jpg</p>
+                        <input type="file" name="arquivo_curriculo" id="arquivo_curriculo" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-zinc-800 dark:file:text-blue-400 cursor-pointer">
+                    </div>
+
+                    <div id="existing-resume-instructions" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">O que deve ser feito no seu conteúdo atual?</label>
+                            <select name="estrategia_conteudo" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition">
+                                <option value="Preservar e corrigir gramática/ortografia">Preservar o conteúdo e corrigir apenas gramática/ortografia</option>
+                                <option value="Reorganizar e reescrever para maior impacto">Reorganizar seções e reescrever para maior impacto profissional</option>
+                                <option value="Encurtar e tornar mais objetivo">Encurtar o texto e torná-lo mais objetivo (foco em 1 página)</option>
+                                <option value="Revisão completa e reescrita profunda">Revisão completa e reescrita profunda</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Instruções específicas de alteração, prazos ou preferências</label>
+                            <textarea name="instrucoes_alteracao" rows="3" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: Gostaria de destacar minha experiência em liderança e remover empregos antigos de 2010..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: Informações do Currículo (Dados Completos) -->
+            <div class="wizard-step hidden" data-step="3">
+                <h2 class="text-2xl font-bold mb-2">3. Informações Profissionais</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Forneça os dados que deseja incluir no seu currículo. Campos não aplicáveis podem ficar em branco.</p>
+                
+                <div class="space-y-8">
+                    <!-- Informações Pessoais -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold border-b border-gray-200 dark:border-zinc-800 pb-2">Informações Pessoais e de Contato</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Nome Completo *</label>
+                                <input type="text" name="nome_completo" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: João da Silva">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Nome Profissional Preferido (Opcional)</label>
+                                <input type="text" name="nome_profissional" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: João Silva">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Cidade e Estado *</label>
+                                <input type="text" name="cidade_estado" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: Curitiba - PR">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Telefone / WhatsApp *</label>
+                                <input type="text" name="telefone" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: (41) 99999-9999">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">E-mail Profissional *</label>
+                                <input type="email" name="email_profissional" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: joao.silva@email.com">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">LinkedIn (URL ou perfil)</label>
+                                <input type="text" name="linkedin" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: linkedin.com/in/joaosilva">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Portfólio / Site Profissional (Opcional)</label>
+                                <input type="text" name="portfolio" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: meudominio.com">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Outro link relevante (Opcional)</label>
+                                <input type="text" name="outro_link" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: GitHub, Behance">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Objetivo e Resumo -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold border-b border-gray-200 dark:border-zinc-800 pb-2">Objetivo e Resumo Profissional</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Cargo ou Função Desejada *</label>
+                                <input type="text" name="cargo_desejado" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: Analista de Logística Pleno">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Nível de Carreira</label>
+                                <select name="nivel_carreira" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition">
+                                    <option value="Júnior / Operacional">Júnior / Operacional / Primeiro Emprego</option>
+                                    <option value="Pleno">Pleno</option>
+                                    <option value="Sênior">Sênior</option>
+                                    <option value="Especialista / Liderança">Especialista / Gestão / Liderança</option>
+                                    <option value="Estágio / Trainee">Estágio / Trainee</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Resumo atual ou principais pontos fortes (Se houver)</label>
+                            <textarea name="resumo_profissional" rows="3" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Escreva um breve resumo ou deixe que nossa equipe redija com base em sua trajetória..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Experiência Profissional (Seção Repetível) -->
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center border-b border-gray-200 dark:border-zinc-800 pb-2">
+                            <h3 class="text-lg font-semibold">Experiência Profissional</h3>
+                            <button type="button" id="add-experience" class="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Adicionar Experiência
+                            </button>
+                        </div>
+                        <div id="experience-container" class="space-y-4">
+                            <!-- Item de Experiência Exemplo -->
+                            <div class="experience-item border border-gray-200 dark:border-zinc-800 p-4 rounded-xl relative space-y-3 bg-gray-50/50 dark:bg-zinc-900/50">
+                                <button type="button" class="remove-item absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm" title="Remover"><i class="fa-solid fa-trash"></i></button>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-medium mb-1">Empresa</label>
+                                        <input type="text" name="exp_empresa[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Nome da Empresa">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium mb-1">Cargo</label>
+                                        <input type="text" name="exp_cargo[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Cargo exercido">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium mb-1">Período</label>
+                                        <input type="text" name="exp_periodo[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Ex: 2021 - Presente">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium mb-1">Principais responsabilidades e conquistas</label>
+                                    <textarea name="exp_atribuicoes[]" rows="2" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Descreva suas atividades e resultados alcançados..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formação Acadêmica (Seção Repetível) -->
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center border-b border-gray-200 dark:border-zinc-800 pb-2">
+                            <h3 class="text-lg font-semibold">Formação Acadêmica</h3>
+                            <button type="button" id="add-education" class="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Adicionar Formação
+                            </button>
+                        </div>
+                        <div id="education-container" class="space-y-4">
+                            <div class="education-item border border-gray-200 dark:border-zinc-800 p-4 rounded-xl relative space-y-3 bg-gray-50/50 dark:bg-zinc-900/50">
+                                <button type="button" class="remove-item absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm" title="Remover"><i class="fa-solid fa-trash"></i></button>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-medium mb-1">Instituição de Ensino</label>
+                                        <input type="text" name="edu_instituicao[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Nome da Faculdade/Escola">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium mb-1">Curso / Graduação</label>
+                                        <input type="text" name="edu_curso[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Ex: Administração de Empresas">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium mb-1">Ano de Conclusão / Previsão</label>
+                                        <input type="text" name="edu_ano[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Ex: 2024 ou Em andamento">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cursos e Certificações -->
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center border-b border-gray-200 dark:border-zinc-800 pb-2">
+                            <h3 class="text-lg font-semibold">Cursos, Certificações e Idiomas</h3>
+                            <button type="button" id="add-course" class="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Adicionar Curso
+                            </button>
+                        </div>
+                        <div id="course-container" class="space-y-4">
+                            <div class="course-item border border-gray-200 dark:border-zinc-800 p-4 rounded-xl relative space-y-3 bg-gray-50/50 dark:bg-zinc-900/50">
+                                <button type="button" class="remove-item absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm" title="Remover"><i class="fa-solid fa-trash"></i></button>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-medium mb-1">Curso / Certificação / Idioma</label>
+                                        <input type="text" name="curso_nome[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Ex: Excel Avançado / Inglês Intermediário">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium mb-1">Instituição / Carga Horária / Nível</label>
+                                        <input type="text" name="curso_detalhe[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Ex: Udemy - 40h">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Habilidades e Competências -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold border-b border-gray-200 dark:border-zinc-800 pb-2">Habilidades Técnicas e Comportamentais</h3>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Lista de Habilidades (Separadas por vírgula)</label>
+                            <input type="text" name="habilidades" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: Gestão de Projetos, Pacote Office, Atendimento ao Cliente, Python">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: Aparência e Estilo -->
+            <div class="wizard-step hidden" data-step="4">
+                <h2 class="text-2xl font-bold mb-2">4. Preferências de Aparência e Design</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Escolha o estilo visual para o seu novo currículo.</p>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-3">Modelo de Currículo</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <label class="border border-gray-200 dark:border-zinc-700 p-4 rounded-xl cursor-pointer hover:border-blue-500 transition block">
+                                <input type="radio" name="modelo_curriculo" value="Classico Profissional" checked class="mb-2">
+                                <span class="font-semibold block text-sm">Clássico Profissional</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Ideal para áreas tradicionais, corporativas e administrativas.</span>
+                            </label>
+                            <label class="border border-gray-200 dark:border-zinc-700 p-4 rounded-xl cursor-pointer hover:border-blue-500 transition block">
+                                <input type="radio" name="modelo_curriculo" value="Moderno Minimalista" class="mb-2">
+                                <span class="font-semibold block text-sm">Moderno Minimalista</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Limpo, direto e altamente legível para sistemas ATS.</span>
+                            </label>
+                            <label class="border border-gray-200 dark:border-zinc-700 p-4 rounded-xl cursor-pointer hover:border-blue-500 transition block">
+                                <input type="radio" name="modelo_curriculo" value="Criativo / Executivo" class="mb-2">
+                                <span class="font-semibold block text-sm">Criativo / Executivo</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Destaque visual para cargos de liderança ou criativos.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Cor de Destaque Principal</label>
+                            <select name="cor_destaque" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition">
+                                <option value="Preto / Grafite Tradicional">Preto / Grafite Tradicional</option>
+                                <option value="Azul Corporativo">Azul Corporativo</option>
+                                <option value="Verde Profissional">Verde Profissional</option>
+                                <option value="Bordô / Vinho Elegante">Bordô / Vinho Elegante</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Foto no Currículo</label>
+                            <select name="opcao_foto" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition">
+                                <option value="Sem foto (Recomendado para maioria das vagas)">Sem foto (Recomendado)</option>
+                                <option value="Com foto profissional">Com foto profissional (Enviar arquivo junto)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Instruções Especiais de Formatação (Opcional)</label>
+                        <textarea name="instrucoes_formatacao" rows="2" class="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Ex: Prefiro layout em página única..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 5: Entrega e Impressão -->
+            <div class="wizard-step hidden" data-step="5">
+                <h2 class="text-2xl font-bold mb-2">5. Formato de Entrega e Impressão</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Escolha como deseja receber o resultado do seu currículo.</p>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-3">Modalidade de Entrega</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <label class="border border-gray-200 dark:border-zinc-700 p-4 rounded-xl cursor-pointer hover:border-blue-500 transition block">
+                                <input type="radio" name="modalidade_entrega" value="Apenas PDF Digital" checked class="mb-2" id="del-pdf">
+                                <span class="font-semibold block text-sm">Apenas PDF Digital</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Enviado por e-mail/WhatsApp pronto para envio.</span>
+                            </label>
+                            <label class="border border-gray-200 dark:border-zinc-700 p-4 rounded-xl cursor-pointer hover:border-blue-500 transition block">
+                                <input type="radio" name="modalidade_entrega" value="Apenas Impressão Física" class="mb-2" id="del-print">
+                                <span class="font-semibold block text-sm">Apenas Impressão Física</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Retirada ou entrega na região de São José dos Pinhais.</span>
+                            </label>
+                            <label class="border border-gray-200 dark:border-zinc-700 p-4 rounded-xl cursor-pointer hover:border-blue-500 transition block">
+                                <input type="radio" name="modalidade_entrega" value="PDF Digital + Impressão Física" class="mb-2" id="del-both">
+                                <span class="font-semibold block text-sm">PDF + Impressão Física</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Combo completo digital e impresso.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Opções de Impressão (Condicionais) -->
+                    <div id="print-options-section" class="space-y-4 p-4 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-900/50 hidden">
+                        <h3 class="font-semibold text-sm">Especificações de Impressão</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium mb-1">Quantidade de Cópias</label>
+                                <input type="number" name="qtd_copias" min="1" value="5" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium mb-1">Tipo de Impressão</label>
+                                <select name="tipo_impressao" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent">
+                                    <option value="Preto e Branco Alta Qualidade">Preto e Branco Alta Qualidade</option>
+                                    <option value="Colorido">Colorido</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium mb-1">Tipo de Papel</label>
+                                <select name="tipo_papel" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent">
+                                    <option value="Sulfite 90g (Profissional)">Sulfite 90g (Profissional)</option>
+                                    <option value="Papel Opaline 120g (Premium)">Papel Opaline 120g (Premium)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 6: Serviços Adicionais (Add-ons) -->
+            <div class="wizard-step hidden" data-step="6">
+                <h2 class="text-2xl font-bold mb-2">6. Serviços Adicionais Opcionais</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Potencialize sua candidatura com nossos complementos especializados.</p>
+                
+                <div class="space-y-3" id="addons-container">
+                    <!-- Gerados via JS com preços centralizados -->
+                </div>
+            </div>
+
+            <!-- STEP 7: Pagamento -->
+            <div class="wizard-step hidden" data-step="7">
+                <h2 class="text-2xl font-bold mb-2">7. Forma de Pagamento</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Selecione como deseja realizar o pagamento. Nenhuma cobrança automática é feita neste momento.</p>
+                
+                <div class="space-y-4">
+                    <label class="border border-gray-200 dark:border-zinc-700 p-4 rounded-xl flex items-start gap-3 cursor-pointer hover:border-blue-500 transition block">
+                        <input type="radio" name="forma_pagamento" value="PIX" checked class="mt-1">
+                        <div>
+                            <span class="font-semibold block">PIX (Chave ou QR Code)</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Instruções e dados de pagamento serão enviados após a confirmação do pedido pelo responsável.</span>
+                        </div>
+                    </label>
+
+                    <label class="border border-gray-200 dark:border-zinc-700 p-4 rounded-xl flex items-start gap-3 cursor-pointer hover:border-blue-500 transition block">
+                        <input type="radio" name="forma_pagamento" value="Dinheiro (Presencial)" class="mt-1">
+                        <div>
+                            <span class="font-semibold block">Dinheiro (Presencial)</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Sujeito a agendamento prévio na WelGrafx em São José dos Pinhais.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- STEP 8: Revisão Final e Envio -->
+            <div class="wizard-step hidden" data-step="8">
+                <h2 class="text-2xl font-bold mb-2">8. Revisão Final do Pedido</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Confira os dados informados antes de enviar o seu pedido.</p>
+                
+                <div class="bg-gray-50 dark:bg-zinc-950 p-6 rounded-2xl border border-gray-200 dark:border-zinc-800 space-y-4 mb-6">
+                    <div id="review-summary-content" class="text-sm space-y-2">
+                        <!-- Preenchido dinamicamente via JS -->
+                    </div>
+
+                    <div class="border-t border-gray-200 dark:border-zinc-800 pt-4 flex justify-between items-center font-bold text-base">
+                        <span>Valor Estimado Total:</span>
+                        <span id="estimated-total" class="text-blue-600 dark:text-blue-400 text-lg">R$ 10,00*</span>
+                    </div>
+                    <p class="text-xs text-gray-500">*Valores sujeitos a confirmação final conforme complexidade e aditivos selecionados.</p>
+                </div>
+
+                <!-- Termos e Privacidade -->
+                <div class="space-y-4">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" name="concordo_termos" required class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-xs text-gray-600 dark:text-gray-400">
+                            Declaro que revisi as informações fornecidas, compreendo que o serviço é realizado manualmente e que a equipe da WelGrafx entrará em contato para confirmar o orçamento final e os detalhes de entrega.
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Botões de Navegação do Wizard -->
+            <div class="mt-8 pt-6 border-t border-gray-200 dark:border-zinc-800 flex justify-between items-center">
+                <button type="button" id="prev-btn" class="px-5 py-2.5 rounded-xl border border-gray-300 dark:border-zinc-700 text-sm font-semibold hover:bg-gray-100 dark:hover:bg-zinc-800 transition hidden">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Anterior
+                </button>
+                <div class="ml-auto flex gap-3">
+                    <button type="button" id="next-btn" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
+                        Continuar <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </button>
+                    <button type="submit" id="submit-btn" class="px-6 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold transition hidden">
+                        <i class="fa-solid fa-paper-plane mr-2"></i> Enviar Pedido
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Seção de FAQ e Informações -->
+        <section class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
+                <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-question text-blue-500"></i> Perguntas Frequentes
+                </h3>
+                <div class="space-y-4 text-sm">
+                    <div>
+                        <h4 class="font-semibold">Quanto tempo demora para ficar pronto?</h4>
+                        <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">O prazo médio é de 24 a 48 horas úteis após a confirmação do pedido e pagamento.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold">Como recebo o currículo digital?</h4>
+                        <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">O arquivo final em formato PDF otimizado é enviado diretamente para o seu e-mail e WhatsApp.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold">Posso pedir alterações caso necessário?</h4>
+                        <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">Sim, está inclusa uma rodada de ajustes sem custo adicional após a entrega da primeira versão.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
+                <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-blue-500"></i> Privacidade e Segurança
+                </h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-4">
+                    Suas informações pessoais e documentos enviados são utilizados exclusivamente para a elaboração do serviço contratado na WelGrafx. Não armazenamos seus dados em bancos públicos ou compartilhamos com terceiros.
+                </p>
+                <div class="text-xs text-gray-400">
+                    <i class="fa-solid fa-envelope mr-1 text-blue-500"></i> Dúvidas diretas: <span class="font-semibold text-gray-700 dark:text-gray-300">ws8530135@gmail.com</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="mt-16 bg-black text-white border-t border-zinc-800 py-8 text-center text-xs text-zinc-400">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>&copy; 2026 WelGrafx — São José dos Pinhais, PR. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Script JavaScript Completo -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Configuração de Preços Centralizada
+            const pricingConfig = {
+                basePrice: 10.00,
+                printingPerPage: 1.50,
+                addons: {
+                    'Revisão Ortográfica e Gramatical Avançada': 15.00,
+                    'Reescrita Completa para Maior Impacto ATS': 25.00,
+                    'Criação de Carta de Apresentação Personalizada': 20.00,
+                    'Otimização Completa de Perfil LinkedIn': 30.00,
+                    'Versão Adicional Direcionada (Outro Cargo)': 15.00,
+                    'Envio de Versão Editável (DOCX)': 10.00,
+                    'Urgência (Entrega em até 12h)': 20.00
+                }
+            };
+
+            // Renderizar lista de Add-ons
+            const addonsContainer = document.getElementById('addons-container');
+            for (const [name, price] of Object.entries(pricingConfig.addons)) {
+                const div = document.createElement('label');
+                div.className = 'border border-gray-200 dark:border-zinc-700 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-blue-500 transition block';
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" name="adicionais[]" value="${name}" data-price="${price}" class="addon-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm font-medium">${name}</span>
+                    </div>
+                    <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">R$ ${price.toFixed(2).replace('.', ',')}</span>
+                `;
+                addonsContainer.appendChild(div);
+            }
+
+            // Wizard State Management
+            let currentStep = 1;
+            const totalSteps = 8;
+            const steps = document.querySelectorAll('.wizard-step');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const submitBtn = document.getElementById('submit-btn');
+            const wizardProgress = document.getElementById('wizard-progress');
+
+            const stepTitles = [
+                "Serviço", "Arquivo", "Dados", "Aparência", "Entrega", "Adicionais", "Pagamento", "Revisão"
+            ];
+
+            function renderProgress() {
+                wizardProgress.innerHTML = '';
+                stepTitles.forEach((title, index) => {
+                    const stepNum = index + 1;
+                    const isActive = stepNum === currentStep;
+                    const isCompleted = stepNum < currentStep;
+
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center gap-2';
+                    item.innerHTML = `
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                            isActive ? 'bg-blue-600 text-white' : isCompleted ? 'bg-green-600 text-white' : 'bg-gray-200 dark:bg-zinc-800 text-gray-500'
+                        }">
+                            ${isCompleted ? '<i class="fa-solid fa-check"></i>' : stepNum}
+                        </div>
+                        <span class="text-xs font-medium ${isActive ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-gray-500 dark:text-gray-400'}">${title}</span>
+                        ${stepNum < stepTitles.length ? '<div class="w-8 h-0.5 bg-gray-200 dark:bg-zinc-800 mx-2"></div>' : ''}
+                    `;
+                    wizardProgress.appendChild(item);
+                });
+            }
+
+            function showStep(step) {
+                steps.forEach((el, idx) => {
+                    if (idx + 1 === step) {
+                        el.classList.remove('hidden');
+                    } else {
+                        el.classList.add('hidden');
+                    }
+                });
+
+                prevBtn.classList.toggle('hidden', step === 1);
+                nextBtn.classList.toggle('hidden', step === totalSteps);
+                submitBtn.classList.toggle('hidden', step !== totalSteps);
+
+                if (step === totalSteps) {
+                    updateReviewSummary();
+                }
+
+                renderProgress();
+                window.scrollTo({ top: 200, behavior: 'smooth' });
+            }
+
+            // Validação simples da etapa atual
+            function validateCurrentStep() {
+                const currentStepEl = document.querySelector(`.wizard-step[data-step="${currentStep}"]`);
+                const requiredInputs = currentStepEl.querySelectorAll('[required]');
+                for (let input of requiredInputs) {
+                    if (!input.value.trim()) {
+                        input.focus();
+                        alert('Por favor, preencha os campos obrigatórios desta etapa.');
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            nextBtn.addEventListener('click', () => {
+                if (validateCurrentStep()) {
+                    if (currentStep < totalSteps) {
+                        currentStep++;
+                        showStep(currentStep);
+                    }
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentStep > 1) {
+                    currentStep--;
+                    showStep(currentStep);
+                }
+            });
+
+            // Condicional de Entrega (Mostrar/Ocultar Print Options)
+            const deliveryRadios = document.querySelectorAll('input[name="modalidade_entrega"]');
+            const printOptionsSection = document.getElementById('print-options-section');
+
+            deliveryRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    if (radio.value.includes('Impressão')) {
+                        printOptionsSection.classList.remove('hidden');
+                    } else {
+                        printOptionsSection.classList.add('hidden');
+                    }
+                    calculateTotal();
+                });
+            });
+
+            // Cálculo Dinâmico de Preço
+            function calculateTotal() {
+                let total = pricingConfig.basePrice;
+
+                // Verificar se inclui impressão
+                const selectedDelivery = document.querySelector('input[name="modalidade_entrega"]:checked');
+                if (selectedDelivery && selectedDelivery.value.includes('Impressão')) {
+                    const copiesInput = document.querySelector('input[name="qtd_copias"]');
+                    const copies = copiesInput ? parseInt(copiesInput.value) || 1 : 1;
+                    total += copies * 5.00; // Custo estimado de impressão por cópia
+                }
+
+                // Somar Add-ons
+                document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
+                    total += parseFloat(cb.dataset.price) || 0;
+                });
+
+                document.getElementById('estimated-total').textContent = `R$ ${total.toFixed(2).replace('.', ',')}*`;
+            }
+
+            document.querySelectorAll('.addon-checkbox, input[name="qtd_copias"]').forEach(el => {
+                el.addEventListener('change', calculateTotal);
+            });
+
+            // Resumo de Revisão
+            function updateReviewSummary() {
+                const formElement = document.getElementById('resume-order-form');
+                const formData = new FormData(formElement);
+                
+                let summaryHTML = `
+                    <p><strong>Serviço:</strong> ${formData.get('tipo_servico') || 'Não informado'}</p>
+                    <p><strong>Nome:</strong> ${formData.get('nome_completo') || 'Não informado'}</p>
+                    <p><strong>E-mail:</strong> ${formData.get('email_profissional') || 'Não informado'}</p>
+                    <p><strong>Telefone:</strong> ${formData.get('telefone') || 'Não informado'}</p>
+                    <p><strong>Cargo Desejado:</strong> ${formData.get('cargo_desejado') || 'Não informado'}</p>
+                    <p><strong>Modelo:</strong> ${formData.get('modelo_curriculo') || 'Clássico'}</p>
+                    <p><strong>Entrega:</strong> ${formData.get('modalidade_entrega') || 'PDF'}</p>
+                    <p><strong>Pagamento:</strong> ${formData.get('forma_pagamento') || 'PIX'}</p>
+                `;
+
+                const selectedAddons = [];
+                document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
+                    selectedAddons.push(cb.value);
+                });
+                if (selectedAddons.length > 0) {
+                    summaryHTML += `<p><strong>Adicionais:</strong> ${selectedAddons.join(', ')}</p>`;
+                }
+
+                document.getElementById('review-summary-content').innerHTML = summaryHTML;
+                calculateTotal();
+            }
+
+            // Seções Repetíveis (Experiência, Educação, Cursos)
+            function setupRepeatable(buttonId, containerId, templateHTML) {
+                const addBtn = document.getElementById(buttonId);
+                const container = document.getElementById(containerId);
+
+                addBtn.addEventListener('click', () => {
+                    const div = document.createElement('div');
+                    div.className = 'border border-gray-200 dark:border-zinc-800 p-4 rounded-xl relative space-y-3 bg-gray-50/50 dark:bg-zinc-900/50';
+                    div.innerHTML = templateHTML + '<button type="button" class="remove-item absolute top-3 right-3 text-red-500 hover:text-red-700 text-sm" title="Remover"><i class="fa-solid fa-trash"></i></button>';
+                    
+                    div.querySelector('.remove-item').addEventListener('click', () => {
+                        div.remove();
+                    });
+                    container.appendChild(div);
+                });
+            }
+
+            // Delegação para remoção de itens iniciais
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.remove-item')) {
+                    const item = e.target.closest('.experience-item, .education-item, .course-item');
+                    if (item && item.parentElement.children.length > 1) {
+                        item.remove();
+                    }
+                }
+            });
+
+            setupRepeatable('add-experience', 'experience-container', `
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium mb-1">Empresa</label>
+                        <input type="text" name="exp_empresa[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Nome da Empresa">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">Cargo</label>
+                        <input type="text" name="exp_cargo[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Cargo exercido">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">Período</label>
+                        <input type="text" name="exp_periodo[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Ex: 2021 - Presente">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Principais responsabilidades e conquistas</label>
+                    <textarea name="exp_atribuicoes[]" rows="2" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Descreva suas atividades..."></textarea>
+                </div>
+            `);
+
+            setupRepeatable('add-education', 'education-container', `
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium mb-1">Instituição de Ensino</label>
+                        <input type="text" name="edu_instituicao[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Nome da Faculdade/Escola">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">Curso / Graduação</label>
+                        <input type="text" name="edu_curso[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Curso">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">Ano de Conclusão / Previsão</label>
+                        <input type="text" name="edu_ano[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Ano">
+                    </div>
+                </div>
+            `);
+
+            setupRepeatable('add-course', 'course-container', `
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium mb-1">Curso / Certificação / Idioma</label>
+                        <input type="text" name="curso_nome[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Nome">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">Instituição / Detalhes</label>
+                        <input type="text" name="curso_detalhe[]" class="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded-lg text-sm bg-transparent" placeholder="Detalhes">
+                    </div>
+                </div>
+            `);
+
+            // Dark Mode Toggle
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            themeToggleBtn.addEventListener('click', () => {
+                const html = document.documentElement;
+                if (html.classList.contains('dark')) {
+                    html.classList.remove('dark');
+                    html.classList.add('light');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    html.classList.remove('light');
+                    html.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+
+            if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+
+            // Inicializar Wizard
+            showStep(1);
+        });
+    </script>
+</body>
+</html>
