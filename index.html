@@ -27,6 +27,11 @@
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
             --shadow-hover: 0 20px 30px -10px rgba(2, 132, 199, 0.15);
             --font-scale: 1rem;
+            --line-height: 1.6;
+            --letter-spacing: 0px;
+            --font-family: 'Plus Jakarta Sans', sans-serif;
+            --focus-outline-color: var(--primary);
+            --focus-outline-width: 0px;
         }
 
         [data-theme="dark"] {
@@ -39,13 +44,54 @@
             --accent-light: rgba(56, 189, 248, 0.12);
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
             --shadow-hover: 0 20px 30px -10px rgba(56, 189, 248, 0.2);
+            --focus-outline-color: var(--accent);
+        }
+
+        /* ESTILOS DE ACESSIBILIDADE */
+        html.a11y-high-contrast {
+            filter: contrast(140%);
+        }
+
+        html.a11y-grayscale {
+            filter: grayscale(100%);
+        }
+
+        html.a11y-grayscale.a11y-high-contrast {
+            filter: grayscale(100%) contrast(140%);
+        }
+
+        html.a11y-highlight-links a {
+            text-decoration: underline !important;
+            font-weight: 800 !important;
+            background-color: rgba(56, 189, 248, 0.2) !important;
+            outline: 2px solid var(--primary) !important;
+        }
+
+        html.a11y-focus-visible *:focus-visible {
+            outline: 3px solid var(--focus-outline-color) !important;
+            outline-offset: 3px !important;
+            box-shadow: 0 0 0 5px rgba(2, 132, 199, 0.3) !important;
+        }
+
+        html.a11y-reduced-motion *,
+        html.a11y-reduced-motion .reveal-on-scroll {
+            transition: none !important;
+            animation: none !important;
+            transform: none !important;
+            opacity: 1 !important;
+        }
+
+        html.a11y-large-cursor,
+        html.a11y-large-cursor * {
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='%230284c7' stroke='%23ffffff' stroke-width='2'%3E%3Cpath d='M3 3l7 18 3-7 7-3L3 3z'/%3E%3C/svg%3E"), auto !important;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: var(--font-family);
+            letter-spacing: var(--letter-spacing);
             transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
         }
 
@@ -59,7 +105,7 @@
             background-color: var(--bg-body);
             color: var(--text-main);
             padding: 32px 16px 80px 16px;
-            line-height: 1.6;
+            line-height: var(--line-height);
             overflow-x: hidden;
             width: 100%;
         }
@@ -176,6 +222,314 @@
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        /* PAINEL DE ACESSIBILIDADE APRIMORADO */
+        .a11y-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 10009;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+
+        .a11y-modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .a11y-modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            max-width: 580px;
+            width: 100%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transform: scale(0.95);
+            transition: transform 0.25s ease;
+        }
+
+        .a11y-modal-overlay.show .a11y-modal {
+            transform: scale(1);
+        }
+
+        .a11y-modal-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-card);
+        }
+
+        .a11y-modal-header h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .a11y-modal-close {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .a11y-modal-close:hover {
+            color: var(--text-main);
+            background: var(--bg-input);
+        }
+
+        .a11y-modal-body {
+            padding: 20px 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .a11y-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .a11y-group-title {
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .a11y-controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
+        }
+
+        .a11y-btn {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .a11y-btn:hover {
+            background: var(--accent-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .a11y-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+        }
+
+        .a11y-toggle-item {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .a11y-toggle-item:hover {
+            border-color: var(--primary);
+        }
+
+        .a11y-toggle-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .a11y-modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .a11y-btn-reset {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .a11y-btn-reset:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* VITRINE "EM BREVE" */
+        .em-breve-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 28px 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .em-breve-header {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .em-breve-header h2 {
+            font-size: clamp(18px, 4vw, 22px);
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.3px;
+            overflow-wrap: break-word;
+        }
+
+        .em-breve-header p {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+            overflow-wrap: break-word;
+        }
+
+        .em-breve-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            width: 100%;
+        }
+
+        .em-breve-card {
+            background: var(--bg-input);
+            border: 1px dashed var(--primary);
+            border-radius: 18px;
+            padding: 22px 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 14px;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            cursor: default;
+        }
+
+        .em-breve-card:hover {
+            transform: translateY(-3px);
+            border-style: solid;
+            box-shadow: 0 12px 20px -8px rgba(2, 132, 199, 0.18);
+        }
+
+        .em-breve-badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+        }
+
+        .em-breve-card-top {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-right: 60px;
+        }
+
+        .em-breve-icon {
+            font-size: 32px;
+            line-height: 1;
+        }
+
+        .em-breve-card-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.3;
+            overflow-wrap: break-word;
+        }
+
+        .em-breve-card-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.45;
+            overflow-wrap: break-word;
+        }
+
+        .em-breve-card-footer {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding-top: 8px;
+            border-top: 1px rgba(2, 132, 199, 0.15) solid;
         }
 
         /* AVISO DE MUDANÇA */
@@ -1242,7 +1596,7 @@
             background-color: var(--bg-card);    
             color: var(--text-main);    
             padding: 48px 24px 24px;    
-            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;    
+            font-family: var(--font-family);    
             border-top: 3px solid var(--primary);    
             margin-top: 40px;
             width: 100%;
@@ -1428,12 +1782,17 @@
             .px-footer-bottom { flex-direction: column; text-align: center; }
             .vitrine-grid { grid-template-columns: 1fr; }
             .vitrine-solucoes-container { padding: 20px 14px; }
+            .em-breve-grid { grid-template-columns: 1fr; }
+            .em-breve-container { padding: 20px 14px; }
             .header-top { flex-direction: column; align-items: center; justify-content: center; }
             .header-controls { justify-content: center; width: 100%; }
             .px-cookie-banner { bottom: 12px; width: calc(100% - 24px); padding: 16px; }
             .px-cookie-actions { width: 100%; justify-content: stretch; }
             .px-cookie-btn { flex: 1 1 auto; max-width: 100%; }
             .cookie-toast { bottom: 16px; right: 16px; font-size: 12px; padding: 10px 14px; }
+            .a11y-modal { max-height: 95vh; }
+            .a11y-modal-body { padding: 16px; }
+            .a11y-controls-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
         @media (max-width: 480px) {
@@ -1450,6 +1809,7 @@
             .header-controls { flex-wrap: wrap; }
             .theme-toggle, .access-btn, .nav-blog-btn { flex: 1 1 auto; justify-content: center; }
             .px-cookie-actions { flex-direction: column; }
+            .a11y-controls-grid { grid-template-columns: 1fr; }
         }
 
         @media (min-width: 1920px) {
@@ -1466,7 +1826,7 @@
             <div class="header-top">
                 <div style="font-weight: 800; font-size: 18px; color: var(--primary);">🖨️ WelGrafx</div>
                 <div class="header-controls">
-                    <button class="access-btn" id="btnFonte" type="button" onclick="alternarTamanhoFonte()" aria-label="Aumentar Tamanho da Fonte">
+                    <button class="access-btn" id="btnFonte" type="button" onclick="abrirPainelAcessibilidade()" aria-label="Abrir Painel de Acessibilidade">
                         <span>♿ Acessibilidade</span>
                     </button>
                     <button class="theme-toggle" id="themeToggleBtn" type="button" aria-label="Alternar Tema Claro/Escuro">
@@ -1621,6 +1981,54 @@
                     <div style="font-weight:700; font-size:14px;">Geradores e Ferramentas Digitais</div>
                     <div style="font-size:11px; color:var(--text-muted);">Utilitários e Geradores Digitais para Profissionais e Serviços</div>
                 </a>
+            </div>
+        </section>
+
+        <!-- NOVA VITRINE — PÁGINAS FUTURAS (EM BREVE) -->
+        <section class="em-breve-container reveal-on-scroll" aria-label="Vitrine de Páginas Futuras">
+            <div class="em-breve-header">
+                <h2>🚀 Novas Soluções em Desenvolvimento</h2>
+                <p>Conheça as próximas páginas e recursos exclusivos que em breve estarão disponíveis na plataforma.</p>
+            </div>
+            <div class="em-breve-grid">
+                <!-- CARD 1 -->
+                <div class="em-breve-card">
+                    <span class="em-breve-badge">Em breve</span>
+                    <div class="em-breve-card-top">
+                        <div class="em-breve-icon">🎨</div>
+                        <div class="em-breve-card-title">Criação e Edição Sob Encomenda</div>
+                        <div class="em-breve-card-desc">Serviço especializado para desenvolvimento visual, personalização de documentos e edições gráficas exclusivas para suas necessidades.</div>
+                    </div>
+                    <div class="em-breve-card-footer">
+                        <span>⏳ Lançamento próximo</span>
+                    </div>
+                </div>
+
+                <!-- CARD 2 -->
+                <div class="em-breve-card">
+                    <span class="em-breve-badge">Em breve</span>
+                    <div class="em-breve-card-top">
+                        <div class="em-breve-icon">📋</div>
+                        <div class="em-breve-card-title">Modelos Digitais e Fichas</div>
+                        <div class="em-breve-card-desc">Biblioteca completa de modelos editáveis, fichas organizacionais, folhas de ponto e formulários prontos para uso imediato.</div>
+                    </div>
+                    <div class="em-breve-card-footer">
+                        <span>⏳ Lançamento próximo</span>
+                    </div>
+                </div>
+
+                <!-- CARD 3 -->
+                <div class="em-breve-card">
+                    <span class="em-breve-badge">Em breve</span>
+                    <div class="em-breve-card-top">
+                        <div class="em-breve-icon">💼</div>
+                        <div class="em-breve-card-title">Soluções para Empresas</div>
+                        <div class="em-breve-card-desc">Pacotes corporativos sob medida, atendimento prioritário, faturamento diferenciado e gestão completa de impressões para seu negócio.</div>
+                    </div>
+                    <div class="em-breve-card-footer">
+                        <span>⏳ Lançamento próximo</span>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -1894,6 +2302,96 @@
         </div>
     </footer>
 
+    <!-- PAINEL MODAL DE ACESSIBILIDADE APRIMORADO -->
+    <div id="pxA11yModal" class="a11y-modal-overlay" role="dialog" aria-modal="true" aria-label="Painel de Acessibilidade">
+        <div class="a11y-modal">
+            <div class="a11y-modal-header">
+                <h3>♿ Acessibilidade</h3>
+                <button type="button" class="a11y-modal-close" onclick="fecharPainelAcessibilidade()" aria-label="Fechar Painel de Acessibilidade">✕</button>
+            </div>
+            <div class="a11y-modal-body">
+                <!-- GRUPO: TEXTO E LEITURA -->
+                <div class="a11y-group">
+                    <span class="a11y-group-title">🔍 Tamanho e Estilo do Texto</span>
+                    <div class="a11y-controls-grid">
+                        <button type="button" class="a11y-btn" onclick="alterarEscalaFonte(-0.05)" aria-label="Diminuir fonte">A- Diminuir</button>
+                        <button type="button" class="a11y-btn" onclick="resetarEscalaFonte()" aria-label="Restaurar tamanho de fonte original">A Normal</button>
+                        <button type="button" class="a11y-btn" onclick="alterarEscalaFonte(0.05)" aria-label="Aumentar fonte">A+ Aumentar</button>
+                    </div>
+                </div>
+
+                <div class="a11y-group">
+                    <span class="a11y-group-title">📏 Espaçamentos</span>
+                    <div class="a11y-controls-grid">
+                        <button type="button" id="btnA11yLineHeight" class="a11y-btn" onclick="alternarEspacamentoLinha()" aria-label="Alternar espaçamento entre linhas">↕️ Espaço Linhas</button>
+                        <button type="button" id="btnA11yLetterSpacing" class="a11y-btn" onclick="alternarEspacamentoLetras()" aria-label="Alternar espaçamento entre letras">↔️ Espaço Letras</button>
+                        <button type="button" id="btnA11yReadableFont" class="a11y-btn" onclick="alternarFonteLegivel()" aria-label="Alternar tipografia de alta legibilidade">🔤 Fonte Legível</button>
+                    </div>
+                </div>
+
+                <!-- GRUPO: CONTRASTE E CORES -->
+                <div class="a11y-group">
+                    <span class="a11y-group-title">🎨 Contraste e Cores</span>
+                    <div class="a11y-toggle-item" onclick="alternarAltoContraste()">
+                        <span class="a11y-toggle-label"><span>☯️</span> Alto Contraste</span>
+                        <label class="px-switch" onclick="event.stopPropagation()">
+                            <input type="checkbox" id="chkA11yHighContrast" onchange="alternarAltoContraste()">
+                            <span class="px-slider"></span>
+                        </label>
+                    </div>
+                    <div class="a11y-toggle-item" onclick="alternarEscalaCinza()">
+                        <span class="a11y-toggle-label"><span>🖼️</span> Escala de Cinza</span>
+                        <label class="px-switch" onclick="event.stopPropagation()">
+                            <input type="checkbox" id="chkA11yGrayscale" onchange="alternarEscalaCinza()">
+                            <span class="px-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- GRUPO: NAVEGAÇÃO E NAVEGABILIDADE -->
+                <div class="a11y-group">
+                    <span class="a11y-group-title">🎯 Auxílios de Navegação</span>
+                    <div class="a11y-toggle-item" onclick="alternarDestaqueLinks()">
+                        <span class="a11y-toggle-label"><span>🔗</span> Destacar Links</span>
+                        <label class="px-switch" onclick="event.stopPropagation()">
+                            <input type="checkbox" id="chkA11yHighlightLinks" onchange="alternarDestaqueLinks()">
+                            <span class="px-slider"></span>
+                        </label>
+                    </div>
+                    <div class="a11y-toggle-item" onclick="alternarDestaqueFoco()">
+                        <span class="a11y-toggle-label"><span>🔍</span> Destacar Foco do Teclado</span>
+                        <label class="px-switch" onclick="event.stopPropagation()">
+                            <input type="checkbox" id="chkA11yFocusVisible" onchange="alternarDestaqueFoco()">
+                            <span class="px-slider"></span>
+                        </label>
+                    </div>
+                    <div class="a11y-toggle-item" onclick="alternarReduzirAnimacoes()">
+                        <span class="a11y-toggle-label"><span>⚡</span> Reduzir Movimento / Animações</span>
+                        <label class="px-switch" onclick="event.stopPropagation()">
+                            <input type="checkbox" id="chkA11yReducedMotion" onchange="alternarReduzirAnimacoes()">
+                            <span class="px-slider"></span>
+                        </label>
+                    </div>
+                    <div class="a11y-toggle-item" onclick="alternarCursorAmpliado()">
+                        <span class="a11y-toggle-label"><span>🖱️</span> Cursor Ampliado</span>
+                        <label class="px-switch" onclick="event.stopPropagation()">
+                            <input type="checkbox" id="chkA11yLargeCursor" onchange="alternarCursorAmpliado()">
+                            <span class="px-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="a11y-modal-footer">
+                <button type="button" class="a11y-btn-reset" onclick="restaurarAcessibilidadePadrao()">
+                    <span>🔄</span> Restaurar Padrões
+                </button>
+                <button type="button" class="px-cookie-btn px-cookie-btn-accept" onclick="fecharPainelAcessibilidade()">
+                    Concluído
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- NOTIFICAÇÃO TOAST TEMPORÁRIA DE COOKIES -->
     <div id="pxCookieToast" class="cookie-toast" role="status" aria-live="polite"></div>
 
@@ -2098,12 +2596,196 @@
             }
         });
 
-        // ACESSIBILIDADE - FONTE
-        let fonteAmpliada = false;    
-        function alternarTamanhoFonte() {    
-            fonteAmpliada = !fonteAmpliada;    
-            document.documentElement.style.setProperty('--font-scale', fonteAmpliada ? '1.12rem' : '1rem');    
+        /* ==========================================================================
+           SISTEMA COMPLETO DE ACESSIBILIDADE
+           ========================================================================== */
+        const A11Y_STORAGE_KEY = 'welgrafx_a11y_settings';
+
+        let a11yState = {
+            fontScale: 1.0,
+            highContrast: false,
+            grayscale: false,
+            highlightLinks: false,
+            focusVisible: false,
+            lineHeight: false,
+            letterSpacing: false,
+            readableFont: false,
+            reducedMotion: false,
+            largeCursor: false
+        };
+
+        function carregarEstadoAcessibilidade() {
+            try {
+                const salvo = localStorage.getItem(A11Y_STORAGE_KEY);
+                if (salvo) {
+                    a11yState = Object.assign(a11yState, JSON.parse(salvo));
+                }
+            } catch (e) {}
+
+            // Detectar preferência do SO para movimento reduzido caso não haja configuração personalizada
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches && localStorage.getItem(A11Y_STORAGE_KEY) === null) {
+                a11yState.reducedMotion = true;
+            }
+
+            aplicarEstadoAcessibilidade();
         }
+
+        function salvarEstadoAcessibilidade() {
+            try {
+                localStorage.setItem(A11Y_STORAGE_KEY, JSON.stringify(a11yState));
+            } catch (e) {}
+            aplicarEstadoAcessibilidade();
+        }
+
+        function aplicarEstadoAcessibilidade() {
+            const root = document.documentElement;
+
+            // Escala de Fonte (limites entre 0.85rem e 1.35rem)
+            const clampedScale = Math.min(Math.max(a11yState.fontScale, 0.85), 1.35);
+            root.style.setProperty('--font-scale', `${clampedScale}rem`);
+
+            // Espaçamento entre linhas
+            root.style.setProperty('--line-height', a11yState.lineHeight ? '2.0' : '1.6');
+            const btnLH = document.getElementById('btnA11yLineHeight');
+            if (btnLH) btnLH.classList.toggle('active', a11yState.lineHeight);
+
+            // Espaçamento entre letras
+            root.style.setProperty('--letter-spacing', a11yState.letterSpacing ? '1.2px' : '0px');
+            const btnLS = document.getElementById('btnA11yLetterSpacing');
+            if (btnLS) btnLS.classList.toggle('active', a11yState.letterSpacing);
+
+            // Tipografia mais legível
+            root.style.setProperty('--font-family', a11yState.readableFont ? 'Arial, Helvetica, sans-serif' : "'Plus Jakarta Sans', sans-serif");
+            const btnRF = document.getElementById('btnA11yReadableFont');
+            if (btnRF) btnRF.classList.toggle('active', a11yState.readableFont);
+
+            // Classes no HTML
+            root.classList.toggle('a11y-high-contrast', a11yState.highContrast);
+            root.classList.toggle('a11y-grayscale', a11yState.grayscale);
+            root.classList.toggle('a11y-highlight-links', a11yState.highlightLinks);
+            root.classList.toggle('a11y-focus-visible', a11yState.focusVisible);
+            root.classList.toggle('a11y-reduced-motion', a11yState.reducedMotion);
+            root.classList.toggle('a11y-large-cursor', a11yState.largeCursor);
+
+            // Sincronizar Checkboxes
+            const chkHC = document.getElementById('chkA11yHighContrast');
+            if (chkHC) chkHC.checked = a11yState.highContrast;
+
+            const chkGS = document.getElementById('chkA11yGrayscale');
+            if (chkGS) chkGS.checked = a11yState.grayscale;
+
+            const chkHL = document.getElementById('chkA11yHighlightLinks');
+            if (chkHL) chkHL.checked = a11yState.highlightLinks;
+
+            const chkFV = document.getElementById('chkA11yFocusVisible');
+            if (chkFV) chkFV.checked = a11yState.focusVisible;
+
+            const chkRM = document.getElementById('chkA11yReducedMotion');
+            if (chkRM) chkRM.checked = a11yState.reducedMotion;
+
+            const chkLC = document.getElementById('chkA11yLargeCursor');
+            if (chkLC) chkLC.checked = a11yState.largeCursor;
+        }
+
+        function abrirPainelAcessibilidade() {
+            const modal = document.getElementById('pxA11yModal');
+            if (modal) {
+                modal.classList.add('show');
+                const closeBtn = modal.querySelector('.a11y-modal-close');
+                if (closeBtn) closeBtn.focus();
+            }
+        }
+
+        function fecharPainelAcessibilidade() {
+            const modal = document.getElementById('pxA11yModal');
+            if (modal) modal.classList.remove('show');
+            const btnFonte = document.getElementById('btnFonte');
+            if (btnFonte) btnFonte.focus();
+        }
+
+        function alterarEscalaFonte(delta) {
+            a11yState.fontScale += delta;
+            salvarEstadoAcessibilidade();
+        }
+
+        function resetarEscalaFonte() {
+            a11yState.fontScale = 1.0;
+            salvarEstadoAcessibilidade();
+        }
+
+        function alternarEspacamentoLinha() {
+            a11yState.lineHeight = !a11yState.lineHeight;
+            salvarEstadoAcessibilidade();
+        }
+
+        function alternarEspacamentoLetras() {
+            a11yState.letterSpacing = !a11yState.letterSpacing;
+            salvarEstadoAcessibilidade();
+        }
+
+        function alternarFonteLegivel() {
+            a11yState.readableFont = !a11yState.readableFont;
+            salvarEstadoAcessibilidade();
+        }
+
+        function alternarAltoContraste() {
+            a11yState.highContrast = !a11yState.highContrast;
+            salvarEstadoAcessibilidade();
+        }
+
+        function alternarEscalaCinza() {
+            a11yState.grayscale = !a11yState.grayscale;
+            salvarEstadoAcessibilidade();
+        }
+
+        function alternarDestaqueLinks() {
+            a11yState.highlightLinks = !a11yState.highlightLinks;
+            salvarEstadoAcessibilidade();
+        }
+
+        function alternarDestaqueFoco() {
+            a11yState.focusVisible = !a11yState.focusVisible;
+            salvarEstadoAcessibilidade();
+        }
+
+        function alternarReduzirAnimacoes() {
+            a11yState.reducedMotion = !a11yState.reducedMotion;
+            salvarEstadoAcessibilidade();
+        }
+
+        function alternarCursorAmpliado() {
+            a11yState.largeCursor = !a11yState.largeCursor;
+            salvarEstadoAcessibilidade();
+        }
+
+        function restaurarAcessibilidadePadrao() {
+            a11yState = {
+                fontScale: 1.0,
+                highContrast: false,
+                grayscale: false,
+                highlightLinks: false,
+                focusVisible: false,
+                lineHeight: false,
+                letterSpacing: false,
+                readableFont: false,
+                reducedMotion: false,
+                largeCursor: false
+            };
+            salvarEstadoAcessibilidade();
+        }
+
+        // Suporte ao Fechamento do Modal com Tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modalA11y = document.getElementById('pxA11yModal');
+                if (modalA11y && modalA11y.classList.contains('show')) {
+                    fecharPainelAcessibilidade();
+                }
+            }
+        });
+
+        // Inicializar Estado de Acessibilidade ao Carregar
+        carregarEstadoAcessibilidade();
 
         // TEMA ESCURO / CLARO
         const themeToggleBtn = document.getElementById('themeToggleBtn');    
