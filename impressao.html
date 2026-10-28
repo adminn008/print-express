@@ -9,7 +9,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/print-express/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/print-express/images/favicon-16x16.png">
     <link rel="manifest" href="/print-express/images/site.webmanifest">
-    <meta name="theme-color" content="#0070f3">
+    <meta name="theme-color" content="#0284c7">
     <!-- jsPDF para geração do comprovante PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -26,6 +26,8 @@
         --accent-light: rgba(2, 132, 199, 0.08);
         --green: #10b981;
         --danger: #ef4444;
+        --amber: #f59e0b;
+        --amber-light: rgba(245, 158, 11, 0.1);
         --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
         --font-scale: 1rem;
     }
@@ -38,6 +40,7 @@
         --text-main: #f8fafc;
         --text-muted: #94a3b8;
         --accent-light: rgba(56, 189, 248, 0.12);
+        --amber-light: rgba(245, 158, 11, 0.15);
         --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
     }
 
@@ -149,151 +152,159 @@
         display: block;
     }
 
-    /* ESTILOS DA TABELA DE PREÇOS (RENOVADA E VISUALMENTE APRIMORADA) */
-    .tabela-precos-card {
+    /* 1. NOVA TABELA DE PREÇOS MODERNA E ELEGANTE */
+    .tabela-precos-moderna {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
-        border-radius: 20px;
-        padding: 28px;
+        border-radius: 24px;
+        padding: 32px;
         box-shadow: var(--shadow);
         display: flex;
         flex-direction: column;
+        gap: 24px;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .tabela-precos-topo {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 16px;
+    }
+
+    .tabela-precos-topo h2 {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--text-main);
+        letter-spacing: -0.5px;
+    }
+
+    .tabela-precos-topo p {
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+
+    .tabela-grid-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 20px;
     }
 
-    .tabela-precos-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 2px solid var(--primary);
-        padding-bottom: 14px;
-    }
-
-    .tabela-precos-header h2 {
-        font-size: 20px;
-        font-weight: 800;
-        color: var(--primary);
-        letter-spacing: -0.5px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin: 0;
-    }
-
-    .tabela-precos-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-    }
-
-    @media (max-width: 600px) {
-        .tabela-precos-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .tabela-categoria-box {
+    .preco-bloco-card {
         background: var(--bg-input);
         border: 1px solid var(--border-color);
-        border-radius: 16px;
-        padding: 18px;
+        border-radius: 18px;
+        padding: 22px;
         display: flex;
         flex-direction: column;
-        gap: 14px;
+        gap: 16px;
+        position: relative;
+        overflow: hidden;
     }
 
-    .tabela-categoria-box.pb-theme {
-        border-top: 4px solid #334155;
+    .preco-bloco-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px -10px rgba(0,0,0,0.08);
+        border-color: var(--green);
     }
 
-    [data-theme="dark"] .tabela-categoria-box.pb-theme {
-        border-top: 4px solid #64748b;
-    }
-
-    .tabela-categoria-box.color-theme {
-        border-top: 4px solid var(--primary);
-    }
-
-    .cat-titulo {
+    .preco-bloco-titulo {
         font-size: 15px;
         font-weight: 800;
         color: var(--text-main);
         display: flex;
         align-items: center;
-        gap: 6px;
-        letter-spacing: -0.3px;
+        gap: 8px;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 10px;
     }
 
-    .cat-itens-lista {
+    .preco-itens-lista {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
     }
 
-    .preco-linha-item {
+    .preco-item-linha {
         display: flex;
         justify-content: space-between;
         align-items: center;
         font-size: 13px;
         color: var(--text-muted);
         font-weight: 600;
-        padding: 6px 0;
-        border-bottom: 1px dashed var(--border-color);
     }
 
-    .preco-linha-item:last-child {
-        border-bottom: none;
-    }
-
-    .preco-linha-item.destaque-especial {
-        background: var(--accent-light);
-        padding: 10px 12px;
+    .preco-item-linha .tag-preco-verde {
+        background: rgba(16, 185, 129, 0.12);
+        color: var(--green);
+        font-weight: 800;
+        padding: 5px 12px;
         border-radius: 10px;
-        border-bottom: none;
-        border: 1px solid rgba(2, 132, 199, 0.2);
-    }
-
-    .preco-linha-item.destaque-especial .cat-nome {
-        color: var(--primary);
-        font-weight: 700;
-    }
-
-    .badge-valor-tabela {
-        background: var(--bg-card);
-        color: var(--primary);
-        font-weight: 800;
-        padding: 5px 10px;
-        border-radius: 8px;
-        font-size: 13px;
-        border: 1px solid var(--border-color);
-        white-space: nowrap;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-    }
-
-    .badge-valor-destaque {
-        background: var(--primary);
-        color: #ffffff;
-        font-weight: 800;
-        padding: 5px 10px;
-        border-radius: 8px;
-        font-size: 13px;
+        font-size: 14px;
+        border: 1px solid rgba(16, 185, 129, 0.25);
         white-space: nowrap;
     }
 
-    .frente-verso-destaque {
-        background: var(--accent-light);
-        border: 1px solid var(--primary);
+    .preco-subdescricao {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-style: italic;
+        margin-top: -4px;
+    }
+
+    .frente-verso-rodape {
+        background: var(--amber-light);
+        border: 1px solid var(--amber);
         border-radius: 14px;
         padding: 14px 18px;
         font-size: 14px;
         font-weight: 700;
-        color: var(--primary);
+        color: var(--amber);
         text-align: center;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.05);
+    }
+
+    [data-theme="dark"] .frente-verso-rodape {
+        color: #fbbf24;
+        border-color: #f59e0b;
+    }
+
+    /* 2. VITRINE EXCLUSIVA PARA CONFERÊNCIA */
+    .conferencia-vitrine-exclusiva {
+        background: linear-gradient(135deg, var(--amber-light) 0%, rgba(245, 158, 11, 0.05) 100%);
+        border: 1px solid var(--amber);
+        border-radius: 20px;
+        padding: 24px 28px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        box-shadow: var(--shadow);
+        animation: fadeIn 0.4s ease;
+    }
+
+    .conferencia-vitrine-titulo {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .conferencia-vitrine-texto {
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--text-muted);
+        max-width: 580px;
+        margin: 0 auto;
+        line-height: 1.5;
     }
 
     /* VITRINE DE TIPOS DE IMPRESSÃO */
@@ -339,66 +350,6 @@
     .tipo-card-item p {
         font-size: 13px;
         color: var(--text-muted);
-    }
-
-    /* VITRINE VISUAL DOS CÁLCULOS */
-    .vitrine-calculos-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: 20px;
-        padding: 24px;
-        box-shadow: var(--shadow);
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-    .vitrine-calculos-card h2 {
-        font-size: 20px;
-        font-weight: 800;
-        color: var(--primary);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 12px;
-    }
-    .vitrine-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 14px;
-    }
-    .vitrine-item {
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: 14px;
-        padding: 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-    .vitrine-item h4 {
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--primary);
-        border-bottom: 1px dashed var(--border-color);
-        padding-bottom: 6px;
-    }
-    .vitrine-item ul {
-        list-style: none;
-        font-size: 13px;
-        color: var(--text-muted);
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-    .vitrine-item .vitrine-total {
-        font-weight: 700;
-        color: var(--text-main);
-        margin-top: 4px;
-        border-top: 1px solid var(--border-color);
-        padding-top: 4px;
-        display: flex;
-        justify-content: space-between;
     }
 
     /* MODAL DE IMAGEM FULLSCREEN E ZOOM */
@@ -498,17 +449,6 @@
         border-radius: 12px;
         font-size: 13px;
         font-weight: 700;
-        text-align: center;
-    }
-
-    .alerta-conferencia-destaque {
-        background: rgba(2, 132, 199, 0.12);
-        border: 1px solid var(--primary);
-        color: var(--primary);
-        padding: 14px;
-        border-radius: 12px;
-        font-size: 15px;
-        font-weight: 800;
         text-align: center;
     }
 
@@ -709,24 +649,6 @@
     }
     .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
 
-    .btn-secondary {
-        background: var(--bg-input);
-        color: var(--primary);
-        border: 1px solid var(--primary);
-        padding: 10px 14px;
-        font-size: 14px;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-    }
-    .btn-secondary:hover {
-        background: var(--accent-light);
-    }
-
     .btn-whatsapp {
         background: #25D366;
         color: white;
@@ -912,6 +834,109 @@
         color: var(--primary);
     }
 
+    /* 6. MODAL DE CARREGAMENTO ANIMADO DO COMPROVANTE */
+    .modal-loading-pdf {
+        display: none;
+        position: fixed;
+        z-index: 999999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(6px);
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-loading-pdf.active {
+        display: flex;
+    }
+    .loading-card-content {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 32px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        animation: fadeIn 0.3s ease;
+    }
+    .spinner-animado {
+        width: 50px;
+        height: 50px;
+        border: 4px solid var(--border-color);
+        border-top: 4px solid var(--green);
+        border-radius: 50%;
+        margin: 0 auto;
+        animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 7. POP-UP DE ATUALIZAÇÃO DA PÁGINA */
+    .popup-atualizacao {
+        display: none;
+        position: fixed;
+        z-index: 999998;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(4px);
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+    .popup-atualizacao.active {
+        display: flex;
+    }
+    .popup-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 32px;
+        max-width: 440px;
+        width: 100%;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        position: relative;
+        animation: fadeIn 0.4s ease;
+    }
+    .popup-close-btn {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .popup-close-btn:hover {
+        background: var(--primary);
+        color: #ffffff;
+        border-color: var(--primary);
+    }
+
     @media (max-width: 500px) {
         body { padding: 16px 10px 80px 10px; }
         .summary-grid { grid-template-columns: 1fr; }
@@ -939,70 +964,99 @@
         <p>Impressões, Xerox, Currículos e Serviços Rápidos</p>    
     </header>    
 
-    <!-- 1. TABELA DE VALORES (ESTILIZADA E ATUALIZADA) -->
-    <div class="tabela-precos-card">
-        <div class="tabela-precos-header">
+    <!-- 1. NOVA TABELA DE PREÇOS MODERNA E ELEGANTE -->
+    <div class="tabela-precos-moderna">
+        <div class="tabela-precos-topo">
             <h2>💰 TABELA DE PREÇOS</h2>
+            <p>Valores claros, transparentes e acessíveis para seus documentos</p>
         </div>
-        
-        <div class="tabela-precos-grid">
-            <!-- COLUNA P&B -->
-            <div class="tabela-categoria-box pb-theme">
-                <div class="cat-titulo">🖤 P&B SIMPLES</div>
-                <div class="cat-itens-lista">
-                    <div class="preco-linha-item">
-                        <span>De 1ª a 19ª / folha</span>
-                        <span class="badge-valor-tabela">R$ 0,50 cada</span>
-                    </div>
-                    <div class="preco-linha-item">
-                        <span>De 20ª a 99ª / folha</span>
-                        <span class="badge-valor-tabela">R$ 0,40 / adicional</span>
-                    </div>
-                    <div class="preco-linha-item">
-                        <span>De 100ª ou mais / folha</span>
-                        <span class="badge-valor-tabela">R$ 0,35 / adicional</span>
-                    </div>
-                    <p>Texto, documentos e Xerox simples.</p>
-                </div>
 
-                <div class="cat-titulo" style="margin-top: 8px; border-top: 1px dashed var(--border-color); padding-top: 12px;">🖤 P&B COBERTURA ALTA</div>
-                <div class="cat-itens-lista">
-                    <div class="preco-linha-item">
-                        <span>Cobertura Alta</span>
-                        <span class="badge-valor-tabela">R$ 1,00 / folha</span>
-                    </div>
-                    <p>Grandes áreas pretas, fundos escuros.</p>
+        <div class="tabela-grid-cards">
+            <!-- BLOCO P&B SIMPLES -->
+            <div class="preco-bloco-card">
+                <div class="preco-bloco-titulo">
+                    🖤 P&B SIMPLES
                 </div>
+                <div class="preco-itens-lista">
+                    <div class="preco-item-linha">
+                        <span>De 1ª a 19ª</span>
+                        <span class="tag-preco-verde">R$ 0,50 cada</span>
+                    </div>
+                    <div class="preco-item-linha">
+                        <span>De 20ª a 99ª</span>
+                        <span class="tag-preco-verde">R$ 0,40 / adicional</span>
+                    </div>
+                    <div class="preco-item-linha">
+                        <span>De 100ª ou mais</span>
+                        <span class="tag-preco-verde">R$ 0,35 / adicional</span>
+                    </div>
+                </div>
+                <div class="preco-subdescricao">Ideal para textos, trabalhos escolares e documentos em geral.</div>
             </div>
 
-            <!-- COLUNA COLORIDA -->
-            <div class="tabela-categoria-box color-theme">
-                <div class="cat-titulo">🎨 IMPRESSÃO COLORIDA</div>
-                <div class="cat-itens-lista">
-                    <div class="preco-linha-item">
+            <!-- BLOCO P&B COBERTURA ALTA -->
+            <div class="preco-bloco-card">
+                <div class="preco-bloco-titulo">
+                    🖤 P&B COBERTURA ALTA
+                </div>
+                <div class="preco-itens-lista">
+                    <div class="preco-item-linha">
+                        <span>Preço por folha</span>
+                        <span class="tag-preco-verde">R$ 1,00 / folha</span>
+                    </div>
+                </div>
+                <div class="preco-subdescricao">Para páginas com grandes áreas pretas e fundos escuros.</div>
+            </div>
+
+            <!-- BLOCO COLORIDA POUCA / MÉDIA -->
+            <div class="preco-bloco-card">
+                <div class="preco-bloco-titulo">
+                    🎨 COLORIDA — POUCA / MÉDIA
+                </div>
+                <div class="preco-itens-lista">
+                    <div class="preco-item-linha">
                         <span>Pouca Cor</span>
-                        <span class="badge-valor-tabela">R$ 1,00 / folha</span>
+                        <span class="tag-preco-verde">R$ 1,00 / folha</span>
                     </div>
-                    <p>Títulos, detalhes, logos simples.</p>
-                    <div class="preco-linha-item destaque-especial" style="flex-direction: column; align-items: flex-start; gap: 4px;">
-                        <div style="display: flex; width: 100%; align-items: center; justify-content: space-between;">
-                            <span class="cat-nome">Média Cor</span>
-                            <span class="badge-valor-destaque">Avulsa: R$ 1,35 / folha</span>
-                        </div>
-                        <div style="font-size: 11px; color: var(--text-muted); width: 100%; text-align: right;">A partir de 6 folhas: <strong>R$ 1,20 cada</strong></div>
-                        <p>Vários elementos coloridos.</p>
+                    <div class="preco-item-linha">
+                        <span>Média Cor (Avulsa)</span>
+                        <span class="tag-preco-verde">R$ 1,35</span>
                     </div>
-                    <div class="preco-linha-item">
-                        <span>Cobertura Total</span>
-                        <span class="badge-valor-tabela">R$ 2,00 / folha</span>
+                    <div class="preco-item-linha">
+                        <span>Média Cor (A partir de 6)</span>
+                        <span class="tag-preco-verde">R$ 1,20 cada</span>
                     </div>
-                    <p>Fotos, fundos e grande cobertura de cor.</p>
                 </div>
+                <div class="preco-subdescricao">Perfeito para gráficos, logotipos, títulos e ilustrações moderadas.</div>
+            </div>
+
+            <!-- BLOCO COLORIDA COBERTURA TOTAL -->
+            <div class="preco-bloco-card">
+                <div class="preco-bloco-titulo">
+                    🎨 COLORIDA — COBERTURA TOTAL
+                </div>
+                <div class="preco-itens-lista">
+                    <div class="preco-item-linha">
+                        <span>Preço por folha</span>
+                        <span class="tag-preco-verde">R$ 2,00 / folha</span>
+                    </div>
+                </div>
+                <div class="preco-subdescricao">Indicado para fotografias e páginas inteiramente coloridas.</div>
             </div>
         </div>
 
-        <div class="frente-verso-destaque">
+        <div class="frente-verso-rodape">
             ℹ️ <strong>Frente e Verso:</strong> +50% do valor da folha
+        </div>
+    </div>
+
+    <!-- 2. VITRINE EXCLUSIVA PARA CONFERÊNCIA -->
+    <div class="conferencia-vitrine-exclusiva">
+        <div class="conferencia-vitrine-titulo">
+            🟡 CONFERÊNCIA ANTES DE IMPRIMIR
+        </div>
+        <div class="conferencia-vitrine-texto">
+            Sempre revisamos seu arquivo antes de imprimir! Caso precisemos ajustar algo ou confirmar o tipo de impressão, entramos em contato com você. Assim garantimos que tudo saia exatamente como você espera!
         </div>
     </div>
 
@@ -1030,44 +1084,6 @@
             <div class="tipo-card-item">
                 <h4>🖼️ Colorida Cobertura Total</h4>
                 <p>Fotografias e fundos inteiros coloridos (acima de 60% da página).</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- 3. VITRINE DE CÁLCULOS -->
-    <!-- <div class="vitrine-calculos-card">
-        <h2>✨ Vitrine de Exemplos de Cálculo</h2>
-        <p class="field-hint">Veja abaixo exemplos práticos de como o valor do pedido é composto conforme as nossas regras:</p>
-        <div class="vitrine-grid">
-            <div class="vitrine-item">
-                <h4>Exemplo 1 — 20 páginas P&B simples</h4>
-                <ul>
-                    <li>19 páginas × R$ 0,50 = R$ 9,50</li>
-                    <li>1 página × R$ 0,40 = R$ 0,40</li>
-                </ul>
-                <div class="vitrine-total"><span>Total:</span> <strong>R$ 9,90</strong></div>
-            </div>
-            <div class="vitrine-item">
-                <h4>Exemplo 2 — 3 páginas P&B simples</h4>
-                <ul>
-                    <li>3 páginas × R$ 0,50 = R$ 1,50</li>
-                </ul>
-                <div class="vitrine-total"><span>Total:</span> <strong>R$ 1,50</strong></div>
-            </div>
-            <div class="vitrine-item">
-                <h4>Exemplo 3 — 1 página P&B simples</h4>
-                <ul>
-                    <li>1 página × R$ 0,50 = R$ 0,50</li>
-                </ul>
-                <div class="vitrine-total"><span>Total:</span> <strong>R$ 0,50</strong></div>
-            </div>
-            <div class="vitrine-item">
-                <h4>Exemplo 4 — Arquivo misto</h4>
-                <ul>
-                    <li>25 páginas P&B simples = R$ 11,90</li>
-                    <li>8 págs coloridas média cor = R$ 9,60</li>
-                </ul>
-                <div class="vitrine-total"><span>Total:</span> <strong>R$ 21,50</strong></div>
             </div>
         </div>
     </div>
@@ -1238,16 +1254,12 @@
         <input type="hidden" id="hidden_tamanho_papel" name="Tamanho do Papel" value="A4">
         <input type="hidden" id="hidden_orientacao" name="Orientacao do Cliente" value="">
         <input type="hidden" id="hidden_redimensionamento" name="Servico adicional: Redimensionamento do Documento" value="Nao">
+        <input type="hidden" id="hidden_dois_arquivos" name="Servico adicional: 2 arquivos na mesma folha" value="Nao">
         <input type="hidden" id="hidden_conferencia" name="Servico adicional: Conferencia do Arquivo" value="Nao">
 
         <div class="alerta-desconsiderar">    
             ⚠️ ATENÇÃO: Pedidos sem pagamento confirmado serão desconsiderados e cancelados automaticamente.    
         </div>    
-
-        <div class="alerta-conferencia-destaque">
-            🟡 <strong>CONFERÊNCIA ANTES DE IMPRIMIR</strong>
-            <p>Sempre revisamos seu arquivo antes de imprimir! Caso precisemos ajustar algo ou confirmar o tipo de impressão, entramos em contato com você. Assim garantimos que tudo saia exatamente como você espera!</p>
-        </div>
 
         <h2>Monte seu Pedido</h2>    
 
@@ -1359,6 +1371,12 @@
         <div class="form-group">    
             <label>Serviços e Opções Extras:</label>    
 
+            <!-- 4. NOVO SERVIÇO ADICIONAL -->
+            <label class="checkbox-card">    
+                <input type="checkbox" id="opt_dois_arquivos" name="Impressao de 2 arquivos na mesma folha" value="Sim (A partir de R$ 1,50)">    
+                <span>📄 <strong>Impressão de 2 arquivos na mesma folha (A partir de R$ 1,50):</strong> Juntamos documentos pequenos para você economizar papel.</span>    
+            </label>
+
             <label class="checkbox-card">    
                 <input type="checkbox" id="opt_redimensionamento" name="Redimensionamento do Documento" value="Sim (A partir de R$ 2,00)">    
                 <span>📐 <strong>Redimensionamento do Documento (Adicional — A partir de R$ 2,00):</strong> Ajuste do conteúdo para outro tamanho de impressão, mantendo a proporção adequada.</span>    
@@ -1444,7 +1462,7 @@
                 <span id="subtotalExibicao">R$ 0,50</span>    
             </div>    
             <div class="price-row" id="rowExtra" style="display: none; color: var(--primary);">    
-                <span>Adicionais Selecionados:</span>    
+                <span id="extraNomeExibicao">Adicionais Selecionados:</span>    
                 <span id="extraExibicao">+ R$ 0,00</span>    
             </div>    
             <div class="price-row total">    
@@ -1472,6 +1490,29 @@
     </form>    
 
     <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>    
+
+    <!-- 6. MODAL DE CARREGAMENTO ANIMADO DO COMPROVANTE -->
+    <div id="modalLoadingPdf" class="modal-loading-pdf">
+        <div class="loading-card-content">
+            <div class="spinner-animado"></div>
+            <h3 style="font-size: 18px; color: var(--text-main);">📄 Preparando seu comprovante!</h3>
+            <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5;">
+                "Estamos organizando os detalhes do seu pedido para deixar tudo prontinho para você."
+            </p>
+        </div>
+    </div>
+
+    <!-- 7. POP-UP DE ATUALIZAÇÃO DA PÁGINA -->
+    <div id="popupAtualizacao" class="popup-atualizacao">
+        <div class="popup-card">
+            <button type="button" class="popup-close-btn" onclick="fecharPopupAtualizacao()">&times;</button>
+            <h3 style="font-size: 20px; color: var(--primary); font-weight: 800;">✨ O WelGrafx está de cara nova!</h3>
+            <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+                "Atualizamos alguns detalhes da página para deixar sua experiência mais bonita, organizada e prática. Confira as novidades!"
+            </p>
+            <button type="button" class="btn-primary" onclick="fecharPopupAtualizacao()" style="margin-top: 8px;">Conhecer Novidades</button>
+        </div>
+    </div>
 
     <div id="secaoCardChamativo" class="card-chamativo">    
         <h3 style="font-size: 18px; color: var(--primary);">✨ Impressão Rápida e Cuidadosa!</h3>    
@@ -1518,6 +1559,20 @@
 
     let permitirSaida = false;    
     let naAbaPagamento = false;    
+
+    // 7. CONTROLE DO POP-UP DE ATUALIZAÇÃO
+    function fecharPopupAtualizacao() {
+        const popup = document.getElementById("popupAtualizacao");
+        if (popup) popup.classList.remove("active");
+        sessionStorage.setItem("welgrafx_atualizacao_vista", "true");
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        if (!sessionStorage.getItem("welgrafx_atualizacao_vista")) {
+            const popup = document.getElementById("popupAtualizacao");
+            if (popup) popup.classList.add("active");
+        }
+    });
 
     let fonteAmpliada = false;    
     function alternarTamanhoFonte() {    
@@ -1594,10 +1649,12 @@
     const inputQtdPaginas = document.getElementById("qtd_paginas");
     const selectAcabamento = document.getElementById("refile");
     const optRedimensionamento = document.getElementById("opt_redimensionamento");
+    const optDoisArquivos = document.getElementById("opt_dois_arquivos");
 
     const valorExibicao = document.getElementById("valorTotalExibicao");    
     const subtotalExibicao = document.getElementById("subtotalExibicao");    
     const extraExibicao = document.getElementById("extraExibicao");    
+    const extraNomeExibicao = document.getElementById("extraNomeExibicao");
     const calculoDetalhadoExibicao = document.getElementById("calculoDetalhadoExibicao");
     const rowExtra = document.getElementById("rowExtra");    
 
@@ -1634,6 +1691,7 @@
         let subtotal = 0;    
         let extras = 0;    
         let textoCalculo = "";
+        let extraNomesArr = [];
 
         let totalPaginasDoc = parseInt(inputQtdPaginas ? inputQtdPaginas.value : 1);
         if (isNaN(totalPaginasDoc) || totalPaginasDoc < 1) totalPaginasDoc = 1;
@@ -1688,8 +1746,20 @@
         textoBadge += ` × ${copias} cópia(s) = ${folhasTotais} folha(s) físicas estimadas.`;
         if (badge) badge.innerHTML = textoBadge;
 
+        // 3 & 4. GERENCIAMENTO DE ADICIONAIS NO SUBTOTAL SEM SOMAR AUTOMATICAMENTE A MENOS QUE SELECIONADO
+        if (optDoisArquivos && optDoisArquivos.checked) {
+            extras += 1.50;
+            extraNomesArr.push("2 arquivos na mesma folha (R$ 1,50)");
+            const elemDois = document.getElementById("hidden_dois_arquivos");
+            if (elemDois) elemDois.value = "Sim (R$ 1,50)";
+        } else {
+            const elemDois = document.getElementById("hidden_dois_arquivos");
+            if (elemDois) elemDois.value = "Nao";
+        }
+
         if (optRedimensionamento && optRedimensionamento.checked) {
             extras += 2.00;
+            extraNomesArr.push("Redimensionamento (R$ 2,00)");
             const elemRedim = document.getElementById("hidden_redimensionamento");
             if (elemRedim) elemRedim.value = "Sim (R$ 2,00)";
         } else {
@@ -1704,6 +1774,7 @@
 
         if (extras > 0 && rowExtra && extraExibicao) {    
             rowExtra.style.display = "flex";    
+            if (extraNomeExibicao) extraNomeExibicao.innerText = `Adicionais (${extraNomesArr.join(", ")}):`;
             extraExibicao.innerText = `+ R$ ${extras.toFixed(2).replace('.', ',')}`;    
         } else if (rowExtra) {    
             rowExtra.style.display = "none";    
@@ -1853,6 +1924,7 @@
     if (inputQtdPaginas) inputQtdPaginas.addEventListener("input", calcularValor);
     if (selectAcabamento) selectAcabamento.addEventListener("change", calcularValor);
     if (optRedimensionamento) optRedimensionamento.addEventListener("change", calcularValor);
+    if (optDoisArquivos) optDoisArquivos.addEventListener("change", calcularValor);
 
     document.querySelectorAll('input[name="Lado da Impressao"]').forEach(r => {
         r.addEventListener("change", calcularValor);
@@ -1866,7 +1938,7 @@
         inputTexto.addEventListener("input", atualizarResumoConferencia);
     }
 
-    // GERAÇÃO DE COMPROVANTE PDF
+    // 5. COMPROVANTE PDF MAIS BONITO E ORGANIZADO
     function gerarComprovantePDF(dadosPedido) {
         try {
             const { jsPDF } = window.jspdf;
@@ -1876,21 +1948,24 @@
                 format: 'a4'
             });
 
+            // Cabeçalho institucional
             doc.setFont("Helvetica", "bold");
-            doc.setFontSize(20);
+            doc.setFontSize(22);
             doc.setTextColor(2, 132, 199);
             doc.text("WelGrafx", 20, 20);
 
             doc.setFont("Helvetica", "normal");
             doc.setFontSize(10);
             doc.setTextColor(100, 116, 139);
-            doc.text("Comprovante de solicitação de impressão", 20, 27);
+            doc.text("Comprovante Oficial de Solicitação de Impressão", 20, 27);
 
-            doc.setDrawColor(226, 232, 240);
+            // Linha divisória tracejada
+            doc.setDrawColor(203, 213, 225);
+            doc.setLineWidth(0.5);
             doc.line(20, 32, 190, 32);
 
             doc.setFont("Helvetica", "bold");
-            doc.setFontSize(12);
+            doc.setFontSize(13);
             doc.setTextColor(15, 23, 42);
             doc.text("Detalhes do Pedido", 20, 42);
 
@@ -1900,9 +1975,11 @@
             let y = 50;
             const addItem = (label, val) => {
                 doc.setFont("Helvetica", "bold");
+                doc.setTextColor(71, 85, 105);
                 doc.text(label + ":", 20, y);
                 doc.setFont("Helvetica", "normal");
-                doc.text(String(val || "-"), 70, y);
+                doc.setTextColor(15, 23, 42);
+                doc.text(String(val || "-"), 75, y);
                 y += 7;
             };
 
@@ -1922,22 +1999,25 @@
             addItem("Observações", dadosPedido.observacoes || "Nenhuma");
             addItem("Situação do Valor", dadosPedido.situacaoValor);
 
-            y += 4;
-            doc.setDrawColor(226, 232, 240);
+            y += 2;
+            // Linha divisória tracejada
+            doc.setLineDashPattern([1, 1], 0);
             doc.line(20, y, 190, y);
+            doc.setLineDashPattern([], 0); // reset
             y += 10;
 
+            // Seção de Valores em destaque verde
             doc.setFont("Helvetica", "bold");
             doc.setFontSize(14);
             doc.setTextColor(16, 185, 129);
-            doc.text(`Valor Final: ${dadosPedido.valorTotal}`, 20, y);
+            doc.text(`Valor Final do Pedido: ${dadosPedido.valorTotal}`, 20, y);
 
-            y += 20;
+            y += 25;
             doc.setFont("Helvetica", "italic");
             doc.setFontSize(9);
             doc.setTextColor(100, 116, 139);
             doc.text("WelGrafx — Emitido eletronicamente via sistema de autoatendimento.", 20, y);
-            doc.text("Este documento serve como comprovante de solicitação.", 20, y + 5);
+            doc.text("Este documento serve como comprovante oficial de solicitação.", 20, y + 5);
 
             doc.save("comprovante-welgrafx.pdf");
         } catch (err) {
@@ -1949,6 +2029,7 @@
     const telaSucesso = document.getElementById("telaSucesso");
     const boxDetalhesPagamento = document.getElementById("boxDetalhesPagamento");
     const btnNotificarWhats = document.getElementById("btnNotificarWhats");
+    const modalLoadingPdf = document.getElementById("modalLoadingPdf");
 
     formImpressao.addEventListener("submit", function (e) {
         const totalCalculado = calcularValor();
@@ -1960,6 +2041,9 @@
         if (elemHiddenTipoText) elemHiddenTipoText.value = tipoTextoObj ? tipoTextoObj.text : "P&B";
 
         naAbaPagamento = true;
+
+        // 6. EXIBIR MENSAGEM ANIMADA DURANTE DOWNLOAD DO COMPROVANTE
+        if (modalLoadingPdf) modalLoadingPdf.classList.add("active");
 
         const protocolo = "WG-" + Math.floor(100000 + Math.random() * 900000);
         const agora = new Date();
@@ -2007,18 +2091,20 @@
         gerarComprovantePDF(dadosComprovante);
 
         setTimeout(function () {
+            if (modalLoadingPdf) modalLoadingPdf.classList.remove("active");
+
             formImpressao.classList.add("hidden");
             const secaoBanner = document.getElementById("secaoBanner");
             const secaoCardChamativo = document.getElementById("secaoCardChamativo");
-            const tabelaCard = document.querySelector(".tabela-precos-card");
+            const tabelaCard = document.querySelector(".tabela-precos-moderna");
+            const conferenciaVitrine = document.querySelector(".conferencia-vitrine-exclusiva");
             const vitrineTipos = document.querySelector(".vitrine-tipos-card");
-            const vitrineCard = document.querySelector(".vitrine-calculos-card");
             const textoExplicativo = document.querySelector(".texto-explicativo-bloco");
             if (secaoBanner) secaoBanner.classList.add("hidden");
             if (secaoCardChamativo) secaoCardChamativo.classList.add("hidden");
             if (tabelaCard) tabelaCard.classList.add("hidden");
+            if (conferenciaVitrine) conferenciaVitrine.classList.add("hidden");
             if (vitrineTipos) vitrineTipos.classList.add("hidden");
-            if (vitrineCard) vitrineCard.classList.add("hidden");
             if (textoExplicativo) textoExplicativo.classList.add("hidden");
 
             const valorFormatado = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
@@ -2052,7 +2138,7 @@
 
             if (telaSucesso) telaSucesso.classList.remove("hidden");
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 800);
+        }, 1200);
     });
 
     document.addEventListener("DOMContentLoaded", function() {
