@@ -401,33 +401,6 @@
         justify-content: space-between;
     }
 
-    /* GRUPOS DE PÁGINAS E CLASSIFICAÇÃO MISTA */
-    .grupos-container {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        margin-top: 8px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: 14px;
-        padding: 16px;
-    }
-    .grupo-item-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: 10px;
-        padding: 10px 14px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        font-size: 13px;
-    }
-    .grupo-acoes {
-        display: flex;
-        gap: 6px;
-    }
-
     /* MODAL DE IMAGEM FULLSCREEN E ZOOM */
     .modal-fullscreen {
         display: none;
@@ -793,6 +766,18 @@
         gap: 14px;
     }
 
+    .qr-code-pix {
+        width: 100%;
+        max-width: 220px;
+        height: auto;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        background: #ffffff;
+        padding: 8px;
+        object-fit: contain;
+        display: block;
+    }
+
     .valor-destaque {
         font-size: 28px;
         font-weight: 800;
@@ -997,7 +982,7 @@
                         <span class="badge-valor-tabela">R$ 1,00/folha</span>
                     </div>
                     <div class="preco-linha-item destaque-especial" style="flex-direction: column; align-items: flex-start; gap: 4px;">
-                        <div style="display: flex; justify-content: space-width; width: 100%; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; width: 100%; align-items: center; justify-content: space-between;">
                             <span class="cat-nome">Média Cor</span>
                             <span class="badge-valor-destaque">Avulsa: R$ 1,35</span>
                         </div>
@@ -1084,8 +1069,8 @@
 
     <!-- TEXTO EXPLICATIVO OBRIGATÓRIO -->
     <div class="texto-explicativo-bloco">
-        <div><strong>📝 Como calculamos arquivos com mistura de P&B e colorido:</strong></div>
-        <div>Cada página do seu arquivo é configurada e cobrada conforme o tipo de impressão que ela tem. Assim você paga apenas pelo que realmente usa!</div>
+        <div><strong>📝 Como funciona o cálculo da impressão:</strong></div>
+        <div>O valor é calculado conforme o tipo de impressão escolhido e a quantidade de páginas. Assim, você consegue conferir os preços e o total estimado antes de finalizar seu pedido!</div>
         <div style="margin-top: 4px;"><strong>✅ Frente e Verso:</strong></div>
         <div>Cada lado é contado como uma página individual. Acréscimo de 50% do valor para o verso na mesma folha.</div>
     </div>
@@ -1247,7 +1232,6 @@
         <input type="hidden" id="hidden_orientacao" name="Orientacao do Cliente" value="">
         <input type="hidden" id="hidden_redimensionamento" name="Servico adicional: Redimensionamento do Documento" value="Nao">
         <input type="hidden" id="hidden_conferencia" name="Servico adicional: Conferencia do Arquivo" value="Nao">
-        <input type="hidden" id="hidden_grupos_detalhe" name="Detalhes dos Grupos de Paginas" value="Unico">
 
         <div class="alerta-desconsiderar">    
             ⚠️ ATENÇÃO: Pedidos sem pagamento confirmado serão desconsiderados e cancelados automaticamente.    
@@ -1283,19 +1267,6 @@
                 <span class="field-hint">Informe quantas páginas tem o seu arquivo ou documento original.</span>
             </div>
 
-            <!-- SELEÇÃO DE MODO: TIPO ÚNICO OU MODO MISTO -->
-            <div class="form-group" style="margin-bottom: 12px;">
-                <label>🎨 Organização das Páginas e Tipos de Impressão:</label>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" name="ModoOrganizacao" value="unico" checked id="modo_unico"> Todo o documento com o mesmo tipo (Impressão comum)
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="ModoOrganizacao" value="grupos" id="modo_grupos"> Arquivo misto (P&B e colorido / Múltiplos grupos)
-                    </label>
-                </div>
-            </div>
-
             <!-- BLOCO TIPO ÚNICO -->
             <div id="blocoTipoUnico" class="form-group" style="margin-bottom: 12px;">    
                 <label for="tipo_impressao">🎨 Tipo de Impressão / Xerox:</label>    
@@ -1307,42 +1278,6 @@
                     <option value="cobertura_total">🖼️ Colorida — Cobertura Total - R$ 2,00/folha</option>    
                 </select>    
             </div>    
-
-            <!-- BLOCO MODO MISTO (INTERVALOS MANUAIS CONFORME REGRAS) -->
-            <div id="blocoGruposIntervalos" class="form-group hidden" style="margin-bottom: 12px;">
-                <span class="field-hint">No modo misto, defina manualmente os intervalos de páginas e os tipos de impressão correspondentes.</span>
-                
-                <div id="containerIntervalosManuais" style="margin-top: 12px;">
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <div style="flex: 1; min-width: 120px;">
-                            <label for="novo_grupo_inicio" style="font-size: 12px;">De (Página):</label>
-                            <input type="number" id="novo_grupo_inicio" value="1" min="1">
-                        </div>
-                        <div style="flex: 1; min-width: 120px;">
-                            <label for="novo_grupo_fim" style="font-size: 12px;">Até (Página):</label>
-                            <input type="number" id="novo_grupo_fim" value="1" min="1">
-                        </div>
-                        <div style="flex: 2; min-width: 180px;">
-                            <label for="novo_grupo_tipo" style="font-size: 12px;">Tipo de Impressão:</label>
-                            <select id="novo_grupo_tipo">
-                                <option value="pb">🖤 P&B Simples</option>
-                                <option value="pb_cobertura_alta">⚫ P&B Cobertura Alta</option>
-                                <option value="pouca_cor">🎨 Colorida Pouca Cor</option>
-                                <option value="media_cor">🌈 Colorida Média Cor</option>
-                                <option value="cobertura_total">🖼️ Colorida Cobertura Total</option>
-                            </select>
-                        </div>
-                        <div style="display: flex; align-items: flex-end;">
-                            <button type="button" class="btn-secondary" onclick="adicionarGrupoPaginas()">➕ Adicionar</button>
-                        </div>
-                    </div>
-
-                    <div id="listaGruposAdicionados" class="grupos-container" style="margin-top: 10px;">
-                        <div style="font-size: 13px; color: var(--text-muted); text-align: center;">Nenhum grupo adicional adicionado.</div>
-                    </div>
-                    <div id="erroGrupos" style="color: var(--danger); font-size: 12px; font-weight: 700; margin-top: 4px; display: none;"></div>
-                </div>
-            </div>
 
             <div class="form-group" style="margin-bottom: 12px;">    
                 <label>🖨️ Lado da Impressão:</label>    
@@ -1575,7 +1510,6 @@
 
     let permitirSaida = false;    
     let naAbaPagamento = false;    
-    let gruposPaginas = []; // Armazena grupos adicionados pelo usuário
 
     let fonteAmpliada = false;    
     function alternarTamanhoFonte() {    
@@ -1589,7 +1523,7 @@
         const arqA4 = document.getElementById("arquivo").files.length;    
         const texto = document.getElementById("textoDireto").value.trim();    
         const obs = document.getElementById("observacoes").value.trim();    
-        return (nome.length > 0 || tel.length > 0 || arqA4 > 0 || texto.length > 0 || obs.length > 0 || gruposPaginas.length > 0);    
+        return (nome.length > 0 || tel.length > 0 || arqA4 > 0 || texto.length > 0 || obs.length > 0);    
     }    
 
     window.addEventListener("beforeunload", function (e) {    
@@ -1645,93 +1579,6 @@
         const currentTheme = document.documentElement.getAttribute('data-theme');    
         aplicarTema(currentTheme === 'dark' ? 'light' : 'dark');    
     });    
-
-    // MODO DE ORGANIZAÇÃO (ÚNICO VS MODO MISTO)
-    const radioModoUnico = document.getElementById("modo_unico");
-    const radioModoGrupos = document.getElementById("modo_grupos");
-    const blocoTipoUnico = document.getElementById("blocoTipoUnico");
-    const blocoGruposIntervalos = document.getElementById("blocoGruposIntervalos");
-
-    if (radioModoUnico && radioModoGrupos) {
-        radioModoUnico.addEventListener("change", function() {
-            if (this.checked) {
-                blocoTipoUnico.classList.remove("hidden");
-                blocoGruposIntervalos.classList.add("hidden");
-                gruposPaginas = [];
-                renderizarGrupos();
-                calcularValor();
-            }
-        });
-        radioModoGrupos.addEventListener("change", function() {
-            if (this.checked) {
-                blocoTipoUnico.classList.add("hidden");
-                blocoGruposIntervalos.classList.remove("hidden");
-                calcularValor();
-            }
-        });
-    }
-
-    function adicionarGrupoPaginas() {
-        const inicio = parseInt(document.getElementById("novo_grupo_inicio").value);
-        const fim = parseInt(document.getElementById("novo_grupo_fim").value);
-        const tipo = document.getElementById("novo_grupo_tipo").value;
-        const totalDoc = parseInt(document.getElementById("qtd_paginas").value) || 1;
-        const divErro = document.getElementById("erroGrupos");
-
-        divErro.style.display = "none";
-        if (isNaN(inicio) || isNaN(fim) || inicio < 1 || fim < 1 || inicio > fim) {
-            divErro.innerText = "⚠️ Intervalo de páginas inválido.";
-            divErro.style.display = "block";
-            return;
-        }
-        if (fim > totalDoc) {
-            divErro.innerText = `⚠️ A página ${fim} ultrapassa o total de páginas do documento (${totalDoc}).`;
-            divErro.style.display = "block";
-            return;
-        }
-
-        gruposPaginas.push({ inicio, fim, tipo });
-        renderizarGrupos();
-        calcularValor();
-    }
-
-    function removerGrupoPaginas(index) {
-        gruposPaginas.splice(index, 1);
-        renderizarGrupos();
-        calcularValor();
-    }
-
-    function renderizarGrupos() {
-        const lista = document.getElementById("listaGruposAdicionados");
-        if (!lista) return;
-
-        if (gruposPaginas.length === 0) {
-            lista.innerHTML = `<div style="font-size: 13px; color: var(--text-muted); text-align: center;">Nenhum grupo adicional adicionado.</div>`;
-            return;
-        }
-
-        const nomesTipos = {
-            'pb': '🖤 P&B Simples',
-            'pb_cobertura_alta': '⚫ P&B Cobertura Alta',
-            'pouca_cor': '🎨 Colorida Pouca Cor',
-            'media_cor': '🌈 Colorida Média Cor',
-            'cobertura_total': '🖼️ Colorida Cobertura Total'
-        };
-
-        let html = "";
-        gruposPaginas.forEach((g, idx) => {
-            const qtdPags = (g.fim - g.inicio) + 1;
-            html += `
-                <div class="grupo-item-card">
-                    <div><strong>Páginas ${g.inicio} a ${g.fim}</strong> (${qtdPags} pág${qtdPags > 1 ? 's' : ''}) — <span>${nomesTipos[g.tipo]}</span></div>
-                    <div class="grupo-acoes">
-                        <button type="button" class="btn-file-action danger" onclick="removerGrupoPaginas(${idx})">Remover</button>
-                    </div>
-                </div>
-            `;
-        });
-        lista.innerHTML = html;
-    }
 
     // CÁLCULO PRECISO E PROGRESSIVO DE PREÇOS
     const selectTipo = document.getElementById("tipo_impressao");    
@@ -1789,71 +1636,29 @@
         const ladoOpcaoObj = document.querySelector('input[name="Lado da Impressao"]:checked');
         const ehFrenteVerso = ladoOpcaoObj && ladoOpcaoObj.value === "Frente e verso";
 
-        let contagemCategorias = {
-            'pb': 0,
-            'pb_cobertura_alta': 0,
-            'pouca_cor': 0,
-            'media_cor': 0,
-            'cobertura_total': 0
-        };
+        let totalPaginasImpressas = totalPaginasDoc * copias;
+        const tipoUnico = selectTipo ? selectTipo.value : 'pb';
 
-        if (gruposPaginas.length > 0) {
-            for (let p = 1; p <= totalPaginasDoc; p++) {
-                let tipoPag = selectTipo ? selectTipo.value : 'pb';
-                for (let g of gruposPaginas) {
-                    if (p >= g.inicio && p <= g.fim) {
-                        tipoPag = g.tipo;
-                        break;
-                    }
-                }
-                if (contagemCategorias[tipoPag] !== undefined) {
-                    contagemCategorias[tipoPag] += 1;
-                } else {
-                    contagemCategorias['pb'] += 1;
-                }
-            }
-        } else {
-            const tipoUnico = selectTipo ? selectTipo.value : 'pb';
-            contagemCategorias[tipoUnico] = totalPaginasDoc;
-        }
-
-        for (let cat in contagemCategorias) {
-            contagemCategorias[cat] *= copias;
-        }
-
-        let detalhesCalculoArr = [];
         let subtotalCalculado = 0;
+        let detalhesCalculoArr = [];
 
-        const qtdPB = contagemCategorias['pb'];
-        if (qtdPB > 0) {
-            const resPB = calcularPrecoPBProgressivo(qtdPB);
-            subtotalCalculado += resPB.custo;
-            detalhesCalculoArr.push(`P&B Simples (${qtdPB} págs): ${resPB.detalhe}`);
-        }
-
-        const qtdPBAlta = contagemCategorias['pb_cobertura_alta'];
-        if (qtdPBAlta > 0) {
-            subtotalCalculado += qtdPBAlta * 1.00;
-            detalhesCalculoArr.push(`${qtdPBAlta} × R$ 1,00 (P&B Alta)`);
-        }
-
-        const qtdPouca = contagemCategorias['pouca_cor'];
-        if (qtdPouca > 0) {
-            subtotalCalculado += qtdPouca * 1.00;
-            detalhesCalculoArr.push(`${qtdPouca} × R$ 1,00 (Pouca Cor)`);
-        }
-
-        const qtdMedia = contagemCategorias['media_cor'];
-        if (qtdMedia > 0) {
-            const precoUnitMedia = qtdMedia >= 6 ? 1.20 : 1.35;
-            subtotalCalculado += qtdMedia * precoUnitMedia;
-            detalhesCalculoArr.push(`${qtdMedia} × R$ ${precoUnitMedia.toFixed(2).replace('.', ',')} (Média Cor)`);
-        }
-
-        const qtdTotalCor = contagemCategorias['cobertura_total'];
-        if (qtdTotalCor > 0) {
-            subtotalCalculado += qtdTotalCor * 2.00;
-            detalhesCalculoArr.push(`${qtdTotalCor} × R$ 2,00 (Cobertura Total)`);
+        if (tipoUnico === 'pb') {
+            const resPB = calcularPrecoPBProgressivo(totalPaginasImpressas);
+            subtotalCalculado = resPB.custo;
+            detalhesCalculoArr.push(`P&B Simples (${totalPaginasImpressas} págs): ${resPB.detalhe}`);
+        } else if (tipoUnico === 'pb_cobertura_alta') {
+            subtotalCalculado = totalPaginasImpressas * 1.00;
+            detalhesCalculoArr.push(`${totalPaginasImpressas} × R$ 1,00 (P&B Alta)`);
+        } else if (tipoUnico === 'pouca_cor') {
+            subtotalCalculado = totalPaginasImpressas * 1.00;
+            detalhesCalculoArr.push(`${totalPaginasImpressas} × R$ 1,00 (Pouca Cor)`);
+        } else if (tipoUnico === 'media_cor') {
+            const precoUnitMedia = totalPaginasImpressas >= 6 ? 1.20 : 1.35;
+            subtotalCalculado = totalPaginasImpressas * precoUnitMedia;
+            detalhesCalculoArr.push(`${totalPaginasImpressas} × R$ ${precoUnitMedia.toFixed(2).replace('.', ',')} (Média Cor)`);
+        } else if (tipoUnico === 'cobertura_total') {
+            subtotalCalculado = totalPaginasImpressas * 2.00;
+            detalhesCalculoArr.push(`${totalPaginasImpressas} × R$ 2,00 (Cobertura Total)`);
         }
 
         if (ehFrenteVerso) {
@@ -1926,11 +1731,7 @@
         };
 
         if (resumoTipo) {
-            if (gruposPaginas.length > 0) {
-                resumoTipo.innerText = "Misto / Múltiplos Grupos";
-            } else {
-                resumoTipo.innerText = tipoMap[selectTipo ? selectTipo.value : 'pb'] || 'P&B Simples';
-            }
+            resumoTipo.innerText = tipoMap[selectTipo ? selectTipo.value : 'pb'] || 'P&B Simples';
         }
         
         let pDoc = parseInt(inputQtdPaginas ? inputQtdPaginas.value : 1);
@@ -1947,7 +1748,7 @@
         const totPag = pDoc * cCop;
 
         if (resumoDocPaginas) resumoDocPaginas.innerText = `📄 Documento: ${pDoc} páginas`;
-        if (resumoOrganizacao) resumoOrganizacao.innerText = gruposPaginas.length > 0 ? `${gruposPaginas.length} grupos personalizados` : "Único tipo / Todas";
+        if (resumoOrganizacao) resumoOrganizacao.innerText = "Único tipo / Todas";
         if (resumoCopias) resumoCopias.innerText = `🔄 Cópias: ${cCop}`;
         if (resumoTotalPaginas) resumoTotalPaginas.innerText = `🖨️ Total de páginas impressas: ${totPag}`;
         if (resumoLado) resumoLado.innerText = strLado;
@@ -1956,12 +1757,10 @@
         const hQtd = document.getElementById("hidden_qtd_paginas");
         const hTotPag = document.getElementById("hidden_total_paginas_impressas");
         const hFolhas = document.getElementById("hidden_folhas_utilizadas");
-        const hGrupos = document.getElementById("hidden_grupos_detalhe");
 
         if (hQtd) hQtd.value = pDoc;
         if (hTotPag) hTotPag.value = totPag;
         if (hFolhas) hFolhas.value = numFolhas;
-        if (hGrupos) hGrupos.value = gruposPaginas.length > 0 ? JSON.stringify(gruposPaginas) : "Tipo único";
 
         const acabTexto = (selectAcabamento && selectAcabamento.value === 'grampeado') ? 'Grampeado' : 'Sem acabamento';
         if (resumoAcabamento) resumoAcabamento.innerText = acabTexto;
@@ -2165,8 +1964,7 @@
         if (arq) nomeArquivo = arq.name;
 
         const qtdP = document.getElementById("qtd_paginas").value;
-        const modoOrgObj = document.querySelector('input[name="ModoOrganizacao"]:checked');
-        const modoStr = modoOrgObj && modoOrgObj.value === 'grupos' ? "Modo misto" : "Impressão comum";
+        const modoStr = "Impressão comum";
         const ladoOpObj = document.querySelector('input[name="Lado da Impressao"]:checked');
         const ladoStr = ladoOpObj ? ladoOpObj.value : "Frente";
         const qtdC = document.getElementById("quantidade").value;
@@ -2177,7 +1975,7 @@
         const acab = document.getElementById("refile").value === 'grampeado' ? 'Grampeado' : 'Sem acabamento';
         const pagForm = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
         const obsText = document.getElementById("observacoes").value;
-        const situacaoVal = modoStr === "Modo misto" ? "Estimativa sujeita à conferência" : "Definitivo";
+        const situacaoVal = "Definitivo";
 
         const dadosComprovante = {
             protocolo,
@@ -2223,6 +2021,7 @@
                         <div class="pix-box-novo">
                             <div style="font-size: 14px; font-weight: 700; color: var(--text-main);">Valor a pagar:</div>
                             <div class="valor-destaque">${valorFormatado}</div>
+                            <img src="qrcode-pix.jpg" alt="QR Code Pix" class="qr-code-pix">
                             <button type="button" class="btn-copiar-pix" onclick="navigator.clipboard.writeText('${CHAVE_PIX_TEXTO}'); alert('Chave PIX copiada!');">📋 Copiar Chave PIX</button>
                         </div>
                     `;
