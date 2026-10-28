@@ -10,6 +10,13 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/print-express/images/favicon-16x16.png">
     <link rel="manifest" href="/print-express/images/site.webmanifest">
     <meta name="theme-color" content="#0070f3">
+    <!-- PDF.js para análise local de PDFs no navegador -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+    </script>
     <style>
     :root {
         --bg-body: #f8fafc;
@@ -58,7 +65,6 @@
         line-height: 1.6;
     }
 
-    /* ACESSIBILIDADE - BOTÃO DE PULAR CONTEÚDO PARA TECLADO */
     .skip-link {
         position: absolute;
         top: -40px;
@@ -147,7 +153,7 @@
         display: block;
     }
 
-    /* ESTILOS DA TABELA DE PREÇOS NOVA */
+    /* TABELA DE PREÇOS REORGANIZADA E RESPONSIVA (CARTÕES EM MOBILE) */
     .tabela-precos-card {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
@@ -181,7 +187,6 @@
         border-collapse: collapse;
         text-align: left;
         font-size: 14px;
-        min-width: 480px;
     }
 
     .tabela-precos th {
@@ -212,6 +217,14 @@
         display: inline-block;
         white-space: nowrap;
         border: 1px solid rgba(2, 132, 199, 0.2);
+    }
+
+    .condicao-especial {
+        font-size: 11px;
+        color: var(--green);
+        font-weight: 700;
+        margin-top: 3px;
+        display: block;
     }
 
     /* MODAL DE IMAGEM FULLSCREEN E ZOOM */
@@ -277,23 +290,10 @@
         transition: transform 0.1s ease-out;
         cursor: zoom-in;
         transform-origin: center center;
-        image-rendering: -webkit-optimize-contrast;
     }
 
     .img-zoomable.zoomed {
         cursor: zoom-out;
-    }
-
-    .box-privacidade {
-        background: var(--accent-light);
-        border: 1px solid var(--primary);
-        border-radius: 14px;
-        padding: 14px 16px;
-        font-size: 13px;
-        color: var(--text-main);
-        display: flex;
-        gap: 12px;
-        align-items: flex-start;
     }
 
     .step-card {
@@ -371,29 +371,6 @@
         box-shadow: 0 0 0 3px var(--accent-light);
     }
 
-    .servicos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-
-    .servico-card {
-        background: var(--bg-input);
-        border: 2px solid var(--border-color);
-        border-radius: 14px;
-        padding: 14px 8px;
-        text-align: center;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .servico-card:hover:not(.disabled) {
-        transform: translateY(-3px);
-        border-color: var(--primary);
-    }
-
-    .servico-card.selected { border-color: var(--primary); background: var(--accent-light); }
-    .servico-card.disabled { opacity: 0.6; cursor: not-allowed; }
-
     .checkbox-card {
         background: var(--bg-input);
         border: 1px solid var(--border-color);
@@ -409,7 +386,6 @@
     .checkbox-card:hover { border-color: var(--primary); transform: translateX(2px); }
     .checkbox-card input[type="checkbox"] { margin-top: 3px; width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
 
-    /* ÁREA VISUAL DE ARQUIVO MELHORADA */
     .file-upload-box {
         background: var(--bg-input);
         border: 2px dashed var(--border-color);
@@ -467,7 +443,95 @@
         color: var(--danger);
     }
 
-    /* RESUMO E CONFERÊNCIA */
+    /* MODALIDADE: PDF COM PÁGINAS MISTAS */
+    .pdf-misto-card {
+        background: var(--accent-light);
+        border: 1px solid var(--primary);
+        border-radius: 14px;
+        padding: 16px;
+        margin-top: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .pdf-misto-card h4 {
+        color: var(--primary);
+        font-size: 15px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .thumbnails-container {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 8px 0;
+        max-height: 120px;
+    }
+    .thumbnail-item {
+        flex: 0 0 auto;
+        width: 70px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 4px;
+        text-align: center;
+        font-size: 10px;
+    }
+    .thumbnail-item canvas {
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+    }
+
+    /* SERVIÇOS DIGITAIS ADICIONAIS */
+    .servicos-digitais-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .servicos-digitais-card h2 {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 12px;
+    }
+    .servicos-dig-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    .servico-dig-item {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .servico-dig-item strong {
+        font-size: 14px;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .servico-dig-item p {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
     .summary-box {
         background: var(--bg-input);
         border: 1px solid var(--border-color);
@@ -684,7 +748,6 @@
         gap: 8px;
     }
 
-    /* NOVOS ESTILOS ADICIONAIS */
     .guia-escolha-box {
         background: var(--bg-input);
         border: 1px solid var(--border-color);
@@ -732,7 +795,7 @@
 
     @media (max-width: 500px) {
         body { padding: 16px 10px 80px 10px; }
-        .servicos-grid { grid-template-columns: repeat(2, 1fr); }
+        .servicos-dig-grid { grid-template-columns: 1fr; }
         .summary-grid { grid-template-columns: 1fr; }
         .checklist-grid { grid-template-columns: 1fr; }
     }
@@ -758,7 +821,7 @@
         <p>Impressões, Xerox, Currículos e Serviços Rápidos</p>    
     </header>    
 
-    <!-- TABELA DE VALORES ADICIONADA -->
+    <!-- TABELA DE VALORES MELHORADA VISUALMENTE -->
     <div class="tabela-precos-card">
         <h2>🏷️ Tabela de Valores</h2>
         <div class="tabela-wrapper">
@@ -766,7 +829,7 @@
                 <thead>
                     <tr>
                         <th>Tipo de impressão</th>
-                        <th>Valor</th>
+                        <th>Preço</th>
                         <th>Descrição</th>
                     </tr>
                 </thead>
@@ -777,22 +840,25 @@
                         <td>Texto, documentos e Xerox simples</td>
                     </tr>
                     <tr>
-                        <td><strong>P&B - Cobertura Alta</strong></td>
+                        <td><strong>P&B — Cobertura Alta</strong></td>
                         <td><span class="badge-valor">R$ 1,00/folha</span></td>
-                        <td>Grandes áreas pretas, fundos escuros</td>
+                        <td>Grandes áreas pretas e fundos escuros</td>
                     </tr>
                     <tr>
-                        <td><strong>Colorida - Pouca Cor</strong></td>
+                        <td><strong>Colorida — Pouca Cor</strong></td>
                         <td><span class="badge-valor">R$ 1,00/folha</span></td>
-                        <td>Títulos, detalhes, logos simples</td>
+                        <td>Títulos, detalhes e logos simples</td>
                     </tr>
                     <tr>
-                        <td><strong>Colorida - Média Cor</strong></td>
+                        <td>
+                            <strong>Colorida — Média Cor</strong>
+                            <span class="condicao-especial">✨ R$ 1,20/folha a partir de 6 folhas</span>
+                        </td>
                         <td><span class="badge-valor">R$ 1,35/folha</span></td>
                         <td>R$ 1,20/folha a partir de 6 folhas</td>
                     </tr>
                     <tr>
-                        <td><strong>Colorida - Cobertura Total</strong></td>
+                        <td><strong>Colorida — Cobertura Total</strong></td>
                         <td><span class="badge-valor">R$ 2,00/folha</span></td>
                         <td>Fotos, fundos e grande cobertura</td>
                     </tr>
@@ -818,7 +884,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);    
             backdrop-filter: blur(4px);    
         ">    
-            
+            Clique para Ampliar a Tabela de Cores 🔍
         </h3>    
         <img id="imgBanner" src="images/classificacao-cores-img.png" alt="Tabela Visual Sobre Cores" class="banner-imagem" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x200/0284c7/ffffff?text=Coloque+sua+Imagem+Aqui';">
         <figure>
@@ -845,7 +911,6 @@
             const srcOriginal = document.getElementById("imgBanner").src;    
             const imgModal = document.getElementById("imgModal");
             imgModal.src = srcOriginal;    
-            
             resetZoom();
             document.getElementById("modalImagem").classList.add("active");    
         }    
@@ -883,7 +948,6 @@
             }
         }
 
-        // Suporte a pinch zoom e arrasto no modal
         let initialDistance = 0;
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -904,7 +968,6 @@
                     aplicarTransform();
                 }, { passive: false });
 
-                // Gestos touch / pinça
                 wrapper.addEventListener("touchstart", function(e) {
                     if (e.touches.length === 2) {
                         initialDistance = Math.hypot(
@@ -954,7 +1017,6 @@
         <input type="hidden" id="hidden_tipo_texto" name="Opcao de Impressao Detalhada" value="">    
         <input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">    
 
-        <!-- NOVOS CAMPOS ADICIONAIS PARA FORMSUBMIT (SEM ALTERAR OS EXISTENTES) -->
         <input type="hidden" id="hidden_qtd_paginas" name="Qtd Paginas Documento" value="1">
         <input type="hidden" id="hidden_paginas_selecionadas_texto" name="Paginas Selecionadas" value="Todas as paginas">
         <input type="hidden" id="hidden_total_paginas_impressas" name="Total Paginas Impressas" value="1">
@@ -981,7 +1043,6 @@
         </div>    
 
         <div id="blocoA4">    
-            <!-- TAMANHO DO PAPEL ADICIONADO -->
             <div class="form-group" style="margin-bottom: 12px;">    
                 <label for="tamanho_papel">📄 Tamanho do Papel:</label>    
                 <select id="tamanho_papel" disabled style="opacity: 0.8; cursor: not-allowed;">    
@@ -989,14 +1050,12 @@
                 </select>    
             </div>
 
-            <!-- QUANTIDADE DE PÁGINAS DO DOCUMENTO ADICIONADO SEPARADO -->
             <div class="form-group" style="margin-bottom: 12px;">    
                 <label for="qtd_paginas">📄 Quantidade de páginas do documento:</label>    
                 <input type="number" id="qtd_paginas" value="1" min="1">    
                 <span class="field-hint">Informe quantas páginas tem o seu arquivo PDF ou documento original.</span>
             </div>
 
-            <!-- 17. 📝 SELEÇÃO DAS PÁGINAS A IMPRIMIR -->
             <div class="form-group" style="margin-bottom: 12px;">
                 <label>📄 Quais páginas deseja imprimir?</label>
                 <div class="radio-group">
@@ -1024,9 +1083,19 @@
                     <option value="pouca_cor">🎨 Colorida — Pouca Cor - R$ 1,00/folha</option>    
                     <option value="media_cor">🌈 Colorida — Média Cor - R$ 1,35/folha</option>    
                     <option value="cobertura_total">🖼️ Colorida — Cobertura Total - R$ 2,00/folha</option>    
+                    <option value="pdf_misto">📑 PDF com páginas mistas (P&B e coloridas)</option>
                 </select>    
 
-                <!-- 💡 GUIA DE ESCOLHA ADICIONADO -->
+                <!-- NOVA MODALIDADE: PDF COM PÁGINAS MISTAS E ANÁLISE AUTOMÁTICA -->
+                <div id="secaoPdfMisto" class="pdf-misto-card hidden">
+                    <h4>📑 Analisador de PDF com Páginas Mistas</h4>
+                    <p class="field-hint">Selecione um arquivo PDF para analisar localmente no navegador quais páginas são P&B e quais possuem cor:</p>
+                    <input type="file" id="inputPdfMisto" accept=".pdf">
+                    <div id="statusPdfAnalise" class="field-hint" style="font-weight: 700;"></div>
+                    <div id="resultadoPdfMisto" class="summary-box hidden" style="background: var(--bg-card);"></div>
+                    <div id="thumbnailsPdf" class="thumbnails-container hidden"></div>
+                </div>
+
                 <details class="guia-escolha-box">
                     <summary>💡 Qual tipo escolher?</summary>
                     <div class="guia-escolha-list">
@@ -1035,6 +1104,7 @@
                         <div><strong>🎨 Colorida pouca cor:</strong> Pequenos detalhes, títulos e logos.</div>
                         <div><strong>🌈 Colorida média cor:</strong> Vários elementos coloridos sem preencher grande parte da página.</div>
                         <div><strong>🖼️ Colorida cobertura total:</strong> Fotos, fundos e páginas muito coloridas.</div>
+                        <div><strong>📑 PDF com páginas mistas:</strong> Analisa automaticamente PDFs com páginas em P&B e coloridas separadamente.</div>
                     </div>
                 </details>
             </div>    
@@ -1061,7 +1131,7 @@
             </div>    
 
             <div class="form-group" style="margin-bottom: 12px;">    
-                <label>🔄 Organização das Cópias (para várias cópias):</label>    
+                <label for="organizacao_copias">🔄 Organização das Cópias (para várias cópias):</label>    
                 <select id="organizacao_copias" name="Organizacao das Copias">    
                     <option value="Ordem normal (Colacionado)">Ordem normal (Documento 1 completo, depois Documento 2 completo...)</option>    
                     <option value="Agrupar por página">📑 Agrupadas por página (Imprime todas as cópias de cada página antes de passar para a próxima)</option>    
@@ -1074,7 +1144,6 @@
                     <option value="manter">Sem acabamento (Folhas soltas / Bordas padrão)</option>    
                     <option value="grampeado">📎 Grampeado (no canto superior esquerdo)</option>    
                 </select>    
-                <!-- Campo compatível para registrar o acabamento no e-mail -->
                 <input type="hidden" id="acabamento_grampo" name="Acabamento Grampo" value="Sem acabamento">
             </div>    
 
@@ -1112,7 +1181,6 @@
         <div class="form-group">    
             <label>Serviços e Opções Extras:</label>    
 
-            <!-- SERVIÇOS ADICIONAIS ADICIONADOS CONFORME SOLICITADO -->
             <label class="checkbox-card">    
                 <input type="checkbox" id="opt_redimensionamento" name="Redimensionamento do Documento" value="Sim (A partir de R$ 2,00)">    
                 <span>📐 <strong>Redimensionamento do Documento (Adicional — A partir de R$ 2,00):</strong> Ajuste do conteúdo para outro tamanho de impressão, mantendo a proporção adequada.</span>    
@@ -1142,7 +1210,6 @@
             <span class="field-hint">Especifique detalhes como intervalo de páginas, observações de troco ou instruções especiais.</span>
         </div>    
 
-        <!-- ÁREA DE RESUMO E CONFERÊNCIA ANTES DE ENVIAR (RESUMO AUTOMÁTICO EXPANDIDO) -->
         <div class="summary-box">
             <h3>📋 RESUMO DO PEDIDO</h3>
             <div class="summary-grid">
@@ -1214,13 +1281,11 @@
                 <span>Valor Estimado:</span>    
                 <strong id="valorTotalExibicao">R$ 0,50</strong>    
             </div>    
-            <!-- AVISO SOBRE O VALOR ADICIONADO -->
             <span class="field-hint" style="margin-top: 6px; font-size: 11px; text-align: center;">
                 📌 O valor apresentado é uma estimativa e poderá ser confirmado após a análise do arquivo enviado.
             </span>
         </div>    
 
-        <!-- CHECKLIST ANTES DO ENVIO ADICIONADO -->
         <div class="checklist-box">
             <h4>Antes de enviar, confira:</h4>
             <div class="checklist-grid">
@@ -1235,6 +1300,30 @@
 
         <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido para Impressão 🚀</button>    
     </form>    
+
+    <!-- NOVA SEÇÃO: SERVIÇOS DIGITAIS ADICIONAIS -->
+    <div class="servicos-digitais-card">
+        <h2>💻 Serviços Digitais Adicionais</h2>
+        <p class="field-hint">Serviços complementares realizados diretamente em seus arquivos digitais. Sujeitos à confirmação prévia e alinhamento pelo WhatsApp.</p>
+        <div class="servicos-dig-grid">
+            <div class="servico-dig-item">
+                <strong>✂️ A. Separação de PDF</strong>
+                <p>Separe um arquivo PDF grande em documentos menores divididos pelas páginas escolhidas.</p>
+            </div>
+            <div class="servico-dig-item">
+                <strong>📑 B. Extração de Páginas</strong>
+                <p>Selecione páginas específicas de um PDF e gere um novo documento exclusivo com elas.</p>
+            </div>
+            <div class="servico-dig-item">
+                <strong>🔄 C. Conversão para PDF</strong>
+                <p>Converta imagens (JPG, PNG) e documentos compatíveis para o formato PDF pronto para impressão.</p>
+            </div>
+            <div class="servico-dig-item">
+                <strong>👁️ D. Conferência Básica</strong>
+                <p>Verificação visual de páginas em branco, orientação incorreta e cortes visíveis de formatação.</p>
+            </div>
+        </div>
+    </div>
 
     <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>    
 
@@ -1279,7 +1368,6 @@
 </a>    
 
 <script>    
-    const EMAIL_DESTINO = "ws8530135@gmail.com";     
     const CHAVE_PIX_TEXTO = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";    
 
     let servicoAtivo = 'a4';    
@@ -1287,25 +1375,21 @@
     let cliquesNavegacao = 0;    
     let naAbaPagamento = false;    
 
-    // ACESSIBILIDADE - MUDAR TAMANHO DA FONTE    
     let fonteAmpliada = false;    
     function alternarTamanhoFonte() {    
         fonteAmpliada = !fonteAmpliada;    
         document.documentElement.style.setProperty('--font-scale', fonteAmpliada ? '1.12rem' : '1rem');    
     }    
 
-    // VERIFICA SE HÁ CAMPOS PREENCHIDOS NO FORMULÁRIO    
     function temCamposPreenchidos() {    
         const nome = document.getElementById("nome").value.trim();    
         const tel = document.getElementById("telefone").value.trim();    
         const arqA4 = document.getElementById("arquivo").files.length;    
-        const arqDoc = document.getElementById("arquivo_doc") ? document.getElementById("arquivo_doc").files.length : 0;    
         const texto = document.getElementById("textoDireto").value.trim();    
         const obs = document.getElementById("observacoes").value.trim();    
-        return (nome.length > 0 || tel.length > 0 || arqA4 > 0 || arqDoc > 0 || texto.length > 0 || obs.length > 0);    
+        return (nome.length > 0 || tel.length > 0 || arqA4 > 0 || texto.length > 0 || obs.length > 0);    
     }    
 
-    // CONFIRMAÇÃO OBRIGATÓRIA ANTES DE FECHAR A ABA / ATUALIZAR    
     window.addEventListener("beforeunload", function (e) {    
         if (!permitirSaida && (temCamposPreenchidos() || naAbaPagamento)) {    
             e.preventDefault();    
@@ -1316,53 +1400,6 @@
         }    
     });    
 
-    // NAVEGAÇÃO ENTRE PAGINAS DO SITE (2 CLIQUES SE PREENCHIDO/NA ABA PAGAMENTO)    
-    function navegarComConfirmacao(url) {    
-        const precisaConfirmar = temCamposPreenchidos() || naAbaPagamento;    
-
-        if (!precisaConfirmar) {    
-            permitirSaida = true;    
-            window.location.href = url;    
-            return;    
-        }    
-
-        cliquesNavegacao++;    
-        if (cliquesNavegacao === 1) {    
-            const msg = naAbaPagamento     
-                ? "⚠️ Você tem um pagamento pendente! Clique novamente para sair assim mesmo."    
-                : "⚠️ Você preencheu dados no formulário! Clique novamente no botão para confirmar a saída.";    
-            alert(msg);    
-            setTimeout(() => cliquesNavegacao = 0, 3500);    
-        } else if (cliquesNavegacao >= 2) {    
-            permitirSaida = true;    
-            window.location.href = url;    
-        }    
-    }    
-
-    // TECLA ESC COM LOGICA DE 2 CLIQUES / CONFIRMAÇÃO    
-    let escCount = 0;    
-    window.addEventListener("keydown", function(e) {    
-        if (e.key === "Escape") {    
-            const precisaConfirmar = temCamposPreenchidos() || naAbaPagamento;    
-
-            if (!precisaConfirmar) {    
-                permitirSaida = true;    
-                history.back();    
-                return;    
-            }    
-
-            escCount++;    
-            if (escCount === 1) {    
-                alert("⚠️ Pressione ESC novamente para confirmar a saída do site.");    
-                setTimeout(() => escCount = 0, 3000);    
-            } else if (escCount >= 2) {    
-                permitirSaida = true;    
-                history.back();    
-            }    
-        }    
-    });    
-
-    // TEMA ESCURO / CLARO    
     const themeToggleBtn = document.getElementById('themeToggleBtn');    
     const themeIcon = document.getElementById('themeIcon');    
     const themeText = document.getElementById('themeText');    
@@ -1387,76 +1424,144 @@
         aplicarTema(currentTheme === 'dark' ? 'light' : 'dark');    
     });    
 
-    // TROCA DE ABAS / SERVIÇOS    
-    function trocarAbaServico(servico) {    
-        servicoAtivo = servico;    
-            
-        const cardA4 = document.getElementById("cardA4");
-        const cardDoc = document.getElementById("cardDoc");
-        const cardDig = document.getElementById("cardDig");
+    // ANÁLISE AUTOMÁTICA DE PDF COM PÁGINAS MISTAS (PDF.js)
+    let analisePdfResultados = null;
+    const selectTipo = document.getElementById("tipo_impressao");
+    const secaoPdfMisto = document.getElementById("secaoPdfMisto");
+    const inputPdfMisto = document.getElementById("inputPdfMisto");
+    const statusPdfAnalise = document.getElementById("statusPdfAnalise");
+    const resultadoPdfMisto = document.getElementById("resultadoPdfMisto");
+    const thumbnailsPdf = document.getElementById("thumbnailsPdf");
 
-        if (cardA4) cardA4.classList.remove("selected");    
-        if (cardDoc) cardDoc.classList.remove("selected");    
-        if (cardDig) cardDig.classList.remove("selected");    
+    if (selectTipo) {
+        selectTipo.addEventListener("change", function() {
+            if (this.value === 'pdf_misto') {
+                if (secaoPdfMisto) secaoPdfMisto.classList.remove("hidden");
+            } else {
+                if (secaoPdfMisto) secaoPdfMisto.classList.add("hidden");
+            }
+            calcularValor();
+        });
+    }
 
-        const blocoA4 = document.getElementById("blocoA4");
-        const blocoDoc = document.getElementById("blocoDoc");
-        const blocoDig = document.getElementById("blocoDig");
+    if (inputPdfMisto) {
+        inputPdfMisto.addEventListener("change", async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
 
-        if (blocoA4) blocoA4.classList.add("hidden");    
-        if (blocoDoc) blocoDoc.classList.add("hidden");    
-        if (blocoDig) blocoDig.classList.add("hidden");    
-
-        const inputArqA4 = document.getElementById("arquivo");    
-        const inputArqDoc = document.getElementById("arquivo_doc");    
-
-        if (servico === 'a4') {    
-            if (cardA4) cardA4.classList.add("selected");    
-            if (blocoA4) blocoA4.classList.remove("hidden");    
-            document.getElementById("hidden_servico_nome").value = "Impressao / Xerox A4";    
-            
-            if (inputArqA4) inputArqA4.disabled = false;
-            if (inputArqDoc) {
-                inputArqDoc.disabled = true;
-                inputArqDoc.value = "";
-                inputArqDoc.removeAttribute("required");
+            if (file.type !== "application/pdf") {
+                alert("⚠️ Por favor, selecione um arquivo PDF válido.");
+                return;
             }
 
-            if (!modoTextoAtivo && inputArqA4) inputArqA4.setAttribute("required", "required");    
-        } else if (servico === 'doc') {    
-            if (cardDoc) cardDoc.classList.add("selected");    
-            if (blocoDoc) blocoDoc.classList.remove("hidden");    
-            document.getElementById("hidden_servico_nome").value = "Documentos Oficiais";    
-            
-            if (inputArqDoc) inputArqDoc.disabled = false;
-            if (inputArqA4) {
-                inputArqA4.disabled = true;
-                inputArqA4.value = "";
-                inputArqA4.removeAttribute("required");
+            if (statusPdfAnalise) statusPdfAnalise.innerText = "⏳ Analisando páginas do PDF no navegador...";
+            if (resultadoPdfMisto) resultadoPdfMisto.classList.add("hidden");
+            if (thumbnailsPdf) {
+                thumbnailsPdf.innerHTML = "";
+                thumbnailsPdf.classList.add("hidden");
             }
 
-            if (inputArqDoc) inputArqDoc.setAttribute("required", "required");    
-        } else if (servico === 'dig') {    
-            if (cardDig) cardDig.classList.add("selected");    
-            if (blocoDig) blocoDig.classList.remove("hidden");    
-            document.getElementById("hidden_servico_nome").value = "Digitalização / Escaneamento";    
-            
-            if (inputArqA4) {
-                inputArqA4.disabled = true;
-                inputArqA4.value = "";
-                inputArqA4.removeAttribute("required");
-            }
-            if (inputArqDoc) {
-                inputArqDoc.disabled = true;
-                inputArqDoc.value = "";
-                inputArqDoc.removeAttribute("required");
-            }
-        }    
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+                const pdfDoc = await loadingTask.promise;
+                const numPages = pdfDoc.numPages;
 
-        calcularValor();    
-    }    
+                let pbCount = 0;
+                let colorCount = 0;
+                let thumbsHtml = "";
 
-    // CÁLCULO E PROCESSAMENTO DAS PÁGINAS A IMPRIMIR
+                for (let i = 1; i <= numPages; i++) {
+                    if (statusPdfAnalise) statusPdfAnalise.innerText = `⏳ Analisando página ${i} de ${numPages}...`;
+                    const page = await pdfDoc.getPage(i);
+                    const viewport = page.getViewport({ scale: 0.3 }); // Baixa escala para análise rápida
+                    const canvas = document.createElement("canvas");
+                    const context = canvas.getContext("2d");
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                    // Análise de pixels para detectar cor
+                    const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+                    const data = imgData.data;
+                    let isColor = false;
+
+                    for (let p = 0; p < data.length; p += 16) { // Amostragem de pixels para desempenho
+                        const r = data[p];
+                        const g = data[p+1];
+                        const b = data[p+2];
+                        const maxDiff = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(b - r));
+                        if (maxDiff > 25 && (r > 40 || g > 40 || b > 40)) { // Detecta saturação de cor significativa
+                            isColor = true;
+                            break;
+                        }
+                    }
+
+                    if (isColor) {
+                        colorCount++;
+                    } else {
+                        pbCount++;
+                    }
+
+                    if (i <= 15) { // Gerar até 15 miniaturas
+                        const thumbDataUrl = canvas.toDataURL();
+                        thumbsHtml += `
+                            <div class="thumbnail-item">
+                                <img src="${thumbDataUrl}" alt="Pág ${i}">
+                                <span>Pág ${i} (${isColor ? 'Colorida' : 'P&B'})</span>
+                            </div>
+                        `;
+                    }
+                }
+
+                // Cálculo do valor estimado (P&B R$ 0,50, Colorida R$ 1,00 como estimativa inicial transparente)
+                const valorPbEst = pbCount * 0.50;
+                const valorColorEst = colorCount * 1.00;
+                const totalEst = valorPbEst + valorColorEst;
+
+                analisePdfResultados = {
+                    nome: file.name,
+                    total: numPages,
+                    pb: pbCount,
+                    coloridas: colorCount,
+                    estimativa: totalEst
+                };
+
+                if (statusPdfAnalise) statusPdfAnalise.innerText = "✅ Análise concluída com sucesso!";
+                if (resultadoPdfMisto) {
+                    resultadoPdfMisto.innerHTML = `
+                        <div style="font-weight:700; color:var(--primary); margin-bottom:4px;">📊 Resultado da Análise de Páginas Mistas</div>
+                        <div>📁 Arquivo: <strong>${file.name}</strong></div>
+                        <div>📄 Total de páginas: <strong>${numPages}</strong></div>
+                        <div>🖤 Páginas P&B identificadas: <strong>${pbCount}</strong> (R$ ${valorPbEst.toFixed(2)})</div>
+                        <div>🎨 Páginas coloridas identificadas: <strong>${colorCount}</strong> (Estimativa inicial: R$ ${valorColorEst.toFixed(2)})</div>
+                        <div style="margin-top:6px; font-weight:700; color:var(--green);">💰 Total Estimado: R$ ${totalEst.toFixed(2)}</div>
+                        <div class="field-hint" style="margin-top:4px;">⚠️ Valor estimativo sujeito à confirmação antes da impressão.</div>
+                    `;
+                    resultadoPdfMisto.classList.remove("hidden");
+                }
+
+                if (thumbnailsPdf && thumbsHtml) {
+                    thumbnailsPdf.innerHTML = thumbsHtml;
+                    thumbnailsPdf.classList.remove("hidden");
+                }
+
+                // Preenche automaticamente o campo de total de páginas
+                const inputQtdPag = document.getElementById("qtd_paginas");
+                if (inputQtdPag) {
+                    inputQtdPag.value = numPages;
+                }
+
+                calcularValor();
+
+            } catch (err) {
+                console.error(err);
+                if (statusPdfAnalise) statusPdfAnalise.innerText = "❌ Erro ao ler o PDF. O arquivo pode estar corrompido, protegido por senha ou incompatível.";
+            }
+        });
+    }
+
     function processarSelecaoPaginas(totalPaginasDoc) {
         const elemRadioChecked = document.querySelector('input[name="Opcao Selecao Paginas"]:checked');
         const modoSelecao = elemRadioChecked ? elemRadioChecked.value : "todas";
@@ -1545,18 +1650,12 @@
         };
     }
 
-    // CÁLCULO DE VALOR EM TEMPO REAL    
-    const selectTipo = document.getElementById("tipo_impressao");    
     const inputQtd = document.getElementById("quantidade");    
     const inputQtdPaginas = document.getElementById("qtd_paginas");
-    const selectDocOficial = document.getElementById("tipo_doc_oficial");    
-    const inputQtdDoc = document.getElementById("qtd_doc");    
-    const inputQtdDig = document.getElementById("qtd_paginas_digitalizar");    
     const selectAcabamento = document.getElementById("refile");
 
     const optRedimensionamento = document.getElementById("opt_redimensionamento");
     const optConferencia = document.getElementById("opt_conferencia");
-    const optAmostra = document.getElementById("opt_armazenamento");    
 
     const valorExibicao = document.getElementById("valorTotalExibicao");    
     const subtotalExibicao = document.getElementById("subtotalExibicao");    
@@ -1586,32 +1685,34 @@
             const ladoOpcaoObj = document.querySelector('input[name="Lado da Impressao"]:checked');
             const ehFrenteVerso = ladoOpcaoObj && ladoOpcaoObj.value === "Frente e verso";
 
-            // 1. Folhas por cópia (arredonda para cima em Frente e Verso)
             const folhasPorCopia = ehFrenteVerso ? Math.ceil(paginasEfetivas / 2) : paginasEfetivas;
-
-            // 2. Total real de folhas físicas cobradas
             const folhasTotais = folhasPorCopia * copias;
 
-            // 3. Preço base por folha segundo a tabela
             let precoUnitario = 0.50;
             const tipoSelecionado = selectTipo ? selectTipo.value : "pb";
 
-            if (tipoSelecionado === "pb_cobertura_alta") {
-                precoUnitario = 1.00;
-            } else if (tipoSelecionado === "pouca_cor") {
-                precoUnitario = 1.00;
-            } else if (tipoSelecionado === "media_cor") {
-                precoUnitario = folhasTotais >= 6 ? 1.20 : 1.35;
-            } else if (tipoSelecionado === "cobertura_total") {
-                precoUnitario = 2.00;
+            if (tipoSelecionado === "pdf_misto" && analisePdfResultados) {
+                // Cálculo personalizado para PDF misto baseado na análise
+                const pbFolhas = analisePdfResultados.pb * 0.50;
+                const colFolhas = analisePdfResultados.coloridas * 1.00;
+                subtotal = (pbFolhas + colFolhas) * copias;
+                textoCalculo = `${analisePdfResultados.pb} pág(s) P&B + ${analisePdfResultados.coloridas} pág(s) Coloridas × ${copias} cópia(s)`;
             } else {
-                precoUnitario = 0.50;
+                if (tipoSelecionado === "pb_cobertura_alta") {
+                    precoUnitario = 1.00;
+                } else if (tipoSelecionado === "pouca_cor") {
+                    precoUnitario = 1.00;
+                } else if (tipoSelecionado === "media_cor") {
+                    precoUnitario = folhasTotais >= 6 ? 1.20 : 1.35;
+                } else if (tipoSelecionado === "cobertura_total") {
+                    precoUnitario = 2.00;
+                } else {
+                    precoUnitario = 0.50;
+                }
+                subtotal = folhasTotais * precoUnitario;
+                textoCalculo = `${folhasTotais} folha(s) × R$ ${precoUnitario.toFixed(2).replace('.', ',')}`;
             }
 
-            // 4. Subtotal da Impressão
-            subtotal = folhasTotais * precoUnitario;
-
-            // Atualiza explicação dinâmica do badge
             const badge = document.getElementById("badgeCalculoPaginas");
             let textoBadge = `💡 <strong>Cálculo:</strong> ${paginasEfetivas} página(s) selecionada(s) por cópia`;
             if (ehFrenteVerso) {
@@ -1619,31 +1720,8 @@
             }
             textoBadge += ` × ${copias} cópia(s) = ${folhasTotais} folha(s) no total.`;
             if (badge) badge.innerHTML = textoBadge;
-
-            textoCalculo = `${folhasTotais} folha(s) × R$ ${precoUnitario.toFixed(2).replace('.', ',')}`;
-
-        } else if (servicoAtivo === 'doc') {    
-            let precoDoc = 1.00;    
-            if (selectDocOficial && selectDocOficial.value === 'boleto') precoDoc = 0.50;    
-            let qtd = parseInt(inputQtdDoc ? inputQtdDoc.value : 1);    
-            if (isNaN(qtd) || qtd < 1) qtd = 1;
-            subtotal = precoDoc * qtd;    
-            textoCalculo = `${qtd} via(s) × R$ ${precoDoc.toFixed(2).replace('.', ',')}`;
-        } else if (servicoAtivo === 'dig') {    
-            let qtd = parseInt(inputQtdDig ? inputQtdDig.value : 1);    
-            if (isNaN(qtd) || qtd < 1) qtd = 1;
-            subtotal = 2.00 * qtd;    
-                
-            let precoEfetivo = 2.00;    
-            if (qtd > 10) precoEfetivo = 1.00;    
-            else if (qtd >= 5) precoEfetivo = 1.50;    
-
-            let totalDig = precoEfetivo * qtd;    
-            desconto = subtotal - totalDig;    
-            textoCalculo = `${qtd} pág(s) × R$ ${precoEfetivo.toFixed(2).replace('.', ',')}`;
         }    
 
-        // Cálculo dos serviços adicionais acrescentados
         if (optRedimensionamento && optRedimensionamento.checked) {
             extras += 2.00;
             const elemRedim = document.getElementById("hidden_redimensionamento");
@@ -1686,7 +1764,6 @@
         return total;    
     }    
 
-    // ATUALIZA A ÁREA "RESUMO DO PEDIDO"
     function atualizarResumoConferencia() {
         const resumoServico = document.getElementById("resumoServico");
         const resumoTipo = document.getElementById("resumoTipo");
@@ -1708,7 +1785,8 @@
                 'pb_cobertura_alta': 'P&B Cobertura Alta',
                 'pouca_cor': 'Colorida Pouca Cor',
                 'media_cor': 'Colorida Média Cor',
-                'cobertura_total': 'Colorida Cobertura Total'
+                'cobertura_total': 'Colorida Cobertura Total',
+                'pdf_misto': 'PDF com páginas mistas'
             };
             if (resumoTipo) resumoTipo.innerText = tipoMap[selectTipo ? selectTipo.value : 'pb'] || 'P&B';
             
@@ -1738,7 +1816,6 @@
             if (resumoLado) resumoLado.innerText = strLado;
             if (resumoFolhas) resumoFolhas.innerText = `Aproximadamente ${numFolhas} folhas`;
 
-            // Atualiza campos ocultos adicionais para envio do FormSubmit
             const hQtd = document.getElementById("hidden_qtd_paginas");
             const hPagSel = document.getElementById("hidden_paginas_selecionadas_texto");
             const hTotPag = document.getElementById("hidden_total_paginas_impressas");
@@ -1760,37 +1837,9 @@
                 const arq = inputArquivo && inputArquivo.files ? inputArquivo.files[0] : null;
                 if (resumoArquivo) resumoArquivo.innerText = arq ? arq.name : 'Nenhum selecionado';
             }
-        } else if (servicoAtivo === 'doc') {
-            const valQtdDoc = inputQtdDoc ? inputQtdDoc.value : 1;
-            if (resumoServico) resumoServico.innerText = "Documentos Oficiais";
-            if (resumoTipo && selectDocOficial) resumoTipo.innerText = selectDocOficial.options[selectDocOficial.selectedIndex].text;
-            if (resumoDocPaginas) resumoDocPaginas.innerText = "N/A";
-            if (resumoPaginasSelecionadas) resumoPaginasSelecionadas.innerText = "N/A";
-            if (resumoTotalSelecionado) resumoTotalSelecionado.innerText = "N/A";
-            if (resumoCopias) resumoCopias.innerText = `Vias: ${valQtdDoc}`;
-            if (resumoTotalPaginas) resumoTotalPaginas.innerText = `Vias: ${valQtdDoc}`;
-            if (resumoLado) resumoLado.innerText = "Padrão Doc";
-            if (resumoFolhas) resumoFolhas.innerText = `${valQtdDoc} folha(s)`;
-            if (resumoAcabamento) resumoAcabamento.innerText = "Sem acabamento";
-            const arqDoc = document.getElementById("arquivo_doc") ? document.getElementById("arquivo_doc").files[0] : null;
-            if (resumoArquivo) resumoArquivo.innerText = arqDoc ? arqDoc.name : 'Nenhum selecionado';
-        } else if (servicoAtivo === 'dig') {
-            const valQtdDig = inputQtdDig ? inputQtdDig.value : 1;
-            if (resumoServico) resumoServico.innerText = "Digitalização";
-            if (resumoTipo) resumoTipo.innerText = "Escaneamento";
-            if (resumoDocPaginas) resumoDocPaginas.innerText = `Estimado: ${valQtdDig} págs`;
-            if (resumoPaginasSelecionadas) resumoPaginasSelecionadas.innerText = "Todas";
-            if (resumoTotalSelecionado) resumoTotalSelecionado.innerText = `${valQtdDig} págs`;
-            if (resumoCopias) resumoCopias.innerText = "1 via digital";
-            if (resumoTotalPaginas) resumoTotalPaginas.innerText = `${valQtdDig} págs`;
-            if (resumoLado) resumoLado.innerText = "Digital";
-            if (resumoFolhas) resumoFolhas.innerText = "N/A (Digital)";
-            if (resumoAcabamento) resumoAcabamento.innerText = "Digital (PDF/Imagem)";
-            if (resumoArquivo) resumoArquivo.innerText = "Envio Físico";
         }
     }
 
-    // ALTERNÂNCIA ENTRE ANEXO DE ARQUIVO E TEXTO DIRETO
     let modoTextoAtivo = false;
     const btnToggleModo = document.getElementById("btnToggleModo");
     const campoArquivoContainer = document.getElementById("campoArquivoContainer");
@@ -1825,7 +1874,6 @@
         });
     }
 
-    // INTERAÇÃO DO PREVIEW DE ARQUIVO
     const filePreview = document.getElementById("filePreview");
     const fileNameDisplay = document.getElementById("fileNameDisplay");
 
@@ -1857,7 +1905,6 @@
         if (fileNameDisplay) fileNameDisplay.innerText = "";
     }
 
-    // MANIPULAÇÃO DA SELEÇÃO DE PÁGINAS
     const radioPagTodas = document.getElementById("pag_todas");
     const radioPagEspecificas = document.getElementById("pag_especificas");
     const containerPagEspecificas = document.getElementById("containerPaginasEspecificas");
@@ -1886,18 +1933,13 @@
         });
     }
 
-    // LISTENERS PARA RECALCULAR AUTOMATICAMENTE
     if (selectTipo) selectTipo.addEventListener("change", calcularValor);
     if (inputQtd) inputQtd.addEventListener("input", calcularValor);
     if (inputQtdPaginas) inputQtdPaginas.addEventListener("input", calcularValor);
-    if (selectDocOficial) selectDocOficial.addEventListener("change", calcularValor);
-    if (inputQtdDoc) inputQtdDoc.addEventListener("input", calcularValor);
-    if (inputQtdDig) inputQtdDig.addEventListener("input", calcularValor);
     if (selectAcabamento) selectAcabamento.addEventListener("change", calcularValor);
 
     if (optRedimensionamento) optRedimensionamento.addEventListener("change", calcularValor);
     if (optConferencia) optConferencia.addEventListener("change", calcularValor);
-    if (optAmostra) optAmostra.addEventListener("change", calcularValor);
 
     document.querySelectorAll('input[name="Lado da Impressao"]').forEach(r => {
         r.addEventListener("change", calcularValor);
@@ -1911,12 +1953,6 @@
         inputTexto.addEventListener("input", atualizarResumoConferencia);
     }
 
-    const inputArquivoDoc = document.getElementById("arquivo_doc");
-    if (inputArquivoDoc) {
-        inputArquivoDoc.addEventListener("change", atualizarResumoConferencia);
-    }
-
-    // PROCESSAMENTO DO FORMULÁRIO DE ENVIO
     const formImpressao = document.getElementById("formImpressao");
     const telaSucesso = document.getElementById("telaSucesso");
     const boxDetalhesPagamento = document.getElementById("boxDetalhesPagamento");
@@ -1949,9 +1985,11 @@
             const secaoBanner = document.getElementById("secaoBanner");
             const secaoCardChamativo = document.getElementById("secaoCardChamativo");
             const tabelaCard = document.querySelector(".tabela-precos-card");
+            const servicosDigCard = document.querySelector(".servicos-digitais-card");
             if (secaoBanner) secaoBanner.classList.add("hidden");
             if (secaoCardChamativo) secaoCardChamativo.classList.add("hidden");
             if (tabelaCard) tabelaCard.classList.add("hidden");
+            if (servicosDigCard) servicosDigCard.classList.add("hidden");
 
             const radioPagamento = document.querySelector('input[name="Forma de Pagamento"]:checked');
             const formaPagamento = radioPagamento ? radioPagamento.value : "PIX";
@@ -1980,7 +2018,7 @@
             }
 
             if (btnNotificarWhats) {
-                const msgWhats = encodeURIComponent(`Olá! Fiz um pedido no site PrintExpress no valor de ${valorFormatado} em nome de ${nomeCliente}.`);
+                const msgWhats = encodeURIComponent(`Olá! Fiz um pedido no site WelGrafx no valor de ${valorFormatado} em nome de ${nomeCliente}.`);
                 btnNotificarWhats.href = `https://wa.me/5541999682836?text=${msgWhats}`;
             }
 
@@ -1989,7 +2027,6 @@
         }, 800);
     });
 
-    // Inicializa cálculo no carregamento da página
     document.addEventListener("DOMContentLoaded", function() {
         calcularValor();
     });
