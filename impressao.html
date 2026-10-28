@@ -10,6 +10,8 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/print-express/images/favicon-16x16.png">
     <link rel="manifest" href="/print-express/images/site.webmanifest">
     <meta name="theme-color" content="#0070f3">
+    <!-- Biblioteca jsPDF para geração de comprovante em PDF no aparelho do cliente -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
     :root {
         --bg-body: #f8fafc;
@@ -58,7 +60,6 @@
         line-height: 1.6;
     }
 
-    /* ACESSIBILIDADE - BOTÃO DE PULAR CONTEÚDO PARA TECLADO */
     .skip-link {
         position: absolute;
         top: -40px;
@@ -88,18 +89,6 @@
     .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
 
     .header-controls { display: flex; gap: 8px; align-items: center; }
-
-    .status-badge {
-        font-size: 12px;
-        font-weight: 700;
-        padding: 6px 12px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-    .status-open { background: rgba(16, 185, 129, 0.15); color: var(--green); }
-    .status-closed { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
 
     .theme-toggle, .access-btn {
         background: var(--bg-card);
@@ -131,11 +120,9 @@
         align-items: center;
         transition: transform 0.2s ease;
     }
-
     .banner-imagem-container:hover {
         transform: scale(1.01);
     }
-
     .banner-imagem {
         width: 100%;
         max-width: 450px;
@@ -147,7 +134,7 @@
         display: block;
     }
 
-    /* ESTILOS DA TABELA DE PREÇOS NOVA */
+    /* SEÇÃO A: TABELA DE VALORES SIMPLIFICADA */
     .tabela-precos-card {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
@@ -158,7 +145,6 @@
         flex-direction: column;
         gap: 16px;
     }
-
     .tabela-precos-card h2 {
         font-size: 20px;
         font-weight: 800;
@@ -169,13 +155,11 @@
         border-bottom: 1px solid var(--border-color);
         padding-bottom: 12px;
     }
-
     .tabela-wrapper {
         width: 100%;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-
     .tabela-precos {
         width: 100%;
         border-collapse: collapse;
@@ -183,7 +167,6 @@
         font-size: 14px;
         min-width: 480px;
     }
-
     .tabela-precos th {
         background: var(--bg-input);
         color: var(--primary);
@@ -192,17 +175,14 @@
         border-bottom: 2px solid var(--border-color);
         white-space: nowrap;
     }
-
     .tabela-precos td {
         padding: 12px 14px;
         border-bottom: 1px solid var(--border-color);
         color: var(--text-main);
     }
-
     .tabela-precos tr:last-child td {
         border-bottom: none;
     }
-
     .tabela-precos .badge-valor {
         background: var(--accent-light);
         color: var(--primary);
@@ -214,7 +194,52 @@
         border: 1px solid rgba(2, 132, 199, 0.2);
     }
 
-    /* VITRINE VISUAL DOS CÁLCULOS */
+    /* SEÇÃO B: VITRINE DE TIPOS DE IMPRESSÃO */
+    .vitrine-tipos-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .vitrine-tipos-card h2 {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 12px;
+    }
+    .tipos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 14px;
+    }
+    .tipo-card-item {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .tipo-card-item h4 {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    .tipo-card-item p {
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+
+    /* SEÇÃO C: VITRINE DE CÁLCULOS */
     .vitrine-calculos-card {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
@@ -274,33 +299,6 @@
         justify-content: space-between;
     }
 
-    /* GRUPOS DE PÁGINAS */
-    .grupos-container {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        margin-top: 8px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: 14px;
-        padding: 16px;
-    }
-    .grupo-item-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: 10px;
-        padding: 10px 14px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        font-size: 13px;
-    }
-    .grupo-acoes {
-        display: flex;
-        gap: 6px;
-    }
-
     /* MODAL DE IMAGEM FULLSCREEN E ZOOM */
     .modal-fullscreen {
         display: none;
@@ -315,13 +313,11 @@
         overflow: hidden;
         touch-action: none;
     }
-
     .modal-fullscreen.active {
         display: flex;
         align-items: center;
         justify-content: center;
     }
-
     .btn-fechar-modal {
         position: absolute;
         top: 20px;
@@ -341,12 +337,10 @@
         transition: background 0.2s ease, transform 0.2s ease;
         user-select: none;
     }
-
     .btn-fechar-modal:hover {
         background: rgba(255, 255, 255, 0.4);
         transform: scale(1.1);
     }
-
     .wrapper-zoom {
         width: 100%;
         height: 100%;
@@ -356,7 +350,6 @@
         overflow: auto;
         padding: 20px;
     }
-
     .img-zoomable {
         max-width: 90vw;
         max-height: 90vh;
@@ -366,21 +359,8 @@
         transform-origin: center center;
         image-rendering: -webkit-optimize-contrast;
     }
-
     .img-zoomable.zoomed {
         cursor: zoom-out;
-    }
-
-    .box-privacidade {
-        background: var(--accent-light);
-        border: 1px solid var(--primary);
-        border-radius: 14px;
-        padding: 14px 16px;
-        font-size: 13px;
-        color: var(--text-main);
-        display: flex;
-        gap: 12px;
-        align-items: flex-start;
     }
 
     .step-card {
@@ -393,7 +373,6 @@
         gap: 20px;
         box-shadow: var(--shadow);
     }
-
     .step-card h2 { 
         font-size: 20px; 
         font-weight: 700;
@@ -412,7 +391,6 @@
         font-weight: 700;
         text-align: center;
     }
-
     .alerta-conferencia-destaque {
         background: rgba(2, 132, 199, 0.12);
         border: 1px solid var(--primary);
@@ -429,19 +407,16 @@
         flex-direction: column;
         gap: 6px;
     }
-
     .form-group label {
         font-size: 14px;
         font-weight: 600;
         color: var(--text-main);
     }
-
     .field-hint {
         font-size: 12px;
         color: var(--text-muted);
         line-height: 1.4;
     }
-
     .example-badge {
         background: var(--accent-light);
         color: var(--primary);
@@ -461,36 +436,12 @@
         color: var(--text-main);
         font-size: 15px;
     }
-
     input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { 
         border-color: var(--primary); 
         outline: 2px solid var(--primary); 
         outline-offset: 1px;
         box-shadow: 0 0 0 3px var(--accent-light);
     }
-
-    .servicos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-
-    .servico-card {
-        background: var(--bg-input);
-        border: 2px solid var(--border-color);
-        border-radius: 14px;
-        padding: 14px 8px;
-        text-align: center;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .servico-card:hover:not(.disabled) {
-        transform: translateY(-3px);
-        border-color: var(--primary);
-    }
-
-    .servico-card.selected { border-color: var(--primary); background: var(--accent-light); }
-    .servico-card.disabled { opacity: 0.6; cursor: not-allowed; }
 
     .checkbox-card {
         background: var(--bg-input);
@@ -507,7 +458,6 @@
     .checkbox-card:hover { border-color: var(--primary); transform: translateX(2px); }
     .checkbox-card input[type="checkbox"] { margin-top: 3px; width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
 
-    /* ÁREA VISUAL DE ARQUIVO MELHORADA */
     .file-upload-box {
         background: var(--bg-input);
         border: 2px dashed var(--border-color);
@@ -565,7 +515,6 @@
         color: var(--danger);
     }
 
-    /* RESUMO E CONFERÊNCIA */
     .summary-box {
         background: var(--bg-input);
         border: 1px solid var(--border-color);
@@ -615,14 +564,12 @@
         gap: 8px;
         font-size: 14px;
     }
-
     .price-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
         color: var(--text-muted);
     }
-
     .price-row.total {
         border-top: 1px dashed var(--border-color);
         padding-top: 10px;
@@ -630,7 +577,6 @@
         font-weight: 700;
         color: var(--text-main);
     }
-
     .price-row.total strong { color: var(--green); font-size: 24px; font-weight: 800; }
 
     .btn-primary {
@@ -643,24 +589,6 @@
         box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
     }
     .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
-
-    .btn-secondary {
-        background: var(--bg-input);
-        color: var(--primary);
-        border: 1px solid var(--primary);
-        padding: 10px 14px;
-        font-size: 14px;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-    }
-    .btn-secondary:hover {
-        background: var(--accent-light);
-    }
 
     .btn-whatsapp {
         background: #25D366;
@@ -700,13 +628,11 @@
         align-items: center;
         gap: 14px;
     }
-
     .valor-destaque {
         font-size: 28px;
         font-weight: 800;
         color: var(--green);
     }
-
     .btn-copiar-pix {
         background: var(--primary);
         color: white; border: none;
@@ -740,7 +666,6 @@
         gap: 8px;
         box-shadow: var(--shadow);
     }
-
     .status-fila {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
@@ -800,31 +725,6 @@
         gap: 8px;
     }
 
-    /* NOVOS ESTILOS ADICIONAIS */
-    .guia-escolha-box {
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 14px;
-        font-size: 12px;
-        margin-top: 8px;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-    .guia-escolha-box summary {
-        font-weight: 700;
-        color: var(--primary);
-        cursor: pointer;
-        font-size: 13px;
-    }
-    .guia-escolha-list {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        margin-top: 8px;
-        padding-left: 4px;
-    }
     .checklist-box {
         background: var(--bg-input);
         border: 1px solid var(--border-color);
@@ -845,6 +745,7 @@
         color: var(--text-main);
         font-weight: 600;
     }
+
     .texto-explicativo-bloco {
         background: var(--accent-light);
         border: 1px solid var(--primary);
@@ -859,12 +760,22 @@
     .texto-explicativo-bloco strong {
         color: var(--primary);
     }
+    .info-fluxo-msg {
+        background: var(--accent-light);
+        border-left: 4px solid var(--primary);
+        padding: 8px 12px;
+        font-size: 12px;
+        color: var(--primary);
+        border-radius: 0 8px 8px 0;
+        margin-top: 6px;
+        font-weight: 600;
+    }
 
     @media (max-width: 500px) {
         body { padding: 16px 10px 80px 10px; }
-        .servicos-grid { grid-template-columns: repeat(2, 1fr); }
         .summary-grid { grid-template-columns: 1fr; }
         .checklist-grid { grid-template-columns: 1fr; }
+        .tipos-grid { grid-template-columns: 1fr; }
     }
 </style>
 </head>    
@@ -888,7 +799,7 @@
         <p>Impressões, Xerox, Currículos e Serviços Rápidos</p>    
     </header>    
 
-    <!-- TABELA DE VALORES -->
+    <!-- SEÇÃO A: TABELA DE VALORES -->
     <div class="tabela-precos-card">
         <h2>🏷️ Tabela de Valores</h2>
         <div class="tabela-wrapper">
@@ -897,41 +808,69 @@
                     <tr>
                         <th>Tipo de impressão</th>
                         <th>Valor</th>
-                        <th>Descrição / Regra</th>
+                        <th>Regra</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><strong>Preto e Branco (P&B) Simples</strong></td>
                         <td><span class="badge-valor">R$ 0,50 a R$ 0,35</span></td>
-                        <td>Até 19 folhas: R$ 0,50/folha. De 20 a 99: R$ 0,40/folha adicional. A partir de 100: R$ 0,35/folha adicional (desconto progressivo por faixa).</td>
+                        <td>Progressivo por faixa de folhas.</td>
                     </tr>
                     <tr>
                         <td><strong>P&B — Cobertura Alta</strong></td>
                         <td><span class="badge-valor">R$ 1,00/folha</span></td>
-                        <td>Grandes áreas pretas, fundos escuros e alta concentração de tinta preta. Sem desconto por quantidade.</td>
+                        <td>Preço fixo por página.</td>
                     </tr>
                     <tr>
                         <td><strong>Colorida — Pouca Cor</strong></td>
                         <td><span class="badge-valor">R$ 1,00/folha</span></td>
-                        <td>Logotipos simples, títulos e detalhes pequenos (~ até 20% cobertura). Sem desconto por quantidade.</td>
+                        <td>Preço fixo por página.</td>
                     </tr>
                     <tr>
                         <td><strong>Colorida — Média Cor</strong></td>
-                        <td><span class="badge-valor">R$ 1,35 ou R$ 1,20</span></td>
-                        <td>Até 5 páginas: R$ 1,35 por página. A partir de 6 páginas: R$ 1,20 por página.</td>
+                        <td><span class="badge-valor">R$ 1,35 / R$ 1,20</span></td>
+                        <td>Até 5 págs: R$ 1,35 | A partir de 6: R$ 1,20.</td>
                     </tr>
                     <tr>
                         <td><strong>Colorida — Cobertura Total</strong></td>
                         <td><span class="badge-valor">R$ 2,00/folha</span></td>
-                        <td>Fotografias, fundos inteiros coloridos e grande cobertura (> 60%). Sem desconto por quantidade.</td>
+                        <td>Preço fixo por página.</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- VITRINE VISUAL DOS CÁLCULOS -->
+    <!-- SEÇÃO B: VITRINE DE TIPOS DE IMPRESSÃO -->
+    <div class="vitrine-tipos-card">
+        <h2>🎨 Tipos de Impressão</h2>
+        <p class="field-hint">Conheça as categorias disponíveis para a classificação das páginas:</p>
+        <div class="tipos-grid">
+            <div class="tipo-card-item">
+                <h4>🖤 P&B simples</h4>
+                <p>Documentos predominantemente textuais, com baixa cobertura de tinta (aproximadamente até 10%).</p>
+            </div>
+            <div class="tipo-card-item">
+                <h4>⚫ P&B com cobertura alta</h4>
+                <p>Páginas com grandes áreas pretas, fundos escuros ou alta concentração de tinta preta.</p>
+            </div>
+            <div class="tipo-card-item">
+                <h4>🎨 Colorida com pouca cor</h4>
+                <p>Pequenos detalhes coloridos, títulos e logotipos simples (aproximadamente até 20% de cobertura).</p>
+            </div>
+            <div class="tipo-card-item">
+                <h4>🌈 Colorida com média cor</h4>
+                <p>Gráficos, diagramas e algumas imagens (cobertura aproximada entre 20% e 60%).</p>
+            </div>
+            <div class="tipo-card-item">
+                <h4>🖼️ Colorida com cobertura total</h4>
+                <p>Fotografias, fundos inteiros coloridos e páginas com grande cobertura (superior a ~60%).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEÇÃO C: VITRINE DE CÁLCULOS -->
     <div class="vitrine-calculos-card">
         <h2>✨ Vitrine Visual dos Exemplos de Cálculo</h2>
         <p class="field-hint">Veja abaixo exemplos práticos de como o valor do pedido é composto conforme as nossas regras:</p>
@@ -968,43 +907,18 @@
                 </ul>
                 <div class="vitrine-total"><span>Total:</span> <strong>R$ 9,60</strong></div>
             </div>
-            <div class="vitrine-item">
-                <h4>Exemplo 5 — Arquivo misto</h4>
-                <ul>
-                    <li>25 páginas P&B simples = R$ 11,90</li>
-                    <li>8 págs coloridas média cor = R$ 9,60</li>
-                </ul>
-                <div class="vitrine-total"><span>Total (antes do mín.):</span> <strong>R$ 21,50</strong></div>
-            </div>
         </div>
     </div>
 
-    <!-- TEXTO EXPLICATIVO PARA O CLIENTE -->
+    <!-- TEXTO EXPLICATIVO OBRIGATÓRIO -->
     <div class="texto-explicativo-bloco">
         <div><strong>📝 Como calculamos arquivos com mistura de P&B e colorido:</strong></div>
         <div>Cada página do seu arquivo é analisada e cobrada separadamente, conforme o tipo de impressão que ela tem. Assim você paga apenas pelo que realmente usa!</div>
         <div style="margin-top: 4px;"><strong>✅ Frente e Verso:</strong></div>
-        <div>Cada lado é contado como uma página individual. O valor da folha = soma do valor dos dois lados impressos, sem cobrar o dobro do papel!</div>
+        <div>Cada lado é contado como uma página individual. O valor da folha = soma do valor dos dois lados impressos (sem cobrar o dobro do papel!)</div>
     </div>
 
     <div id="secaoBanner" class="banner-imagem-container" style="position: relative; display: inline-block; width: 100%; max-width: 450px; margin: 0 auto; cursor: pointer;" onclick="abrirImagem()">    
-        <h3 style="    
-            position: absolute;     
-            top: 12px;     
-            left: 50%;     
-            transform: translateX(-50%);     
-            background: rgba(15, 23, 42, 0.75);     
-            color: #ffffff;     
-            padding: 6px 16px;     
-            border-radius: 20px;     
-            font-size: 14px;     
-            font-weight: 700;     
-            text-align: center;     
-            white-space: nowrap;     
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);    
-            backdrop-filter: blur(4px);    
-        ">    
-        </h3>    
         <img id="imgBanner" src="images/classificacao-cores-img.png" alt="Tabela Visual Sobre Cores" class="banner-imagem" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x200/0284c7/ffffff?text=Coloque+sua+Imagem+Aqui';">
         <figure>
             <figcaption style="font-size: 11px;">Material visual desenvolvido com auxílio de Inteligência Artificial (IA) — OpenAI / ChatGPT.</figcaption>
@@ -1033,12 +947,10 @@
             resetZoom();
             document.getElementById("modalImagem").classList.add("active");    
         }    
-
         function fecharImagem() {    
             document.getElementById("modalImagem").classList.remove("active");    
             resetZoom();
         }    
-
         function resetZoom() {
             zoomAtual = 1;
             pantoX = 0;
@@ -1047,7 +959,6 @@
             const imgModal = document.getElementById("imgModal");
             if(imgModal) imgModal.classList.remove("zoomed");
         }
-
         function toggleZoom(e) {
             e.stopPropagation();
             const imgModal = document.getElementById("imgModal");
@@ -1059,73 +970,12 @@
             }
             aplicarTransform();
         }
-
         function aplicarTransform() {
             const imgModal = document.getElementById("imgModal");
             if(imgModal) {
                 imgModal.style.transform = `translate(${pantoX}px, ${pantoY}px) scale(${zoomAtual})`;
             }
         }
-
-        let initialDistance = 0;
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const wrapper = document.getElementById("wrapperZoom");
-            const imgModal = document.getElementById("imgModal");
-
-            if(wrapper && imgModal) {
-                wrapper.addEventListener("wheel", function(e) {
-                    if (!document.getElementById("modalImagem").classList.contains("active")) return;
-                    e.preventDefault();
-                    if (e.deltaY < 0) {
-                        zoomAtual = Math.min(zoomAtual + 0.3, 4);
-                    } else {
-                        zoomAtual = Math.max(zoomAtual - 0.3, 1);
-                    }
-                    if(zoomAtual === 1) { pantoX = 0; pantoY = 0; imgModal.classList.remove("zoomed"); }
-                    else { imgModal.classList.add("zoomed"); }
-                    aplicarTransform();
-                }, { passive: false });
-
-                wrapper.addEventListener("touchstart", function(e) {
-                    if (e.touches.length === 2) {
-                        initialDistance = Math.hypot(
-                            e.touches[0].pageX - e.touches[1].pageX,
-                            e.touches[0].pageY - e.touches[1].pageY
-                        );
-                    } else if (e.touches.length === 1 && zoomAtual > 1) {
-                        isDragging = true;
-                        startX = e.touches[0].clientX - pantoX;
-                        startY = e.touches[0].clientY - pantoY;
-                    }
-                }, { passive: true });
-
-                wrapper.addEventListener("touchmove", function(e) {
-                    if (e.touches.length === 2) {
-                        e.preventDefault();
-                        const currentDistance = Math.hypot(
-                            e.touches[0].pageX - e.touches[1].pageX,
-                            e.touches[0].pageY - e.touches[1].pageY
-                        );
-                        const factor = currentDistance / initialDistance;
-                        zoomAtual = Math.min(Math.max(zoomAtual * factor, 1), 4);
-                        initialDistance = currentDistance;
-                        if(zoomAtual === 1) { pantoX = 0; pantoY = 0; imgModal.classList.remove("zoomed"); }
-                        else { imgModal.classList.add("zoomed"); }
-                        aplicarTransform();
-                    } else if (e.touches.length === 1 && isDragging && zoomAtual > 1) {
-                        e.preventDefault();
-                        pantoX = e.touches[0].clientX - startX;
-                        pantoY = e.touches[0].clientY - startY;
-                        aplicarTransform();
-                    }
-                }, { passive: false });
-
-                wrapper.addEventListener("touchend", function() {
-                    isDragging = false;
-                });
-            }
-        });
     </script>    
 
     <form id="formImpressao" class="step-card" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data" target="hidden_iframe">    
@@ -1137,14 +987,12 @@
         <input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">    
 
         <input type="hidden" id="hidden_qtd_paginas" name="Qtd Paginas Documento" value="1">
-        <input type="hidden" id="hidden_paginas_selecionadas_texto" name="Paginas Selecionadas" value="Todas as paginas">
         <input type="hidden" id="hidden_total_paginas_impressas" name="Total Paginas Impressas" value="1">
         <input type="hidden" id="hidden_folhas_utilizadas" name="Folhas Utilizadas Estimadas" value="1">
         <input type="hidden" id="hidden_tamanho_papel" name="Tamanho do Papel" value="A4">
-        <input type="hidden" id="hidden_orientacao" name="Orientacao do Cliente" value="">
+        <input type="hidden" id="hidden_fluxo_escolhido" name="Fluxo Escolhido" value="Tudo em preto e branco">
         <input type="hidden" id="hidden_redimensionamento" name="Servico adicional: Redimensionamento do Documento" value="Nao">
         <input type="hidden" id="hidden_conferencia" name="Servico adicional: Conferencia do Arquivo" value="Nao">
-        <input type="hidden" id="hidden_grupos_detalhe" name="Detalhes dos Grupos de Paginas" value="Unico">
 
         <div class="alerta-desconsiderar">    
             ⚠️ ATENÇÃO: Pedidos sem pagamento confirmado serão desconsiderados e cancelados automaticamente.    
@@ -1180,74 +1028,29 @@
                 <span class="field-hint">Informe quantas páginas tem o seu arquivo PDF ou documento original.</span>
             </div>
 
-            <!-- SELEÇÃO DE MODO: TIPO ÚNICO OU MÚLTIPLOS GRUPOS / INTERVALOS -->
+            <!-- OPÇÃO DE IMPRESSÃO MISTA (REQUISITO 2 & 3) -->
             <div class="form-group" style="margin-bottom: 12px;">
-                <label>🎨 Organização das Páginas e Tipos de Impressão:</label>
+                <label>🎨 Como deseja tratar o arquivo?</label>
                 <div class="radio-group">
                     <label class="radio-label">
-                        <input type="radio" name="ModoOrganizacao" value="unico" checked id="modo_unico"> Todo o documento com o mesmo tipo
+                        <input type="radio" name="OpcaoFluxoImpressao" value="pb_simples" checked id="fluxo_pb_simples"> Opção A — Tudo em preto e branco
                     </label>
                     <label class="radio-label">
-                        <input type="radio" name="ModoOrganizacao" value="grupos" id="modo_grupos"> Misturar páginas (intervalos com tipos diferentes)
+                        <input type="radio" name="OpcaoFluxoImpressao" value="misto" id="fluxo_misto"> Opção B — Arquivo misto: P&B e colorido
                     </label>
                 </div>
+                <div id="infoFluxoMsg" class="info-fluxo-msg">
+                    📌 Fluxo ativo: <strong>Opção A — Tudo em preto e branco</strong>. O campo de upload padrão está ativado.
+                </div>
             </div>
 
-            <!-- BLOCO TIPO ÚNICO -->
-            <div id="blocoTipoUnico" class="form-group" style="margin-bottom: 12px;">    
+            <div class="form-group" style="margin-bottom: 12px;" id="blocoTipoUnico">    
                 <label for="tipo_impressao">🎨 Tipo de Impressão / Xerox:</label>    
                 <select id="tipo_impressao" name="Codigo Opcao Cor">    
-                    <option value="pb">🖤 Preto e Branco (P&B) Simples - Prog. (R$ 0,50 a R$ 0,35)</option>    
-                    <option value="pb_cobertura_alta">⚫ P&B — Cobertura Alta - R$ 1,00/folha</option>    
-                    <option value="pouca_cor">🎨 Colorida — Pouca Cor - R$ 1,00/folha</option>    
-                    <option value="media_cor">🌈 Colorida — Média Cor - R$ 1,35 / R$ 1,20</option>    
-                    <option value="cobertura_total">🖼️ Colorida — Cobertura Total - R$ 2,00/folha</option>    
+                    <option value="pb" selected>🖤 Preto e Branco (P&B) Simples - Desconto progressivo (R$ 0,50 a R$ 0,35)</option>    
                 </select>    
-
-                <details class="guia-escolha-box">
-                    <summary>💡 Qual tipo escolher?</summary>
-                    <div class="guia-escolha-list">
-                        <div><strong>🖤 P&B simples:</strong> Textos e documentos simples (desconto progressivo).</div>
-                        <div><strong>⚫ P&B cobertura alta:</strong> Grandes áreas pretas ou fundos escuros.</div>
-                        <div><strong>🎨 Colorida pouca cor:</strong> Pequenos detalhes, títulos e logos (~ até 20%).</div>
-                        <div><strong>🌈 Colorida média cor:</strong> Gráficos e imagens (~ 20% a 60%).</div>
-                        <div><strong>🖼️ Colorida cobertura total:</strong> Fotografias e fundos inteiros (> 60%).</div>
-                    </div>
-                </details>
+                <span class="field-hint">Na Opção A, todas as páginas são impressas em P&B simples com tabela progressiva.</span>
             </div>    
-
-            <!-- BLOCO MÚLTIPLOS GRUPOS / INTERVALOS -->
-            <div id="blocoGruposIntervalos" class="form-group hidden" style="margin-bottom: 12px;">
-                <span class="field-hint">Adicione os intervalos de páginas do seu documento e defina o tipo de impressão de cada grupo:</span>
-                <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 120px;">
-                        <label for="novo_grupo_inicio" style="font-size: 12px;">De (Página):</label>
-                        <input type="number" id="novo_grupo_inicio" value="1" min="1">
-                    </div>
-                    <div style="flex: 1; min-width: 120px;">
-                        <label for="novo_grupo_fim" style="font-size: 12px;">Até (Página):</label>
-                        <input type="number" id="novo_grupo_fim" value="1" min="1">
-                    </div>
-                    <div style="flex: 2; min-width: 180px;">
-                        <label for="novo_grupo_tipo" style="font-size: 12px;">Tipo de Impressão:</label>
-                        <select id="novo_grupo_tipo">
-                            <option value="pb">🖤 P&B Simples</option>
-                            <option value="pb_cobertura_alta">⚫ P&B Cobertura Alta</option>
-                            <option value="pouca_cor">🎨 Colorida Pouca Cor</option>
-                            <option value="media_cor">🌈 Colorida Média Cor</option>
-                            <option value="cobertura_total">🖼️ Colorida Cobertura Total</option>
-                        </select>
-                    </div>
-                    <div style="display: flex; align-items: flex-end;">
-                        <button type="button" class="btn-secondary" onclick="adicionarGrupoPaginas()">➕ Adicionar</button>
-                    </div>
-                </div>
-
-                <div id="listaGruposAdicionados" class="grupos-container" style="margin-top: 10px;">
-                    <div style="font-size: 13px; color: var(--text-muted); text-align: center;">Nenhum grupo adicional adicionado. O documento inteiro usará o tipo principal selecionado acima.</div>
-                </div>
-                <div id="erroGrupos" style="color: var(--danger); font-size: 12px; font-weight: 700; margin-top: 4px; display: none;"></div>
-            </div>
 
             <div class="form-group" style="margin-bottom: 12px;">    
                 <label>🖨️ Lado da Impressão:</label>    
@@ -1259,7 +1062,7 @@
                         <input type="radio" name="Lado da Impressao" value="Frente e verso"> Frente e verso (Ambos os lados na mesma folha)    
                     </label>    
                 </div>    
-                <span class="field-hint">Ao escolher "Frente e verso", cada lado impresso é cobrado pelo seu tipo e o papel não é cobrado duas vezes.</span>    
+                <span class="field-hint">Cada lado impresso corresponde a uma página e é cobrado conforme seu tipo. O papel não é cobrado duas vezes.</span>    
             </div>    
 
             <div class="form-group" style="margin-bottom: 12px;">    
@@ -1287,6 +1090,7 @@
                 <input type="hidden" id="acabamento_grampo" name="Acabamento Grampo" value="Sem acabamento">
             </div>    
 
+            <!-- UPLOAD DE ARQUIVOS (BLOQUEIO DE DUPLICIDADE CONFORME REGRA 3) -->
             <div class="form-group">    
                 <div style="display:flex; justify-content:space-between; align-items:center;">    
                     <label for="arquivo">📎 Anexar Documento(s) – Máx. 10.00MB:</label>    
@@ -1294,7 +1098,7 @@
                 </div>    
                     
                 <div id="campoArquivoContainer">    
-                    <div class="file-upload-box">
+                    <div class="file-upload-box" id="uploadBoxNormal">
                         <input type="file" id="arquivo" name="attachment" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">    
                         <div id="filePreview" class="file-preview-card hidden">
                             <div class="file-preview-info">
@@ -1306,8 +1110,17 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- CAMPO ESPECÍFICO PARA FLUXO MISTO -->
+                    <div id="uploadBoxMisto" class="file-upload-box hidden" style="border-color: var(--primary); background: var(--accent-light);">
+                        <input type="file" id="arquivo_misto" name="attachment_misto" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" disabled>    
+                        <div style="font-size: 13px; font-weight: 700; color: var(--primary); margin-top: 6px;">
+                            📁 Envio para Arquivo Misto (A equipe WelGrafx fará a conferência e classificação)
+                        </div>
+                    </div>
+
                     <span class="field-hint" style="margin-top: 4px; display: block;">
-                        💡 Para garantir que o documento seja impresso como você preparou, recomendamos enviar o arquivo em PDF.
+                        💡 O campo de arquivo ativo corresponde à opção selecionada acima.
                     </span>
                     <div id="fileDetails" class="file-info hidden"></div>    
                 </div>    
@@ -1320,12 +1133,10 @@
 
         <div class="form-group">    
             <label>Serviços e Opções Extras:</label>    
-
             <label class="checkbox-card">    
                 <input type="checkbox" id="opt_redimensionamento" name="Redimensionamento do Documento" value="Sim (A partir de R$ 2,00)">    
                 <span>📐 <strong>Redimensionamento do Documento (Adicional — A partir de R$ 2,00):</strong> Ajuste do conteúdo para outro tamanho de impressão, mantendo a proporção adequada.</span>    
             </label>    
-
             <label class="checkbox-card">    
                 <input type="checkbox" id="opt_suporte" name="Suporte Atendimento Direto Site" value="Sim (Gratis)">    
                 <span>💬 <strong>Suporte Direto e Atendimento (Grátis):</strong> Suporte via WhatsApp para tirar dúvidas e acompanhar seu envio.</span>    
@@ -1358,16 +1169,12 @@
                     <span class="value" id="resumoServico">Impressão A4</span>
                 </div>
                 <div class="summary-item">
-                    <span class="label">Tipo</span>
-                    <span class="value" id="resumoTipo">P&B Simples</span>
+                    <span class="label">Fluxo</span>
+                    <span class="value" id="resumoFluxo">Tudo em preto e branco</span>
                 </div>
                 <div class="summary-item">
                     <span class="label">Documento</span>
                     <span class="value" id="resumoDocPaginas">📄 Documento: 1 páginas</span>
-                </div>
-                <div class="summary-item">
-                    <span class="label">Organização</span>
-                    <span class="value" id="resumoOrganizacao">Único tipo / Todas</span>
                 </div>
                 <div class="summary-item">
                     <span class="label">Cópias</span>
@@ -1402,16 +1209,8 @@
                 <span id="calculoDetalhadoExibicao">1 folha(s) × R$ 0,50</span>    
             </div>    
             <div class="price-row">    
-                <span>Subtotal (sem mínimo):</span>    
+                <span>Subtotal:</span>    
                 <span id="subtotalExibicao">R$ 0,50</span>    
-            </div>    
-            <div class="price-row" id="rowMinimoAplicado" style="color: var(--primary); display: none;">    
-                <span>Valor Mínimo do Pedido (R$ 2,00):</span>    
-                <span id="minimoAplicadoExibicao">Aplicado</span>    
-            </div>    
-            <div class="price-row" id="rowDesconto" style="color: var(--green); display: none;">    
-                <span>Desconto Aplicado:</span>    
-                <span id="descontoExibicao">- R$ 0,00</span>    
             </div>    
             <div class="price-row" id="rowExtra" style="display: none; color: var(--primary);">    
                 <span>Adicionais Selecionados:</span>    
@@ -1419,9 +1218,9 @@
             </div>    
             <div class="price-row total">    
                 <span>Valor Final do Pedido:</span>    
-                <strong id="valorTotalExibicao">R$ 2,00</strong>    
+                <strong id="valorTotalExibicao">R$ 0,50</strong>    
             </div>    
-            <span class="field-hint" style="margin-top: 6px; font-size: 11px; text-align: center;">
+            <span class="field-hint" style="margin-top: 6px; font-size: 11px; text-align: center;" id="avisoEstimativaPreco">    
                 📌 O valor apresentado é uma estimativa e poderá ser confirmado após a análise do arquivo enviado.
             </span>
         </div>    
@@ -1438,7 +1237,7 @@
             </div>
         </div>
 
-        <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido para Impressão 🚀</button>    
+        <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido e Gerar Comprovante PDF 🚀</button>    
     </form>    
 
     <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>    
@@ -1448,7 +1247,6 @@
         <p style="font-size: 14px; color: var(--text-muted);">    
             Impressões A4 para documentos, trabalhos e materiais gráficos. Arte gráfica sob encomenda. Dúvidas? Fale diretamente conosco pelo WhatsApp!    
         </p>    
-            
         <div class="status-fila">    
             ⚡ <strong>Tempo Médio de Produção:</strong> 5 a 15 minutos após a confirmação conforme o horário do pedido.    
         </div>    
@@ -1460,6 +1258,10 @@
         <p style="color: var(--text-muted); font-size: 15px; margin-top: 4px;">Tudo certo! Já recebemos sua solicitação.</p>    
 
         <div id="boxDetalhesPagamento"></div>    
+
+        <button type="button" class="btn-secondary" id="btnBaixarPdfNovamente" style="margin-top: 12px; width: 100%; justify-content: center; padding: 14px;" onclick="gerarComprovantePDF()">    
+            📥 Baixar Comprovante PDF Novamente
+        </button>
 
         <a id="btnNotificarWhats" href="#" target="_blank" class="btn-whatsapp">    
             💬 Confirmar Pedido no WhatsApp    
@@ -1486,11 +1288,9 @@
 <script>    
     const CHAVE_PIX_TEXTO = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";    
 
-    let servicoAtivo = 'a4';    
     let permitirSaida = false;    
     let cliquesNavegacao = 0;    
     let naAbaPagamento = false;    
-    let gruposPaginas = []; // Armazena grupos adicionados pelo usuário
 
     let fonteAmpliada = false;    
     function alternarTamanhoFonte() {    
@@ -1502,9 +1302,10 @@
         const nome = document.getElementById("nome").value.trim();    
         const tel = document.getElementById("telefone").value.trim();    
         const arqA4 = document.getElementById("arquivo").files.length;    
+        const arqMisto = document.getElementById("arquivo_misto").files.length;
         const texto = document.getElementById("textoDireto").value.trim();    
         const obs = document.getElementById("observacoes").value.trim();    
-        return (nome.length > 0 || tel.length > 0 || arqA4 > 0 || texto.length > 0 || obs.length > 0 || gruposPaginas.length > 0);    
+        return (nome.length > 0 || tel.length > 0 || arqA4 > 0 || arqMisto > 0 || texto.length > 0 || obs.length > 0);    
     }    
 
     window.addEventListener("beforeunload", function (e) {    
@@ -1552,120 +1353,71 @@
         }    
         localStorage.setItem('theme', theme);    
     }    
-
     const savedTheme = localStorage.getItem('theme') || 'dark';    
     aplicarTema(savedTheme);    
-
     themeToggleBtn.addEventListener('click', () => {    
         const currentTheme = document.documentElement.getAttribute('data-theme');    
         aplicarTema(currentTheme === 'dark' ? 'light' : 'dark');    
     });    
 
-    // MODO DE ORGANIZAÇÃO (ÚNICO VS GRUPOS)
-    const radioModoUnico = document.getElementById("modo_unico");
-    const radioModoGrupos = document.getElementById("modo_grupos");
+    // GESTÃO DOS FLUXOS DE ARQUIVO (REGRA 3)
+    const fluxoPbSimples = document.getElementById("fluxo_pb_simples");
+    const fluxoMisto = document.getElementById("fluxo_misto");
+    const uploadBoxNormal = document.getElementById("uploadBoxNormal");
+    const uploadBoxMisto = document.getElementById("uploadBoxMisto");
+    const inputArquivoNormal = document.getElementById("arquivo");
+    const inputArquivoMisto = document.getElementById("arquivo_misto");
+    const infoFluxoMsg = document.getElementById("infoFluxoMsg");
+    const hiddenFluxoEscolhido = document.getElementById("hidden_fluxo_escolhido");
     const blocoTipoUnico = document.getElementById("blocoTipoUnico");
-    const blocoGruposIntervalos = document.getElementById("blocoGruposIntervalos");
 
-    if (radioModoUnico && radioModoGrupos) {
-        radioModoUnico.addEventListener("change", function() {
+    if (fluxoPbSimples && fluxoMisto) {
+        fluxoPbSimples.addEventListener("change", function() {
             if (this.checked) {
+                uploadBoxNormal.classList.remove("hidden");
+                uploadBoxMisto.classList.add("hidden");
+                inputArquivoNormal.disabled = false;
+                inputArquivoNormal.setAttribute("required", "required");
+                inputArquivoMisto.disabled = true;
+                inputArquivoMisto.value = "";
+                inputArquivoMisto.removeAttribute("required");
                 blocoTipoUnico.classList.remove("hidden");
-                blocoGruposIntervalos.classList.add("hidden");
-                gruposPaginas = [];
-                renderizarGrupos();
+                infoFluxoMsg.innerHTML = "📌 Fluxo ativo: <strong>Opção A — Tudo em preto e branco</strong>. O campo de upload padrão está ativado.";
+                if (hiddenFluxoEscolhido) hiddenFluxoEscolhido.value = "Tudo em preto e branco";
                 calcularValor();
             }
         });
-        radioModoGrupos.addEventListener("change", function() {
+
+        fluxoMisto.addEventListener("change", function() {
             if (this.checked) {
+                uploadBoxNormal.classList.add("hidden");
+                uploadBoxMisto.classList.remove("hidden");
+                inputArquivoMisto.disabled = false;
+                inputArquivoMisto.setAttribute("required", "required");
+                inputArquivoNormal.disabled = true;
+                inputArquivoNormal.value = "";
+                inputArquivoNormal.removeAttribute("required");
+                ocultarPreviewA4();
                 blocoTipoUnico.classList.add("hidden");
-                blocoGruposIntervalos.classList.remove("hidden");
+                infoFluxoMsg.innerHTML = "📌 Fluxo ativo: <strong>Opção B — Arquivo misto: P&B e colorido</strong>. O campo de upload padrão foi desativado e o envio específico para arquivo misto está ativado.";
+                if (hiddenFluxoEscolhido) hiddenFluxoEscolhido.value = "Arquivo misto: P&B e colorido";
                 calcularValor();
             }
         });
     }
 
-    function adicionarGrupoPaginas() {
-        const inicio = parseInt(document.getElementById("novo_grupo_inicio").value);
-        const fim = parseInt(document.getElementById("novo_grupo_fim").value);
-        const tipo = document.getElementById("novo_grupo_tipo").value;
-        const totalDoc = parseInt(document.getElementById("qtd_paginas").value) || 1;
-        const divErro = document.getElementById("erroGrupos");
-
-        divErro.style.display = "none";
-        if (isNaN(inicio) || isNaN(fim) || inicio < 1 || fim < 1 || inicio > fim) {
-            divErro.innerText = "⚠️ Intervalo de páginas inválido.";
-            divErro.style.display = "block";
-            return;
-        }
-        if (fim > totalDoc) {
-            divErro.innerText = `⚠️ A página ${fim} ultrapassa o total de páginas do documento (${totalDoc}).`;
-            divErro.style.display = "block";
-            return;
-        }
-
-        gruposPaginas.push({ inicio, fim, tipo });
-        renderizarGrupos();
-        calcularValor();
-    }
-
-    function removerGrupoPaginas(index) {
-        gruposPaginas.splice(index, 1);
-        renderizarGrupos();
-        calcularValor();
-    }
-
-    function renderizarGrupos() {
-        const lista = document.getElementById("listaGruposAdicionados");
-        if (!lista) return;
-
-        if (gruposPaginas.length === 0) {
-            lista.innerHTML = `<div style="font-size: 13px; color: var(--text-muted); text-align: center;">Nenhum grupo adicional adicionado.</div>`;
-            return;
-        }
-
-        const nomesTipos = {
-            'pb': '🖤 P&B Simples',
-            'pb_cobertura_alta': '⚫ P&B Cobertura Alta',
-            'pouca_cor': '🎨 Colorida Pouca Cor',
-            'media_cor': '🌈 Colorida Média Cor',
-            'cobertura_total': '🖼️ Colorida Cobertura Total'
-        };
-
-        let html = "";
-        gruposPaginas.forEach((g, idx) => {
-            const qtdPags = (g.fim - g.inicio) + 1;
-            html += `
-                <div class="grupo-item-card">
-                    <div><strong>Páginas ${g.inicio} a ${g.fim}</strong> (${qtdPags} pág${qtdPags > 1 ? 's' : ''}) — <span>${nomesTipos[g.tipo]}</span></div>
-                    <div class="grupo-acoes">
-                        <button type="button" class="btn-file-action danger" onclick="removerGrupoPaginas(${idx})">Remover</button>
-                    </div>
-                </div>
-            `;
-        });
-        lista.innerHTML = html;
-    }
-
-    // CÁLCULO PRECISO E PROGRESSIVO DE PREÇOS
-    const selectTipo = document.getElementById("tipo_impressao");    
+    // CÁLCULO PRECISO (REGRAS 1 E 4)
     const inputQtd = document.getElementById("quantidade");    
     const inputQtdPaginas = document.getElementById("qtd_paginas");
     const selectAcabamento = document.getElementById("refile");
-
     const optRedimensionamento = document.getElementById("opt_redimensionamento");
     const optConferencia = document.getElementById("opt_conferencia");
 
     const valorExibicao = document.getElementById("valorTotalExibicao");    
     const subtotalExibicao = document.getElementById("subtotalExibicao");    
-    const descontoExibicao = document.getElementById("descontoExibicao");    
     const extraExibicao = document.getElementById("extraExibicao");    
     const calculoDetalhadoExibicao = document.getElementById("calculoDetalhadoExibicao");
-    const rowDesconto = document.getElementById("rowDesconto");    
     const rowExtra = document.getElementById("rowExtra");    
-    const rowMinimoAplicado = document.getElementById("rowMinimoAplicado");
-    const minimoAplicadoExibicao = document.getElementById("minimoAplicadoExibicao");
 
     function calcularPrecoPBProgressivo(n) {
         if (n <= 0) return { custo: 0, detalhe: "0 páginas" };
@@ -1673,36 +1425,28 @@
         let dParts = [];
         let rem = n;
 
-        // Primeiras 19 folhas a R$ 0,50
         const faix1 = Math.min(rem, 19);
         if (faix1 > 0) {
             custo += faix1 * 0.50;
             dParts.push(`${faix1} × R$ 0,50`);
             rem -= faix1;
         }
-
-        // Da folha 20 até 99 (80 folhas) a R$ 0,40
         if (rem > 0) {
             const faix2 = Math.min(rem, 80);
             custo += faix2 * 0.40;
             dParts.push(`${faix2} × R$ 0,40`);
             rem -= faix2;
         }
-
-        // A partir da folha 100 a R$ 0,35
         if (rem > 0) {
             const faix3 = rem;
             custo += faix3 * 0.35;
             dParts.push(`${faix3} × R$ 0,35`);
         }
-
         return { custo, detalhe: dParts.join(" + ") };
     }
 
     function calcularValor() {    
-        let total = 0;    
         let subtotal = 0;    
-        let desconto = 0;    
         let extras = 0;    
         let textoCalculo = "";
 
@@ -1715,104 +1459,34 @@
         const ladoOpcaoObj = document.querySelector('input[name="Lado da Impressao"]:checked');
         const ehFrenteVerso = ladoOpcaoObj && ladoOpcaoObj.value === "Frente e verso";
 
-        // Mapear contagem por categoria de impressão
-        let contagemCategorias = {
-            'pb': 0,
-            'pb_cobertura_alta': 0,
-            'pouca_cor': 0,
-            'media_cor': 0,
-            'cobertura_total': 0
-        };
+        const isMisto = fluxoMisto && fluxoMisto.checked;
 
-        if (gruposPaginas.length > 0) {
-            // Se houver grupos definidos, computa página por página do documento
-            for (let p = 1; p <= totalPaginasDoc; p++) {
-                let tipoPag = selectTipo ? selectTipo.value : 'pb';
-                // Verificar se p está em algum grupo
-                for (let g of gruposPaginas) {
-                    if (p >= g.inicio && p <= g.fim) {
-                        tipoPag = g.tipo;
-                        break;
-                    }
-                }
-                if (contagemCategorias[tipoPag] !== undefined) {
-                    contagemCategorias[tipoPag] += 1;
-                } else {
-                    contagemCategorias['pb'] += 1;
-                }
-            }
+        if (isMisto) {
+            // Para arquivo misto, valor estimado inicial com base em P&B simples progressivo ou estimativa padrão
+            const qtdTotalPags = totalPaginasDoc * copias;
+            const resPB = calcularPrecoPBProgressivo(qtdTotalPags);
+            subtotal = resPB.custo;
+            textoCalculo = `Estimativa inicial (${qtdTotalPags} págs): ${resPB.detalhe}`;
         } else {
-            // Modo único: todas as páginas do documento pertencem ao tipo selecionado
-            const tipoUnico = selectTipo ? selectTipo.value : 'pb';
-            contagemCategorias[tipoUnico] = totalPaginasDoc;
+            // Opção A — Tudo em preto e branco com cálculo progressivo por faixa
+            const qtdTotalPags = totalPaginasDoc * copias;
+            const resPB = calcularPrecoPBProgressivo(qtdTotalPags);
+            subtotal = resPB.custo;
+            textoCalculo = `${qtdTotalPags} página(s) P&B simples: ${resPB.detalhe}`;
         }
 
-        // Multiplicar pelas cópias
-        for (let cat in contagemCategorias) {
-            contagemCategorias[cat] *= copias;
-        }
-
-        let detalhesCalculoArr = [];
-        let subtotalCalculado = 0;
-
-        // 1. P&B Simples (Progressivo)
-        const qtdPB = contagemCategorias['pb'];
-        if (qtdPB > 0) {
-            const resPB = calcularPrecoPBProgressivo(qtdPB);
-            subtotalCalculado += resPB.custo;
-            detalhesCalculoArr.push(`P&B Simples (${qtdPB} págs): ${resPB.detalhe}`);
-        }
-
-        // 2. P&B Cobertura Alta (R$ 1,00)
-        const qtdPBAlta = contagemCategorias['pb_cobertura_alta'];
-        if (qtdPBAlta > 0) {
-            const custoAlta = qtdPBAlta * 1.00;
-            subtotalCalculado += custoAlta;
-            detalhesCalculoArr.push(`${qtdPBAlta} × R$ 1,00 (P&B Alta)`);
-        }
-
-        // 3. Colorida Pouca Cor (R$ 1,00)
-        const qtdPouca = contagemCategorias['pouca_cor'];
-        if (qtdPouca > 0) {
-            const custoPouca = qtdPouca * 1.00;
-            subtotalCalculado += custoPouca;
-            detalhesCalculoArr.push(`${qtdPouca} × R$ 1,00 (Pouca Cor)`);
-        }
-
-        // 4. Colorida Média Cor (Até 5: 1.35, >=6: 1.20)
-        const qtdMedia = contagemCategorias['media_cor'];
-        if (qtdMedia > 0) {
-            const precoUnitMedia = qtdMedia >= 6 ? 1.20 : 1.35;
-            const custoMedia = qtdMedia * precoUnitMedia;
-            subtotalCalculado += custoMedia;
-            detalhesCalculoArr.push(`${qtdMedia} × R$ ${precoUnitMedia.toFixed(2).replace('.', ',')} (Média Cor)`);
-        }
-
-        // 5. Colorida Cobertura Total (R$ 2,00)
-        const qtdTotalCor = contagemCategorias['cobertura_total'];
-        if (qtdTotalCor > 0) {
-            const custoTotalCor = qtdTotalCor * 2.00;
-            subtotalCalculado += custoTotalCor;
-            detalhesCalculoArr.push(`${qtdTotalCor} × R$ 2,00 (Cobertura Total)`);
-        }
-
-        subtotal = subtotalCalculado;
-        textoCalculo = detalhesCalculoArr.length > 0 ? detalhesCalculoArr.join(" | ") : "1 folha × R$ 0,50";
-
-        // Total de páginas impressas e folhas estimadas
-        const totalPaginasImpressas = Object.values(contagemCategorias).reduce((a, b) => a + b, 0);
+        // Folhas físicas e badge
         const folhasPorCopia = ehFrenteVerso ? Math.ceil(totalPaginasDoc / 2) : totalPaginasDoc;
         const folhasTotais = folhasPorCopia * copias;
+        const totalPaginasImpressas = totalPaginasDoc * copias;
 
         const badge = document.getElementById("badgeCalculoPaginas");
-        let textoBadge = `💡 <strong>Cálculo:</strong> ${totalPaginasDoc} página(s) selecionada(s) por cópia`;
+        let textoBadge = `💡 <strong>Cálculo:</strong> ${totalPaginasDoc} página(s) × ${copias} cópia(s) = ${totalPaginasImpressas} página(s) impressas`;
         if (ehFrenteVerso) {
-            textoBadge += ` (${folhasPorCopia} folha(s) por cópia em frente e verso)`;
+            textoBadge += ` (${folhasTotais} folha(s) físicas em frente e verso).`;
         }
-        textoBadge += ` × ${copias} cópia(s) = ${folhasTotais} folha(s) físicas estimadas.`;
         if (badge) badge.innerHTML = textoBadge;
 
-        // Serviços adicionais
         if (optRedimensionamento && optRedimensionamento.checked) {
             extras += 2.00;
             const elemRedim = document.getElementById("hidden_redimensionamento");
@@ -1830,26 +1504,11 @@
             if (elemConf) elemConf.value = "Nao";
         }
 
-        let totalAntesMinimo = subtotal + extras;
-        let minimoAplicado = false;
-
-        // Valor mínimo do pedido: R$ 2,00
-        if (totalAntesMinimo < 2.00 && totalAntesMinimo > 0) {
-            total = 2.00;
-            minimoAplicado = true;
-        } else {
-            total = totalAntesMinimo;
-        }
+        // SEM VALOR MÍNIMO INCOERENTE (REQUISITO 4)
+        let total = subtotal + extras;
 
         if (subtotalExibicao) subtotalExibicao.innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;    
         if (calculoDetalhadoExibicao) calculoDetalhadoExibicao.innerText = textoCalculo;
-
-        if (minimoAplicado && rowMinimoAplicado) {
-            rowMinimoAplicado.style.display = "flex";
-            if (minimoAplicadoExibicao) minimoAplicadoExibicao.innerText = `Aplicado (Mínimo R$ 2,00)`;
-        } else if (rowMinimoAplicado) {
-            rowMinimoAplicado.style.display = "none";
-        }
 
         if (extras > 0 && rowExtra && extraExibicao) {    
             rowExtra.style.display = "flex";    
@@ -1866,9 +1525,8 @@
 
     function atualizarResumoConferencia() {
         const resumoServico = document.getElementById("resumoServico");
-        const resumoTipo = document.getElementById("resumoTipo");
+        const resumoFluxo = document.getElementById("resumoFluxo");
         const resumoDocPaginas = document.getElementById("resumoDocPaginas");
-        const resumoOrganizacao = document.getElementById("resumoOrganizacao");
         const resumoCopias = document.getElementById("resumoCopias");
         const resumoTotalPaginas = document.getElementById("resumoTotalPaginas");
         const resumoLado = document.getElementById("resumoLado");
@@ -1879,21 +1537,8 @@
 
         if (resumoServico) resumoServico.innerText = "Impressão A4";
         
-        const tipoMap = {
-            'pb': 'P&B Simples',
-            'pb_cobertura_alta': 'P&B Cobertura Alta',
-            'pouca_cor': 'Colorida Pouca Cor',
-            'media_cor': 'Colorida Média Cor',
-            'cobertura_total': 'Colorida Cobertura Total'
-        };
-
-        if (resumoTipo) {
-            if (gruposPaginas.length > 0) {
-                resumoTipo.innerText = "Misto / Múltiplos Grupos";
-            } else {
-                resumoTipo.innerText = tipoMap[selectTipo ? selectTipo.value : 'pb'] || 'P&B Simples';
-            }
-        }
+        const isMisto = fluxoMisto && fluxoMisto.checked;
+        if (resumoFluxo) resumoFluxo.innerText = isMisto ? "Arquivo Misto (P&B e Colorido)" : "Tudo em Preto e Branco";
         
         let pDoc = parseInt(inputQtdPaginas ? inputQtdPaginas.value : 1);
         if (isNaN(pDoc) || pDoc < 1) pDoc = 1;
@@ -1909,7 +1554,6 @@
         const totPag = pDoc * cCop;
 
         if (resumoDocPaginas) resumoDocPaginas.innerText = `📄 Documento: ${pDoc} páginas`;
-        if (resumoOrganizacao) resumoOrganizacao.innerText = gruposPaginas.length > 0 ? `${gruposPaginas.length} grupos personalizados` : "Único tipo / Todas";
         if (resumoCopias) resumoCopias.innerText = `🔄 Cópias: ${cCop}`;
         if (resumoTotalPaginas) resumoTotalPaginas.innerText = `🖨️ Total de páginas impressas: ${totPag}`;
         if (resumoLado) resumoLado.innerText = strLado;
@@ -1918,12 +1562,10 @@
         const hQtd = document.getElementById("hidden_qtd_paginas");
         const hTotPag = document.getElementById("hidden_total_paginas_impressas");
         const hFolhas = document.getElementById("hidden_folhas_utilizadas");
-        const hGrupos = document.getElementById("hidden_grupos_detalhe");
 
         if (hQtd) hQtd.value = pDoc;
         if (hTotPag) hTotPag.value = totPag;
         if (hFolhas) hFolhas.value = numFolhas;
-        if (hGrupos) hGrupos.value = gruposPaginas.length > 0 ? JSON.stringify(gruposPaginas) : "Tipo único";
 
         const acabTexto = (selectAcabamento && selectAcabamento.value === 'grampeado') ? 'Grampeado' : 'Sem acabamento';
         if (resumoAcabamento) resumoAcabamento.innerText = acabTexto;
@@ -1933,7 +1575,7 @@
             const txt = document.getElementById("textoDireto") ? document.getElementById("textoDireto").value.trim() : "";
             if (resumoArquivo) resumoArquivo.innerText = txt ? 'Texto Colado' : 'Texto não informado';
         } else {
-            const arq = inputArquivo && inputArquivo.files ? inputArquivo.files[0] : null;
+            const arq = isMisto ? (inputArquivoMisto && inputArquivoMisto.files ? inputArquivoMisto.files[0] : null) : (inputArquivoNormal && inputArquivoNormal.files ? inputArquivoNormal.files[0] : null);
             if (resumoArquivo) resumoArquivo.innerText = arq ? arq.name : 'Nenhum selecionado';
         }
     }
@@ -1942,7 +1584,7 @@
     const btnToggleModo = document.getElementById("btnToggleModo");
     const campoArquivoContainer = document.getElementById("campoArquivoContainer");
     const campoTextoContainer = document.getElementById("campoTextoContainer");
-    const inputArquivo = document.getElementById("arquivo");
+    const inputArquivoNormal = document.getElementById("arquivo");
     const inputTexto = document.getElementById("textoDireto");
 
     if (btnToggleModo) {
@@ -1952,10 +1594,8 @@
                 if (campoArquivoContainer) campoArquivoContainer.classList.add("hidden");
                 if (campoTextoContainer) campoTextoContainer.classList.remove("hidden");
                 btnToggleModo.innerText = "📎 Prefiro anexar um arquivo";
-                if (inputArquivo) {
-                    inputArquivo.removeAttribute("required");
-                    inputArquivo.value = "";
-                }
+                if (inputArquivoNormal) inputArquivoNormal.removeAttribute("required");
+                if (inputArquivoMisto) inputArquivoMisto.removeAttribute("required");
                 if (inputTexto) inputTexto.setAttribute("required", "required");
                 ocultarPreviewA4();
             } else {
@@ -1966,7 +1606,11 @@
                     inputTexto.removeAttribute("required");
                     inputTexto.value = "";
                 }
-                if (inputArquivo) inputArquivo.setAttribute("required", "required");
+                if (fluxoMisto && fluxoMisto.checked) {
+                    if (inputArquivoMisto) inputArquivoMisto.setAttribute("required", "required");
+                } else {
+                    if (inputArquivoNormal) inputArquivoNormal.setAttribute("required", "required");
+                }
             }
             calcularValor();
         });
@@ -1975,8 +1619,8 @@
     const filePreview = document.getElementById("filePreview");
     const fileNameDisplay = document.getElementById("fileNameDisplay");
 
-    if (inputArquivo) {
-        inputArquivo.addEventListener("change", function () {
+    if (inputArquivoNormal) {
+        inputArquivoNormal.addEventListener("change", function () {
             if (this.files && this.files[0]) {
                 const file = this.files[0];
                 if (fileNameDisplay) fileNameDisplay.innerText = file.name;
@@ -1988,14 +1632,20 @@
         });
     }
 
+    if (inputArquivoMisto) {
+        inputArquivoMisto.addEventListener("change", function () {
+            calcularValor();
+        });
+    }
+
     function removerArquivoA4() {
-        if (inputArquivo) inputArquivo.value = "";
+        if (inputArquivoNormal) inputArquivoNormal.value = "";
         ocultarPreviewA4();
         calcularValor();
     }
 
     function trocarArquivoA4() {
-        if (inputArquivo) inputArquivo.click();
+        if (inputArquivoNormal) inputArquivoNormal.click();
     }
 
     function ocultarPreviewA4() {
@@ -2003,7 +1653,6 @@
         if (fileNameDisplay) fileNameDisplay.innerText = "";
     }
 
-    if (selectTipo) selectTipo.addEventListener("change", calcularValor);
     if (inputQtd) inputQtd.addEventListener("input", calcularValor);
     if (inputQtdPaginas) inputQtdPaginas.addEventListener("input", calcularValor);
     if (selectAcabamento) selectAcabamento.addEventListener("change", calcularValor);
@@ -2013,15 +1662,128 @@
     document.querySelectorAll('input[name="Lado da Impressao"]').forEach(r => {
         r.addEventListener("change", calcularValor);
     });
-
     document.querySelectorAll('input[name="Forma de Pagamento"]').forEach(r => {
         r.addEventListener("change", calcularValor);
     });
-
     if (inputTexto) {
         inputTexto.addEventListener("input", atualizarResumoConferencia);
     }
 
+    // GERAÇÃO DO COMPROVANTE PDF NO APARELHO DO CLIENTE (REQUISITO 7)
+    function gerarComprovantePDF() {
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const nomeCliente = document.getElementById("nome") ? document.getElementById("nome").value.trim() : "Cliente";
+            const telefone = document.getElementById("telefone") ? document.getElementById("telefone").value.trim() : "";
+            const qtdPaginas = document.getElementById("qtd_paginas") ? document.getElementById("qtd_paginas").value : "1";
+            const qtdCopias = document.getElementById("quantidade") ? document.getElementById("quantidade").value : "1";
+            const ladoImpressao = document.querySelector('input[name="Lado da Impressao"]:checked')?.value || "Frente";
+            const fluxo = fluxoMisto && fluxoMisto.checked ? "Arquivo Misto (P&B e Colorido)" : "Tudo em Preto e Branco";
+            const pagamento = document.querySelector('input[name="Forma de Pagamento"]:checked')?.value || "PIX";
+            const obs = document.getElementById("observacoes") ? document.getElementById("observacoes").value.trim() : "Nenhuma";
+            const totalEst = document.getElementById("valorTotalExibicao") ? document.getElementById("valorTotalExibicao").innerText : "R$ 0,50";
+            const dataHora = new Date().toLocaleString("pt-BR");
+            const protocolo = "WG-" + Math.floor(100000 + Math.random() * 900000);
+
+            let arquivoNome = "Nenhum arquivo anexado";
+            if (modoTextoAtivo) {
+                arquivoNome = "Texto colado diretamente no site";
+            } else if (fluxoMisto && fluxoMisto.checked) {
+                arquivoNome = inputArquivoMisto && inputArquivoMisto.files[0] ? inputArquivoMisto.files[0].name : "Arquivo Misto";
+            } else {
+                arquivoNome = inputArquivoNormal && inputArquivoNormal.files[0] ? inputArquivoNormal.files[0].name : "Arquivo Padrão";
+            }
+
+            // Cabeçalho PDF
+            doc.setFillColor(2, 132, 199);
+            doc.rect(0, 0, 210, 25, "F");
+            doc.setTextColor(255, 255, 255);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(16);
+            doc.text("WelGrafx — Comprovante de Solicitação de Impressão", 15, 16);
+
+            // Corpo PDF
+            doc.setTextColor(15, 23, 42);
+            doc.setFontSize(11);
+            let y = 35;
+
+            doc.setFont("helvetica", "bold");
+            doc.text(`Protocolo: ${protocolo}`, 15, y);
+            doc.text(`Data/Hora: ${dataHora}`, 120, y);
+            y += 10;
+
+            doc.setLineWidth(0.5);
+            doc.setLineColor(226, 232, 240);
+            doc.line(15, y, 195, y);
+            y += 8;
+
+            doc.setFontSize(12);
+            doc.setTextColor(2, 132, 199);
+            doc.text("Dados do Cliente", 15, y);
+            y += 6;
+
+            doc.setFontSize(10);
+            doc.setTextColor(15, 23, 42);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Nome: ${nomeCliente}`, 15, y);
+            y += 6;
+            doc.text(`WhatsApp: ${telefone}`, 15, y);
+            y += 10;
+
+            doc.setFontSize(12);
+            doc.setTextColor(2, 132, 199);
+            doc.setFont("helvetica", "bold");
+            doc.text("Detalhes do Pedido", 15, y);
+            y += 6;
+
+            doc.setFontSize(10);
+            doc.setTextColor(15, 23, 42);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Arquivo: ${arquivoNome}`, 15, y);
+            y += 6;
+            doc.text(`Quantidade de páginas do documento: ${qtdPaginas}`, 15, y);
+            y += 6;
+            doc.text(`Modalidade / Fluxo: ${fluxo}`, 15, y);
+            y += 6;
+            doc.text(`Modo de Impressão: ${ladoImpressao}`, 15, y);
+            y += 6;
+            doc.text(`Quantidade de Cópias: ${qtdCopias}`, 15, y);
+            y += 6;
+            doc.text(`Forma de Pagamento: ${pagamento}`, 15, y);
+            y += 6;
+            doc.text(`Observações: ${obs}`, 15, y);
+            y += 10;
+
+            doc.setLineWidth(0.5);
+            doc.line(15, y, 195, y);
+            y += 8;
+
+            doc.setFontSize(13);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(16, 185, 129);
+            doc.text(`Valor Estimado Final: ${totalEst}`, 15, y);
+            y += 8;
+
+            doc.setFontSize(9);
+            doc.setTextColor(100, 116, 139);
+            doc.setFont("helvetica", "italic");
+            doc.text("Atenção: O valor acima é uma estimativa preliminar e passará por conferência da equipe WelGrafx antes da execução.", 15, y);
+            y += 15;
+
+            // Rodapé
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            doc.text("WelGrafx — Impressões Rápidas & Serviços | www.welgrafx.com.br", 15, y);
+
+            doc.save("comprovante-welgrafx.pdf");
+        } catch (err) {
+            console.error("Erro ao gerar PDF:", err);
+        }
+    }
+
+    // FORM SUBMIT E SUCESSO
     const formImpressao = document.getElementById("formImpressao");
     const telaSucesso = document.getElementById("telaSucesso");
     const boxDetalhesPagamento = document.getElementById("boxDetalhesPagamento");
@@ -2032,24 +1794,31 @@
         const elemHiddenTotal = document.getElementById("hidden_total");
         if (elemHiddenTotal) elemHiddenTotal.value = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
 
-        const tipoTextoObj = selectTipo ? selectTipo.options[selectTipo.selectedIndex] : null;
+        const isMisto = fluxoMisto && fluxoMisto.checked;
+        const tipoTextoObj = isMisto ? "Arquivo Misto (P&B e Colorido)" : "Tudo em Preto e Branco";
         const elemHiddenTipoText = document.getElementById("hidden_tipo_texto");
-        if (elemHiddenTipoText) elemHiddenTipoText.value = tipoTextoObj ? tipoTextoObj.text : "Misto";
+        if (elemHiddenTipoText) elemHiddenTipoText.value = tipoTextoObj;
 
         naAbaPagamento = true;
+
+        // Gerar comprovante PDF automaticamente no aparelho
+        gerarComprovantePDF();
 
         setTimeout(function () {
             formImpressao.classList.add("hidden");
             const secaoBanner = document.getElementById("secaoBanner");
             const secaoCardChamativo = document.getElementById("secaoCardChamativo");
             const tabelaCard = document.querySelector(".tabela-precos-card");
-            const vitrineCard = document.querySelector(".vitrine-calculos-card");
-            const textoExplicativo = document.querySelector(".texto-explicativo-bloco");
+            const vitrineTipos = document.querySelector(".vitrine-tipos-card");
+            const vitrineCalculos = document.querySelector(".vitrine-calculos-card");
+            const blocoTextoExp = document.querySelector(".texto-explicativo-bloco");
+
             if (secaoBanner) secaoBanner.classList.add("hidden");
             if (secaoCardChamativo) secaoCardChamativo.classList.add("hidden");
             if (tabelaCard) tabelaCard.classList.add("hidden");
-            if (vitrineCard) vitrineCard.classList.add("hidden");
-            if (textoExplicativo) textoExplicativo.classList.add("hidden");
+            if (vitrineTipos) vitrineTipos.classList.add("hidden");
+            if (vitrineCalculos) vitrineCalculos.classList.add("hidden");
+            if (blocoTextoExp) blocoTextoExp.classList.add("hidden");
 
             const radioPagamento = document.querySelector('input[name="Forma de Pagamento"]:checked');
             const formaPagamento = radioPagamento ? radioPagamento.value : "PIX";
@@ -2078,7 +1847,7 @@
             }
 
             if (btnNotificarWhats) {
-                const msgWhats = encodeURIComponent(`Olá! Fiz um pedido no site WelGrafx no valor de ${valorFormatado} em nome de ${nomeCliente}.`);
+                const msgWhats = encodeURIComponent(`Olá! Fiz um pedido no site WelGrafx no valor de ${valorFormatado} em nome de ${nomeCliente}. O comprovante PDF foi gerado.`);
                 btnNotificarWhats.href = `https://wa.me/5541999682836?text=${msgWhats}`;
             }
 
