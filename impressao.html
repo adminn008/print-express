@@ -1,1963 +1,2389 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WelGrafx - Impressões Rápidas & Serviços</title>
-<link href="[https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap)" rel="stylesheet">
-<link rel="apple-touch-icon" sizes="180x180" href="/print-express/images/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/print-express/images/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/print-express/images/favicon-16x16.png">
-<link rel="manifest" href="/print-express/images/site.webmanifest">
-<meta name="theme-color" content="#0284c7">
-<!-- jsPDF para geração do comprovante PDF -->
-<script src="[https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js](https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js)"></script>
-<style>
-:root {
---bg-body: #f8fafc;
---bg-card: #ffffff;
---bg-input: #f1f5f9;
---border-color: #e2e8f0;
---text-main: #0f172a;
---text-muted: #64748b;
---primary: #0284c7;
---primary-hover: #0369a1;
---accent: #38bdf8;
---accent-light: rgba(2, 132, 199, 0.08);
---green: #10b981;
---danger: #ef4444;
---amber: #f59e0b;
---amber-light: rgba(245, 158, 11, 0.1);
---shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
---font-scale: 1rem;
-}
-​[data-theme="dark"] {
---bg-body: #0f172a;
---bg-card: #1e293b;
---bg-input: #0f172a;
---border-color: #334155;
---text-main: #f8fafc;
---text-muted: #94a3b8;
---accent-light: rgba(56, 189, 248, 0.12);
---amber-light: rgba(245, 158, 11, 0.15);
---shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-}
-​* {
-box-sizing: border-box;
-margin: 0;
-padding: 0;
-font-family: 'Plus Jakarta Sans', sans-serif;
-transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
-}
-​html {
-font-size: var(--font-scale);
-}
-​body {
-background-color: var(--bg-body);
-color: var(--text-main);
-padding: 32px 16px 80px 16px;
-line-height: 1.6;
-}
-​/* ACESSIBILIDADE - BOTÃO DE PULAR CONTEÚDO PARA TECLADO */
-.skip-link {
-position: absolute;
-top: -40px;
-left: 10px;
-background: var(--primary);
-color: white;
-padding: 8px 16px;
-z-index: 10000;
-border-radius: 8px;
-font-weight: 700;
-text-decoration: none;
-transition: top 0.2s ease;
-}
-.skip-link:focus {
-top: 10px;
-}
-​.container {
-max-width: 680px;
-margin: 0 auto;
-display: flex;
-flex-direction: column;
-gap: 24px;
-}
-​header { text-align: center; position: relative; }
-.header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
-​.header-controls { display: flex; gap: 8px; align-items: center; }
-​.status-badge {
-font-size: 12px;
-font-weight: 700;
-padding: 6px 12px;
-border-radius: 20px;
-display: flex;
-align-items: center;
-gap: 6px;
-}
-.status-open { background: rgba(16, 185, 129, 0.15); color: var(--green); }
-.status-closed { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-​.theme-toggle, .access-btn {
-background: var(--bg-card);
-border: 1px solid var(--border-color);
-color: var(--text-main);
-padding: 8px 12px;
-border-radius: 20px;
-cursor: pointer;
-font-size: 13px;
-font-weight: 600;
-display: flex;
-align-items: center;
-gap: 6px;
-box-shadow: var(--shadow);
-}
-​.theme-toggle:hover, .access-btn:hover {
-transform: translateY(-2px);
-border-color: var(--primary);
-}
-​h1 { color: var(--primary); font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
-header p { color: var(--text-muted); font-size: 15px; font-weight: 500; }
-​.banner-imagem-container {
-width: 100%;
-display: flex;
-justify-content: center;
-align-items: center;
-transition: transform 0.2s ease;
-}
-​.banner-imagem-container:hover {
-transform: scale(1.01);
-}
-​.banner-imagem {
-width: 100%;
-max-width: 450px;
-height: auto;
-border-radius: 16px;
-border: 1px solid var(--border-color);
-box-shadow: var(--shadow);
-object-fit: cover;
-display: block;
-}
-​/* 1. NOVA TABELA DE PREÇOS MODERNA E ELEGANTE */
-.tabela-precos-moderna {
-background: var(--bg-card);
-border: 1px solid var(--border-color);
-border-radius: 24px;
-padding: 32px;
-box-shadow: var(--shadow);
-display: flex;
-flex-direction: column;
-gap: 24px;
-animation: fadeIn 0.4s ease;
-}
-​.tabela-precos-topo {
-text-align: center;
-display: flex;
-flex-direction: column;
-gap: 6px;
-border-bottom: 1px solid var(--border-color);
-padding-bottom: 16px;
-}
-​.tabela-precos-topo h2 {
-font-size: 22px;
-font-weight: 800;
-color: var(--text-main);
-letter-spacing: -0.5px;
-}
-​.tabela-precos-topo p {
-font-size: 13px;
-color: var(--text-muted);
-}
-​.tabela-grid-cards {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-gap: 20px;
-}
-​.preco-bloco-card {
-background: var(--bg-input);
-border: 1px solid var(--border-color);
-border-radius: 18px;
-padding: 22px;
-display: flex;
-flex-direction: column;
-gap: 16px;
-position: relative;
-overflow: hidden;
-}
-​.preco-bloco-card:hover {
-transform: translateY(-3px);
-box-shadow: 0 12px 30px -10px rgba(0,0,0,0.08);
-border-color: var(--green);
-}
-​.preco-bloco-titulo {
-font-size: 15px;
-font-weight: 800;
-color: var(--text-main);
-display: flex;
-align-items: center;
-gap: 8px;
-border-bottom: 2px solid var(--border-color);
-padding-bottom: 10px;
-}
-​.preco-itens-lista {
-display: flex;
-flex-direction: column;
-gap: 12px;
-}
-​.preco-item-linha {
-display: flex;
-justify-content: space-between;
-align-items: center;
-font-size: 13px;
-color: var(--text-muted);
-font-weight: 600;
-}
-​.preco-item-linha .tag-preco-verde {
-background: rgba(16, 185, 129, 0.12);
-color: var(--green);
-font-weight: 800;
-padding: 5px 12px;
-border-radius: 10px;
-font-size: 14px;
-border: 1px solid rgba(16, 185, 129, 0.25);
-white-space: nowrap;
-}
-​.preco-subdescricao {
-font-size: 12px;
-color: var(--text-muted);
-font-style: italic;
-margin-top: -4px;
-}
-​.frente-verso-rodape {
-background: var(--amber-light);
-border: 1px solid var(--amber);
-border-radius: 14px;
-padding: 14px 18px;
-font-size: 14px;
-font-weight: 700;
-color: var(--amber);
-text-align: center;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 8px;
-}
-​[data-theme="dark"] .frente-verso-rodape {
-color: #fbbf24;
-border-color: #f59e0b;
-}
-​/* 1. VITRINES INFORMATIVAS (REQUISITO 1) */
-.vitrines-container {
-display: flex;
-flex-direction: column;
-gap: 20px;
-}
-​.vitrine-informativa-card {
-background: var(--bg-card);
-border: 1px solid var(--border-color);
-border-radius: 20px;
-padding: 24px;
-box-shadow: var(--shadow);
-display: flex;
-flex-direction: column;
-gap: 16px;
-animation: fadeIn 0.4s ease;
-}
-​.vitrine-informativa-card h3 {
-font-size: 18px;
-font-weight: 800;
-color: var(--primary);
-display: flex;
-align-items: center;
-gap: 8px;
-border-bottom: 1px solid var(--border-color);
-padding-bottom: 12px;
-}
-​.vitrine-cobertura-aviso {
-background: var(--amber-light);
-border: 1px solid var(--amber);
-border-radius: 14px;
-padding: 16px;
-display: flex;
-flex-direction: column;
-gap: 6px;
-}
-​.vitrine-cobertura-aviso strong {
-color: var(--amber);
-font-size: 14px;
-display: flex;
-align-items: center;
-gap: 6px;
-}
-​[data-theme="dark"] .vitrine-cobertura-aviso strong {
-color: #fbbf24;
-}
-​.vitrine-cobertura-aviso p {
-font-size: 13px;
-color: var(--text-main);
-line-height: 1.5;
-font-weight: 500;
-}
-​.vitrine-beneficios-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-gap: 16px;
-}
-​.beneficio-cartao {
-background: var(--bg-input);
-border: 1px solid var(--border-color);
-border-radius: 14px;
-padding: 18px;
-display: flex;
-flex-direction: column;
-gap: 8px;
-transition: transform 0.2s ease, border-color 0.2s ease;
-}
-​.beneficio-cartao:hover {
-transform: translateY(-2px);
-border-color: var(--primary);
-box-shadow: 0 8px 20px -6px rgba(0,0,0,0.06);
-}
-​.beneficio-cartao h4 {
-font-size: 14px;
-font-weight: 800;
-color: var(--primary);
-display: flex;
-align-items: center;
-gap: 6px;
-}
-​.beneficio-cartao p {
-font-size: 13px;
-color: var(--text-muted);
-line-height: 1.5;
-}
-​/* MODAL DE IMAGEM FULLSCREEN E ZOOM */
-.modal-fullscreen {
-display: none;
-position: fixed;
-z-index: 99999;
-left: 0;
-top: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(0, 0, 0, 0.92);
-backdrop-filter: blur(5px);
-overflow: hidden;
-touch-action: none;
-}
-​.modal-fullscreen.active {
-display: flex;
-align-items: center;
-justify-content: center;
-}
-​.btn-fechar-modal {
-position: absolute;
-top: 20px;
-right: 25px;
-color: #ffffff;
-font-size: 32px;
-font-weight: bold;
-cursor: pointer;
-z-index: 100000;
-background: rgba(255, 255, 255, 0.2);
-width: 44px;
-height: 44px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-transition: background 0.2s ease, transform 0.2s ease;
-user-select: none;
-}
-​.btn-fechar-modal:hover {
-background: rgba(255, 255, 255, 0.4);
-transform: scale(1.1);
-}
-​.wrapper-zoom {
-width: 100%;
-height: 100%;
-display: flex;
-align-items: center;
-justify-content: center;
-overflow: auto;
-padding: 20px;
-}
-​.img-zoomable {
-max-width: 90vw;
-max-height: 90vh;
-object-fit: contain;
-transition: transform 0.1s ease-out;
-cursor: zoom-in;
-transform-origin: center center;
-image-rendering: -webkit-optimize-contrast;
-}
-​.img-zoomable.zoomed {
-cursor: zoom-out;
-}
-​.step-card {
-background: var(--bg-card);
-border: 1px solid var(--border-color);
-border-radius: 20px;
-padding: 28px;
-display: flex;
-flex-direction: column;
-gap: 20px;
-box-shadow: var(--shadow);
-}
-​.step-card h2 {
-font-size: 20px;
-font-weight: 700;
-color: var(--text-main);
-border-bottom: 1px solid var(--border-color);
-padding-bottom: 12px;
-}
-​.alerta-desconsiderar {
-background: rgba(239, 68, 68, 0.12);
-border: 1px solid var(--danger);
-color: var(--danger);
-padding: 12px;
-border-radius: 12px;
-font-size: 13px;
-font-weight: 700;
-text-align: center;
-}
-​.form-group {
-display: flex;
-flex-direction: column;
-gap: 6px;
-}
-​.form-group label {
-font-size: 14px;
-font-weight: 600;
-color: var(--text-main);
-}
-​.field-hint {
-font-size: 12px;
-color: var(--text-muted);
-line-height: 1.4;
-}
-​.example-badge {
-background: var(--accent-light);
-color: var(--primary);
-padding: 8px 12px;
-border-radius: 8px;
-font-size: 12px;
-font-weight: 600;
-border: 1px solid rgba(2, 132, 199, 0.2);
-}
-​input[type="text"], input[type="tel"], input[type="number"], input[type="file"], select, textarea {
-width: 100%;
-padding: 12px 16px;
-background: var(--bg-input);
-border: 1px solid var(--border-color);
-border-radius: 12px;
-color: var(--text-main);
-font-size: 15px;
-}
-​input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible {
-border-color: var(--primary);
-outline: 2px solid var(--primary);
-outline-offset: 1px;
-box-shadow: 0 0 0 3px var(--accent-light);
-}
-​.checkbox-card {
-background: var(--bg-input);
-border: 1px solid var(--border-color);
-padding: 14px 16px;
-border-radius: 12px;
-display: flex;
-align-items: flex-start;
-gap: 12px;
-font-size: 13px;
-font-weight: 600;
-cursor: pointer;
-}
-.checkbox-card:hover { border-color: var(--primary); transform: translateX(2px); }
-.checkbox-card input[type="checkbox"] { margin-top: 3px; width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
-​/* ÁREA VISUAL DE ARQUIVO MELHORADA */
-.file-upload-box {
-background: var(--bg-input);
-border: 2px dashed var(--border-color);
-border-radius: 14px;
-padding: 16px;
-text-align: center;
-position: relative;
-transition: all 0.2s ease;
-}
-.file-upload-box:hover {
-border-color: var(--primary);
-}
-.file-preview-card {
-background: var(--bg-card);
-border: 1px solid var(--border-color);
-border-radius: 12px;
-padding: 12px 16px;
-display: flex;
-align-items: center;
-justify-content: space-between;
-gap: 12px;
-margin-top: 8px;
-}
-.file-preview-info {
-display: flex;
-align-items: center;
-gap: 8px;
-font-size: 13px;
-font-weight: 700;
-color: var(--primary);
-overflow: hidden;
-text-overflow: ellipsis;
-white-space: nowrap;
-}
-.file-actions {
-display: flex;
-gap: 6px;
-}
-.btn-file-action {
-background: var(--bg-input);
-border: 1px solid var(--border-color);
-color: var(--text-main);
-padding: 6px 10px;
-border-radius: 8px;
-font-size: 12px;
-font-weight: 600;
-cursor: pointer;
-}
-.btn-file-action:hover {
-border-color: var(--primary);
-color: var(--primary);
-}
-.btn-file-action.danger:hover {
-border-color: var(--danger);
-color: var(--danger);
-}
-​/* RESUMO E CONFERÊNCIA */
-.summary-box {
-background: var(--bg-input);
-border: 1px solid var(--border-color);
-border-radius: 16px;
-padding: 18px;
-display: flex;
-flex-direction: column;
-gap: 10px;
-}
-.summary-box h3 {
-font-size: 16px;
-font-weight: 700;
-color: var(--primary);
-border-bottom: 1px solid var(--border-color);
-padding-bottom: 8px;
-display: flex;
-align-items: center;
-gap: 6px;
-}
-.summary-grid {
-display: grid;
-grid-template-columns: repeat(2, 1fr);
-gap: 8px;
-font-size: 13px;
-}
-.summary-item {
-display: flex;
-flex-direction: column;
-}
-.summary-item span.label {
-color: var(--text-muted);
-font-size: 11px;
-text-transform: uppercase;
-font-weight: 700;
-}
-.summary-item span.value {
-color: var(--text-main);
-font-weight: 600;
-}
-​/* 4. REORGANIZAÇÃO COMPLETA DA APRESENTAÇÃO DO SUBTOTAL (TABELA DETALHADA) */
-.price-box-novo {
-background: var(--bg-input);
-border: 1px solid var(--border-color);
-border-radius: 16px;
-padding: 20px;
-display: flex;
-flex-direction: column;
-gap: 14px;
-font-size: 14px;
-}
-​.tabela-resumo-valores {
-display: flex;
-flex-direction: column;
-gap: 8px;
-border-bottom: 1px solid var(--border-color);
-padding-bottom: 12px;
-}
-​.tabela-resumo-linha {
-display: flex;
-justify-content: space-between;
-align-items: center;
-font-size: 14px;
-color: var(--text-main);
-font-weight: 600;
-}
-​.tabela-resumo-linha .val-item {
-color: var(--primary);
-font-weight: 700;
-}
-​.tabela-resumo-linha.desconto-linha {
-color: var(--green);
-}
-​.tabela-resumo-linha.desconto-linha .val-item {
-color: var(--green);
-font-weight: 700;
-}
-​.tabela-resumo-linha.subtotal-linha {
-border-top: 1px dashed var(--border-color);
-padding-top: 8px;
-font-weight: 700;
-color: var(--text-muted);
-}
-​.tabela-resumo-linha.total-final-linha {
-border-top: 2px solid var(--border-color);
-padding-top: 10px;
-font-size: 18px;
-font-weight: 800;
-color: var(--text-main);
-}
-​.tabela-resumo-linha.total-final-linha .val-total-destaque {
-color: var(--green);
-font-size: 24px;
-font-weight: 800;
-}
-​.btn-primary {
-background: var(--primary);
-color: white; border: none;
-padding: 16px; font-size: 16px;
-border-radius: 12px; cursor: pointer;
-font-weight: 700; width: 100%;
-display: flex; justify-content: center; align-items: center; gap: 8px;
-box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
-}
-.btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
-​.btn-whatsapp {
-background: #25D366;
-color: white;
-text-decoration: none;
-padding: 16px;
-border-radius: 12px;
-font-weight: 700;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 8px;
-margin-top: 12px;
-font-size: 16px;
-box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
-}
-.btn-whatsapp:hover { transform: translateY(-2px); }
-​.sucesso-card {
-background: var(--bg-card);
-border: 1px solid var(--border-color);
-border-radius: 20px;
-padding: 28px;
-text-align: center;
-box-shadow: var(--shadow);
-animation: fadeIn 0.4s ease-in-out;
-}
-​.pix-box-novo {
-background: var(--bg-input);
-border: 2px dashed var(--primary);
-padding: 24px;
-border-radius: 16px;
-margin-top: 18px;
-display: flex;
-flex-direction: column;
-align-items: center;
-gap: 14px;
-}
-​.qr-code-pix {
-width: 100%;
-max-width: 220px;
-height: auto;
-border-radius: 12px;
-border: 1px solid var(--border-color);
-background: #ffffff;
-padding: 8px;
-object-fit: contain;
-display: block;
-}
-​.valor-destaque {
-font-size: 28px;
-font-weight: 800;
-color: var(--green);
-}
-​.btn-copiar-pix {
-background: var(--primary);
-color: white; border: none;
-padding: 14px 20px; font-weight: 700;
-border-radius: 12px; cursor: pointer;
-width: 100%;
-font-size: 15px;
-transition: all 0.2s ease;
-}
-​.dinheiro-box-novo {
-background: var(--bg-input);
-border: 2px solid var(--border-color);
-padding: 24px;
-border-radius: 16px;
-margin-top: 18px;
-display: flex;
-flex-direction: column;
-align-items: center;
-gap: 12px;
-}
-​.card-chamativo {
-background: linear-gradient(135deg, rgba(2, 132, 199, 0.1) 0%, rgba(56, 189, 248, 0.15) 100%);
-border: 1px solid var(--accent);
-border-radius: 16px;
-padding: 20px;
-text-align: center;
-display: flex;
-flex-direction: column;
-gap: 8px;
-box-shadow: var(--shadow);
-}
-​.status-fila {
-background: var(--bg-card);
-border: 1px solid var(--border-color);
-border-radius: 12px;
-padding: 10px 14px;
-font-size: 13px;
-color: var(--text-main);
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 8px;
-margin-top: 6px;
-font-weight: 600;
-}
-​.radio-group { display: flex; gap: 20px; margin-top: 4px; flex-wrap: wrap; }
-.radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px; font-weight: 500; }
-.hidden { display: none !important; }
-​.btn-flutuante {
-position: fixed;
-bottom: 20px; right: 20px;
-background: #25D366; color: white;
-border-radius: 50px; padding: 12px 20px;
-font-weight: 700; font-size: 14px;
-box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-text-decoration: none;
-display: flex; align-items: center; gap: 8px;
-z-index: 999;
-}
-.btn-flutuante:hover { transform: scale(1.05); }
-​.btn-toggle-modo {
-background: transparent;
-border: 1px dashed var(--primary);
-color: var(--primary);
-padding: 8px 12px;
-border-radius: 8px;
-cursor: pointer;
-font-size: 13px;
-font-weight: 600;
-margin-top: 4px;
-}
-​.alerta-pagamento-pendente {
-background: rgba(239, 68, 68, 0.1);
-border: 1px solid var(--danger);
-color: var(--danger);
-padding: 12px 16px;
-border-radius: 12px;
-font-size: 13px;
-font-weight: 700;
-margin-top: 14px;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 8px;
-}
-​.checklist-box {
-background: var(--bg-input);
-border: 1px solid var(--border-color);
-border-radius: 14px;
-padding: 16px;
-font-size: 13px;
-}
-.checklist-box h4 {
-color: var(--primary);
-font-size: 14px;
-margin-bottom: 8px;
-font-weight: 700;
-}
-.checklist-grid {
-display: grid;
-grid-template-columns: repeat(2, 1fr);
-gap: 6px;
-color: var(--text-main);
-font-weight: 600;
-}
-​/* 6. MODAL DE CARREGAMENTO ANIMADO DO COMPROVANTE */
-.modal-loading-pdf {
-display: none;
-position: fixed;
-z-index: 999999;
-left: 0;
-top: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(15, 23, 42, 0.75);
-backdrop-filter: blur(6px);
-align-items: center;
-justify-content: center;
-}
-.modal-loading-pdf.active {
-display: flex;
-}
-.loading-card-content {
-background: var(--bg-card);
-border: 1px solid var(--border-color);
-border-radius: 20px;
-padding: 32px;
-max-width: 400px;
-width: 90%;
-text-align: center;
-box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
-display: flex;
-flex-direction: column;
-gap: 16px;
-animation: fadeIn 0.3s ease;
-}
-.spinner-animado {
-width: 50px;
-height: 50px;
-border: 4px solid var(--border-color);
-border-top: 4px solid var(--green);
-border-radius: 50%;
-margin: 0 auto;
-animation: spin 0.8s linear infinite;
-}
-@keyframes spin {
-0% { transform: rotate(0deg); }
-100% { transform: rotate(360deg); }
-}
-@keyframes fadeIn {
-from { opacity: 0; transform: translateY(10px); }
-to { opacity: 1; transform: translateY(0); }
-}
-​/* 2. MELHORAR O POP-UP DE NOVIDADES */
-.popup-atualizacao {
-display: none;
-position: fixed;
-z-index: 999998;
-left: 0;
-top: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(15, 23, 42, 0.7);
-backdrop-filter: blur(6px);
-align-items: center;
-justify-content: center;
-padding: 16px;
-}
-.popup-atualizacao.active {
-display: flex;
-}
-.popup-card {
-background: var(--bg-card);
-border: 1px solid var(--border-color);
-border-radius: 24px;
-padding: 36px 32px 32px 32px;
-max-width: 440px;
-width: 100%;
-box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
-display: flex;
-flex-direction: column;
-gap: 16px;
-position: relative;
-animation: fadeIn 0.4s ease;
-text-align: center;
-}
-.popup-icon-header {
-font-size: 40px;
-margin-bottom: -4px;
-}
-.popup-card h3 {
-font-size: 22px;
-color: var(--text-main);
-font-weight: 800;
-letter-spacing: -0.5px;
-}
-.popup-card p {
-font-size: 14px;
-color: var(--text-muted);
-line-height: 1.6;
-}
-.popup-close-btn {
-position: absolute;
-top: 16px;
-right: 16px;
-background: var(--bg-input);
-border: 1px solid var(--border-color);
-color: var(--text-main);
-width: 36px;
-height: 36px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-font-weight: 700;
-font-size: 18px;
-cursor: pointer;
-transition: background 0.2s ease, color 0.2s ease;
-}
-.popup-close-btn:hover {
-background: var(--danger);
-color: #ffffff;
-border-color: var(--danger);
-}
-​@media (max-width: 500px) {
-body { padding: 16px 10px 80px 10px; }
-.summary-grid { grid-template-columns: 1fr; }
-.checklist-grid { grid-template-columns: 1fr; }
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WelGrafx - Impressões Rápidas & Serviços</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/print-express/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/print-express/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/print-express/images/favicon-16x16.png">
+    <link rel="manifest" href="/print-express/images/site.webmanifest">
+    <meta name="theme-color" content="#0284c7">
+    <!-- jsPDF para geração do comprovante PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+    :root {
+        --bg-body: #f8fafc;
+        --bg-card: #ffffff;
+        --bg-input: #f1f5f9;
+        --border-color: #e2e8f0;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --primary: #0284c7;
+        --primary-hover: #0369a1;
+        --accent: #38bdf8;
+        --accent-light: rgba(2, 132, 199, 0.08);
+        --green: #10b981;
+        --danger: #ef4444;
+        --amber: #f59e0b;
+        --amber-light: rgba(245, 158, 11, 0.1);
+        --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        --font-scale: 1rem;
+    }
+
+    [data-theme="dark"] {
+        --bg-body: #0f172a;
+        --bg-card: #1e293b;
+        --bg-input: #0f172a;
+        --border-color: #334155;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --accent-light: rgba(56, 189, 248, 0.12);
+        --amber-light: rgba(245, 158, 11, 0.15);
+        --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    * { 
+        box-sizing: border-box; 
+        margin: 0; 
+        padding: 0; 
+        font-family: 'Plus Jakarta Sans', sans-serif; 
+        transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease; 
+    }
+        
+    html {
+        font-size: var(--font-scale);
+    }
+
+    body { 
+        background-color: var(--bg-body); 
+        color: var(--text-main); 
+        padding: 32px 16px 80px 16px; 
+        line-height: 1.6;
+    }
+
+    .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 10px;
+        background: var(--primary);
+        color: white;
+        padding: 8px 16px;
+        z-index: 10000;
+        border-radius: 8px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: top 0.2s ease;
+    }
+    .skip-link:focus {
+        top: 10px;
+    }
+
+    .container { 
+        max-width: 680px; 
+        margin: 0 auto; 
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    header { text-align: center; position: relative; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
+
+    .header-controls { display: flex; gap: 8px; align-items: center; }
+
+    .theme-toggle, .access-btn {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        padding: 8px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: var(--shadow);
+    }
+
+    .theme-toggle:hover, .access-btn:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary);
+    }
+
+    h1 { color: var(--primary); font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+    header p { color: var(--text-muted); font-size: 15px; font-weight: 500; }
+
+    .banner-imagem-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: transform 0.2s ease;
+    }
+
+    .banner-imagem-container:hover {
+        transform: scale(1.01);
+    }
+
+    .banner-imagem {
+        width: 100%;
+        max-width: 450px;
+        height: auto;
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow);
+        object-fit: cover;
+        display: block;
+    }
+
+    /* VITRINE 1 — CLASSIFICAÇÃO POR COBERTURA DE TINTA */
+    .vitrine-cobertura {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .vitrine-cobertura h3 {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .vitrine-cobertura p {
+        font-size: 14px;
+        color: var(--text-muted);
+        line-height: 1.5;
+    }
+
+    .vitrine-aviso-box {
+        background: var(--amber-light);
+        border: 1px solid var(--amber);
+        border-radius: 14px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .vitrine-aviso-box strong {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--amber);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .vitrine-aviso-box span {
+        font-size: 13px;
+        color: var(--text-main);
+        font-weight: 500;
+        line-height: 1.4;
+    }
+
+    .vitrine-rodape-duvida {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--primary);
+        text-align: center;
+        background: var(--accent-light);
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(2, 132, 199, 0.2);
+    }
+
+    /* VITRINE 2 — BENEFÍCIOS E INFORMAÇÕES DO SERVIÇO */
+    .vitrine-beneficios-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+    }
+
+    .beneficio-cartao {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .beneficio-cartao:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary);
+    }
+
+    .beneficio-cartao h4 {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .beneficio-cartao p {
+        font-size: 13px;
+        color: var(--text-muted);
+        line-height: 1.5;
+    }
+
+    /* TABELA DE PREÇOS MODERNA */
+    .tabela-precos-moderna {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 32px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .tabela-precos-topo {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 16px;
+    }
+
+    .tabela-precos-topo h2 {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--text-main);
+        letter-spacing: -0.5px;
+    }
+
+    .tabela-precos-topo p {
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+
+    .tabela-grid-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .preco-bloco-card {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .preco-bloco-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px -10px rgba(0,0,0,0.08);
+        border-color: var(--green);
+    }
+
+    .preco-bloco-titulo {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 10px;
+    }
+
+    .preco-itens-lista {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .preco-item-linha {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    .preco-item-linha .tag-preco-verde {
+        background: rgba(16, 185, 129, 0.12);
+        color: var(--green);
+        font-weight: 800;
+        padding: 5px 12px;
+        border-radius: 10px;
+        font-size: 14px;
+        border: 1px solid rgba(16, 185, 129, 0.25);
+        white-space: nowrap;
+    }
+
+    .preco-subdescricao {
+        font-size: 12px;
+        color: var(--text-muted);
+        font-style: italic;
+        margin-top: -4px;
+    }
+
+    .frente-verso-rodape {
+        background: var(--amber-light);
+        border: 1px solid var(--amber);
+        border-radius: 14px;
+        padding: 14px 18px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--amber);
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    [data-theme="dark"] .frente-verso-rodape {
+        color: #fbbf24;
+        border-color: #f59e0b;
+    }
+
+    .conferencia-vitrine-exclusiva {
+        background: linear-gradient(135deg, var(--amber-light) 0%, rgba(245, 158, 11, 0.05) 100%);
+        border: 1px solid var(--amber);
+        border-radius: 20px;
+        padding: 24px 28px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        box-shadow: var(--shadow);
+        animation: fadeIn 0.4s ease;
+    }
+
+    .conferencia-vitrine-titulo {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .conferencia-vitrine-texto {
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--text-muted);
+        max-width: 580px;
+        margin: 0 auto;
+        line-height: 1.5;
+    }
+
+    .vitrine-tipos-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .vitrine-tipos-card h2 {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 12px;
+    }
+    .tipos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 12px;
+    }
+    .tipo-card-item {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .tipo-card-item h4 {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    .tipo-card-item p {
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+
+    .modal-fullscreen {
+        display: none;
+        position: fixed;
+        z-index: 99999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.92);
+        backdrop-filter: blur(5px);
+        overflow: hidden;
+        touch-action: none;
+    }
+
+    .modal-fullscreen.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-fechar-modal {
+        position: absolute;
+        top: 20px;
+        right: 25px;
+        color: #ffffff;
+        font-size: 32px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 100000;
+        background: rgba(255, 255, 255, 0.2);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s ease, transform 0.2s ease;
+        user-select: none;
+    }
+
+    .btn-fechar-modal:hover {
+        background: rgba(255, 255, 255, 0.4);
+        transform: scale(1.1);
+    }
+
+    .wrapper-zoom {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: auto;
+        padding: 20px;
+    }
+
+    .img-zoomable {
+        max-width: 90vw;
+        max-height: 90vh;
+        object-fit: contain;
+        transition: transform 0.1s ease-out;
+        cursor: zoom-in;
+        transform-origin: center center;
+        image-rendering: -webkit-optimize-contrast;
+    }
+
+    .img-zoomable.zoomed {
+        cursor: zoom-out;
+    }
+
+    .step-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        box-shadow: var(--shadow);
+    }
+
+    .step-card h2 { 
+        font-size: 20px; 
+        font-weight: 700;
+        color: var(--text-main); 
+        border-bottom: 1px solid var(--border-color); 
+        padding-bottom: 12px;
+    }
+
+    .alerta-desconsiderar {
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .field-hint {
+        font-size: 12px;
+        color: var(--text-muted);
+        line-height: 1.4;
+    }
+
+    .example-badge {
+        background: var(--accent-light);
+        color: var(--primary);
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1px solid rgba(2, 132, 199, 0.2);
+    }
+
+    input[type="text"], input[type="tel"], input[type="number"], input[type="file"], select, textarea {
+        width: 100%;
+        padding: 12px 16px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        color: var(--text-main);
+        font-size: 15px;
+    }
+
+    input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { 
+        border-color: var(--primary); 
+        outline: 2px solid var(--primary); 
+        outline-offset: 1px;
+        box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    .checkbox-card {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        padding: 14px 16px;
+        border-radius: 12px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .checkbox-card:hover { border-color: var(--primary); transform: translateX(2px); }
+    .checkbox-card input[type="checkbox"] { margin-top: 3px; width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
+
+    .file-upload-box {
+        background: var(--bg-input);
+        border: 2px dashed var(--border-color);
+        border-radius: 14px;
+        padding: 16px;
+        text-align: center;
+        position: relative;
+        transition: all 0.2s ease;
+    }
+    .file-upload-box:hover {
+        border-color: var(--primary);
+    }
+    .file-preview-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 8px;
+    }
+    .file-preview-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--primary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .file-actions {
+        display: flex;
+        gap: 6px;
+    }
+    .btn-file-action {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .btn-file-action:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+    .btn-file-action.danger:hover {
+        border-color: var(--danger);
+        color: var(--danger);
+    }
+
+    .summary-box {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .summary-box h3 {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--primary);
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        font-size: 13px;
+    }
+    .summary-item {
+        display: flex;
+        flex-direction: column;
+    }
+    .summary-item span.label {
+        color: var(--text-muted);
+        font-size: 11px;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+    .summary-item span.value {
+        color: var(--text-main);
+        font-weight: 600;
+    }
+
+    /* 4. APRESENTAÇÃO ORGANIZADA DO SUBTOTAL E VALORES */
+    .price-box {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        padding: 20px; 
+        border-radius: 14px;
+        display: flex; 
+        flex-direction: column;
+        gap: 12px;
+        font-size: 14px;
+    }
+
+    .price-table-header {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--primary);
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 6px;
+        margin-bottom: 2px;
+    }
+
+    .price-item-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: var(--text-main);
+        font-weight: 600;
+    }
+
+    .price-item-row span:last-child {
+        color: var(--text-muted);
+        font-weight: 700;
+    }
+
+    .price-discount-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: var(--green);
+        font-weight: 700;
+        background: rgba(16, 185, 129, 0.08);
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px dashed rgba(16, 185, 129, 0.3);
+    }
+
+    .price-row-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px dashed var(--border-color);
+        padding-top: 12px;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    .price-row-total strong { 
+        color: var(--green); 
+        font-size: 24px; 
+        font-weight: 800; 
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: white; border: none;
+        padding: 16px; font-size: 16px;
+        border-radius: 12px; cursor: pointer;
+        font-weight: 700; width: 100%;
+        display: flex; justify-content: center; align-items: center; gap: 8px;
+        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+    }
+    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+    .btn-whatsapp {
+        background: #25D366;
+        color: white;
+        text-decoration: none;
+        padding: 16px;
+        border-radius: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 12px;
+        font-size: 16px;
+        box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
+    }
+    .btn-whatsapp:hover { transform: translateY(-2px); }
+
+    .sucesso-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 28px;
+        text-align: center;
+        box-shadow: var(--shadow);
+        animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .pix-box-novo {
+        background: var(--bg-input);
+        border: 2px dashed var(--primary);
+        padding: 24px;
+        border-radius: 16px;
+        margin-top: 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .qr-code-pix {
+        width: 100%;
+        max-width: 220px;
+        height: auto;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        background: #ffffff;
+        padding: 8px;
+        object-fit: contain;
+        display: block;
+    }
+
+    .valor-destaque {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--green);
+    }
+
+    .btn-copiar-pix {
+        background: var(--primary);
+        color: white; border: none;
+        padding: 14px 20px; font-weight: 700;
+        border-radius: 12px; cursor: pointer;
+        width: 100%;
+        font-size: 15px;
+        transition: all 0.2s ease;
+    }
+
+    .dinheiro-box-novo {
+        background: var(--bg-input);
+        border: 2px solid var(--border-color);
+        padding: 24px;
+        border-radius: 16px;
+        margin-top: 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .card-chamativo {
+        background: linear-gradient(135deg, rgba(2, 132, 199, 0.1) 0%, rgba(56, 189, 248, 0.15) 100%);
+        border: 1px solid var(--accent);
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        box-shadow: var(--shadow);
+    }
+
+    .status-fila {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 10px 14px;
+        font-size: 13px;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 6px;
+        font-weight: 600;
+    }
+
+    .radio-group { display: flex; gap: 20px; margin-top: 4px; flex-wrap: wrap; }
+    .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px; font-weight: 500; }
+    .hidden { display: none !important; }
+
+    .btn-flutuante {
+        position: fixed;
+        bottom: 20px; right: 20px;
+        background: #25D366; color: white;
+        border-radius: 50px; padding: 12px 20px;
+        font-weight: 700; font-size: 14px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        text-decoration: none;
+        display: flex; align-items: center; gap: 8px;
+        z-index: 999;
+    }
+    .btn-flutuante:hover { transform: scale(1.05); }
+
+    .btn-toggle-modo {
+        background: transparent;
+        border: 1px dashed var(--primary);
+        color: var(--primary);
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        margin-top: 4px;
+    }
+
+    .alerta-pagamento-pendente {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        margin-top: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .checklist-box {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 16px;
+        font-size: 13px;
+    }
+    .checklist-box h4 {
+        color: var(--primary);
+        font-size: 14px;
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+    .checklist-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        color: var(--text-main);
+        font-weight: 600;
+    }
+    .texto-explicativo-bloco {
+        background: var(--accent-light);
+        border: 1px solid var(--primary);
+        border-radius: 14px;
+        padding: 16px;
+        font-size: 13px;
+        color: var(--text-main);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .texto-explicativo-bloco strong {
+        color: var(--primary);
+    }
+
+    .modal-loading-pdf {
+        display: none;
+        position: fixed;
+        z-index: 999999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(6px);
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-loading-pdf.active {
+        display: flex;
+    }
+    .loading-card-content {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 32px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        animation: fadeIn 0.3s ease;
+    }
+    .spinner-animado {
+        width: 50px;
+        height: 50px;
+        border: 4px solid var(--border-color);
+        border-top: 4px solid var(--green);
+        border-radius: 50%;
+        margin: 0 auto;
+        animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 2. POP-UP DE NOVIDADES APRIMORADO (SEM AZUL DOMINANTE, DESIGN PROFISSIONAL) */
+    .popup-atualizacao {
+        display: none;
+        position: fixed;
+        z-index: 999998;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(4px);
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+    .popup-atualizacao.active {
+        display: flex;
+    }
+    .popup-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 32px;
+        max-width: 440px;
+        width: 100%;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        position: relative;
+        animation: fadeIn 0.4s ease;
+    }
+    .popup-close-btn {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .popup-close-btn:hover {
+        background: var(--green);
+        color: #ffffff;
+        border-color: var(--green);
+    }
+    .popup-header-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(16, 185, 129, 0.12);
+        color: var(--green);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 4px;
+    }
+
+    @media (max-width: 500px) {
+        body { padding: 16px 10px 80px 10px; }
+        .summary-grid { grid-template-columns: 1fr; }
+        .checklist-grid { grid-template-columns: 1fr; }
+    }
 </style>
-</head>
-<body>
-<a href="#formImpressao" class="skip-link">Pular para o Formulário de Pedido</a>
-​<div class="container">
-<header role="banner">
-<div class="header-top">
-<div style="font-weight: 800; font-size: 18px; color: var(--primary);">📄 Impressões / Xerox</div>
-<div class="header-controls">
-<button class="access-btn" id="btnFonte" type="button" onclick="alternarTamanhoFonte()" aria-label="Aumentar Tamanho da Fonte">
-<span>♿ Acessibilidade</span>
-</button>
-<button class="theme-toggle" id="themeToggleBtn" type="button" aria-label="Alternar Tema Claro/Escuro">
-<span id="themeIcon">🌙</span> <span id="themeText">Escuro</span>
-</button>
-</div>
-</div>
-<h1>WelGrafx</h1>
-<p>Impressões, Xerox, Currículos e Serviços Rápidos</p>
-</header>
-​<!-- 1. NOVA TABELA DE PREÇOS MODERNA E ELEGANTE -->
-<div class="tabela-precos-moderna">
-<div class="tabela-precos-topo">
-<h2>💰 TABELA DE PREÇOS</h2>
-<p>Valores claros, transparentes e acessíveis para seus documentos</p>
-</div>
-​<div class="tabela-grid-cards">
-<!-- BLOCO P&B SIMPLES -->
-<div class="preco-bloco-card">
-<div class="preco-bloco-titulo">
-🖤 P&B SIMPLES
-</div>
-<div class="preco-itens-lista">
-<div class="preco-item-linha">
-<span>De 1ª a 19ª</span>
-<span class="tag-preco-verde">R$ 0,50 cada</span>
-</div>
-<div class="preco-item-linha">
-<span>De 20ª a 99ª</span>
-<span class="tag-preco-verde">R$ 0,40 / adicional</span>
-</div>
-<div class="preco-item-linha">
-<span>De 100ª ou mais</span>
-<span class="tag-preco-verde">R$ 0,35 / adicional</span>
-</div>
-</div>
-<div class="preco-subdescricao">Ideal para textos, trabalhos escolares e documentos em geral.</div>
-</div>
-​<!-- BLOCO P&B COBERTURA ALTA -->
-<div class="preco-bloco-card">
-<div class="preco-bloco-titulo">
-🖤 P&B COBERTURA ALTA
-</div>
-<div class="preco-itens-lista">
-<div class="preco-item-linha">
-<span>Preço por folha</span>
-<span class="tag-preco-verde">R$ 1,00 / folha</span>
-</div>
-</div>
-<div class="preco-subdescricao">Para páginas com grandes áreas pretas e fundos escuros.</div>
-</div>
-​<!-- BLOCO COLORIDA POUCA / MÉDIA -->
-<div class="preco-bloco-card">
-<div class="preco-bloco-titulo">
-🎨 COLORIDA — POUCA / MÉDIA
-</div>
-<div class="preco-itens-lista">
-<div class="preco-item-linha">
-<span>Pouca Cor</span>
-<span class="tag-preco-verde">R$ 1,00 / folha</span>
-</div>
-<div class="preco-item-linha">
-<span>Média Cor (Avulsa)</span>
-<span class="tag-preco-verde">R$ 1,35</span>
-</div>
-<div class="preco-item-linha">
-<span>Média Cor (A partir de 6)</span>
-<span class="tag-preco-verde">R$ 1,20 cada</span>
-</div>
-</div>
-<div class="preco-subdescricao">Perfeito para gráficos, logotipos, títulos e ilustrações moderadas.</div>
-</div>
-​<!-- BLOCO COLORIDA COBERTURA TOTAL -->
-<div class="preco-bloco-card">
-<div class="preco-bloco-titulo">
-🎨 COLORIDA — COBERTURA TOTAL
-</div>
-<div class="preco-itens-lista">
-<div class="preco-item-linha">
-<span>Preço por folha</span>
-<span class="tag-preco-verde">R$ 2,00 / folha</span>
-</div>
-</div>
-<div class="preco-subdescricao">Indicado para fotografias e páginas inteiramente coloridas.</div>
-</div>
-</div>
-​<div class="frente-verso-rodape">
-ℹ️ <strong>Frente e Verso:</strong> +50% do valor da folha
-</div>
-</div>
-​<!-- 1. VITRINES INFORMATIVAS (REQUISITO 1) -->
-<div class="vitrines-container">
-<!-- Vitrine 1 — Classificação por cobertura de tinta -->
-<div class="vitrine-informativa-card">
-<h3>📊 Como funciona a classificação da impressão?</h3>
-<p class="field-hint">A classificação é feita conforme a cobertura de tinta na página, ou seja, a quantidade de área colorida ou preenchida.</p>
-​<div class="vitrine-cobertura-aviso">
-<strong>⚠️ IMPORTANTE:</strong>
-<p>A categoria escolhida pelo cliente será conferida antes da impressão. Se o arquivo possuir cobertura de tinta superior à categoria selecionada, o pedido será ajustado para a categoria correta e poderá haver cobrança da diferença de valor.</p>
-</div>
-​<p style="font-size: 13px; font-weight: 600; color: var(--primary); text-align: center; margin-top: 4px;">
-“Em caso de dúvida, envie seu arquivo ou entre em contato antes de finalizar o pedido!”
-</p>
-</div>
-​<!-- Vitrine 2 — Benefícios e informações do serviço -->
-<div class="vitrine-informativa-card">
-<h3>✨ Vantagens e Informações do Serviço</h3>
-<div class="vitrine-beneficios-grid">
-<div class="beneficio-cartao">
-<h4>⚡ ATENDIMENTO RÁPIDO</h4>
-<p>Pedidos recebidos a qualquer momento, com produção dentro dos horários e prazos informados.</p>
-</div>
-<div class="beneficio-cartao">
-<h4>🔍 IMPRESSÃO CUIDADOSA</h4>
-<p>Arquivos impressos de acordo com as configurações e opções escolhidas no pedido.</p>
-</div>
-<div class="beneficio-cartao">
-<h4>📄 OPÇÕES PARA SEU PEDIDO</h4>
-<p>P&B, colorido, frente e verso, diferentes níveis de cobertura e opções de acabamento.</p>
-</div>
-<div class="beneficio-cartao">
-<h4>🏷️ PREÇOS TRANSPARENTES</h4>
-<p>Escolha o tipo de impressão e veja o valor de acordo com as opções selecionadas.</p>
-</div>
-</div>
-</div>
-</div>
-​<div id="secaoBanner" class="banner-imagem-container" style="position: relative; display: inline-block; width: 100%; max-width: 450px; margin: 0 auto; cursor: pointer;" onclick="abrirImagem()">
-<h3 style="    
-position: absolute;     
-top: 12px;     
-left: 50%;     
-transform: translateX(-50%);     
-background: rgba(15, 23, 42, 0.75);     
-color: #ffffff;     
-padding: 6px 16px;     
-border-radius: 20px;     
-font-size: 14px;     
-font-weight: 700;     
-text-align: center;     
-white-space: nowrap;     
-box-shadow: 0 4px 10px rgba(0,0,0,0.3);    
-backdrop-filter: blur(4px);    
-">
-</h3>
-<img id="imgBanner" src="images/classificacao-cores-img.png" alt="Tabela Visual Sobre Cores" class="banner-imagem" onerror="this.onerror=null; this.src='[https://via.placeholder.com/600x200/0284c7/ffffff?text=Coloque+sua+Imagem+Aqui](https://via.placeholder.com/600x200/0284c7/ffffff?text=Coloque+sua+Imagem+Aqui)';">
-<figure>
-<figcaption style="font-size: 11px;">Material visual desenvolvido com auxílio de Inteligência Artificial (IA) — OpenAI / ChatGPT.</figcaption>
-</figure>
-</div>
-​<div id="modalImagem" class="modal-fullscreen">
-<span class="btn-fechar-modal" onclick="fecharImagem()">×</span>
-<div class="wrapper-zoom" id="wrapperZoom">
-<img id="imgModal" alt="Visualização ampliada" class="img-zoomable" onclick="toggleZoom(event)">
-</div>
-</div>
-​<script>
-let zoomAtual = 1;
-let pantoX = 0;
-let pantoY = 0;
-let isDragging = false;
-let startX = 0;
-let startY = 0;
-​function abrirImagem() {
-const srcOriginal = document.getElementById("imgBanner").src;
-const imgModal = document.getElementById("imgModal");
-imgModal.src = srcOriginal;
-resetZoom();
-document.getElementById("modalImagem").classList.add("active");
-}
-​function fecharImagem() {
-document.getElementById("modalImagem").classList.remove("active");
-resetZoom();
-}
-​function resetZoom() {
-zoomAtual = 1;
-pantoX = 0;
-pantoY = 0;
-aplicarTransform();
-const imgModal = document.getElementById("imgModal");
-if(imgModal) imgModal.classList.remove("zoomed");
-}
-​function toggleZoom(e) {
-e.stopPropagation();
-const imgModal = document.getElementById("imgModal");
-if (zoomAtual === 1) {
-zoomAtual = 2.5;
-imgModal.classList.add("zoomed");
-} else {
-resetZoom();
-}
-aplicarTransform();
-}
-​function aplicarTransform() {
-const imgModal = document.getElementById("imgModal");
-if(imgModal) {
-imgModal.style.transform = translate(${pantoX}px, ${pantoY}px) scale(${zoomAtual});
-}
-}
-​let initialDistance = 0;
-​document.addEventListener("DOMContentLoaded", function() {
-const wrapper = document.getElementById("wrapperZoom");
-const imgModal = document.getElementById("imgModal");
-​if(wrapper && imgModal) {
-wrapper.addEventListener("wheel", function(e) {
-if (!document.getElementById("modalImagem").classList.contains("active")) return;
-e.preventDefault();
-if (e.deltaY < 0) {
-zoomAtual = Math.min(zoomAtual + 0.3, 4);
-} else {
-zoomAtual = Math.max(zoomAtual - 0.3, 1);
-}
-if(zoomAtual === 1) { pantoX = 0; pantoY = 0; imgModal.classList.remove("zoomed"); }
-else { imgModal.classList.add("zoomed"); }
-aplicarTransform();
-}, { passive: false });
-​wrapper.addEventListener("touchstart", function(e) {
-if (e.touches.length === 2) {
-initialDistance = Math.hypot(
-e.touches[0].pageX - e.touches[1].pageX,
-e.touches[0].pageY - e.touches[1].pageY
-);
-} else if (e.touches.length === 1 && zoomAtual > 1) {
-isDragging = true;
-startX = e.touches[0].clientX - pantoX;
-startY = e.touches[0].clientY - pantoY;
-}
-}, { passive: true });
-​wrapper.addEventListener("touchmove", function(e) {
-if (e.touches.length === 2) {
-e.preventDefault();
-const currentDistance = Math.hypot(
-e.touches[0].pageX - e.touches[1].pageX,
-e.touches[0].pageY - e.touches[1].pageY
-);
-const factor = currentDistance / initialDistance;
-zoomAtual = Math.min(Math.max(zoomAtual * factor, 1), 4);
-initialDistance = currentDistance;
-if(zoomAtual === 1) { pantoX = 0; pantoY = 0; imgModal.classList.remove("zoomed"); }
-else { imgModal.classList.add("zoomed"); }
-aplicarTransform();
-} else if (e.touches.length === 1 && isDragging && zoomAtual > 1) {
-e.preventDefault();
-pantoX = e.touches[0].clientX - startX;
-pantoY = e.touches[0].clientY - startY;
-aplicarTransform();
-}
-}, { passive: false });
-​wrapper.addEventListener("touchend", function() {
-isDragging = false;
-});
-}
-});
-</script>
-​<form id="formImpressao" class="step-card" action="[https://formsubmit.co/ws8530135@gmail.com](https://formsubmit.co/ws8530135@gmail.com)" method="POST" enctype="multipart/form-data" target="hidden_iframe">
-​<input type="hidden" name="_captcha" value="false">
-<input type="hidden" name="_template" value="table">
-<input type="hidden" id="hidden_servico_nome" name="Servico Selecionado" value="Impressao / Xerox A4">
-<input type="hidden" id="hidden_tipo_texto" name="Opcao de Impressao Detalhada" value="">
-<input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">
-​<input type="hidden" id="hidden_qtd_paginas" name="Qtd Paginas Documento" value="1">
-<input type="hidden" id="hidden_paginas_selecionadas_texto" name="Paginas Selecionadas" value="Todas as paginas">
-<input type="hidden" id="hidden_total_paginas_impressas" name="Total Paginas Impressas" value="1">
-<input type="hidden" id="hidden_folhas_utilizadas" name="Folhas Utilizadas Estimadas" value="1">
-<input type="hidden" id="hidden_tamanho_papel" name="Tamanho do Papel" value="A4">
-<input type="hidden" id="hidden_orientacao" name="Orientacao do Cliente" value="">
-<input type="hidden" id="hidden_redimensionamento" name="Servico adicional: Redimensionamento do Documento" value="Nao">
-<input type="hidden" id="hidden_etiquetas" name="Servico adicional: Etiquetas Simples" value="Nao">
-<input type="hidden" id="hidden_conferencia" name="Servico adicional: Conferencia do Arquivo" value="Nao">
-​<div class="alerta-desconsiderar">
-⚠️ ATENÇÃO: Pedidos sem pagamento confirmado serão desconsiderados e cancelados automaticamente.
-</div>
-​<h2>Monte seu Pedido</h2>
-​<div class="form-group">
-<label for="nome">Seu Nome Completo:</label>
-<input type="text" id="nome" name="Nome do Cliente" placeholder="EX: João da Silva" required>
-</div>
-​<div class="form-group">
-<label for="telefone">WhatsApp para Contato:</label>
-<input type="tel" id="telefone" name="WhatsApp" placeholder="(41) 99999-9999" maxlength="15" required>
-</div>
-​<div id="blocoA4">
-<div class="form-group" style="margin-bottom: 12px;">
-<label for="tamanho_papel">📄 Tamanho do Papel:</label>
-<select id="tamanho_papel" disabled style="opacity: 0.8; cursor: not-allowed;">
-<option value="A4" selected>A4 (Padrão - 21cm x 29,7cm)</option>
-</select>
-</div>
-​<div class="form-group" style="margin-bottom: 12px;">
-<label for="qtd_paginas">📄 Quantidade total de páginas do documento:</label>
-<input type="number" id="qtd_paginas" value="1" min="1">
-<span class="field-hint">Informe quantas páginas tem o seu arquivo ou documento original.</span>
-</div>
-​<!-- BLOCO TIPO ÚNICO -->
-<div id="blocoTipoUnico" class="form-group" style="margin-bottom: 12px;">
-<label for="tipo_impressao">🎨 Tipo de Impressão / Xerox:</label>
-<select id="tipo_impressao" name="Codigo Opcao Cor">
-<option value="pb">🖤 Preto e Branco (P&B) Simples (R$ 0,50 a R$ 0,35)</option>
-<option value="pb_cobertura_alta">⚫ P&B — Cobertura Alta - R$ 1,00/folha</option>
-<option value="pouca_cor">🎨 Colorida — Pouca Cor - R$ 1,00/folha</option>
-<option value="media_cor">🌈 Colorida — Média Cor - R$ 1,35 / R$ 1,20</option>
-<option value="cobertura_total">🖼️ Colorida — Cobertura Total - R$ 2,00/folha</option>
-</select>
-</div>
-​<div class="form-group" style="margin-bottom: 12px;">
-<label>🖨️ Lado da Impressão:</label>
-<div class="radio-group">
-<label class="radio-label">
-<input type="radio" name="Lado da Impressao" value="Frente" checked> Frente (1 lado)
-</label>
-<label class="radio-label">
-<input type="radio" name="Lado da Impressao" value="Frente e verso"> Frente e verso (Acréscimo de 50% do valor)
-</label>
-</div>
-<span class="field-hint">Ao escolher "Frente e verso", há um acréscimo de 50% do valor para o verso na mesma folha.</span>
-</div>
-​<div class="form-group" style="margin-bottom: 12px;">
-<label for="quantidade">📄 Quantidade de Cópias:</label>
-<input type="number" id="quantidade" name="Quantidade de Copias" value="1" min="1">
-<div class="example-badge" style="margin-top: 6px;" id="badgeCalculoPaginas">
-💡 <strong>Cálculo:</strong> 1 página × 1 cópia = 1 página impressa.
-</div>
-</div>
-​<div class="form-group" style="margin-bottom: 12px;">
-<label>🔄 Organização das Cópias (para várias cópias):</label>
-<select id="organizacao_copias" name="Organizacao das Copias">
-<option value="Ordem normal (Colacionado)">Ordem normal (Documento 1 completo, depois Documento 2 completo...)</option>
-<option value="Agrupar por página">📑 Agrupadas por página (Imprime todas as cópias de cada página antes de passar para a próxima)</option>
-</select>
-</div>
-​<div class="form-group" style="margin-bottom: 12px;">
-<label for="refile">✂️ Acabamento do Pedido:</label>
-<select id="refile" name="Refile de Bordas">
-<option value="manter">Sem acabamento (Folhas soltas / Bordas padrão)</option>
-<option value="grampeado">📎 Grampeado (no canto superior esquerdo)</option>
-</select>
-<input type="hidden" id="acabamento_grampo" name="Acabamento Grampo" value="Sem acabamento">
-</div>
-​<div class="form-group">
-<div style="display:flex; justify-content:space-between; align-items:center;">
-<label for="arquivo">📎 Anexar Documento(s) – Máx. 10.00MB:</label>
-<button type="button" class="btn-toggle-modo" id="btnToggleModo">✏️ Prefiro colar um texto</button>
-</div>
-​<div id="campoArquivoContainer">
-<div class="file-upload-box">
-<input type="file" id="arquivo" name="attachment" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
-<div id="filePreview" class="file-preview-card hidden">
-<div class="file-preview-info">
-📎 <span id="fileNameDisplay">trabalho.pdf</span>
-</div>
-<div class="file-actions">
-<button type="button" class="btn-file-action" onclick="trocarArquivoA4()">🔄 Trocar</button>
-<button type="button" class="btn-file-action danger" onclick="removerArquivoA4()">✕ Remover</button>
-</div>
-</div>
-</div>
-<span class="field-hint" style="margin-top: 4px; display: block;">
-💡 Para garantir que o documento seja impresso como você preparou, recomendamos enviar o arquivo em PDF.
-</span>
-<div id="fileDetails" class="file-info hidden"></div>
-</div>
-​<div id="campoTextoContainer" class="hidden">
-<textarea id="textoDireto" name="Texto para Impressao" rows="3" placeholder="Cole aqui o texto que deseja imprimir..."></textarea>
-</div>
-</div>
-</div>
-​<div class="form-group">
-<label>Serviços e Opções Extras:</label>
-​<!-- 3. SUBSTITUIR O SERVIÇO ADICIONAL DE R$ 1,50 -->
-<label class="checkbox-card">
-<input type="checkbox" id="opt_etiquetas" name="Impressao de folha com etiquetas simples" value="Sim (A partir de R$ 1,50)">
-<span>🏷️ <strong>Impressão de folha com etiquetas simples — A partir de R$ 1,50:</strong> Imprimimos suas etiquetas em folha A4, conforme o arquivo enviado. Serviço de impressão sem recorte.</span>
-</label>
-​<label class="checkbox-card">
-<input type="checkbox" id="opt_redimensionamento" name="Redimensionamento do Documento" value="Sim (A partir de R$ 2,00)">
-<span>📐 <strong>Redimensionamento do Documento (Adicional — A partir de R$ 2,00):</strong> Ajuste do conteúdo para outro tamanho de impressão, mantendo a proporção adequada.</span>
-endlabel>
-​<label class="checkbox-card">
-<input type="checkbox" id="opt_suporte" name="Suporte Atendimento Direto Site" value="Sim (Gratis)">
-<span>💬 <strong>Suporte Direto e Atendimento (Grátis):</strong> Suporte via WhatsApp para tirar dúvidas e acompanhar seu envio.</span>
-endlabel>
-</div>
-​<div class="form-group">
-<label>Forma de Pagamento:</label>
-<div class="radio-group">
-<label class="radio-label">
-<input type="radio" name="Forma de Pagamento" value="PIX" checked> PIX
-</label>
-<label class="radio-label">
-<input type="radio" name="Forma de Pagamento" value="Dinheiro"> Dinheiro (Na Retirada)
-</label>
-</div>
-</div>
-​<div class="form-group">
-<label for="observacoes">📝 Alguma orientação para a impressão?</label>
-<textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex: Imprimir somente páginas 3 a 8. Não imprimir a capa. Grampear no canto superior esquerdo."></textarea>
-<span class="field-hint">Especifique detalhes como intervalo de páginas, observações de troco ou instruções especiais.</span>
-</div>
-​<div class="summary-box">
-<h3>📋 RESUMO DO PEDIDO</h3>
-<div class="summary-grid">
-<div class="summary-item">
-<span class="label">Serviço</span>
-<span class="value" id="resumoServico">Impressão A4</span>
-</div>
-<div class="summary-item">
-<span class="label">Tipo</span>
-<span class="value" id="resumoTipo">P&B Simples</span>
-</div>
-<div class="summary-item">
-<span class="label">Documento</span>
-<span class="value" id="resumoDocPaginas">📄 Documento: 1 páginas</span>
-</div>
-<div class="summary-item">
-<span class="label">Organização</span>
-<span class="value" id="resumoOrganizacao">Único tipo / Todas</span>
-</div>
-<div class="summary-item">
-<span class="label">Cópias</span>
-<span class="value" id="resumoCopias">🔄 Cópias: 1</span>
-</div>
-<div class="summary-item">
-<span class="label">Total Impresso</span>
-<span class="value" id="resumoTotalPaginas">🖨️ Total de páginas impressas: 1</span>
-</div>
-<div class="summary-item">
-<span class="label">Impressão</span>
-<span class="value" id="resumoLado">Frente</span>
-</div>
-<div class="summary-item">
-<span class="label">Folhas Físicas</span>
-<span class="value" id="resumoFolhas">1 folhas físicas</span>
-</div>
-<div class="summary-item">
-<span class="label">Acabamento</span>
-<span class="value" id="resumoAcabamento">Sem acabamento</span>
-</div>
-<div class="summary-item" style="grid-column: span 2;">
-<span class="label">Arquivo</span>
-<span class="value" id="resumoArquivo">Nenhum selecionado</span>
-</div>
-</div>
-</div>
-​<!-- 4. REORGANIZAÇÃO COMPLETA DA APRESENTAÇÃO DO SUBTOTAL -->
-<div class="price-box-novo">
-<div style="font-weight: 700; color: var(--primary); font-size: 15px; margin-bottom: 2px;">RESUMO DOS VALORES</div>
-<div class="tabela-resumo-valores" id="tabelaResumoValoresContainer">
-<div class="tabela-resumo-linha">
-<span id="itemNome1">Impressão P&B simples</span>
-<span class="val-item" id="itemVal1">R$ 0,50</span>
-</div>
-</div>
-​<div class="tabela-resumo-linha subtotal-linha">
-<span>Subtotal</span>
-<span id="subtotalExibicao">R$ 0,50</span>
-</div>
-​<div class="tabela-resumo-linha desconto-linha" id="rowDesconto" style="display: none;">
-<span id="descontoNomeExibicao">Desconto aplicado</span>
-<span class="val-item" id="descontoValExibicao">- R$ 0,00</span>
-</div>
-​<div class="tabela-resumo-linha total-final-linha">
-<span>TOTAL FINAL</span>
-<span class="val-total-destaque" id="valorTotalExibicao">R$ 0,50</span>
-</div>
-​<span class="field-hint" style="text-align: center; font-size: 11px;" id="avisoEstimativaPreco">
-📌 O valor apresentado reflete exatamente o cálculo das páginas e serviços selecionados.
-</span>
-</div>
-​<div class="checklist-box">
-<h4>Antes de enviar, confira:</h4>
-<div class="checklist-grid">
-<div>✓ Quantidade de páginas</div>
-<div>✓ Quantidade de cópias</div>
-<div>✓ P&B ou colorido</div>
-<div>✓ Frente ou frente e verso</div>
-<div>✓ Acabamento</div>
-<div>✓ Arquivo correto</div>
-</div>
-</div>
-​<button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido e Baixar Comprovante PDF 🚀</button>
-</form>
-​<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-​<!-- 6. MODAL DE CARREGAMENTO ANIMADO DO COMPROVANTE -->
-<div id="modalLoadingPdf" class="modal-loading-pdf">
-<div class="loading-card-content">
-<div class="spinner-animado"></div>
-<h3 style="font-size: 18px; color: var(--text-main);">📄 Preparando seu comprovante!</h3>
-<p style="font-size: 14px; color: var(--text-muted); line-height: 1.5;">
-"Estamos organizando os detalhes do seu pedido para deixar tudo prontinho para você."
-</p>
-</div>
-</div>
-​<!-- 2. MELHORAR O POP-UP DE NOVIDADES -->
-<div id="popupAtualizacao" class="popup-atualizacao">
-<div class="popup-card">
-<button type="button" class="popup-close-btn" onclick="fecharPopupAtualizacao()">×</button>
-<div class="popup-icon-header">✨</div>
-<h3>O WelGrafx está de cara nova!</h3>
-<p>
-Atualizamos alguns detalhes da página para deixar sua experiência mais bonita, organizada e prática. Confira as novidades e aproveite nossos serviços!
-</p>
-<button type="button" class="btn-primary" onclick="fecharPopupAtualizacao()" style="margin-top: 4px;">Conhecer Novidades</button>
-</div>
-</div>
-​<div id="secaoCardChamativo" class="card-chamativo">
-<h3 style="font-size: 18px; color: var(--primary);">✨ Impressão Rápida e Cuidadosa!</h3>
-<p style="font-size: 14px; color: var(--text-muted);">
-Impressões A4 para documentos, trabalhos e materiais gráficos. Arte gráfica sob encomenda. Dúvidas? Fale diretamente conosco pelo WhatsApp!
-</p>
-​<div class="status-fila">
-⚡ <strong>Tempo Médio de Produção:</strong> 5 a 15 minutos após a confirmação conforme o horário do pedido.
-</div>
-</div>
-​<div id="telaSucesso" class="sucesso-card hidden">
-<div style="font-size: 60px; margin-bottom: 8px;">🎉</div>
-<h2 style="font-size: 24px; color: var(--primary);">Pedido Confirmado!</h2>
-<p style="color: var(--text-muted); font-size: 15px; margin-top: 4px;">Tudo certo! Recebemos sua solicitação e o comprovante PDF foi baixado em seu aparelho.</p>
-​<div id="boxDetalhesPagamento"></div>
-​<a id="btnNotificarWhats" href="#" target="_blank" class="btn-whatsapp">
-💬 Confirmar Pedido no WhatsApp
-</a>
-​<div class="alerta-pagamento-pendente">
-⚠️ Não feche esta página antes de realizar o pagamento do pedido!
-</div>
-​<button class="btn-primary" onclick="permitirSaida = true; window.onbeforeunload = null; location.reload();" style="margin-top: 18px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">
-🔄 Fazer Novo Pedido
-</button>
-</div>
-</div>
-​<footer style="text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 13px;">
-<p>© 2026 WelGrafx. Todos os direitos reservados.</p>
+</head>    
+<body>    
+<a href="#formImpressao" class="skip-link">Pular para o Formulário de Pedido</a>    
+
+    <div class="container">
+        <header role="banner">
+            <div class="header-top">
+                <div style="font-weight: 800; font-size: 18px; color: var(--primary);">📄 Impressões / Xerox</div>
+                <div class="header-controls">
+                    <button class="access-btn" id="btnFonte" type="button" onclick="alternarTamanhoFonte()" aria-label="Aumentar Tamanho da Fonte">
+                        <span>♿ Acessibilidade</span>
+                    </button>
+                    <button class="theme-toggle" id="themeToggleBtn" type="button" aria-label="Alternar Tema Claro/Escuro">
+                        <span id="themeIcon">🌙</span> <span id="themeText">Escuro</span>
+                    </button>
+                </div>
+            </div>
+        <h1>WelGrafx</h1>    
+        <p>Impressões, Xerox, Currículos e Serviços Rápidos</p>    
+    </header>    
+
+    <!-- 1. VITRINE 1 — CLASSIFICAÇÃO POR COBERTURA DE TINTA -->
+    <div class="vitrine-cobertura">
+        <h3>🎨 Como funciona a classificação da impressão?</h3>
+        <p>A classificação é feita conforme a cobertura de tinta na página, ou seja, a quantidade de área colorida ou preenchida.</p>
+        <div class="vitrine-aviso-box">
+            <strong>⚠️ IMPORTANTE:</strong>
+            <span>A categoria escolhida pelo cliente será conferida antes da impressão. Se o arquivo possuir cobertura de tinta superior à categoria selecionada, o pedido será ajustado para a categoria correta e poderá haver cobrança da diferença de valor.</span>
+        </div>
+        <div class="vitrine-rodape-duvida">
+            💡 Em caso de dúvida, envie seu arquivo ou entre em contato antes de finalizar o pedido!
+        </div>
+    </div>
+
+    <!-- 1. VITRINE 2 — BENEFÍCIOS E INFORMAÇÕES DO SERVIÇO -->
+    <div class="vitrine-beneficios-grid">
+        <div class="beneficio-cartao">
+            <h4>⚡ ATENDIMENTO RÁPIDO</h4>
+            <p>Pedidos recebidos a qualquer momento, com produção dentro dos horários e prazos informados.</p>
+        </div>
+        <div class="beneficio-cartao">
+            <h4>🛡️ IMPRESSÃO CUIDADOSA</h4>
+            <p>Arquivos impressos de acordo com as configurações e opções escolhidas no pedido.</p>
+        </div>
+        <div class="beneficio-cartao">
+            <h4>📑 OPÇÕES PARA SEU PEDIDO</h4>
+            <p>P&B, colorido, frente e verso, diferentes níveis de cobertura e opções de acabamento.</p>
+        </div>
+        <div class="beneficio-cartao">
+            <h4>💎 PREÇOS TRANSPARENTES</h4>
+            <p>Escolha o tipo de impressão e veja o valor de acordo com as opções selecionadas.</p>
+        </div>
+    </div>
+
+    <!-- NOVA TABELA DE PREÇOS MODERNA E ELEGANTE -->
+    <div class="tabela-precos-moderna">
+        <div class="tabela-precos-topo">
+            <h2>💰 TABELA DE PREÇOS</h2>
+            <p>Valores claros, transparentes e acessíveis para seus documentos</p>
+        </div>
+
+        <div class="tabela-grid-cards">
+            <!-- BLOCO P&B SIMPLES -->
+            <div class="preco-bloco-card">
+                <div class="preco-bloco-titulo">
+                    🖤 P&B SIMPLES
+                </div>
+                <div class="preco-itens-lista">
+                    <div class="preco-item-linha">
+                        <span>De 1ª a 19ª</span>
+                        <span class="tag-preco-verde">R$ 0,50 cada</span>
+                    </div>
+                    <div class="preco-item-linha">
+                        <span>De 20ª a 99ª</span>
+                        <span class="tag-preco-verde">R$ 0,40 / adicional</span>
+                    </div>
+                    <div class="preco-item-linha">
+                        <span>De 100ª ou mais</span>
+                        <span class="tag-preco-verde">R$ 0,35 / adicional</span>
+                    </div>
+                </div>
+                <div class="preco-subdescricao">Ideal para textos, trabalhos escolares e documentos em geral.</div>
+            </div>
+
+            <!-- BLOCO P&B COBERTURA ALTA -->
+            <div class="preco-bloco-card">
+                <div class="preco-bloco-titulo">
+                    🖤 P&B COBERTURA ALTA
+                </div>
+                <div class="preco-itens-lista">
+                    <div class="preco-item-linha">
+                        <span>Preço por folha</span>
+                        <span class="tag-preco-verde">R$ 1,00 / folha</span>
+                    </div>
+                </div>
+                <div class="preco-subdescricao">Para páginas com grandes áreas pretas e fundos escuros.</div>
+            </div>
+
+            <!-- BLOCO COLORIDA POUCA / MÉDIA -->
+            <div class="preco-bloco-card">
+                <div class="preco-bloco-titulo">
+                    🎨 COLORIDA — POUCA / MÉDIA
+                </div>
+                <div class="preco-itens-lista">
+                    <div class="preco-item-linha">
+                        <span>Pouca Cor</span>
+                        <span class="tag-preco-verde">R$ 1,00 / folha</span>
+                    </div>
+                    <div class="preco-item-linha">
+                        <span>Média Cor (Avulsa)</span>
+                        <span class="tag-preco-verde">R$ 1,35</span>
+                    </div>
+                    <div class="preco-item-linha">
+                        <span>Média Cor (A partir de 6)</span>
+                        <span class="tag-preco-verde">R$ 1,20 cada</span>
+                    </div>
+                </div>
+                <div class="preco-subdescricao">Perfeito para gráficos, logotipos, títulos e ilustrações moderadas.</div>
+            </div>
+
+            <!-- BLOCO COLORIDA COBERTURA TOTAL -->
+            <div class="preco-bloco-card">
+                <div class="preco-bloco-titulo">
+                    🎨 COLORIDA — COBERTURA TOTAL
+                </div>
+                <div class="preco-itens-lista">
+                    <div class="preco-item-linha">
+                        <span>Preço por folha</span>
+                        <span class="tag-preco-verde">R$ 2,00 / folha</span>
+                    </div>
+                </div>
+                <div class="preco-subdescricao">Indicado para fotografias e páginas inteiramente coloridas.</div>
+            </div>
+        </div>
+
+        <div class="frente-verso-rodape">
+            ℹ️ <strong>Frente e Verso:</strong> +50% do valor da folha
+        </div>
+    </div>
+
+    <!-- VITRINE EXCLUSIVA PARA CONFERÊNCIA -->
+    <div class="conferencia-vitrine-exclusiva">
+        <div class="conferencia-vitrine-titulo">
+            🟡 CONFERÊNCIA ANTES DE IMPRIMIR
+        </div>
+        <div class="conferencia-vitrine-texto">
+            Sempre revisamos seu arquivo antes de imprimir! Caso precisemos ajustar algo ou confirmar o tipo de impressão, entramos em contato com você. Assim garantimos que tudo saia exatamente como você espera!
+        </div>
+    </div>
+
+    <!-- VITRINE DE TIPOS DE IMPRESSÃO -->
+    <div class="vitrine-tipos-card">
+        <h2>🎨 Vitrine de Tipos de Impressão</h2>
+        <p class="field-hint">Conheça as categorias de impressão disponíveis:</p>
+        <div class="tipos-grid">
+            <div class="tipo-card-item">
+                <h4>🖤 P&B Simples</h4>
+                <p>Documentos predominantemente textuais, baixa cobertura de tinta.</p>
+            </div>
+            <div class="tipo-card-item">
+                <h4>⚫ P&B Cobertura Alta</h4>
+                <p>Páginas com grandes áreas pretas ou fundos escuros.</p>
+            </div>
+            <div class="tipo-card-item">
+                <h4>🎨 Colorida Pouca Cor</h4>
+                <p>Pequenos detalhes, títulos e logotipos simples (até ~20% da página).</p>
+            </div>
+            <div class="tipo-card-item">
+                <h4>🌈 Colorida Média Cor</h4>
+                <p>Gráficos, diagramas e algumas imagens (de 20% a 60% da página).</p>
+            </div>
+            <div class="tipo-card-item">
+                <h4>🖼️ Colorida Cobertura Total</h4>
+                <p>Fotografias e fundos inteiros coloridos (acima de 60% da página).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEXTO EXPLICATIVO OBRIGATÓRIO -->
+    <div class="texto-explicativo-bloco">
+        <div><strong>📝 Como funciona o cálculo da impressão:</strong></div>
+        <div>O valor é calculado conforme o tipo de impressão escolhido e a quantidade de páginas. Assim, você consegue conferir os preços e o total estimado antes de finalizar seu pedido!</div>
+        <div style="margin-top: 4px;"><strong>📄 Frente e Verso:</strong></div>
+        <div>Imprimir nos dois lados da mesma folha?
+        <p>Sem problemas! O valor é <strong>acréscimo de 50% sobre o preço de cada lado impresso.</strong> Assim você economiza papel e paga apenas pelo que realmente usa.</p>
+        <p>Exemplo: <i>P&B R$ 0,50 → Frente e Verso = R$ 0,75</i></p></div>
+    </div>
+
+    <div id="secaoBanner" class="banner-imagem-container" style="position: relative; display: inline-block; width: 100%; max-width: 450px; margin: 0 auto; cursor: pointer;" onclick="abrirImagem()">    
+        <h3 style="    
+            position: absolute;     
+            top: 12px;     
+            left: 50%;     
+            transform: translateX(-50%);     
+            background: rgba(15, 23, 42, 0.75);     
+            color: #ffffff;     
+            padding: 6px 16px;     
+            border-radius: 20px;     
+            font-size: 14px;     
+            font-weight: 700;     
+            text-align: center;     
+            white-space: nowrap;     
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);    
+            backdrop-filter: blur(4px);    
+        ">    
+        </h3>    
+        <img id="imgBanner" src="images/classificacao-cores-img.png" alt="Tabela Visual Sobre Cores" class="banner-imagem" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x200/0284c7/ffffff?text=Coloque+sua+Imagem+Aqui';">
+        <figure>
+            <figcaption style="font-size: 11px;">Material visual desenvolvido com auxílio de Inteligência Artificial (IA) — OpenAI / ChatGPT.</figcaption>
+        </figure>
+    </div>    
+
+    <div id="modalImagem" class="modal-fullscreen">    
+        <span class="btn-fechar-modal" onclick="fecharImagem()">&times;</span>    
+        <div class="wrapper-zoom" id="wrapperZoom">
+            <img id="imgModal" alt="Visualização ampliada" class="img-zoomable" onclick="toggleZoom(event)">    
+        </div>
+    </div>    
+
+    <script>    
+        let zoomAtual = 1;
+        let pantoX = 0;
+        let pantoY = 0;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+
+        function abrirImagem() {    
+            const srcOriginal = document.getElementById("imgBanner").src;    
+            const imgModal = document.getElementById("imgModal");
+            imgModal.src = srcOriginal;    
+            resetZoom();
+            document.getElementById("modalImagem").classList.add("active");    
+        }    
+
+        function fecharImagem() {    
+            document.getElementById("modalImagem").classList.remove("active");    
+            resetZoom();
+        }    
+
+        function resetZoom() {
+            zoomAtual = 1;
+            pantoX = 0;
+            pantoY = 0;
+            aplicarTransform();
+            const imgModal = document.getElementById("imgModal");
+            if(imgModal) imgModal.classList.remove("zoomed");
+        }
+
+        function toggleZoom(e) {
+            e.stopPropagation();
+            const imgModal = document.getElementById("imgModal");
+            if (zoomAtual === 1) {
+                zoomAtual = 2.5;
+                imgModal.classList.add("zoomed");
+            } else {
+                resetZoom();
+            }
+            aplicarTransform();
+        }
+
+        function aplicarTransform() {
+            const imgModal = document.getElementById("imgModal");
+            if(imgModal) {
+                imgModal.style.transform = `translate(${pantoX}px, ${pantoY}px) scale(${zoomAtual})`;
+            }
+        }
+
+        let initialDistance = 0;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const wrapper = document.getElementById("wrapperZoom");
+            const imgModal = document.getElementById("imgModal");
+
+            if(wrapper && imgModal) {
+                wrapper.addEventListener("wheel", function(e) {
+                    if (!document.getElementById("modalImagem").classList.contains("active")) return;
+                    e.preventDefault();
+                    if (e.deltaY < 0) {
+                        zoomAtual = Math.min(zoomAtual + 0.3, 4);
+                    } else {
+                        zoomAtual = Math.max(zoomAtual - 0.3, 1);
+                    }
+                    if(zoomAtual === 1) { pantoX = 0; pantoY = 0; imgModal.classList.remove("zoomed"); }
+                    else { imgModal.classList.add("zoomed"); }
+                    aplicarTransform();
+                }, { passive: false });
+
+                wrapper.addEventListener("touchstart", function(e) {
+                    if (e.touches.length === 2) {
+                        initialDistance = Math.hypot(
+                            e.touches[0].pageX - e.touches[1].pageX,
+                            e.touches[0].pageY - e.touches[1].pageY
+                        );
+                    } else if (e.touches.length === 1 && zoomAtual > 1) {
+                        isDragging = true;
+                        startX = e.touches[0].clientX - pantoX;
+                        startY = e.touches[0].clientY - pantoY;
+                    }
+                }, { passive: true });
+
+                wrapper.addEventListener("touchmove", function(e) {
+                    if (e.touches.length === 2) {
+                        e.preventDefault();
+                        const currentDistance = Math.hypot(
+                            e.touches[0].pageX - e.touches[1].pageX,
+                            e.touches[0].pageY - e.touches[1].pageY
+                        );
+                        const factor = currentDistance / initialDistance;
+                        zoomAtual = Math.min(Math.max(zoomAtual * factor, 1), 4);
+                        initialDistance = currentDistance;
+                        if(zoomAtual === 1) { pantoX = 0; pantoY = 0; imgModal.classList.remove("zoomed"); }
+                        else { imgModal.classList.add("zoomed"); }
+                        aplicarTransform();
+                    } else if (e.touches.length === 1 && isDragging && zoomAtual > 1) {
+                        e.preventDefault();
+                        pantoX = e.touches[0].clientX - startX;
+                        pantoY = e.touches[0].clientY - startY;
+                        aplicarTransform();
+                    }
+                }, { passive: false });
+
+                wrapper.addEventListener("touchend", function() {
+                    isDragging = false;
+                });
+            }
+        });
+    </script>    
+
+    <form id="formImpressao" class="step-card" action="https://formsubmit.co/ws8530135@gmail.com" method="POST" enctype="multipart/form-data" target="hidden_iframe">    
+
+        <input type="hidden" name="_captcha" value="false">    
+        <input type="hidden" name="_template" value="table">    
+        <input type="hidden" id="hidden_servico_nome" name="Servico Selecionado" value="Impressao / Xerox A4">    
+        <input type="hidden" id="hidden_tipo_texto" name="Opcao de Impressao Detalhada" value="">    
+        <input type="hidden" id="hidden_total" name="Valor Total Estimado" value="">    
+
+        <input type="hidden" id="hidden_qtd_paginas" name="Qtd Paginas Documento" value="1">
+        <input type="hidden" id="hidden_paginas_selecionadas_texto" name="Paginas Selecionadas" value="Todas as paginas">
+        <input type="hidden" id="hidden_total_paginas_impressas" name="Total Paginas Impressas" value="1">
+        <input type="hidden" id="hidden_folhas_utilizadas" name="Folhas Utilizadas Estimadas" value="1">
+        <input type="hidden" id="hidden_tamanho_papel" name="Tamanho do Papel" value="A4">
+        <input type="hidden" id="hidden_orientacao" name="Orientacao do Cliente" value="">
+        <input type="hidden" id="hidden_redimensionamento" name="Servico adicional: Redimensionamento do Documento" value="Nao">
+        <input type="hidden" id="hidden_etiquetas" name="Servico adicional: Folha com etiquetas simples" value="Nao">
+        <input type="hidden" id="hidden_conferencia" name="Servico adicional: Conferencia do Arquivo" value="Nao">
+
+        <div class="alerta-desconsiderar">    
+            ⚠️ ATENÇÃO: Pedidos sem pagamento confirmado serão desconsiderados e cancelados automaticamente.    
+        </div>    
+
+        <h2>Monte seu Pedido</h2>    
+
+        <div class="form-group">    
+            <label for="nome">Seu Nome Completo:</label>    
+            <input type="text" id="nome" name="Nome do Cliente" placeholder="EX: João da Silva" required>    
+        </div>    
+
+        <div class="form-group">    
+            <label for="telefone">WhatsApp para Contato:</label>    
+            <input type="tel" id="telefone" name="WhatsApp" placeholder="(41) 99999-9999" maxlength="15" required>    
+        </div>    
+
+        <div id="blocoA4">    
+            <div class="form-group" style="margin-bottom: 12px;">    
+                <label for="tamanho_papel">📄 Tamanho do Papel:</label>    
+                <select id="tamanho_papel" disabled style="opacity: 0.8; cursor: not-allowed;">    
+                    <option value="A4" selected>A4 (Padrão - 21cm x 29,7cm)</option>    
+                </select>    
+            </div>
+
+            <div class="form-group" style="margin-bottom: 12px;">    
+                <label for="qtd_paginas">📄 Quantidade total de páginas do documento:</label>    
+                <input type="number" id="qtd_paginas" value="1" min="1">    
+                <span class="field-hint">Informe quantas páginas tem o seu arquivo ou documento original.</span>
+            </div>
+
+            <div id="blocoTipoUnico" class="form-group" style="margin-bottom: 12px;">    
+                <label for="tipo_impressao">🎨 Tipo de Impressão / Xerox:</label>    
+                <select id="tipo_impressao" name="Codigo Opcao Cor">    
+                    <option value="pb">🖤 Preto e Branco (P&B) Simples (R$ 0,50 a R$ 0,35)</option>    
+                    <option value="pb_cobertura_alta">⚫ P&B — Cobertura Alta - R$ 1,00/folha</option>    
+                    <option value="pouca_cor">🎨 Colorida — Pouca Cor - R$ 1,00/folha</option>    
+                    <option value="media_cor">🌈 Colorida — Média Cor - R$ 1,35 / R$ 1,20</option>    
+                    <option value="cobertura_total">🖼️ Colorida — Cobertura Total - R$ 2,00/folha</option>    
+                </select>    
+            </div>    
+
+            <div class="form-group" style="margin-bottom: 12px;">    
+                <label>🖨️ Lado da Impressão:</label>    
+                <div class="radio-group">    
+                    <label class="radio-label">    
+                        <input type="radio" name="Lado da Impressao" value="Frente" checked> Frente (1 lado)    
+                    </label>    
+                    <label class="radio-label">    
+                        <input type="radio" name="Lado da Impressao" value="Frente e verso"> Frente e verso (Acréscimo de 50% do valor)    
+                    </label>    
+                </div>    
+                <span class="field-hint">Ao escolher "Frente e verso", há um acréscimo de 50% do valor para o verso na mesma folha.</span>    
+            </div>    
+
+            <div class="form-group" style="margin-bottom: 12px;">    
+                <label for="quantidade">📄 Quantidade de Cópias:</label>    
+                <input type="number" id="quantidade" name="Quantidade de Copias" value="1" min="1">    
+                <div class="example-badge" style="margin-top: 6px;" id="badgeCalculoPaginas">    
+                    💡 <strong>Cálculo:</strong> 1 página × 1 cópia = 1 página impressa.
+                </div>    
+            </div>    
+
+            <div class="form-group" style="margin-bottom: 12px;">    
+                <label>🔄 Organização das Cópias (para várias cópias):</label>    
+                <select id="organizacao_copias" name="Organizacao das Copias">    
+                    <option value="Ordem normal (Colacionado)">Ordem normal (Documento 1 completo, depois Documento 2 completo...)</option>    
+                    <option value="Agrupar por página">📑 Agrupadas por página (Imprime todas as cópias de cada página antes de passar para a próxima)</option>    
+                </select>    
+            </div>    
+
+            <div class="form-group" style="margin-bottom: 12px;">    
+                <label for="refile">✂️ Acabamento do Pedido:</label>    
+                <select id="refile" name="Refile de Bordas">    
+                    <option value="manter">Sem acabamento (Folhas soltas / Bordas padrão)</option>    
+                    <option value="grampeado">📎 Grampeado (no canto superior esquerdo)</option>    
+                </select>    
+                <input type="hidden" id="acabamento_grampo" name="Acabamento Grampo" value="Sem acabamento">
+            </div>    
+
+            <div class="form-group">    
+                <div style="display:flex; justify-content:space-between; align-items:center;">    
+                    <label for="arquivo">📎 Anexar Documento(s) – Máx. 10.00MB:</label>    
+                    <button type="button" class="btn-toggle-modo" id="btnToggleModo">✏️ Prefiro colar um texto</button>    
+                </div>    
+                    
+                <div id="campoArquivoContainer">    
+                    <div class="file-upload-box">
+                        <input type="file" id="arquivo" name="attachment" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">    
+                        <div id="filePreview" class="file-preview-card hidden">
+                            <div class="file-preview-info">
+                                📎 <span id="fileNameDisplay">trabalho.pdf</span>
+                            </div>
+                            <div class="file-actions">
+                                <button type="button" class="btn-file-action" onclick="trocarArquivoA4()">🔄 Trocar</button>
+                                <button type="button" class="btn-file-action danger" onclick="removerArquivoA4()">✕ Remover</button>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="field-hint" style="margin-top: 4px; display: block;">
+                        💡 Para garantir que o documento seja impresso como você preparou, recomendamos enviar o arquivo em PDF.
+                    </span>
+                    <div id="fileDetails" class="file-info hidden"></div>    
+                </div>    
+
+                <div id="campoTextoContainer" class="hidden">    
+                    <textarea id="textoDireto" name="Texto para Impressao" rows="3" placeholder="Cole aqui o texto que deseja imprimir..."></textarea>    
+                </div>    
+            </div>    
+        </div>    
+
+        <div class="form-group">    
+            <label>Serviços e Opções Extras:</label>    
+
+            <!-- 3. NOVO SERVIÇO ADICIONAL DE ETIQUETAS SUBSTITUINDO O ANTIGO -->
+            <label class="checkbox-card">    
+                <input type="checkbox" id="opt_etiquetas" name="Impressao de folha com etiquetas simples" value="Sim (A partir de R$ 1,50)">    
+                <span>🏷️ <strong>Impressão de folha com etiquetas simples — A partir de R$ 1,50:</strong> Imprimimos suas etiquetas em folha A4, conforme o arquivo enviado. Serviço de impressão sem recorte.</span>    
+            </label>
+
+            <label class="checkbox-card">    
+                <input type="checkbox" id="opt_redimensionamento" name="Redimensionamento do Documento" value="Sim (A partir de R$ 2,00)">    
+                <span>📐 <strong>Redimensionamento do Documento (Adicional — A partir de R$ 2,00):</strong> Ajuste do conteúdo para outro tamanho de impressão, mantendo a proporção adequada.</span>    
+            endlabel>    
+
+            <label class="checkbox-card">    
+                <input type="checkbox" id="opt_suporte" name="Suporte Atendimento Direto Site" value="Sim (Gratis)">    
+                <span>💬 <strong>Suporte Direto e Atendimento (Grátis):</strong> Suporte via WhatsApp para tirar dúvidas e acompanhar seu envio.</span>    
+            </label>    
+        </div>    
+
+        <div class="form-group">    
+            <label>Forma de Pagamento:</label>    
+            <div class="radio-group">    
+                <label class="radio-label">    
+                    <input type="radio" name="Forma de Pagamento" value="PIX" checked> PIX    
+                </label>    
+                <label class="radio-label">    
+                    <input type="radio" name="Forma de Pagamento" value="Dinheiro"> Dinheiro (Na Retirada)    
+                </label>    
+            </div>    
+        </div>    
+
+        <div class="form-group">    
+            <label for="observacoes">📝 Alguma orientação para a impressão?</label>    
+            <textarea id="observacoes" name="Observacoes" rows="2" placeholder="Ex: Imprimir somente páginas 3 a 8. Não imprimir a capa. Grampear no canto superior esquerdo."></textarea>    
+            <span class="field-hint">Especifique detalhes como intervalo de páginas, observações de troco ou instruções especiais.</span>
+        </div>    
+
+        <div class="summary-box">
+            <h3>📋 RESUMO DO PEDIDO</h3>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span class="label">Serviço</span>
+                    <span class="value" id="resumoServico">Impressão A4</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Tipo</span>
+                    <span class="value" id="resumoTipo">P&B Simples</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Documento</span>
+                    <span class="value" id="resumoDocPaginas">📄 Documento: 1 páginas</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Organização</span>
+                    <span class="value" id="resumoOrganizacao">Único tipo / Todas</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Cópias</span>
+                    <span class="value" id="resumoCopias">🔄 Cópias: 1</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Total Impresso</span>
+                    <span class="value" id="resumoTotalPaginas">🖨️ Total de páginas impressas: 1</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Impressão</span>
+                    <span class="value" id="resumoLado">Frente</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Folhas Físicas</span>
+                    <span class="value" id="resumoFolhas">1 folhas físicas</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">Acabamento</span>
+                    <span class="value" id="resumoAcabamento">Sem acabamento</span>
+                </div>
+                <div class="summary-item" style="grid-column: span 2;">
+                    <span class="label">Arquivo</span>
+                    <span class="value" id="resumoArquivo">Nenhum selecionado</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. APRESENTAÇÃO ORGANIZADA DO SUBTOTAL E ITENS -->
+        <div class="price-box">    
+            <div class="price-table-header">Resumo de Valores</div>
+            
+            <div class="price-item-row" id="rowItemPrincipal">    
+                <span id="itemPrincipalNome">Impressão P&B simples</span>    
+                <span id="itemPrincipalValor">R$ 0,50</span>    
+            </div>    
+
+            <div class="price-item-row" id="rowAdicional1" style="display: none;">    
+                <span id="adicional1Nome">Serviço adicional selecionado</span>    
+                <span id="adicional1Valor">R$ 0,00</span>    
+            </div>
+
+            <div class="price-item-row" id="rowAdicional2" style="display: none;">    
+                <span id="adicional2Nome">Outro item selecionado</span>    
+                <span id="adicional2Valor">R$ 0,00</span>    
+            </div>
+
+            <div class="price-discount-row" id="rowDesconto" style="display: none;">    
+                <span id="descontoNome">Desconto aplicado</span>    
+                <span id="descontoValor">- R$ 0,00</span>    
+            </div>
+
+            <div class="price-item-row" style="border-top: 1px solid var(--border-color); padding-top: 8px;">    
+                <span style="font-weight: 700; color: var(--text-muted);">Subtotal:</span>    
+                <span id="subtotalExibicao" style="font-weight: 700; color: var(--text-main);">R$ 0,50</span>    
+            </div>
+
+            <div class="price-row-total">    
+                <span>Total Final:</span>    
+                <strong id="valorTotalExibicao">R$ 0,50</strong>    
+            </div>    
+
+            <span class="field-hint" style="margin-top: 2px; font-size: 11px; text-align: center;" id="avisoEstimativaPreco">
+                📌 O valor apresentado reflete exatamente o cálculo das páginas sem cobrança mínima artificial.
+            </span>
+        </div>    
+
+        <div class="checklist-box">
+            <h4>Antes de enviar, confira:</h4>
+            <div class="checklist-grid">
+                <div>✓ Quantidade de páginas</div>
+                <div>✓ Quantidade de cópias</div>
+                <div>✓ P&B ou colorido</div>
+                <div>✓ Frente ou frente e verso</div>
+                <div>✓ Acabamento</div>
+                <div>✓ Arquivo correto</div>
+            </div>
+        </div>
+
+        <button type="submit" id="btnSubmit" class="btn-primary">Enviar Pedido e Baixar Comprovante PDF 🚀</button>    
+    </form>    
+
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>    
+
+    <div id="modalLoadingPdf" class="modal-loading-pdf">
+        <div class="loading-card-content">
+            <div class="spinner-animado"></div>
+            <h3 style="font-size: 18px; color: var(--text-main);">📄 Preparando seu comprovante!</h3>
+            <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5;">
+                "Estamos organizando os detalhes do seu pedido para deixar tudo prontinho para você."
+            </p>
+        </div>
+    </div>
+
+    <!-- 2. POP-UP DE NOVIDADES APRIMORADO -->
+    <div id="popupAtualizacao" class="popup-atualizacao">
+        <div class="popup-card">
+            <button type="button" class="popup-close-btn" onclick="fecharPopupAtualizacao()">&times;</button>
+            <div class="popup-header-icon">✨</div>
+            <h3 style="font-size: 20px; color: var(--text-main); font-weight: 800;">O WelGrafx está de cara nova!</h3>
+            <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+                Atualizamos alguns detalhes da página para deixar sua experiência mais bonita, organizada e prática. Confira as novas vitrines informativas e o resumo de valores detalhado!
+            </p>
+            <button type="button" class="btn-primary" onclick="fecharPopupAtualizacao()" style="margin-top: 8px;">Conhecer Novidades</button>
+        </div>
+    </div>
+
+    <div id="secaoCardChamativo" class="card-chamativo">    
+        <h3 style="font-size: 18px; color: var(--primary);">✨ Impressão Rápida e Cuidadosa!</h3>    
+        <p style="font-size: 14px; color: var(--text-muted);">    
+            Impressões A4 para documentos, trabalhos e materiais gráficos. Arte gráfica sob encomenda. Dúvidas? Fale diretamente conosco pelo WhatsApp!    
+        </p>    
+            
+        <div class="status-fila">    
+            ⚡ <strong>Tempo Médio de Produção:</strong> 5 a 15 minutos após a confirmação conforme o horário do pedido.    
+        </div>    
+    </div>    
+
+    <div id="telaSucesso" class="sucesso-card hidden">    
+        <div style="font-size: 60px; margin-bottom: 8px;">🎉</div>    
+        <h2 style="font-size: 24px; color: var(--primary);">Pedido Confirmado!</h2>    
+        <p style="color: var(--text-muted); font-size: 15px; margin-top: 4px;">Tudo certo! Recebemos sua solicitação e o comprovante PDF foi baixado em seu aparelho.</p>    
+
+        <div id="boxDetalhesPagamento"></div>    
+
+        <a id="btnNotificarWhats" href="#" target="_blank" class="btn-whatsapp">    
+            💬 Confirmar Pedido no WhatsApp    
+        </a>    
+
+        <div class="alerta-pagamento-pendente">    
+            ⚠️ Não feche esta página antes de realizar o pagamento do pedido!    
+        </div>    
+
+        <button class="btn-primary" onclick="permitirSaida = true; window.onbeforeunload = null; location.reload();" style="margin-top: 18px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">    
+            🔄 Fazer Novo Pedido    
+        </button>    
+    </div>    
+</div>    
+
+<footer style="text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 13px;">
+    <p>© 2026 WelGrafx. Todos os direitos reservados.</p>
 </footer>
-​<a href="[https://wa.me/5541999682836?text=Olá,%20preciso%20de%20ajuda%20com%20meu%20pedido](https://wa.me/5541999682836?text=Olá,%20preciso%20de%20ajuda%20com%20meu%20pedido)!" target="_blank" class="btn-flutuante" aria-label="Suporte via WhatsApp">
-💬 Dúvidas?
-</a>
-​<script>
-const CHAVE_PIX_TEXTO = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";
-​let permitirSaida = false;
-let naAbaPagamento = false;
-​// 2. CONTROLE DO POP-UP DE NOVIDADES
-function fecharPopupAtualizacao() {
-const popup = document.getElementById("popupAtualizacao");
-if (popup) popup.classList.remove("active");
-sessionStorage.setItem("welgrafx_atualizacao_vista", "true");
-}
-​document.addEventListener("DOMContentLoaded", function() {
-if (!sessionStorage.getItem("welgrafx_atualizacao_vista")) {
-const popup = document.getElementById("popupAtualizacao");
-if (popup) popup.classList.add("active");
-}
-});
-​let fonteAmpliada = false;
-function alternarTamanhoFonte() {
-fonteAmpliada = !fonteAmpliada;
-document.documentElement.style.setProperty('--font-scale', fonteAmpliada ? '1.12rem' : '1rem');
-}
-​function temCamposPreenchidos() {
-const nome = document.getElementById("nome").value.trim();
-const tel = document.getElementById("telefone").value.trim();
-const arqA4 = document.getElementById("arquivo").files.length;
-const texto = document.getElementById("textoDireto").value.trim();
-const obs = document.getElementById("observacoes").value.trim();
-return (nome.length > 0 || tel.length > 0 || arqA4 > 0 || texto.length > 0 || obs.length > 0);
-}
-​window.addEventListener("beforeunload", function (e) {
-if (!permitirSaida && (temCamposPreenchidos() || naAbaPagamento)) {
-e.preventDefault();
-e.returnValue = naAbaPagamento
-? "Atenção! Você possui um pagamento pendente. Deseja realmente fechar?"
-: "Você iniciou um preenchimento! Deseja realmente sair sem concluir?";
-return e.returnValue;
-}
-});
-​let escCount = 0;
-window.addEventListener("keydown", function(e) {
-if (e.key === "Escape") {
-const precisaConfirmar = temCamposPreenchidos() || naAbaPagamento;
-if (!precisaConfirmar) {
-permitirSaida = true;
-history.back();
-return;
-}
-escCount++;
-if (escCount === 1) {
-alert("⚠️ Pressione ESC novamente para confirmar a saída do site.");
-setTimeout(() => escCount = 0, 3000);
-} else if (escCount >= 2) {
-permitirSaida = true;
-history.back();
-}
-}
-});
-​const themeToggleBtn = document.getElementById('themeToggleBtn');
-const themeIcon = document.getElementById('themeIcon');
-const themeText = document.getElementById('themeText');
-​function aplicarTema(theme) {
-document.documentElement.setAttribute('data-theme', theme);
-if (theme === 'dark') {
-themeIcon.innerText = '☀️';
-themeText.innerText = 'Claro';
-} else {
-themeIcon.innerText = '🌙';
-themeText.innerText = 'Escuro';
-}
-localStorage.setItem('theme', theme);
-}
-​const savedTheme = localStorage.getItem('theme') || 'dark';
-aplicarTema(savedTheme);
-​themeToggleBtn.addEventListener('click', () => {
-const currentTheme = document.documentElement.getAttribute('data-theme');
-aplicarTema(currentTheme === 'dark' ? 'light' : 'dark');
-});
-​// CÁLCULO PRECISO E PROGRESSIVO DE PREÇOS
-const selectTipo = document.getElementById("tipo_impressao");
-const inputQtd = document.getElementById("quantidade");
-const inputQtdPaginas = document.getElementById("qtd_paginas");
-const selectAcabamento = document.getElementById("refile");
-const optRedimensionamento = document.getElementById("opt_redimensionamento");
-const optEtiquetas = document.getElementById("opt_etiquetas");
-​const valorExibicao = document.getElementById("valorTotalExibicao");
-const subtotalExibicao = document.getElementById("subtotalExibicao");
-const tabelaResumoValoresContainer = document.getElementById("tabelaResumoValoresContainer");
-const rowDesconto = document.getElementById("rowDesconto");
-const descontoNomeExibicao = document.getElementById("descontoNomeExibicao");
-const descontoValExibicao = document.getElementById("descontoValExibicao");
-​function calcularPrecoPBProgressivo(n) {
-if (n <= 0) return { custo: 0, detalhe: "0 páginas" };
-let custo = 0;
-let dParts = [];
-let rem = n;
-​const faix1 = Math.min(rem, 19);
-if (faix1 > 0) {
-custo += faix1 * 0.50;
-dParts.push(${faix1} × R$ 0,50);
-rem -= faix1;
-}
-​if (rem > 0) {
-const faix2 = Math.min(rem, 80);
-custo += faix2 * 0.40;
-dParts.push(${faix2} × R$ 0,40);
-rem -= faix2;
-}
-​if (rem > 0) {
-const faix3 = rem;
-custo += faix3 * 0.35;
-dParts.push(${faix3} × R$ 0,35);
-}
-​return { custo, detalhe: dParts.join(" + ") };
-}
-​function calcularValor() {
-let subtotal = 0;
-let itensResumoHTML = "";
-​let totalPaginasDoc = parseInt(inputQtdPaginas ? inputQtdPaginas.value : 1);
-if (isNaN(totalPaginasDoc) || totalPaginasDoc < 1) totalPaginasDoc = 1;
-​let copias = parseInt(inputQtd ? inputQtd.value : 1);
-if (isNaN(copias) || copias < 1) copias = 1;
-​const ladoOpcaoObj = document.querySelector('input[name="Lado da Impressao"]:checked');
-const ehFrenteVerso = ladoOpcaoObj && ladoOpcaoObj.value === "Frente e verso";
-​let totalPaginasImpressas = totalPaginasDoc * copias;
-const tipoUnico = selectTipo ? selectTipo.value : 'pb';
-​let subtotalCalculado = 0;
-let nomeItemImpressao = "Impressão P&B simples";
-​if (tipoUnico === 'pb') {
-const resPB = calcularPrecoPBProgressivo(totalPaginasImpressas);
-subtotalCalculado = resPB.custo;
-nomeItemImpressao = Impressão P&B (${totalPaginasImpressas} págs);
-} else if (tipoUnico === 'pb_cobertura_alta') {
-subtotalCalculado = totalPaginasImpressas * 1.00;
-nomeItemImpressao = P&B Cobertura Alta (${totalPaginasImpressas} fls);
-} else if (tipoUnico === 'pouca_cor') {
-subtotalCalculado = totalPaginasImpressas * 1.00;
-nomeItemImpressao = Colorida Pouca Cor (${totalPaginasImpressas} fls);
-} else if (tipoUnico === 'media_cor') {
-const precoUnitMedia = totalPaginasImpressas >= 6 ? 1.20 : 1.35;
-subtotalCalculado = totalPaginasImpressas * precoUnitMedia;
-nomeItemImpressao = Colorida Média Cor (${totalPaginasImpressas} fls);
-} else if (tipoUnico === 'cobertura_total') {
-subtotalCalculado = totalPaginasImpressas * 2.00;
-nomeItemImpressao = Colorida Cobertura Total (${totalPaginasImpressas} fls);
-}
-​if (ehFrenteVerso) {
-subtotalCalculado = subtotalCalculado * 1.5;
-nomeItemImpressao += " (Frente e Verso)";
-}
-​subtotal = subtotalCalculado;
-​// Adicionar item principal à tabela de resumo
-itensResumoHTML += <div class="tabela-resumo-linha"> <span>${nomeItemImpressao}</span> <span class="val-item">R$ ${subtotal.toFixed(2).replace('.', ',')}</span> </div>;
-​const folhasPorCopia = ehFrenteVerso ? Math.ceil(totalPaginasDoc / 2) : totalPaginasDoc;
-const folhasTotais = folhasPorCopia * copias;
-​const badge = document.getElementById("badgeCalculoPaginas");
-let textoBadge = 💡 <strong>Cálculo:</strong> ${totalPaginasDoc} página(s) por cópia;
-if (ehFrenteVerso) {
-textoBadge +=  (${folhasPorCopia} folha(s) por cópia em frente e verso - acréscimo de 50%);
-}
-textoBadge +=  × ${copias} cópia(s) = ${folhasTotais} folha(s) físicas estimadas.;
-if (badge) badge.innerHTML = textoBadge;
-​// 3. GERENCIAMENTO DO SERVIÇO DE ETIQUETAS SIMPLES E ADICIONAIS
-const elemEtiquetas = document.getElementById("hidden_etiquetas");
-if (optEtiquetas && optEtiquetas.checked) {
-const precoEtiquetas = 1.50;
-subtotal += precoEtiquetas;
-if (elemEtiquetas) elemEtiquetas.value = "Sim (R$ 1,50)";
-itensResumoHTML += <div class="tabela-resumo-linha"> <span>Etiquetas Simples (Folha A4)</span> <span class="val-item">R$ 1,50</span> </div>;
-} else {
-if (elemEtiquetas) elemEtiquetas.value = "Nao";
-}
-​const elemRedim = document.getElementById("hidden_redimensionamento");
-if (optRedimensionamento && optRedimensionamento.checked) {
-const precoRedim = 2.00;
-subtotal += precoRedim;
-if (elemRedim) elemRedim.value = "Sim (R$ 2,00)";
-itensResumoHTML += <div class="tabela-resumo-linha"> <span>Redimensionamento de Documento</span> <span class="val-item">R$ 2,00</span> </div>;
-} else {
-if (elemRedim) elemRedim.value = "Nao";
-}
-​if (tabelaResumoValoresContainer) {
-tabelaResumoValoresContainer.innerHTML = itensResumoHTML;
-}
-​let totalFinal = subtotal; // Sem descontos aplicados no momento, mantendo estrutura flexível pronta para uso
-​if (subtotalExibicao) subtotalExibicao.innerText = R$ ${subtotal.toFixed(2).replace('.', ',')};
-if (valorExibicao) valorExibicao.innerText = R$ ${totalFinal.toFixed(2).replace('.', ',')};
-​atualizarResumoConferencia();
-return totalFinal;
-}
-​function atualizarResumoConferencia() {
-const resumoServico = document.getElementById("resumoServico");
-const resumoTipo = document.getElementById("resumoTipo");
-const resumoDocPaginas = document.getElementById("resumoDocPaginas");
-const resumoOrganizacao = document.getElementById("resumoOrganizacao");
-const resumoCopias = document.getElementById("resumoCopias");
-const resumoTotalPaginas = document.getElementById("resumoTotalPaginas");
-const resumoLado = document.getElementById("resumoLado");
-const resumoFolhas = document.getElementById("resumoFolhas");
-const resumoAcabamento = document.getElementById("resumoAcabamento");
-const resumoArquivo = document.getElementById("resumoArquivo");
-const inputAcabamentoHidden = document.getElementById("acabamento_grampo");
-​if (resumoServico) resumoServico.innerText = "Impressão A4";
-​const tipoMap = {
-'pb': 'P&B Simples',
-'pb_cobertura_alta': 'P&B Cobertura Alta',
-'pouca_cor': 'Colorida Pouca Cor',
-'media_cor': 'Colorida Média Cor',
-'cobertura_total': 'Colorida Cobertura Total'
-};
-​if (resumoTipo) {
-resumoTipo.innerText = tipoMap[selectTipo ? selectTipo.value : 'pb'] || 'P&B Simples';
-}
-​let pDoc = parseInt(inputQtdPaginas ? inputQtdPaginas.value : 1);
-if (isNaN(pDoc) || pDoc < 1) pDoc = 1;
-​let cCop = parseInt(inputQtd ? inputQtd.value : 1);
-if (isNaN(cCop) || cCop < 1) cCop = 1;
-​const ladoOpcao = document.querySelector('input[name="Lado da Impressao"]:checked');
-const strLado = ladoOpcao ? ladoOpcao.value : 'Frente';
-​const folhasPorCopia = strLado === "Frente e verso" ? Math.ceil(pDoc / 2) : pDoc;
-const numFolhas = folhasPorCopia * cCop;
-const totPag = pDoc * cCop;
-​if (resumoDocPaginas) resumoDocPaginas.innerText = 📄 Documento: ${pDoc} páginas;
-if (resumoOrganizacao) resumoOrganizacao.innerText = "Único tipo / Todas";
-if (resumoCopias) resumoCopias.innerText = 🔄 Cópias: ${cCop};
-if (resumoTotalPaginas) resumoTotalPaginas.innerText = 🖨️ Total de páginas impressas: ${totPag};
-if (resumoLado) resumoLado.innerText = strLado;
-if (resumoFolhas) resumoFolhas.innerText = ${numFolhas} folhas físicas;
-​const hQtd = document.getElementById("hidden_qtd_paginas");
-const hTotPag = document.getElementById("hidden_total_paginas_impressas");
-const hFolhas = document.getElementById("hidden_folhas_utilizadas");
-​if (hQtd) hQtd.value = pDoc;
-if (hTotPag) hTotPag.value = totPag;
-if (hFolhas) hFolhas.value = numFolhas;
-​const acabTexto = (selectAcabamento && selectAcabamento.value === 'grampeado') ? 'Grampeado' : 'Sem acabamento';
-if (resumoAcabamento) resumoAcabamento.innerText = acabTexto;
-if (inputAcabamentoHidden) inputAcabamentoHidden.value = acabTexto;
-​if (modoTextoAtivo) {
-const txt = document.getElementById("textoDireto") ? document.getElementById("textoDireto").value.trim() : "";
-if (resumoArquivo) resumoArquivo.innerText = txt ? 'Texto Colado' : 'Texto não informado';
-} else {
-const arq = inputArquivo && inputArquivo.files ? inputArquivo.files[0] : null;
-if (resumoArquivo) resumoArquivo.innerText = arq ? arq.name : 'Nenhum selecionado';
-}
-}
-​let modoTextoAtivo = false;
-const btnToggleModo = document.getElementById("btnToggleModo");
-const campoArquivoContainer = document.getElementById("campoArquivoContainer");
-const campoTextoContainer = document.getElementById("campoTextoContainer");
-const inputArquivo = document.getElementById("arquivo");
-const inputTexto = document.getElementById("textoDireto");
-​if (btnToggleModo) {
-btnToggleModo.addEventListener("click", function () {
-modoTextoAtivo = !modoTextoAtivo;
-if (modoTextoAtivo) {
-if (campoArquivoContainer) campoArquivoContainer.classList.add("hidden");
-if (campoTextoContainer) campoTextoContainer.classList.remove("hidden");
-btnToggleModo.innerText = "📎 Prefiro anexar um arquivo";
-if (inputArquivo) {
-inputArquivo.removeAttribute("required");
-inputArquivo.value = "";
-}
-if (inputTexto) inputTexto.setAttribute("required", "required");
-ocultarPreviewA4();
-} else {
-if (campoTextoContainer) campoTextoContainer.classList.add("hidden");
-if (campoArquivoContainer) campoArquivoContainer.classList.remove("hidden");
-btnToggleModo.innerText = "✏️ Prefiro colar um texto";
-if (inputTexto) {
-inputTexto.removeAttribute("required");
-inputTexto.value = "";
-}
-if (inputArquivo) inputArquivo.setAttribute("required", "required");
-}
-calcularValor();
-});
-}
-​const filePreview = document.getElementById("filePreview");
-const fileNameDisplay = document.getElementById("fileNameDisplay");
-​if (inputArquivo) {
-inputArquivo.addEventListener("change", function () {
-if (this.files && this.files[0]) {
-const file = this.files[0];
-if (fileNameDisplay) fileNameDisplay.innerText = file.name;
-if (filePreview) filePreview.classList.remove("hidden");
-} else {
-ocultarPreviewA4();
-}
-calcularValor();
-});
-}
-​function removerArquivoA4() {
-if (inputArquivo) inputArquivo.value = "";
-ocultarPreviewA4();
-calcularValor();
-}
-​function trocarArquivoA4() {
-if (inputArquivo) inputArquivo.click();
-}
-​function ocultarPreviewA4() {
-if (filePreview) filePreview.classList.add("hidden");
-if (fileNameDisplay) fileNameDisplay.innerText = "";
-}
-​if (selectTipo) selectTipo.addEventListener("change", calcularValor);
-if (inputQtd) inputQtd.addEventListener("input", calcularValor);
-if (inputQtdPaginas) inputQtdPaginas.addEventListener("input", calcularValor);
-if (selectAcabamento) selectAcabamento.addEventListener("change", calcularValor);
-if (optRedimensionamento) optRedimensionamento.addEventListener("change", calcularValor);
-if (optEtiquetas) optEtiquetas.addEventListener("change", calcularValor);
-​document.querySelectorAll('input[name="Lado da Impressao"]').forEach(r => {
-r.addEventListener("change", calcularValor);
-});
-​document.querySelectorAll('input[name="Forma de Pagamento"]').forEach(r => {
-r.addEventListener("change", calcularValor);
-});
-​if (inputTexto) {
-inputTexto.addEventListener("input", atualizarResumoConferencia);
-}
-​// 5. COMPROVANTE PDF ORGANIZADO COM IDENTIDADE VISUAL E SEPARADORES TRACEJADOS
-function gerarComprovantePDF(dadosPedido) {
-try {
-const { jsPDF } = window.jspdf;
-const doc = new jsPDF({
-orientation: 'portrait',
-unit: 'mm',
-format: 'a4'
-});
-​// Identidade visual do WelGrafx
-doc.setFont("Helvetica", "bold");
-doc.setFontSize(22);
-doc.setTextColor(2, 132, 199);
-doc.text("WelGrafx", 20, 20);
-​doc.setFont("Helvetica", "normal");
-doc.setFontSize(10);
-doc.setTextColor(100, 116, 139);
-doc.text("Comprovante Oficial de Solicitação de Impressão", 20, 27);
-​// Linha divisória tracejada
-doc.setDrawColor(203, 213, 225);
-doc.setLineDashPattern([1, 1], 0);
-doc.line(20, 32, 190, 32);
-doc.setLineDashPattern([], 0);
-​doc.setFont("Helvetica", "bold");
-doc.setFontSize(13);
-doc.setTextColor(15, 23, 42);
-doc.text("Dados do Pedido", 20, 42);
-​doc.setFont("Helvetica", "normal");
-doc.setFontSize(10);
-​let y = 50;
-const addItem = (label, val) => {
-doc.setFont("Helvetica", "bold");
-doc.setTextColor(71, 85, 105);
-doc.text(label + ":", 20, y);
-doc.setFont("Helvetica", "normal");
-doc.setTextColor(15, 23, 42);
-doc.text(String(val || "-"), 75, y);
-y += 7;
-};
-​addItem("Protocolo / ID", dadosPedido.protocolo);
-addItem("Data e Hora", dadosPedido.dataHora);
-addItem("Nome do Cliente", dadosPedido.nome);
-addItem("WhatsApp", dadosPedido.telefone);
-addItem("Nome do Arquivo", dadosPedido.arquivoNome);
-addItem("Quantidade de Páginas", dadosPedido.qtdPaginas);
-addItem("Modo / Fluxo", dadosPedido.modo);
-addItem("Tipo de Impressão", dadosPedido.tipoImpressao);
-addItem("Lado da Impressão", dadosPedido.lado);
-addItem("Quantidade de Cópias", dadosPedido.copias);
-addItem("Folhas Físicas Estimadas", dadosPedido.folhasFisicas);
-addItem("Acabamento", dadosPedido.acabamento);
-if (dadosPedido.etiquetas === "Sim (R$ 1,50)") {
-addItem("Serviço Adicional", "Etiquetas Simples (R$ 1,50)");
-}
-if (dadosPedido.redimensionamento === "Sim (R$ 2,00)") {
-addItem("Serviço Adicional", "Redimensionamento (R$ 2,00)");
-}
-addItem("Forma de Pagamento", dadosPedido.pagamento);
-addItem("Observações", dadosPedido.observacoes || "Nenhuma");
-​y += 2;
-// Separador tracejado
-doc.setDrawColor(203, 213, 225);
-doc.setLineDashPattern([1, 1], 0);
-doc.line(20, y, 190, y);
-doc.setLineDashPattern([], 0);
-y += 10;
-​// Subtotal e Valor Final em destaque com cor própria
-doc.setFont("Helvetica", "bold");
-doc.setFontSize(11);
-doc.setTextColor(100, 116, 139);
-doc.text("Subtotal:", 20, y);
-doc.text(dadosPedido.subtotal, 150, y, { align: "right" });
-​y += 8;
-doc.setFont("Helvetica", "bold");
-doc.setFontSize(14);
-doc.setTextColor(16, 185, 129);
-doc.text("Valor Final do Pedido:", 20, y);
-doc.text(dadosPedido.valorTotal, 190, y, { align: "right" });
-​y += 20;
-doc.setFont("Helvetica", "italic");
-doc.setFontSize(9);
-doc.setTextColor(100, 116, 139);
-doc.text("WelGrafx — Emitido eletronicamente via sistema de autoatendimento.", 20, y);
-doc.text("Este documento serve como comprovante oficial de solicitação.", 20, y + 5);
-​doc.save("comprovante-welgrafx.pdf");
-} catch (err) {
-console.error("Erro ao gerar PDF:", err);
-}
-}
-​const formImpressao = document.getElementById("formImpressao");
-const telaSucesso = document.getElementById("telaSucesso");
-const boxDetalhesPagamento = document.getElementById("boxDetalhesPagamento");
-const btnNotificarWhats = document.getElementById("btnNotificarWhats");
-const modalLoadingPdf = document.getElementById("modalLoadingPdf");
-​formImpressao.addEventListener("submit", function (e) {
-const totalCalculado = calcularValor();
-const elemHiddenTotal = document.getElementById("hidden_total");
-if (elemHiddenTotal) elemHiddenTotal.value = R$ ${totalCalculado.toFixed(2).replace('.', ',')};
-​const tipoTextoObj = selectTipo ? selectTipo.options[selectTipo.selectedIndex] : null;
-const elemHiddenTipoText = document.getElementById("hidden_tipo_texto");
-if (elemHiddenTipoText) elemHiddenTipoText.value = tipoTextoObj ? tipoTextoObj.text : "P&B";
-​naAbaPagamento = true;
-​// 6. EXIBIR MENSAGEM ANIMADA DURANTE DOWNLOAD DO COMPROVANTE
-if (modalLoadingPdf) modalLoadingPdf.classList.add("active");
-​const protocolo = "WG-" + Math.floor(100000 + Math.random() * 900000);
-const agora = new Date();
-const dataHoraStr = agora.toLocaleDateString("pt-BR") + " " + agora.toLocaleTimeString("pt-BR");
-const nomeCliente = document.getElementById("nome") ? document.getElementById("nome").value.trim() : "";
-const telCliente = document.getElementById("telefone") ? document.getElementById("telefone").value.trim() : "";
-​let nomeArquivo = "Nenhum";
-const arq = inputArquivo && inputArquivo.files && inputArquivo.files[0] ? inputArquivo.files[0] : null;
-if (arq) nomeArquivo = arq.name;
-​const qtdP = document.getElementById("qtd_paginas").value;
-const modoStr = "Impressão comum";
-const ladoOpObj = document.querySelector('input[name="Lado da Impressao"]:checked');
-const ladoStr = ladoOpObj ? ladoOpObj.value : "Frente";
-const qtdC = document.getElementById("quantidade").value;
-const pDocNum = parseInt(qtdP) || 1;
-const cCopNum = parseInt(qtdC) || 1;
-const folhasPorCopia = ladoStr === "Frente e verso" ? Math.ceil(pDocNum / 2) : pDocNum;
-const totalFolhasFisicas = folhasPorCopia * cCopNum;
-const acab = document.getElementById("refile").value === 'grampeado' ? 'Grampeado' : 'Sem acabamento';
-const pagForm = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
-const obsText = document.getElementById("observacoes").value;
-const etiquetasVal = optEtiquetas && optEtiquetas.checked ? "Sim (R$ 1,50)" : "Nao";
-const redimVal = optRedimensionamento && optRedimensionamento.checked ? "Sim (R$ 2,00)" : "Nao";
-​const dadosComprovante = {
-protocolo,
-dataHora: dataHoraStr,
-nome: nomeCliente,
-telefone: telCliente,
-arquivoNome: nomeArquivo,
-qtdPaginas: qtdP,
-modo: modoStr,
-tipoImpressao: tipoTextoObj ? tipoTextoObj.text : "P&B Simples",
-lado: ladoStr,
-copias: qtdC,
-folhasFisicas: totalFolhasFisicas + " folhas",
-acabamento: acab,
-etiquetas: etiquetasVal,
-redimensionamento: redimVal,
-pagamento: pagForm,
-observacoes: obsText,
-subtotal: R$ ${totalCalculado.toFixed(2).replace('.', ',')},
-valorTotal: R$ ${totalCalculado.toFixed(2).replace('.', ',')}
-};
-​gerarComprovantePDF(dadosComprovante);
-​setTimeout(function () {
-if (modalLoadingPdf) modalLoadingPdf.classList.remove("active");
-​formImpressao.classList.add("hidden");
-const secaoBanner = document.getElementById("secaoBanner");
-const secaoCardChamativo = document.getElementById("secaoCardChamativo");
-const tabelaCard = document.querySelector(".tabela-precos-moderna");
-const vitrinesContainer = document.querySelector(".vitrines-container");
-const textoExplicativo = document.querySelector(".texto-explicativo-bloco");
-if (secaoBanner) secaoBanner.classList.add("hidden");
-if (secaoCardChamativo) secaoCardChamativo.classList.add("hidden");
-if (tabelaCard) tabelaCard.classList.add("hidden");
-if (vitrinesContainer) vitrinesContainer.classList.add("hidden");
-if (textoExplicativo) textoExplicativo.classList.add("hidden");
-​const valorFormatado = R$ ${totalCalculado.toFixed(2).replace('.', ',')};
-​if (pagForm === "PIX") {
-if (boxDetalhesPagamento) {
-boxDetalhesPagamento.innerHTML = <div class="pix-box-novo"> <div style="font-size: 14px; font-weight: 700; color: var(--text-main);">Valor a pagar:</div> <div class="valor-destaque">${valorFormatado}</div> <img src="qrcode-pix.jpg" alt="QR Code Pix" class="qr-code-pix"> <button type="button" class="btn-copiar-pix" onclick="navigator.clipboard.writeText('${CHAVE_PIX_TEXTO}'); alert('Chave PIX copiada!');">📋 Copiar Chave PIX</button> </div>;
-}
-} else {
-if (boxDetalhesPagamento) {
-boxDetalhesPagamento.innerHTML = <div class="dinheiro-box-novo"> <div style="font-size: 14px; font-weight: 700; color: var(--text-main);">Valor a pagar na retirada:</div> <div class="valor-destaque">${valorFormatado}</div> </div>;
-}
-}
-​if (btnNotificarWhats) {
-const msgWhats = encodeURIComponent(Olá! Fiz um pedido no site WelGrafx (Protocolo ${protocolo}) no valor de ${valorFormatado} em nome de ${nomeCliente}.);
-btnNotificarWhats.href = [https://wa.me/5541999682836?text=$](https://wa.me/5541999682836?text=$){msgWhats};
-}
-​if (telaSucesso) telaSucesso.classList.remove("hidden");
-window.scrollTo({ top: 0, behavior: 'smooth' });
-}, 1200);
-});
-​document.addEventListener("DOMContentLoaded", function() {
-calcularValor();
-});
+
+<a href="https://wa.me/5541999682836?text=Olá,%20preciso%20de%20ajuda%20com%20meu%20pedido!" target="_blank" class="btn-flutuante" aria-label="Suporte via WhatsApp">    
+    💬 Dúvidas?    
+</a>    
+
+<script>    
+    const CHAVE_PIX_TEXTO = "00020101021126580014br.gov.bcb.pix0136b8bbc0cc-afe0-4544-8f18-b2d4621783175204000053039865802BR5922WELINGTON DE L E SILVA6013SAO JOSE DOS 62070503***630440CB";    
+
+    let permitirSaida = false;    
+    let naAbaPagamento = false;    
+
+    // 2. CONTROLE DO POP-UP DE ATUALIZAÇÃO (SESSÃO ÚNICA)
+    function fecharPopupAtualizacao() {
+        const popup = document.getElementById("popupAtualizacao");
+        if (popup) popup.classList.remove("active");
+        sessionStorage.setItem("welgrafx_atualizacao_vista", "true");
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        if (!sessionStorage.getItem("welgrafx_atualizacao_vista")) {
+            const popup = document.getElementById("popupAtualizacao");
+            if (popup) popup.classList.add("active");
+        }
+    });
+
+    let fonteAmpliada = false;    
+    function alternarTamanhoFonte() {    
+        fonteAmpliada = !fonteAmpliada;    
+        document.documentElement.style.setProperty('--font-scale', fonteAmpliada ? '1.12rem' : '1rem');    
+    }    
+
+    function temCamposPreenchidos() {    
+        const nome = document.getElementById("nome").value.trim();    
+        const tel = document.getElementById("telefone").value.trim();    
+        const arqA4 = document.getElementById("arquivo").files.length;    
+        const texto = document.getElementById("textoDireto").value.trim();    
+        const obs = document.getElementById("observacoes").value.trim();    
+        return (nome.length > 0 || tel.length > 0 || arqA4 > 0 || texto.length > 0 || obs.length > 0);    
+    }    
+
+    window.addEventListener("beforeunload", function (e) {    
+        if (!permitirSaida && (temCamposPreenchidos() || naAbaPagamento)) {    
+            e.preventDefault();    
+            e.returnValue = naAbaPagamento     
+                ? "Atenção! Você possui um pagamento pendente. Deseja realmente fechar?"     
+                : "Você iniciou um preenchimento! Deseja realmente sair sem concluir?";    
+            return e.returnValue;    
+        }    
+    });    
+
+    let escCount = 0;    
+    window.addEventListener("keydown", function(e) {    
+        if (e.key === "Escape") {    
+            const precisaConfirmar = temCamposPreenchidos() || naAbaPagamento;    
+            if (!precisaConfirmar) {    
+                permitirSaida = true;    
+                history.back();    
+                return;    
+            }    
+            escCount++;    
+            if (escCount === 1) {    
+                alert("⚠️ Pressione ESC novamente para confirmar a saída do site.");    
+                setTimeout(() => escCount = 0, 3000);    
+            } else if (escCount >= 2) {    
+                permitirSaida = true;    
+                history.back();    
+            }    
+        }    
+    });    
+
+    const themeToggleBtn = document.getElementById('themeToggleBtn');    
+    const themeIcon = document.getElementById('themeIcon');    
+    const themeText = document.getElementById('themeText');    
+
+    function aplicarTema(theme) {    
+        document.documentElement.setAttribute('data-theme', theme);    
+        if (theme === 'dark') {    
+            themeIcon.innerText = '☀️';    
+            themeText.innerText = 'Claro';    
+        } else {    
+            themeIcon.innerText = '🌙';    
+            themeText.innerText = 'Escuro';    
+        }    
+        localStorage.setItem('theme', theme);    
+    }    
+
+    const savedTheme = localStorage.getItem('theme') || 'dark';    
+    aplicarTema(savedTheme);    
+
+    themeToggleBtn.addEventListener('click', () => {    
+        const currentTheme = document.documentElement.getAttribute('data-theme');    
+        aplicarTema(currentTheme === 'dark' ? 'light' : 'dark');    
+    });    
+
+    // CÁLCULO PRECISO E PROGRESSIVO DE PREÇOS
+    const selectTipo = document.getElementById("tipo_impressao");    
+    const inputQtd = document.getElementById("quantidade");    
+    const inputQtdPaginas = document.getElementById("qtd_paginas");
+    const selectAcabamento = document.getElementById("refile");
+    const optRedimensionamento = document.getElementById("opt_redimensionamento");
+    const optEtiquetas = document.getElementById("opt_etiquetas");
+
+    const valorExibicao = document.getElementById("valorTotalExibicao");    
+    const subtotalExibicao = document.getElementById("subtotalExibicao");    
+    const itemPrincipalNome = document.getElementById("itemPrincipalNome");
+    const itemPrincipalValor = document.getElementById("itemPrincipalValor");
+    const rowAdicional1 = document.getElementById("rowAdicional1");
+    const adicional1Nome = document.getElementById("adicional1Nome");
+    const adicional1Valor = document.getElementById("adicional1Valor");
+    const rowAdicional2 = document.getElementById("rowAdicional2");
+    const adicional2Nome = document.getElementById("adicional2Nome");
+    const adicional2Valor = document.getElementById("adicional2Valor");
+    const rowDesconto = document.getElementById("rowDesconto");
+
+    function calcularPrecoPBProgressivo(n) {
+        if (n <= 0) return { custo: 0, detalhe: "0 páginas" };
+        let custo = 0;
+        let dParts = [];
+        let rem = n;
+
+        const faix1 = Math.min(rem, 19);
+        if (faix1 > 0) {
+            custo += faix1 * 0.50;
+            dParts.push(`${faix1} × R$ 0,50`);
+            rem -= faix1;
+        }
+
+        if (rem > 0) {
+            const faix2 = Math.min(rem, 80);
+            custo += faix2 * 0.40;
+            dParts.push(`${faix2} × R$ 0,40`);
+            rem -= faix2;
+        }
+
+        if (rem > 0) {
+            const faix3 = rem;
+            custo += faix3 * 0.35;
+            dParts.push(`${faix3} × R$ 0,35`);
+        }
+
+        return { custo, detalhe: dParts.join(" + ") };
+    }
+
+    function calcularValor() {    
+        let subtotal = 0;    
+        let extras = 0;    
+        let nomeServicoPrincipal = "Impressão P&B simples";
+
+        let totalPaginasDoc = parseInt(inputQtdPaginas ? inputQtdPaginas.value : 1);
+        if (isNaN(totalPaginasDoc) || totalPaginasDoc < 1) totalPaginasDoc = 1;
+
+        let copias = parseInt(inputQtd ? inputQtd.value : 1);
+        if (isNaN(copias) || copias < 1) copias = 1;
+
+        const ladoOpcaoObj = document.querySelector('input[name="Lado da Impressao"]:checked');
+        const ehFrenteVerso = ladoOpcaoObj && ladoOpcaoObj.value === "Frente e verso";
+
+        let totalPaginasImpressas = totalPaginasDoc * copias;
+        const tipoUnico = selectTipo ? selectTipo.value : 'pb';
+
+        let subtotalCalculado = 0;
+
+        if (tipoUnico === 'pb') {
+            const resPB = calcularPrecoPBProgressivo(totalPaginasImpressas);
+            subtotalCalculado = resPB.custo;
+            nomeServicoPrincipal = `Impressão P&B Simples (${totalPaginasImpressas} págs)`;
+        } else if (tipoUnico === 'pb_cobertura_alta') {
+            subtotalCalculado = totalPaginasImpressas * 1.00;
+            nomeServicoPrincipal = `P&B Cobertura Alta (${totalPaginasImpressas} fls)`;
+        } else if (tipoUnico === 'pouca_cor') {
+            subtotalCalculado = totalPaginasImpressas * 1.00;
+            nomeServicoPrincipal = `Colorida Pouca Cor (${totalPaginasImpressas} fls)`;
+        } else if (tipoUnico === 'media_cor') {
+            const precoUnitMedia = totalPaginasImpressas >= 6 ? 1.20 : 1.35;
+            subtotalCalculado = totalPaginasImpressas * precoUnitMedia;
+            nomeServicoPrincipal = `Colorida Média Cor (${totalPaginasImpressas} fls)`;
+        } else if (tipoUnico === 'cobertura_total') {
+            subtotalCalculado = totalPaginasImpressas * 2.00;
+            nomeServicoPrincipal = `Colorida Cobertura Total (${totalPaginasImpressas} fls)`;
+        }
+
+        if (ehFrenteVerso) {
+            subtotalCalculado = subtotalCalculado * 1.5;
+            nomeServicoPrincipal += " [F/V]";
+        }
+
+        subtotal = subtotalCalculado;
+
+        const folhasPorCopia = ehFrenteVerso ? Math.ceil(totalPaginasDoc / 2) : totalPaginasDoc;
+        const folhasTotais = folhasPorCopia * copias;
+
+        const badge = document.getElementById("badgeCalculoPaginas");
+        let textoBadge = `💡 <strong>Cálculo:</strong> ${totalPaginasDoc} página(s) por cópia`;
+        if (ehFrenteVerso) {
+            textoBadge += ` (${folhasPorCopia} folha(s) por cópia em frente e verso - acréscimo de 50%)`;
+        }
+        textoBadge += ` × ${copias} cópia(s) = ${folhasTotais} folha(s) físicas estimadas.`;
+        if (badge) badge.innerHTML = textoBadge;
+
+        // 3. GERENCIAMENTO DO NOVO ADICIONAL DE ETIQUETAS E REDIMENSIONAMENTO
+        let adicionalCount = 0;
+        if (optEtiquetas && optEtiquetas.checked) {
+            extras += 1.50;
+            adicionalCount++;
+            if (adicionalCount === 1) {
+                rowAdicional1.style.display = "flex";
+                adicional1Nome.innerText = "Etiquetas simples (A4)";
+                adicional1Valor.innerText = "R$ 1,50";
+            }
+            const elemEtiq = document.getElementById("hidden_etiquetas");
+            if (elemEtiq) elemEtiq.value = "Sim (R$ 1,50)";
+        } else {
+            const elemEtiq = document.getElementById("hidden_etiquetas");
+            if (elemEtiq) elemEtiq.value = "Nao";
+            rowAdicional1.style.display = "none";
+        }
+
+        if (optRedimensionamento && optRedimensionamento.checked) {
+            extras += 2.00;
+            adicionalCount++;
+            if (adicionalCount === 1) {
+                rowAdicional1.style.display = "flex";
+                adicional1Nome.innerText = "Redimensionamento";
+                adicional1Valor.innerText = "R$ 2,00";
+            } else if (adicionalCount === 2) {
+                rowAdicional2.style.display = "flex";
+                adicional2Nome.innerText = "Redimensionamento";
+                adicional2Valor.innerText = "R$ 2,00";
+            }
+            const elemRedim = document.getElementById("hidden_redimensionamento");
+            if (elemRedim) elemRedim.value = "Sim (R$ 2,00)";
+        } else {
+            const elemRedim = document.getElementById("hidden_redimensionamento");
+            if (elemRedim) elemRedim.value = "Nao";
+            if (adicionalCount < 2) rowAdicional2.style.display = "none";
+        }
+
+        if (adicionalCount === 0) {
+            rowAdicional1.style.display = "none";
+            rowAdicional2.style.display = "none";
+        }
+
+        let totalFinal = subtotal + extras;
+
+        if (itemPrincipalNome) itemPrincipalNome.innerText = nomeServicoPrincipal;
+        if (itemPrincipalValor) itemPrincipalValor.innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+        if (subtotalExibicao) subtotalExibicao.innerText = `R$ ${totalFinal.toFixed(2).replace('.', ',')}`;    
+        if (valorExibicao) valorExibicao.innerText = `R$ ${totalFinal.toFixed(2).replace('.', ',')}`;    
+        
+        atualizarResumoConferencia();
+        return totalFinal;    
+    }    
+
+    function atualizarResumoConferencia() {
+        const resumoServico = document.getElementById("resumoServico");
+        const resumoTipo = document.getElementById("resumoTipo");
+        const resumoDocPaginas = document.getElementById("resumoDocPaginas");
+        const resumoOrganizacao = document.getElementById("resumoOrganizacao");
+        const resumoCopias = document.getElementById("resumoCopias");
+        const resumoTotalPaginas = document.getElementById("resumoTotalPaginas");
+        const resumoLado = document.getElementById("resumoLado");
+        const resumoFolhas = document.getElementById("resumoFolhas");
+        const resumoAcabamento = document.getElementById("resumoAcabamento");
+        const resumoArquivo = document.getElementById("resumoArquivo");
+        const inputAcabamentoHidden = document.getElementById("acabamento_grampo");
+
+        if (resumoServico) resumoServico.innerText = "Impressão A4";
+        
+        const tipoMap = {
+            'pb': 'P&B Simples',
+            'pb_cobertura_alta': 'P&B Cobertura Alta',
+            'pouca_cor': 'Colorida Pouca Cor',
+            'media_cor': 'Colorida Média Cor',
+            'cobertura_total': 'Colorida Cobertura Total'
+        };
+
+        if (resumoTipo) {
+            resumoTipo.innerText = tipoMap[selectTipo ? selectTipo.value : 'pb'] || 'P&B Simples';
+        }
+        
+        let pDoc = parseInt(inputQtdPaginas ? inputQtdPaginas.value : 1);
+        if (isNaN(pDoc) || pDoc < 1) pDoc = 1;
+
+        let cCop = parseInt(inputQtd ? inputQtd.value : 1);
+        if (isNaN(cCop) || cCop < 1) cCop = 1;
+
+        const ladoOpcao = document.querySelector('input[name="Lado da Impressao"]:checked');
+        const strLado = ladoOpcao ? ladoOpcao.value : 'Frente';
+        
+        const folhasPorCopia = strLado === "Frente e verso" ? Math.ceil(pDoc / 2) : pDoc;
+        const numFolhas = folhasPorCopia * cCop;
+        const totPag = pDoc * cCop;
+
+        if (resumoDocPaginas) resumoDocPaginas.innerText = `📄 Documento: ${pDoc} páginas`;
+        if (resumoOrganizacao) resumoOrganizacao.innerText = "Único tipo / Todas";
+        if (resumoCopias) resumoCopias.innerText = `🔄 Cópias: ${cCop}`;
+        if (resumoTotalPaginas) resumoTotalPaginas.innerText = `🖨️ Total de páginas impressas: ${totPag}`;
+        if (resumoLado) resumoLado.innerText = strLado;
+        if (resumoFolhas) resumoFolhas.innerText = `${numFolhas} folhas físicas`;
+
+        const hQtd = document.getElementById("hidden_qtd_paginas");
+        const hTotPag = document.getElementById("hidden_total_paginas_impressas");
+        const hFolhas = document.getElementById("hidden_folhas_utilizadas");
+
+        if (hQtd) hQtd.value = pDoc;
+        if (hTotPag) hTotPag.value = totPag;
+        if (hFolhas) hFolhas.value = numFolhas;
+
+        const acabTexto = (selectAcabamento && selectAcabamento.value === 'grampeado') ? 'Grampeado' : 'Sem acabamento';
+        if (resumoAcabamento) resumoAcabamento.innerText = acabTexto;
+        if (inputAcabamentoHidden) inputAcabamentoHidden.value = acabTexto;
+
+        if (modoTextoAtivo) {
+            const txt = document.getElementById("textoDireto") ? document.getElementById("textoDireto").value.trim() : "";
+            if (resumoArquivo) resumoArquivo.innerText = txt ? 'Texto Colado' : 'Texto não informado';
+        } else {
+            const arq = inputArquivo && inputArquivo.files ? inputArquivo.files[0] : null;
+            if (resumoArquivo) resumoArquivo.innerText = arq ? arq.name : 'Nenhum selecionado';
+        }
+    }
+
+    let modoTextoAtivo = false;
+    const btnToggleModo = document.getElementById("btnToggleModo");
+    const campoArquivoContainer = document.getElementById("campoArquivoContainer");
+    const campoTextoContainer = document.getElementById("campoTextoContainer");
+    const inputArquivo = document.getElementById("arquivo");
+    const inputTexto = document.getElementById("textoDireto");
+
+    if (btnToggleModo) {
+        btnToggleModo.addEventListener("click", function () {
+            modoTextoAtivo = !modoTextoAtivo;
+            if (modoTextoAtivo) {
+                if (campoArquivoContainer) campoArquivoContainer.classList.add("hidden");
+                if (campoTextoContainer) campoTextoContainer.classList.remove("hidden");
+                btnToggleModo.innerText = "📎 Prefiro anexar um arquivo";
+                if (inputArquivo) {
+                    inputArquivo.removeAttribute("required");
+                    inputArquivo.value = "";
+                }
+                if (inputTexto) inputTexto.setAttribute("required", "required");
+                ocultarPreviewA4();
+            } else {
+                if (campoTextoContainer) campoTextoContainer.classList.add("hidden");
+                if (campoArquivoContainer) campoArquivoContainer.classList.remove("hidden");
+                btnToggleModo.innerText = "✏️ Prefiro colar um texto";
+                if (inputTexto) {
+                    inputTexto.removeAttribute("required");
+                    inputTexto.value = "";
+                }
+                if (inputArquivo) inputArquivo.setAttribute("required", "required");
+            }
+            calcularValor();
+        });
+    }
+
+    const filePreview = document.getElementById("filePreview");
+    const fileNameDisplay = document.getElementById("fileNameDisplay");
+
+    if (inputArquivo) {
+        inputArquivo.addEventListener("change", function () {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                if (fileNameDisplay) fileNameDisplay.innerText = file.name;
+                if (filePreview) filePreview.classList.remove("hidden");
+            } else {
+                ocultarPreviewA4();
+            }
+            calcularValor();
+        });
+    }
+
+    function removerArquivoA4() {
+        if (inputArquivo) inputArquivo.value = "";
+        ocultarPreviewA4();
+        calcularValor();
+    }
+
+    function trocarArquivoA4() {
+        if (inputArquivo) inputArquivo.click();
+    }
+
+    function ocultarPreviewA4() {
+        if (filePreview) filePreview.classList.add("hidden");
+        if (fileNameDisplay) fileNameDisplay.innerText = "";
+    }
+
+    if (selectTipo) selectTipo.addEventListener("change", calcularValor);
+    if (inputQtd) inputQtd.addEventListener("input", calcularValor);
+    if (inputQtdPaginas) inputQtdPaginas.addEventListener("input", calcularValor);
+    if (selectAcabamento) selectAcabamento.addEventListener("change", calcularValor);
+    if (optRedimensionamento) optRedimensionamento.addEventListener("change", calcularValor);
+    if (optEtiquetas) optEtiquetas.addEventListener("change", calcularValor);
+
+    document.querySelectorAll('input[name="Lado da Impressao"]').forEach(r => {
+        r.addEventListener("change", calcularValor);
+    });
+
+    document.querySelectorAll('input[name="Forma de Pagamento"]').forEach(r => {
+        r.addEventListener("change", calcularValor);
+    });
+
+    if (inputTexto) {
+        inputTexto.addEventListener("input", atualizarResumoConferencia);
+    }
+
+    // 5. COMPROVANTE PDF ORGANIZADO EM LINHAS SEPARADAS (IGUAL AO SUBTOTAL)
+    function gerarComprovantePDF(dadosPedido) {
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            // Cabeçalho institucional WelGrafx
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(22);
+            doc.setTextColor(2, 132, 199);
+            doc.text("WelGrafx", 20, 20);
+
+            doc.setFont("Helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(100, 116, 139);
+            doc.text("Comprovante Oficial de Solicitação de Impressão", 20, 27);
+
+            // Linha divisória tracejada
+            doc.setDrawColor(203, 213, 225);
+            doc.setLineWidth(0.5);
+            doc.setLineDashPattern([1, 1], 0);
+            doc.line(20, 32, 190, 32);
+            doc.setLineDashPattern([], 0);
+
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(13);
+            doc.setTextColor(15, 23, 42);
+            doc.text("Detalhes do Pedido", 20, 42);
+
+            doc.setFont("Helvetica", "normal");
+            doc.setFontSize(10);
+            
+            let y = 50;
+            const addItem = (label, val) => {
+                doc.setFont("Helvetica", "bold");
+                doc.setTextColor(71, 85, 105);
+                doc.text(label + ":", 20, y);
+                doc.setFont("Helvetica", "normal");
+                doc.setTextColor(15, 23, 42);
+                doc.text(String(val || "-"), 75, y);
+                y += 7;
+            };
+
+            addItem("Protocolo / ID", dadosPedido.protocolo);
+            addItem("Data e Hora", dadosPedido.dataHora);
+            addItem("Nome do Cliente", dadosPedido.nome);
+            addItem("WhatsApp", dadosPedido.telefone);
+            addItem("Nome do Arquivo", dadosPedido.arquivoNome);
+            addItem("Quantidade de Páginas", dadosPedido.qtdPaginas);
+            addItem("Modo / Fluxo", dadosPedido.modo);
+            addItem("Tipo de Impressão", dadosPedido.tipoImpressao);
+            addItem("Lado da Impressão", dadosPedido.lado);
+            addItem("Quantidade de Cópias", dadosPedido.copias);
+            addItem("Folhas Físicas Estimadas", dadosPedido.folhasFisicas);
+            addItem("Acabamento", dadosPedido.acabamento);
+            addItem("Forma de Pagamento", dadosPedido.pagamento);
+            addItem("Observações", dadosPedido.observacoes || "Nenhuma");
+
+            y += 2;
+            doc.setLineDashPattern([1, 1], 0);
+            doc.line(20, y, 190, y);
+            doc.setLineDashPattern([], 0);
+            y += 8;
+
+            // Seção de Detalhamento Financeiro (Linhas Separadas)
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(11);
+            doc.setTextColor(15, 23, 42);
+            doc.text("Resumo de Valores", 20, y);
+            y += 7;
+
+            doc.setFont("Helvetica", "normal");
+            doc.setFontSize(10);
+
+            // Item Principal
+            doc.text(dadosPedido.itemPrincipalNome, 20, y);
+            doc.text(dadosPedido.itemPrincipalValor, 170, y, { align: "right" });
+            y += 6;
+
+            if (dadosPedido.temEtiquetas) {
+                doc.text("Etiquetas simples (A4)", 20, y);
+                doc.text("R$ 1,50", 170, y, { align: "right" });
+                y += 6;
+            }
+
+            if (dadosPedido.temRedim) {
+                doc.text("Redimensionamento", 20, y);
+                doc.text("R$ 2,00", 170, y, { align: "right" });
+                y += 6;
+            }
+
+            y += 2;
+            doc.setLineDashPattern([0.5, 0.5], 0);
+            doc.line(20, y, 190, y);
+            doc.setLineDashPattern([], 0);
+            y += 8;
+
+            // Total Final em destaque verde
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(13);
+            doc.setTextColor(16, 185, 129);
+            doc.text("Valor Final do Pedido:", 20, y);
+            doc.text(dadosPedido.valorTotal, 170, y, { align: "right" });
+
+            y += 25;
+            doc.setFont("Helvetica", "italic");
+            doc.setFontSize(9);
+            doc.setTextColor(100, 116, 139);
+            doc.text("WelGrafx — Emitido eletronicamente via sistema de autoatendimento.", 20, y);
+            doc.text("Este documento serve como comprovante oficial de solicitação.", 20, y + 5);
+
+            doc.save("comprovante-welgrafx.pdf");
+        } catch (err) {
+            console.error("Erro ao gerar PDF:", err);
+        }
+    }
+
+    const formImpressao = document.getElementById("formImpressao");
+    const telaSucesso = document.getElementById("telaSucesso");
+    const boxDetalhesPagamento = document.getElementById("boxDetalhesPagamento");
+    const btnNotificarWhats = document.getElementById("btnNotificarWhats");
+    const modalLoadingPdf = document.getElementById("modalLoadingPdf");
+
+    formImpressao.addEventListener("submit", function (e) {
+        const totalCalculado = calcularValor();
+        const elemHiddenTotal = document.getElementById("hidden_total");
+        if (elemHiddenTotal) elemHiddenTotal.value = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
+
+        const tipoTextoObj = selectTipo ? selectTipo.options[selectTipo.selectedIndex] : null;
+        const elemHiddenTipoText = document.getElementById("hidden_tipo_texto");
+        if (elemHiddenTipoText) elemHiddenTipoText.value = tipoTextoObj ? tipoTextoObj.text : "P&B";
+
+        naAbaPagamento = true;
+
+        if (modalLoadingPdf) modalLoadingPdf.classList.add("active");
+
+        const protocolo = "WG-" + Math.floor(100000 + Math.random() * 900000);
+        const agora = new Date();
+        const dataHoraStr = agora.toLocaleDateString("pt-BR") + " " + agora.toLocaleTimeString("pt-BR");
+        const nomeCliente = document.getElementById("nome") ? document.getElementById("nome").value.trim() : "";
+        const telCliente = document.getElementById("telefone") ? document.getElementById("telefone").value.trim() : "";
+        
+        let nomeArquivo = "Nenhum";
+        const arq = inputArquivo && inputArquivo.files && inputArquivo.files[0] ? inputArquivo.files[0] : null;
+        if (arq) nomeArquivo = arq.name;
+
+        const qtdP = document.getElementById("qtd_paginas").value;
+        const modoStr = "Impressão comum";
+        const ladoOpObj = document.querySelector('input[name="Lado da Impressao"]:checked');
+        const ladoStr = ladoOpObj ? ladoOpObj.value : "Frente";
+        const qtdC = document.getElementById("quantidade").value;
+        const pDocNum = parseInt(qtdP) || 1;
+        const cCopNum = parseInt(qtdC) || 1;
+        const folhasPorCopia = ladoStr === "Frente e verso" ? Math.ceil(pDocNum / 2) : pDocNum;
+        const totalFolhasFisicas = folhasPorCopia * cCopNum;
+        const acab = document.getElementById("refile").value === 'grampeado' ? 'Grampeado' : 'Sem acabamento';
+        const pagForm = document.querySelector('input[name="Forma de Pagamento"]:checked').value;
+        const obsText = document.getElementById("observacoes").value;
+
+        const dadosComprovante = {
+            protocolo,
+            dataHora: dataHoraStr,
+            nome: nomeCliente,
+            telefone: telCliente,
+            arquivoNome: nomeArquivo,
+            qtdPaginas: qtdP,
+            modo: modoStr,
+            tipoImpressao: tipoTextoObj ? tipoTextoObj.text : "P&B Simples",
+            lado: ladoStr,
+            copias: qtdC,
+            folhasFisicas: totalFolhasFisicas + " folhas",
+            acabamento: acab,
+            pagamento: pagForm,
+            observacoes: obsText,
+            itemPrincipalNome: itemPrincipalNome ? itemPrincipalNome.innerText : "Impressão P&B simples",
+            itemPrincipalValor: itemPrincipalValor ? itemPrincipalValor.innerText : "R$ 0,50",
+            temEtiquetas: optEtiquetas && optEtiquetas.checked,
+            temRedim: optRedimensionamento && optRedimensionamento.checked,
+            valorTotal: `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`
+        };
+
+        gerarComprovantePDF(dadosComprovante);
+
+        setTimeout(function () {
+            if (modalLoadingPdf) modalLoadingPdf.classList.remove("active");
+
+            formImpressao.classList.add("hidden");
+            const secaoBanner = document.getElementById("secaoBanner");
+            const secaoCardChamativo = document.getElementById("secaoCardChamativo");
+            const tabelaCard = document.querySelector(".tabela-precos-moderna");
+            const conferenciaVitrine = document.querySelector(".conferencia-vitrine-exclusiva");
+            const vitrineTipos = document.querySelector(".vitrine-tipos-card");
+            const vitrineCobertura = document.querySelector(".vitrine-cobertura");
+            const vitrineBeneficios = document.querySelector(".vitrine-beneficios-grid");
+            const textoExplicativo = document.querySelector(".texto-explicativo-bloco");
+            if (secaoBanner) secaoBanner.classList.add("hidden");
+            if (secaoCardChamativo) secaoCardChamativo.classList.add("hidden");
+            if (tabelaCard) tabelaCard.classList.add("hidden");
+            if (conferenciaVitrine) conferenciaVitrine.classList.add("hidden");
+            if (vitrineTipos) vitrineTipos.classList.add("hidden");
+            if (vitrineCobertura) vitrineCobertura.classList.add("hidden");
+            if (vitrineBeneficios) vitrineBeneficios.classList.add("hidden");
+            if (textoExplicativo) textoExplicativo.classList.add("hidden");
+
+            const valorFormatado = `R$ ${totalCalculado.toFixed(2).replace('.', ',')}`;
+
+            if (pagForm === "PIX") {
+                if (boxDetalhesPagamento) {
+                    boxDetalhesPagamento.innerHTML = `
+                        <div class="pix-box-novo">
+                            <div style="font-size: 14px; font-weight: 700; color: var(--text-main);">Valor a pagar:</div>
+                            <div class="valor-destaque">${valorFormatado}</div>
+                            <img src="qrcode-pix.jpg" alt="QR Code Pix" class="qr-code-pix">
+                            <button type="button" class="btn-copiar-pix" onclick="navigator.clipboard.writeText('${CHAVE_PIX_TEXTO}'); alert('Chave PIX copiada!');">📋 Copiar Chave PIX</button>
+                        </div>
+                    `;
+                }
+            } else {
+                if (boxDetalhesPagamento) {
+                    boxDetalhesPagamento.innerHTML = `
+                        <div class="dinheiro-box-novo">
+                            <div style="font-size: 14px; font-weight: 700; color: var(--text-main);">Valor a pagar na retirada:</div>
+                            <div class="valor-destaque">${valorFormatado}</div>
+                        </div>
+                    `;
+                }
+            }
+
+            if (btnNotificarWhats) {
+                const msgWhats = encodeURIComponent(`Olá! Fiz um pedido no site WelGrafx (Protocolo ${protocolo}) no valor de ${valorFormatado} em nome de ${nomeCliente}.`);
+                btnNotificarWhats.href = `https://wa.me/5541999682836?text=${msgWhats}`;
+            }
+
+            if (telaSucesso) telaSucesso.classList.remove("hidden");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 1200);
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        calcularValor();
+    });
 </script>
 </body>
 </html>
